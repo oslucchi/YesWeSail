@@ -1,0 +1,119 @@
+<div class="main_search">
+
+    <div class="ui container">
+        <div class="main_search_content">
+            <h1 class="ui header">LA VELA PER TUTTI</h1>
+            <h2 class="ui header"> Scegli e personalizza la tua esperienza a prezzi mai visti prima.</h2>
+
+
+            <div class="ui fluid three item menu">
+
+                <div class="ui dropdown item">
+                    Regione
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item">Electronics</a>
+                        <a class="item">Electronics</a>
+                        <a class="item">Electronics</a>
+                        <a class="item">Electronics</a>
+                        <a class="item">Electronics</a>
+                    </div>
+                </div>
+                <div class="ui dropdown item">
+                    Stile
+                    <i class="dropdown icon"></i>
+                    <div class="menu">
+                        <a class="item">Electronics</a>
+                    </div>
+                </div>
+
+                <a href="#/search/{{selectedPlace}}/{{selectedStyle}}" class="item">Cerca</a>
+
+            </div>
+
+
+
+
+
+        </div>
+
+    </div>
+</div>
+
+
+
+<div class="featured_content_container">
+    <div class="featured_content">
+
+
+        <h1>Le migliori proposte</h1>
+
+        <div class="ui horizontal segments">
+            <div ng-repeat="proposal in proposals" style="background-image: url({{proposal.imgUrl}}); background-size: cover;" class="ui segment">
+                <div class="proposal_card">
+                    {{proposal.title}} {{proposal.price}}€ {{proposal.description}} {{proposal.start}}-{{proposal.end}}
+                </div>
+            </div>
+        </div>
+
+
+        <h1>Esplora</h1>
+        <div class="ui horizontal segments">
+            <div ng-repeat="proposal in proposals" style="background-image: url({{proposal.imgUrl}}); background-size: cover;" class="ui segment">
+                <div class="proposal_card">
+                    {{proposal.title}} {{proposal.price}}€ {{proposal.description}} {{proposal.start}}-{{proposal.end}}
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+</div>
+
+
+<div class="why_us">
+    <div class="why_us_left">
+        <h1>Perchè scegliere YesWeSail</h1>
+        <div class="ui items">
+            <div class="item">
+                <div class="image">
+                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/miglior-prezzo.png">
+                </div>
+                <div class="middle aligned content">
+                    <h2 class="header"> Miglior prezzo garantito</h2>
+                    <div class="description">
+                        Nasce il primo sistema di early booking per risparmiare sulle vacanze in barca.
+                    </div>
+
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/pagamenti-sicuri.png">
+                </div>
+                <div class="middle aligned content">
+                    <h2 class="header">Pagamenti sicuri</h2>
+                    <div class="description">
+                        Il pagamento avviene su canali sicuri e criptati e la quota viene versata allo skipper entro 24 ore dalla partenza.
+                    </div>
+
+                </div>
+            </div>
+            <div class="item">
+                <div class="image">
+                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/servizio-personlizato.png">
+                </div>
+                <div class="middle aligned content">
+                    <h2 class="header">Servizio completamente personalizzabile</h2>
+                    <div class="description">
+                        Possibilità di personalizzare la vacanza con attività turistiche a terra.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="why_us_right">
+    </div>
+</div>

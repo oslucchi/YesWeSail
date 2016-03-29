@@ -1,0 +1,93 @@
+
+   
+    <div class="ui container">
+        <div class="main_search_content">
+        <!--<div class="ui menu">
+  
+            <div class="item">
+            <div class="ui action input">
+              <input type="text" placeholder="Navigate to...">
+                                <select ng-model="style" class="ui compact selection dropdown">
+                    <option value="">Stile</option>
+                    <option value="pesca">Pesca</option>
+                    <option value="relax">Relax</option>
+                </select>
+              <div ng-click="getResults()" class="ui button">Go</div>
+            </div>
+          </div> 
+
+
+        </div>-->
+        <div class="ui fluid three item menu">
+
+                        <div class="ui dropdown item">
+                            Regione
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <a class="item">Electronics</a>
+                                <a class="item">Electronics</a>
+                                <a class="item">Electronics</a>
+                                <a class="item">Electronics</a>
+                                <a class="item">Electronics</a>
+                            </div>
+                        </div>
+                        <div class="ui dropdown item">
+                            Stile
+                            <i class="dropdown icon"></i>
+                            <div class="menu">
+                                <a class="item">Electronics</a>
+                            </div>
+                        </div>
+
+                        <a href="#/search/{{selectedPlace}}/{{selectedStyle}}" class="item">Cerca</a>
+
+            </div>
+        </div>
+        <div class="ui divider"></div>
+        
+
+        
+        <div class="ui container">
+        <div class="ui four stackable cards">
+            <div ng-repeat="result in results" class="ui card">
+              <div class="content">
+                <div class="right floated"><h2>{{result.price}}€</h2></div>
+                <img class="ui avatar image" src="http://www.yeswesail.com/usersultramedia/23/1458057204.jpg"> 
+                  <a href="#/events/{{result.eventId}}">{{result.title}}</a>
+                  
+              </div>
+              <div class="image">
+                <img ng-src="{{result.url}}">
+              </div>
+                <div class="content">
+                  <div class="description">
+                    {{result.description}}
+                  </div>
+                    
+               
+              </div>
+                 <div class="content">
+
+
+                      <div>{{result.start}} - {{result.end}}</div>
+                </div>
+             <div class="content">
+                
+                <span class="right floated">
+                  <i class="heart outline like icon"></i>
+                  17 likes
+                </span>
+                <i class="comment icon"></i>
+                3 comments
+              </div>
+              <div class="extra content">
+                <div class="ui large transparent left icon input">
+                  <i class="heart outline icon"></i>
+                  <input type="text" placeholder="Add Comment...">
+                </div>
+              </div>
+            </div>
+        </div>
+        
+        </div>
+    </div>
