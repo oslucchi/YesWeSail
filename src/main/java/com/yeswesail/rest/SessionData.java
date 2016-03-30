@@ -16,7 +16,7 @@ public class SessionData {
 		sessionData = new HashMap<>();
 	}
 	
-	public static SessionData getInstance(String errCode)
+	public static SessionData getInstance()
 	{
 		if (singletonInstance == null)
 		{
@@ -25,7 +25,7 @@ public class SessionData {
 		return(singletonInstance);
 	}
 	
-	public static Users getBasicProfile(String token)
+	public Users getBasicProfile(String token)
 	{
 		Object[] profile = sessionData.get(token);
 		if (profile == null)
@@ -35,7 +35,7 @@ public class SessionData {
 		return((Users) profile[0]);
 	}
 
-	public static Object[] getWholeProfile(String token)
+	public Object[] getWholeProfile(String token)
 	{
 		Object[] profile = sessionData.get(token);
 		if (profile == null)
@@ -45,8 +45,10 @@ public class SessionData {
 		return(profile);
 	}
 
-	public static void addUser(String token) throws Exception
+	public void addUser(String token) throws Exception
 	{
+		if (sessionData.get(token) != null)
+			return;
 		Object[] userData = new Object[2];
 		UsersAuth ua = UsersAuth.findToken(token);
 		userData[0] = new Users(ua.getUserId());
@@ -55,12 +57,12 @@ public class SessionData {
 		return;
 	}
 
-	public static void removeUser(String token)
+	public void removeUser(String token)
 	{
 		sessionData.remove(token);
 	}
 
-	public static Users getBasicProfile(int userId)
+	public Users getBasicProfile(int userId)
 	{
 		for(String token: sessionData.keySet())
 		{
@@ -72,7 +74,7 @@ public class SessionData {
 		return(null);
 	}
 
-	public static Object[] getWholeProfile(int userId)
+	public Object[] getWholeProfile(int userId)
 	{
 		for(String token: sessionData.keySet())
 		{
@@ -84,16 +86,19 @@ public class SessionData {
 		return(null);
 	}
 
-	public static void addUser(int userId) throws Exception
+	public void addUser(int userId) throws Exception
 	{
 		Object[] userData = new Object[2];
 		UsersAuth ua = UsersAuth.findUserId(userId);
+		if (sessionData.get(ua.getToken()) != null)
+			return;
+
 		userData[0] = new Users(userId);
 		userData[1] = AddressInfo.findUserId(userId);
 		sessionData.put(ua.getToken(), userData);
 	}
 
-	public static void removeUser(int userId)
+	public void removeUser(int userId)
 	{
 		for(String token: sessionData.keySet())
 		{
@@ -104,4 +109,5 @@ public class SessionData {
 		}
 		return;
 	}
+
 }

@@ -42,11 +42,12 @@ public class AddressInfo extends DBInterface
 	{
 		String sql = "SELECT * " +
 				 "FROM AddressInfo " +
-				 "WHERE  usersId = " + userId;
+				 "WHERE  userId = " + userId;
 		@SuppressWarnings("unchecked")
 		ArrayList<AddressInfo> adList = 
 				(ArrayList<AddressInfo>) DBInterface.populateCollection(sql, AddressInfo.class);
-		AddressInfo[] adi = (AddressInfo[]) adList.toArray();
+		AddressInfo[] adi = new AddressInfo[adList.size()];
+		adi = adList.toArray(adi);
 		return(adi);
 	}
 	
