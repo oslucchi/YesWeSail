@@ -23,5 +23,4 @@ public class Profile {
 	{
 		return Response.status(Response.Status.OK).build();
 	}
-
 }

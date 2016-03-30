@@ -37,7 +37,7 @@
   ;
   </script>
 
-<div class="login_container">
+<div class="login_container" ng-controller="LoginCtrl">
     <div class="ui container">
 <div class="ui middle aligned center aligned grid">
   <div class="column">
@@ -47,7 +47,7 @@
         Esegui l'accesso al tuo account
       </div>
     </h2>
-    <form method="post" action="/login" class="ui large form">
+    <form ng-submit="login(credentials)" class="ui large form">
       <div class="ui stacked segment">
           <div class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</div>
            <div class="ui horizontal divider"></div>
@@ -58,16 +58,16 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="email" placeholder="E-mail address">
+            <input type="text" ng-model="credentials.username" name="email" placeholder="E-mail address">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input type="password" name="password" placeholder="Password">
+            <input type="password" ng-model="credentials.password" name="password" placeholder="Password">
           </div>
         </div>
-        <div class="ui fluid large blue submit button">Accedi</div>
+        <button type="submit" class="ui fluid large blue submit button">Accedi</button>
       </div>
 
       <div class="ui error message"></div>
