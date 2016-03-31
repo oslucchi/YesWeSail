@@ -6,9 +6,11 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -19,16 +21,16 @@ import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.DBUtility.Users;
 
-@Path("/auth/login")
+@Path("/pippo/login")
 public class Login {
 	ApplicationProperties prop = new ApplicationProperties();
 	final Logger log = Logger.getLogger(this.getClass());
 	
-	@GET
-	@Path("/{email}/{password}")
+	@POST
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response login(@PathParam("email") String email, 
-						  @PathParam("password") String password)
+	public Response login(@QueryParam("email") String email, 
+						  @QueryParam("password") String password)
 	{
 		String errorMsg = "";
 		String token = UUID.randomUUID().toString();
@@ -102,6 +104,13 @@ public class Login {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	@GET
+	@Path("/{email}/{password}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response loginByToken(@PathParam("email") String email, @PathParam("password") String password)
+	{
+		return Response.status(Response.Status.OK).build();
+	}
 	
 	@GET
 	@Path("/token/{token}")
