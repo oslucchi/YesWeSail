@@ -19,6 +19,7 @@ public class ApplicationProperties {
 	private String webHome = "";
 	private String redirectUserRegistered = "";
 	private String redirectHome	= "";
+	private String redirectLogin = "";
 	private int sessionExpireTime = 0;
 	
 	final Logger log = Logger.getLogger(this.getClass());
@@ -51,6 +52,7 @@ public class ApplicationProperties {
     	webHome = properties.getProperty("webHome");
     	redirectUserRegistered = properties.getProperty("redirectUserRegistered");
     	redirectHome = properties.getProperty("redirectHome");
+    	redirectLogin = properties.getProperty("redirectLogin");
     	try
     	{
     		sessionExpireTime = Integer.parseInt(properties.getProperty("sessionExpireTime"));
@@ -113,5 +115,10 @@ public class ApplicationProperties {
 
 	public String getRedirectHome() {
 		return redirectHome;
+	}
+
+	public String getRedirectLogin() {
+		return redirectLogin;
 	}		
+
 }

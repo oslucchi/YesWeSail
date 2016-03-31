@@ -25,11 +25,11 @@ import com.yeswesail.rest.DBUtility.Users;
 @Path("/auth/register")
 public class Auth {
 	DBConnection conn;
-	@GET
-	@Path("/{email}/{password}")
+	@POST
+	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response register(@PathParam("email") String email, 
-						   @PathParam("password") String password)
+	public Response register(@QueryParam("email") String email, 
+						   @QueryParam("password") String password)
 	{
 		ApplicationProperties prop = new ApplicationProperties();
 		String errorMsg = "";
@@ -67,12 +67,6 @@ public class Auth {
 			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + token;
 	        String htmlText = LanguageResources.getResource("mail.body");
 	        htmlText.replaceAll("%CNFMLINK%", httpLink);
-	        /*
-	        htmlText = htmlText.substring(0, httpLink.indexOf("%CNFMLINK%")) + httpLink + 
-	        		htmlText.substring(httpLink.indexOf("%CNFMLINK%") + httpLink.length());
-	        htmlText = htmlText.substring(0, httpLink.indexOf("%CNFMLINK%")) + httpLink + 
-	        		htmlText.substring(httpLink.indexOf("%CNFMLINK%") + httpLink.length());
-	        */
 	        String subject = LanguageResources.getResource("mail.subject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
@@ -84,15 +78,6 @@ public class Auth {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 		}
 		
-		URI location;
-		try {
-			location = new URI(prop.getWebHost() + "/" + prop.getRedirectUserRegistered() +
-							   "?token=" + token);
-			return Response.seeOther(location).build();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity(LanguageResources.getResource("auth.registerRedirectMsg")).build();
 	}
 }

@@ -16,7 +16,6 @@ import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
-import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.DBUtility.Users;
 
@@ -90,14 +89,6 @@ public class Login {
 			}
 		}
 
-		try {
-			SessionData.getInstance().addUser(token);
-		}
-		catch(Exception e)
-		{
-			
-		}
-		
 		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
 		try {
 			URI location;
@@ -111,6 +102,7 @@ public class Login {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	
 	@GET
 	@Path("/token/{token}")
 	@Produces(MediaType.APPLICATION_JSON)
