@@ -110,4 +110,21 @@ public class SessionData {
 		return;
 	}
 
+	public void updateSession(int userId, Object[] data, String newToken)
+	{
+		for(String token: sessionData.keySet())
+		{
+			if (((Users)sessionData.get(token)[0]).getIdUsers() == userId)
+			{
+				sessionData.remove(token);
+				sessionData.put(newToken, data);
+			}
+		}
+	}
+
+	public void updateSession(String token, Object[] data)
+	{
+		sessionData.put(token, data);
+	}
+
 }

@@ -1,9 +1,8 @@
 package com.yeswesail.rest.login;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -13,28 +12,29 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.Mailer;
+import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
+import com.yeswesail.rest.jsonInt.AuthJson;
 
 
-/*
- * Tra i parametri della funzione
- * 						   @Context HttpServletRequest httpRequest,
- */
 @Path("/auth")
 public class Auth {
 	ApplicationProperties prop = new ApplicationProperties();
 	final Logger log = Logger.getLogger(this.getClass());
+	Genson genson = new Genson();
 
 	@POST
 	@Path("/register")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response register(@QueryParam("email") String email, 
-						     @QueryParam("password") String password)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response register(AuthJson jsonIn) 
 	{
 		ApplicationProperties prop = new ApplicationProperties();
 		String errorMsg = "";
@@ -42,8 +42,10 @@ public class Auth {
 		try 
 		{
 			Users u = new Users();
-			u.setEmail(email);
-			u.setPassword(password);
+			u.setEmail(jsonIn.username);
+			u.setPassword(jsonIn.password);
+			u.setName(jsonIn.firstName);
+			u.setSurname(jsonIn.lastName);
 			u.setStatus("D");
 			u.setIsShipOwner("F");
 			u.setConnectedVia("P");
@@ -74,7 +76,7 @@ public class Auth {
 	        String subject = LanguageResources.getResource("mail.subject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
-			Mailer.sendMail(email, subject, htmlText, imagePath);
+			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{
@@ -82,20 +84,27 @@ public class Auth {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 		}
 		
-		return Response.status(Response.Status.OK).entity(LanguageResources.getResource("auth.registerRedirectMsg")).build();
+		return Response.status(Response.Status.OK)
+				.entity(LanguageResources.getResource("auth.registerRedirectMsg")).build();
 	}
+
 	
 	@POST
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes("application/json")
-	public Response login(@FormParam("username") String username, 
-						  @FormParam("password") String password)
-	{
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response login(AuthJson jsonIn) 
+	{ 
+		String username = jsonIn.username; 
+		String password = jsonIn.password; 
 		String errorMsg = "";
-		String token = UUID.randomUUID().toString();
 		Users u;
 		String query = null;
+
+		/*
+		 * A new login always requires a new token to be generated
+		 */
+		String token = UUID.randomUUID().toString();
 		log.debug("Login called. Parameters: '" + username + "|" + password + "'");
 		try 
 		{
@@ -128,10 +137,11 @@ public class Auth {
 		UsersAuth ua = null;
 		try
 		{
-			log.trace("Searching for a valid token for the user in DB");
+			log.trace("Setting up the new token for the user in DB");
 			ua = new UsersAuth();
 			query = "SELECT * FROM UsersAuth WHERE userId = " + u.getIdUsers();
 			ua.populateObject(query, ua);
+			ua.setToken(token);
 			ua.setLastRefreshed(new Date());
 			log.trace("Refreshing the last access");
 			ua.update("idUsersAuth");
@@ -158,55 +168,116 @@ public class Auth {
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 			}
 		}
-
-		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
-		try {
-			log.trace("Redirect to " + uri);
-			URI location;
-			location = new URI(uri);
-			return Response.seeOther(location).build();
-		} 
-		catch (URISyntaxException e) 
+		SessionData sa = SessionData.getInstance();
+		Object[] userProfile = sa.getWholeProfile(u.getIdUsers());
+		if (userProfile == null)
 		{
-			log.error("Exception setting redirection URL '" + uri + "': " + e.getMessage());
+			userProfile = new Object[2];
 		}
-		return Response.status(Response.Status.OK).build();
-	}
-	
-	@GET
-	@Path("/token/{token}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response loginByToken(@PathParam("token") String token)
-	{
-		String errorMsg = "";
+		userProfile[0] = u;
 		try 
 		{
-			String query = "SELECT * FROM UserAuth WHERE token = '" + token + "'";
-			UsersAuth ua = new UsersAuth();
-			ua.populateObject(query, ua);
+			userProfile[1] = AddressInfo.findUserId(u.getIdUsers());
+		}
+		catch (Exception e) 
+		{
+			;
+		}
+		sa.updateSession(u.getIdUsers(), userProfile, token);
+
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("token", token);
+		jsonResponse.put("user", u);
+		String entity = genson.serialize(jsonResponse);
+		return Response.status(Response.Status.OK).entity(entity)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.build();
+	}
+	
+	@POST
+	@Path("/loginByToken")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response loginByToken(AuthJson jsonIn)
+	{
+		String errorMsg = "";
+		UsersAuth ua = null;
+		SessionData sa = SessionData.getInstance();
+		
+		try 
+		{
+			ua = UsersAuth.findToken(jsonIn.token);
 			if (prop.getSessionExpireTime() != 0)
 			{
 				if (ua.getLastRefreshed().getTime() + prop.getSessionExpireTime() * 1000 < new Date().getTime())
 				{
+					ua.delete(ua.getIdUsersAuth());
+					sa.removeUser(jsonIn.token);
 					errorMsg = LanguageResources.getResource("auth.sessionExpired");
 					return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 				}
 			}
 		}
 		catch (Exception e) {
+			sa.removeUser(jsonIn.token);
 			errorMsg = LanguageResources.getResource("auth.sessionExpired");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
-		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
-		try {
-			URI location;
-			location = new URI(uri);
-			return Response.temporaryRedirect(location).build();
-		} 
-		catch (URISyntaxException e) {
-			log.error("Exception setting redirection URL '" + uri + "': " + e.getMessage());
+
+		Object[] userProfile = sa.getWholeProfile(jsonIn.token);
+		try 
+		{
+			ua.setLastRefreshed(new Date());
+			ua.update("idUsersAuth");
+			if (userProfile == null)
+			{
+				sa.addUser(ua.getUserId());
+				userProfile = new Object[2];
+				userProfile = sa.getWholeProfile(ua.getToken());
+			}
+			else
+			{
+				userProfile[0] = new Users(ua.getUserId());
+				userProfile[1] = AddressInfo.findUserId(ua.getUserId());
+				sa.updateSession(jsonIn.token, userProfile);
+			}
 		}
-		return Response.status(Response.Status.OK).build();
+		catch (Exception e) {
+			log.error("Exception " + e.getMessage() + " setting up sessionData");
+		}
+		
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("token", jsonIn.token);
+		jsonResponse.put("user", userProfile[0]);
+		String entity = genson.serialize(jsonResponse);
+		return Response.status(Response.Status.OK).entity(entity)
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.build();
 	}
 
+	@POST
+	@Path("/logout")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response logout(AuthJson jsonIn)
+	{
+		try 
+		{
+			String query = "SELECT * FROM UsersAuth WHERE token = '" + jsonIn.token + "'";
+			UsersAuth ua = new UsersAuth();
+			ua.populateObject(query, ua);
+			ua.delete(ua.getIdUsersAuth());
+		}
+		catch (Exception e) {
+			return Response.status(Response.Status.NOT_FOUND).
+					entity(LanguageResources.getResource("auth.tokenNotFound")).build();
+		}
+		
+		SessionData.getInstance().removeUser(jsonIn.token);
+		return Response.status(Response.Status.OK)
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.build();
+	}
 }
