@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('LoginCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService) {
+    .controller('LoginCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, $location) {
         $scope.credentials = {
             username: '',
             password: ''
@@ -17,7 +17,11 @@ angular.module('yeswesailApp')
             
             AuthService.login(credentials).then(function (user) {
                 $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
+                
                 $scope.setCurrentUser(user);
+                $location.path('/#');
+                
+                
             }, function () {
                 $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
             });

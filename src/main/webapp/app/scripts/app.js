@@ -21,7 +21,10 @@ angular
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
         loginFailed: 'auth-login-failed',
+        registerSuccess: 'auth-register-success',
+        registerFailed: 'auth-register-failed',
         logoutSuccess: 'auth-logout-success',
+        logoutFail: 'auth-logout-fail',
         sessionTimeout: 'auth-session-timeout',
         notAuthenticated: 'auth-not-authenticated',
         notAuthorized: 'auth-not-authorized'
@@ -70,9 +73,14 @@ angular
 
 
     })
-    .run(function(){
+    .run(function($rootScope, $cookieStore, $http){
         angular.element('.ui.dropdown').dropdown({action: 'hide'});
         
-        
+        // keep user logged in after page refresh
+        $rootScope.globals = $cookieStore.get('globals') || {};
+        if ($rootScope.globals.currentUser) {
+            
+            $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.token; // jshint ignore:line
+        }
     
 });
