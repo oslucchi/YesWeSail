@@ -13,7 +13,11 @@ angular.module('yeswesailApp')
 
         authService.login = function (credentials) {
             return $http
+<<<<<<< HEAD
                 .post('http://localhost:1337/yeswesail.ddns.net:8080/YesWeSail/rest/auth/login', credentials)
+=======
+                .post('http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/login', credentials)
+>>>>>>> 26cc4b6a9c8ab57a966d1813acd3792e3b0f19be
                 .then(function (res) {
                     var jsonResData = JSON.parse(res.data);
                     Session.create(jsonResData.token, jsonResData.user.idUsers, jsonResData.user.roleId);
