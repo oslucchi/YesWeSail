@@ -199,34 +199,34 @@ public class Auth {
 	@Path("/loginByToken")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response loginByToken(AuthJson jsonIn)
+	public Response loginByToken(@HeaderParam("Authorization") String token)
 	{
 		String errorMsg = "";
 		UsersAuth ua = null;
 		SessionData sa = SessionData.getInstance();
-		
+
 		try 
 		{
-			ua = UsersAuth.findToken(jsonIn.token);
+			ua = UsersAuth.findToken(token);
 			if (prop.getSessionExpireTime() != 0)
 			{
 				if (ua.getLastRefreshed().getTime() + prop.getSessionExpireTime() * 1000 < new Date().getTime())
 				{
 					ua.delete(ua.getIdUsersAuth());
-					sa.removeUser(jsonIn.token);
+					sa.removeUser(token);
 					errorMsg = LanguageResources.getResource("auth.sessionExpired");
 					return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 				}
 			}
 		}
 		catch (Exception e) {
-			sa.removeUser(jsonIn.token);
+			sa.removeUser(token);
 			errorMsg = LanguageResources.getResource("auth.sessionExpired");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
 
-		Object[] userProfile = sa.getWholeProfile(jsonIn.token);
-		try 
+		Object[] userProfile = sa.getWholeProfile(token);
+		try  
 		{
 			ua.setLastRefreshed(new Date());
 			ua.update("idUsersAuth");
@@ -240,7 +240,7 @@ public class Auth {
 			{
 				userProfile[0] = new Users(ua.getUserId());
 				userProfile[1] = AddressInfo.findUserId(ua.getUserId());
-				sa.updateSession(jsonIn.token, userProfile);
+				sa.updateSession(token, userProfile);
 			}
 		}
 		catch (Exception e) {
@@ -248,7 +248,7 @@ public class Auth {
 		}
 		
 		HashMap<String, Object> jsonResponse = new HashMap<>();
-		jsonResponse.put("token", jsonIn.token);
+		jsonResponse.put("token", token);
 		jsonResponse.put("user", userProfile[0]);
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity)
@@ -261,11 +261,11 @@ public class Auth {
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response logout(AuthJson jsonIn)
+	public Response logout(@HeaderParam("Authorization") String token)
 	{
 		try 
 		{
-			String query = "SELECT * FROM UsersAuth WHERE token = '" + jsonIn.token + "'";
+			String query = "SELECT * FROM UsersAuth WHERE token = '" + token + "'";
 			UsersAuth ua = new UsersAuth();
 			ua.populateObject(query, ua);
 			ua.delete(ua.getIdUsersAuth());
@@ -275,7 +275,7 @@ public class Auth {
 					entity(LanguageResources.getResource("auth.tokenNotFound")).build();
 		}
 		
-		SessionData.getInstance().removeUser(jsonIn.token);
+		SessionData.getInstance().removeUser(token);
 		return Response.status(Response.Status.OK)
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
 				.build();

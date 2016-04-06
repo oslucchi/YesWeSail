@@ -1,0 +1,47 @@
+package com.yeswesail.rest;
+
+import java.io.IOException;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.Provider;
+
+import com.yeswesail.rest.DBUtility.UsersAuth;
+
+@Provider
+@PreMatching
+public class Authorizer implements ContainerRequestFilter 
+{
+	@Override
+	public void filter(ContainerRequestContext request) throws IOException 
+	{
+		String path = request.getUriInfo().getPath();
+		path = path.substring(path.lastIndexOf("/") + 1);
+		if ((path.compareTo("login") == 0) ||
+			(path.compareTo("register") == 0))
+		{
+			return;
+		}
+		String token = request.getHeaderString("Authorization");
+
+		Object[] sessionProfile = SessionData.getInstance().getWholeProfile(token);
+		if (sessionProfile != null)
+		{
+			return;
+		}
+		UsersAuth ua = null;
+		try {
+			ua = UsersAuth.findToken(token);
+			SessionData.getInstance().addUser(ua.getUserId());
+		} 
+		catch (Exception e) {
+			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+					.entity("Token not recognized")
+					.build());;
+		}
+		return;
+	}
+
+}
