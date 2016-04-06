@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `yeswesail` /*!40100 DEFAULT CHARACTER SET utf8 */;
-USE `yeswesail`;
--- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.9, for linux-glibc2.5 (x86_64)
 --
--- Host: 127.0.0.1    Database: yeswesail
+-- Host: localhost    Database: yeswesail
 -- ------------------------------------------------------
--- Server version	5.5.47-0ubuntu0.14.04.1
+-- Server version	5.6.29
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -95,11 +93,8 @@ DROP TABLE IF EXISTS `Categories`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Categories` (
   `idCategories` int(11) NOT NULL AUTO_INCREMENT,
-  `languageId` int(11) NOT NULL,
   `name` varchar(45) NOT NULL,
-  PRIMARY KEY (`idCategories`),
-  KEY `fk_Categories_Languages_idx` (`languageId`),
-  CONSTRAINT `fk_Categories_Languages` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  PRIMARY KEY (`idCategories`)
 ) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -109,8 +104,36 @@ CREATE TABLE `Categories` (
 
 LOCK TABLES `Categories` WRITE;
 /*!40000 ALTER TABLE `Categories` DISABLE KEYS */;
-INSERT INTO `Categories` VALUES (1,1,'Relax'),(2,1,'Pesca'),(3,1,'Sport'),(4,2,'Relax'),(5,2,'Fishing'),(6,2,'Sport');
+INSERT INTO `Categories` VALUES (1,'Relax'),(2,'Pesca'),(3,'Sport');
 /*!40000 ALTER TABLE `Categories` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `CategoriesLanguages`
+--
+
+DROP TABLE IF EXISTS `CategoriesLanguages`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `CategoriesLanguages` (
+  `categoryId` int(11) NOT NULL,
+  `languageId` int(11) NOT NULL,
+  `description` varchar(45) NOT NULL,
+  PRIMARY KEY (`categoryId`,`languageId`),
+  KEY `fk_CategoriesLanguages_Languages_idx` (`languageId`),
+  CONSTRAINT `fk_CategoriesLanguages_Category` FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`idCategories`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_CategoriesLanguages_Languages` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `CategoriesLanguages`
+--
+
+LOCK TABLES `CategoriesLanguages` WRITE;
+/*!40000 ALTER TABLE `CategoriesLanguages` DISABLE KEYS */;
+INSERT INTO `CategoriesLanguages` VALUES (1,1,'Relax'),(1,2,'Relax'),(2,1,'Pesca'),(2,2,'Fishing'),(3,1,'Sport'),(3,2,'Sport');
+/*!40000 ALTER TABLE `CategoriesLanguages` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -513,4 +536,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-03-26 22:54:38
+-- Dump completed on 2016-04-06 19:24:39

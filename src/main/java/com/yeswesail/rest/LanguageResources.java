@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class LanguageResources {
-	private static Properties[] resource = new Properties[2];
+	private static Properties[] resource = new Properties[3];
 	private static LanguageResources singletonInstance = null;
 	private static int languageCode = Constants.LNG_IT;
 
@@ -36,5 +36,19 @@ public class LanguageResources {
 			singletonInstance = new LanguageResources();
 		}
 		return(resource[languageCode].getProperty(errCode, "Unknown error"));
+	}
+
+	public static String getResource(int language, String errCode)
+	{
+		if (singletonInstance == null)
+		{
+			singletonInstance = new LanguageResources();
+		}
+		return(resource[language].getProperty(errCode, "Unknown error"));
+	}
+
+	public static void setLanguageCode(int languageCode) 
+	{
+		LanguageResources.languageCode = languageCode;
 	}
 }

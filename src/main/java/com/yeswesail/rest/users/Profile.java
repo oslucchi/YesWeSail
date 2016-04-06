@@ -1,10 +1,11 @@
 package com.yeswesail.rest.users;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
-import javax.ws.rs.GET;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -12,70 +13,130 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
+import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
 public class Profile {
 	ApplicationProperties prop = new ApplicationProperties();
 	final Logger log = Logger.getLogger(this.getClass());
-	
-	@GET
-	@Path("/basic/{token}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response basic(@PathParam("token") String token)
-	{
-		String errMsg = "";
-		Users u = SessionData.getInstance().getBasicProfile(token);
-		UsersAuth ua = null;
+	Users u = null;
+	UsersAuth ua = null;
+	AddressInfo[] ai = new AddressInfo[2];
 
+	private String getUserData(UsersJson jsonIn)
+	{
+		String errMsg = null;
+		u = SessionData.getInstance().getBasicProfile(jsonIn.token);
+		
 		if (u == null)
 		{
 			try 
 			{
 				ua = new UsersAuth();
-				String query = "SELECT * FROM UsersAuth WHERE token = '" + token + "'";
+				String query = "SELECT * FROM UsersAuth WHERE token = '" + jsonIn.token + "'";
 				ua.populateObject(query, ua);
 			}
 			catch (Exception e) 
 			{
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
-					errMsg = LanguageResources.getResource("auth.loginTokenNotExist");
+					errMsg = LanguageResources.getResource(
+								Constants.getLanguageCode(jsonIn.language), "auth.loginTokenNotExist");
 				}
 				else
 				{
-					errMsg = LanguageResources.getResource("generic.execError") + " (" +
+					errMsg = LanguageResources.getResource(Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" +
 							 e.getMessage() + ")";
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
-				return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
 			}
 
 			try 
 			{
-				SessionData.getInstance().addUser(token);
-				u = SessionData.getInstance().getBasicProfile(token);
+				SessionData.getInstance().addUser(jsonIn.token);
+				u = SessionData.getInstance().getBasicProfile(jsonIn.token);
 			}
 			catch(Exception e)
 			{
-				errMsg = LanguageResources.getResource("generic.execError") + " (" +
+				errMsg = LanguageResources.getResource(Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" +
 						 e.getMessage() + ")";
 			}
 		}
 		
+		return errMsg;
+	}
+	
+	@POST
+	@Path("/basic")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response basicProfile(UsersJson jsonIn)
+	{
+		String errMsg = getUserData(jsonIn);
+		if (errMsg != null)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
+		}
+		
 		ObjectMapper mapper = new ObjectMapper();
 		String json = "";
+		
 		try {
 			json = mapper.writeValueAsString(u);
 		} 
 		catch (IOException e) {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(
+								Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+								e.getMessage() + ")").build();
+		}
+
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+	
+	@POST
+	@Path("/whole")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response wholeProfile(UsersJson jsonIn)
+	{
+		String errMsg = null;
+		try 
+		{
+			ai = AddressInfo.findUserId(u.getIdUsers());
+		}
+		catch (Exception e) {
+			log.error("Error retrieving AddressInfo for user " + u.getIdUsers() + " (" + e.getMessage() + ")");
+			errMsg = LanguageResources.getResource(
+						Constants.getLanguageCode(jsonIn.language), "users.addressInfoException") + " (" +
+						e.getMessage() + ")";
+			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
+		}
+		
+		ArrayList<Object> toJson = new ArrayList<>();
+		toJson.add(u);
+		toJson.add(ai);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try {
+			json = mapper.writeValueAsString(toJson);
+		} 
+		catch (IOException e) {
+			log.error("Error jasonizing whole profile (" + e.getMessage() + ")");
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(
+							Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+							e.getMessage() + ")").build();
 		}
 
 		return Response.status(Response.Status.OK).entity(json).build();
