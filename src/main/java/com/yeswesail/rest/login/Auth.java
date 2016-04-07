@@ -1,11 +1,16 @@
 package com.yeswesail.rest.login;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -256,6 +261,30 @@ public class Auth {
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
 				.build();
 	}
+    
+	@POST
+	@Path("/fbLogin")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response fbLogin(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException 
+	{
+        HttpSession httpSession = request.getSession();
+        String faceCode = request.getParameter("code");
+        String state = request.getParameter("state");
+        String sessionID = httpSession.getId();
+
+        FacebookHandler fbh = new FacebookHandler();
+        String errorMsg = null;
+        if ((errorMsg = fbh.getFacebookAccessToken(faceCode)) == null)
+        {
+			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+        }
+		return Response.status(Response.Status.OK).entity("")
+				.header("Access-Control-Allow-Origin", "*")
+				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.build();
+    }
 
 	@POST
 	@Path("/logout")
