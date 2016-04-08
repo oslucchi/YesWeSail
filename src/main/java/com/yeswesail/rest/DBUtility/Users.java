@@ -22,6 +22,7 @@ public class Users extends DBInterface
 	protected String languagesSpoken;
 	protected String experiences;
 	protected String status;
+	protected String imageURL;
 	
 	private void setNames()
 	{
@@ -201,4 +202,11 @@ public class Users extends DBInterface
 		this.status = status;
 	}
 
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
 }

@@ -155,8 +155,10 @@ public class FacebookHandler implements Serializable
 						 		  url.getPath().substring(url.getPath().lastIndexOf("."));
 				savePath = getClass().getResource(savePath).getPath();
 				Files.copy(in, Paths.get(savePath));
+				u.setImageURL(savePath);
+				u.update("idUsers");
 			} 
-			catch (IOException e) {
+			catch (Exception e) {
 				;
 			}
 		}
