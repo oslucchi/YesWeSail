@@ -26,7 +26,7 @@ public class YesWeSail {
 
 	public YesWeSail()
 	{
-		prop = new ApplicationProperties();
+		prop = ApplicationProperties.getInstance();
 		try 
 		{
 			conn = DBConnection.getInstance();

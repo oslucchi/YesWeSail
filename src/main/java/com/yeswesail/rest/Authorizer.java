@@ -26,16 +26,22 @@ public class Authorizer implements ContainerRequestFilter
 			return;
 		}
 		String token = request.getHeaderString("Authorization");
+		String language = request.getHeaderString("Language");
 
-		Object[] sessionProfile = SessionData.getInstance().getWholeProfile(token);
+		SessionData sd = SessionData.getInstance();
+		Object[] sessionProfile = sd.getSessionData(token);
 		if (sessionProfile != null)
 		{
+			if (SessionData.getInstance().getLanguage(token) != Constants.getLanguageCode(language))
+			{
+				sd.setLanguage(token, Constants.getLanguageCode(language));
+			}
 			return;
 		}
 		UsersAuth ua = null;
 		try {
 			ua = UsersAuth.findToken(token);
-			SessionData.getInstance().addUser(ua.getUserId());
+			sd.addUser(ua.getUserId(), Constants.getLanguageCode(language));
 		} 
 		catch (Exception e) {
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)

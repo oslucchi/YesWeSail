@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -24,13 +25,13 @@ import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
 public class Profile {
-	ApplicationProperties prop = new ApplicationProperties();
+	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Users u = null;
 	UsersAuth ua = null;
 	AddressInfo[] ai = new AddressInfo[2];
 
-	private String getUserData(UsersJson jsonIn)
+	private String getUserData(UsersJson jsonIn, String language)
 	{
 		String errMsg = null;
 		u = SessionData.getInstance().getBasicProfile(jsonIn.token);
@@ -48,11 +49,11 @@ public class Profile {
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
 					errMsg = LanguageResources.getResource(
-								Constants.getLanguageCode(jsonIn.language), "auth.loginTokenNotExist");
+								Constants.getLanguageCode(language), "auth.loginTokenNotExist");
 				}
 				else
 				{
-					errMsg = LanguageResources.getResource(Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" +
+					errMsg = LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError") + " (" +
 							 e.getMessage() + ")";
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
@@ -60,12 +61,12 @@ public class Profile {
 
 			try 
 			{
-				SessionData.getInstance().addUser(jsonIn.token);
+				SessionData.getInstance().addUser(jsonIn.token, Constants.getLanguageCode(language));
 				u = SessionData.getInstance().getBasicProfile(jsonIn.token);
 			}
 			catch(Exception e)
 			{
-				errMsg = LanguageResources.getResource(Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" +
+				errMsg = LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError") + " (" +
 						 e.getMessage() + ")";
 			}
 		}
@@ -77,9 +78,9 @@ public class Profile {
 	@Path("/basic")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response basicProfile(UsersJson jsonIn)
+	public Response basicProfile(UsersJson jsonIn, @HeaderParam("Language") String language)
 	{
-		String errMsg = getUserData(jsonIn);
+		String errMsg = getUserData(jsonIn, language);
 		if (errMsg != null)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
@@ -95,7 +96,7 @@ public class Profile {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
 		}
 
@@ -106,7 +107,7 @@ public class Profile {
 	@Path("/whole")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response wholeProfile(UsersJson jsonIn)
+	public Response wholeProfile(UsersJson jsonIn, @HeaderParam("Language") String language)
 	{
 		String errMsg = null;
 		try 
@@ -116,7 +117,7 @@ public class Profile {
 		catch (Exception e) {
 			log.error("Error retrieving AddressInfo for user " + u.getIdUsers() + " (" + e.getMessage() + ")");
 			errMsg = LanguageResources.getResource(
-						Constants.getLanguageCode(jsonIn.language), "users.addressInfoException") + " (" +
+						Constants.getLanguageCode(language), "users.addressInfoException") + " (" +
 						e.getMessage() + ")";
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
 		}
@@ -135,7 +136,7 @@ public class Profile {
 			log.error("Error jasonizing whole profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(LanguageResources.getResource(
-							Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+							Constants.getLanguageCode(language), "generic.execError") + " (" + 
 							e.getMessage() + ")").build();
 		}
 

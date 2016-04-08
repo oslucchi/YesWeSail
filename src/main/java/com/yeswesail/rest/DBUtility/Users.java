@@ -43,6 +43,20 @@ public class Users extends DBInterface
 		this.populateObject(sql, this);
 	}
 
+	public Users(String email) throws Exception
+	{
+		findByEmail(email);
+	}
+
+	public void findByEmail(String email) throws Exception
+	{
+		setNames();
+		String sql = "SELECT * " +
+					 "FROM " + tableName + " " +
+					 "WHERE email = '" + email + "'";
+		this.populateObject(sql, this);
+	}
+
 	public int getIdUsers() {
 		return idUsers;
 	}

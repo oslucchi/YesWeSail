@@ -17,15 +17,30 @@ public class ApplicationProperties {
 	private String mailPassword = "";
 	private String webHost = "";
 	private String webHome = "";
-	private String redirectUserRegistered = "";
+	private String redirectRegistrationCompleted = "";
 	private String redirectHome	= "";
-	private String redirectLogin = "";
+	private String redirectOnLogin = "";
+	private String fbApplicationId = "";
+	private String fbApplicationSecret = "";
 	private int sessionExpireTime = 0;
+	private int maxNumHotOffers = 4;
+	
+	private static ApplicationProperties instance = null;
 	
 	final Logger log = Logger.getLogger(this.getClass());
 	
-	public ApplicationProperties()
+	public static ApplicationProperties getInstance()
 	{
+		if (instance == null)
+		{
+			instance = new ApplicationProperties();
+		}
+		return(instance);
+	}
+	
+	private ApplicationProperties()
+	{
+		String variable = "";
 		log.trace("ApplicationProperties start");
 		Properties properties = new Properties();
     	try 
@@ -50,18 +65,22 @@ public class ApplicationProperties {
     	mailPassword = properties.getProperty("mailPassword");
     	webHost = properties.getProperty("webHost");
     	webHome = properties.getProperty("webHome");
-    	redirectUserRegistered = properties.getProperty("redirectUserRegistered");
+    	redirectRegistrationCompleted = properties.getProperty("redirectRegistrationCompleted");
     	redirectHome = properties.getProperty("redirectHome");
-    	redirectLogin = properties.getProperty("redirectLogin");
+    	redirectOnLogin = properties.getProperty("redirectOnLogin");
+    	fbApplicationId = properties.getProperty("fbApplicationId");
+    	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
     	try
     	{
+    		variable = "sessionExpireTime";
     		sessionExpireTime = Integer.parseInt(properties.getProperty("sessionExpireTime"));
+    		variable = "maxNumHotOffers";
+    		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
     	}
     	catch(NumberFormatException e)
     	{
-    		log.error("The format for the variable 'sessionExpireTime' is incorrect (" +
+    		log.error("The format for the variable '" + variable + "' is incorrect (" +
     					 properties.getProperty("sessionExpireTime") + ")");
-    		sessionExpireTime = 0;
     	}
 	}
 
@@ -109,16 +128,28 @@ public class ApplicationProperties {
 		return webHome;
 	}
 
-	public String getRedirectUserRegistered() {
-		return redirectUserRegistered;
+	public String getRedirectRegistrationCompleted() {
+		return redirectRegistrationCompleted;
 	}
 
 	public String getRedirectHome() {
 		return redirectHome;
 	}
 
-	public String getRedirectLogin() {
-		return redirectLogin;
+	public String getRedirectOnLogin() {
+		return redirectOnLogin;
+	}
+
+	public int getMaxNumHotOffers() {
+		return maxNumHotOffers;
+	}
+
+	public String getFbApplicationId() {
+		return fbApplicationId;
+	}
+
+	public String getFbApplicationSecret() {
+		return fbApplicationSecret;
 	}		
 
 }

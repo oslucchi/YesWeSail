@@ -6,5 +6,4 @@ public class EventJson {
 	public String dateStart;
 	public String dateEnd;
 	public String[] labels;
-    public String language;
 }

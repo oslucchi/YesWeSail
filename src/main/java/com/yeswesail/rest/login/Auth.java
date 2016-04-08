@@ -1,7 +1,5 @@
 package com.yeswesail.rest.login;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
@@ -16,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.SessionData;
@@ -28,22 +27,18 @@ import com.yeswesail.rest.jsonInt.AuthJson;
 
 @Path("/auth")
 public class Auth {
-	ApplicationProperties prop = new ApplicationProperties();
+	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Genson genson = new Genson();
-
-	@POST
-	@Path("/register")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response register(AuthJson jsonIn) 
+	private String token = null;
+	private Users u = null;
+	
+	protected String populateUsersTable(AuthJson jsonIn)
 	{
-		ApplicationProperties prop = new ApplicationProperties();
-		String errorMsg = "";
-		String token = UUID.randomUUID().toString();
+		String errorMsg = null;
 		try 
 		{
-			Users u = new Users();
+			u = new Users();
 			u.setEmail(jsonIn.username);
 			u.setPassword(jsonIn.password);
 			u.setName(jsonIn.firstName);
@@ -52,12 +47,7 @@ public class Auth {
 			u.setIsShipOwner("F");
 			u.setConnectedVia("P");
 			u.setRoleId(1);
-			int id = u.insertAndReturnId("idUsers", u);
-			RegistrationConfirm rc = new RegistrationConfirm();
-			rc.setUserId(id);
-			rc.setToken(token);
-			rc.setStatus("A");
-			id = rc.insertAndReturnId("idRegistrationConfirm", rc);
+			u.insert("idUsers", u);
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -68,8 +58,74 @@ public class Auth {
 			{
 				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
 			}
-			return Response.status(Response.Status.NOT_ACCEPTABLE).entity(errorMsg).build();
 		}
+		return errorMsg;
+	}
+	
+	protected String populateRegistrationConfirmTable(AuthJson jsonIn)
+	{
+		String errorMsg = null;
+		try 
+		{
+			RegistrationConfirm rc = new RegistrationConfirm();
+			rc.setUserId(u.getIdUsers());
+			rc.setToken(token);
+			rc.setStatus("A");
+			rc.insert("idRegistrationConfirm", rc);
+		}
+		catch (Exception e) {
+			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
+			{
+				errorMsg = LanguageResources.getResource("users.alreadyRegistered");
+			}
+			else
+			{
+				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+			}
+		}
+		return errorMsg;
+	}
+	
+	protected String populateUsersAuthTable(String token, int userId)
+	{
+		String errorMsg = null;
+		try 
+		{
+			UsersAuth ua = new UsersAuth();
+			ua.setCreated(new Date());
+			ua.setLastRefreshed(ua.getCreated());
+			ua.setUserId(userId);
+			ua.setToken(token);
+			ua.insert("idUsersAuth", ua);
+		}
+		catch (Exception e) {
+			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
+			{
+				errorMsg = LanguageResources.getResource("users.tokenAlreadyExistent");
+			}
+			else
+			{
+				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+			}
+		}
+		return errorMsg;
+	}
+
+	@POST
+	@Path("/register")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response register(AuthJson jsonIn) 
+	{
+		token = UUID.randomUUID().toString();
+		String errorMsg = populateUsersTable(jsonIn);
+		if (errorMsg == null)
+			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
+
+		errorMsg = populateRegistrationConfirmTable(jsonIn);
+		if (errorMsg == null)
+			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
+
 		try
 		{
 			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + token;
@@ -201,7 +257,7 @@ public class Auth {
 	@Path("/loginByToken")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response loginByToken(@HeaderParam("Authorization") String token)
+	public Response loginByToken(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
 	{
 		String errorMsg = "";
 		UsersAuth ua = null;
@@ -234,14 +290,15 @@ public class Auth {
 			ua.update("idUsersAuth");
 			if (userProfile == null)
 			{
-				sa.addUser(ua.getUserId());
-				userProfile = new Object[2];
-				userProfile = sa.getWholeProfile(ua.getToken());
+				sa.addUser(ua.getUserId(), Constants.getLanguageCode(language));
+				userProfile = new Object[SessionData.SESSION_ELEMENTS];
+				userProfile = sa.getSessionData(ua.getToken());
 			}
 			else
 			{
-				userProfile[0] = new Users(ua.getUserId());
-				userProfile[1] = AddressInfo.findUserId(ua.getUserId());
+				userProfile[SessionData.BASIC_PROFILE] = new Users(ua.getUserId());
+				userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+				userProfile[SessionData.LANGUAGE] = Constants.getLanguageCode(language);
 				sa.updateSession(token, userProfile);
 			}
 		}
@@ -270,11 +327,10 @@ public class Auth {
         {
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
-		try {
-			return Response.seeOther(new URI(prop.getWebHost())).build();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		
+		if (fbh.isNewRegistration())
+		{
+			return Response.seeOther(fbh.getLocation()).build();
 		}
 		return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
    }

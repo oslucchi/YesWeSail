@@ -3,6 +3,7 @@ package com.yeswesail.rest;
 import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,7 +19,7 @@ import com.yeswesail.rest.jsonInt.MapsJson;
 
 @Path("/maps")
 public class Maps {
-	ApplicationProperties prop = new ApplicationProperties();
+	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	JsonHandler jh = new JsonHandler();
 
@@ -27,7 +28,7 @@ public class Maps {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response register(MapsJson jsonIn)
+	public Response register(MapsJson jsonIn, @HeaderParam("Language") String language)
 	{
 		String json = null;
 		
@@ -40,14 +41,14 @@ public class Maps {
 					CategoriesLanguages.populateCollection("SELECT * " +
 														   "FROM CategoriesLanguages " +
 														   "WHERE languageId = " + 
-														   		Constants.getLanguageCode(jsonIn.language), CategoriesLanguages.class);
+														   		Constants.getLanguageCode(language), CategoriesLanguages.class);
 				break;
 			
 			case "ROLES":
 				map = (ArrayList<Object>) 
 					Roles.populateCollection("SELECT * " +
 											 "FROM RolesLanguages " +
-											 "WHERE languageId = " + Constants.getLanguageCode(jsonIn.language), Roles.class);
+											 "WHERE languageId = " + Constants.getLanguageCode(language), Roles.class);
 					break;
 				
 			case "EVENTTYPES":
@@ -60,7 +61,7 @@ public class Maps {
 		catch (Exception e) {
 			log.error("Error jasonizing the map " + jsonIn.mapName + " (" + e.getMessage() + ")");
 			json = LanguageResources.getResource(
-					Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+					Constants.getLanguageCode(language), "generic.execError") + " (" + 
 					e.getMessage() + ")";
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(json).build();
@@ -72,7 +73,7 @@ public class Maps {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(map, jsonIn.language) != Response.Status.OK)
+		if (jh.jasonize(map, language) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(jh.json).build();

@@ -3,10 +3,13 @@ package com.yeswesail.rest.DBUtility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.SessionData;
+
 public class Events extends DBInterface
 {	
 	private static final long serialVersionUID = 2658938461796360575L;
-
+	
 	protected int idEvents;
 	protected int eventType;
 	protected Date dateStart;
@@ -17,6 +20,7 @@ public class Events extends DBInterface
 	protected int shipownerId;
 	protected int shipId;
 	protected String labels;
+	protected String description;
 	
 	private void setNames()
 	{
@@ -38,12 +42,25 @@ public class Events extends DBInterface
 		this.populateObject(sql, this);
 	}
 	
-	public static Events[] findHot() throws Exception
+	public Events(int id, int languageId) throws Exception
 	{
-		String sql = "SELECT * " +
-				 	 "FROM Events " +
+		setNames();
+		String sql = "SELECT a.*, b.description " +
+				 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 "     ON a.idEvents = b.eventId AND " +
+			 	 "        b.languageId = " + languageId + " " +
+				 "WHERE idEvents = " + id;
+		this.populateObject(sql, this);
+	}
+	
+	public static Events[] findHot(int languageId) throws Exception
+	{
+		String sql = "SELECT *, b.description  " +
+				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 	 "     ON a.idEvents = b.eventId AND " +
+				 	 "        b.languageId = " + languageId + " " +
 				 	 "ORDER BY dateStart " +
-				 	 "LIMIT 4";
+				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> hotEvents = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (hotEvents.size() == 0)
@@ -51,13 +68,30 @@ public class Events extends DBInterface
 		return(hotEvents.toArray(new Events[hotEvents.size()]));
 	}
 
-	public static Events[] findByFilter(String sql) throws Exception
+	public static Events[] findHot(String token) throws Exception
 	{
+		int languageId = SessionData.getInstance().getLanguage(token);
+		return(findHot(languageId));
+	}
+
+	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
+	{
+		String sql = "SELECT *, b.description  " +
+				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 	 "     ON a.idEvents = b.eventId AND " +
+				 	 "        b.languageId = " + languageId + " " +
+				 	 whereClause;
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
 		return(events.toArray(new Events[events.size()]));
+	}
+
+	public static Events[] findByFilter(String whereClause, String token) throws Exception
+	{
+		int languageId = SessionData.getInstance().getLanguage(token);
+		return(findByFilter(whereClause, languageId));
 	}
 
 	public int getIdEvents() {

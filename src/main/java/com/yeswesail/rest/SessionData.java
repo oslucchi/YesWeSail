@@ -8,6 +8,11 @@ import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 
 public class SessionData {
+	final public static int BASIC_PROFILE = 0; // a users Object only
+	final public static int WHOLE_PROFILE = 1; // Users and AddressInfo array
+	final public static int LANGUAGE = 2; // Language 
+	final public static int SESSION_ELEMENTS = 3;
+	
 	private static Map<String, Object[]> sessionData;
 	private static SessionData singletonInstance = null;
 
@@ -32,7 +37,7 @@ public class SessionData {
 		{
 			return(null);
 		}
-		return((Users) profile[0]);
+		return((Users) profile[BASIC_PROFILE]);
 	}
 
 	public Object[] getWholeProfile(String token)
@@ -42,17 +47,60 @@ public class SessionData {
 		{
 			return(null);
 		}
-		return(profile);
+		Object[] newArray = new Object[WHOLE_PROFILE];
+		java.lang.System.arraycopy(profile, 0, newArray, 0, WHOLE_PROFILE);
+		return(newArray);
+	}
+	
+	public int getLanguage(String token)
+	{
+		if (sessionData.get(token) != null)
+			return 1;
+		return(((Integer) sessionData.get(token)[LANGUAGE]).intValue());
+	}
+	
+	public Object[] getSessionData(String token)
+	{
+		Object[] profile = sessionData.get(token);
+		if (profile == null)
+		{
+			return(null);
+		}
+		return profile;
 	}
 
-	public void addUser(String token) throws Exception
+	public int getLanguage(int userId)
+	{
+		for(String token: sessionData.keySet())
+		{
+			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
+			{
+				return(((Integer) sessionData.get(token)[LANGUAGE]).intValue());
+			}
+		}
+		return(1);
+	}
+	
+
+	public void setLanguage(String token, int languageId)
+	{
+		Object[] profile = sessionData.get(token);
+		if (profile == null)
+		{
+			return;
+		}
+		profile[LANGUAGE] = new Integer(languageId);
+	}
+	
+	public void addUser(String token, int languageId) throws Exception
 	{
 		if (sessionData.get(token) != null)
 			return;
-		Object[] userData = new Object[2];
+		Object[] userData = new Object[SESSION_ELEMENTS];
 		UsersAuth ua = UsersAuth.findToken(token);
-		userData[0] = new Users(ua.getUserId());
-		userData[1] = AddressInfo.findUserId(ua.getUserId());
+		userData[BASIC_PROFILE] = new Users(ua.getUserId());
+		userData[WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+		userData[LANGUAGE] = new Integer(languageId);;
 		sessionData.put(token, userData);
 		return;
 	}
@@ -66,9 +114,9 @@ public class SessionData {
 	{
 		for(String token: sessionData.keySet())
 		{
-			if (((Users)sessionData.get(token)[0]).getIdUsers() == userId)
+			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
 			{
-				return((Users)sessionData.get(token)[0]);
+				return((Users)sessionData.get(token)[BASIC_PROFILE]);
 			}
 		}
 		return(null);
@@ -78,7 +126,7 @@ public class SessionData {
 	{
 		for(String token: sessionData.keySet())
 		{
-			if (((Users)sessionData.get(token)[0]).getIdUsers() == userId)
+			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
 			{
 				return(sessionData.get(token));
 			}
@@ -86,15 +134,16 @@ public class SessionData {
 		return(null);
 	}
 
-	public void addUser(int userId) throws Exception
+	public void addUser(int userId, int languageId) throws Exception
 	{
-		Object[] userData = new Object[2];
 		UsersAuth ua = UsersAuth.findUserId(userId);
 		if (sessionData.get(ua.getToken()) != null)
 			return;
 
-		userData[0] = new Users(userId);
-		userData[1] = AddressInfo.findUserId(userId);
+		Object[] userData = new Object[SESSION_ELEMENTS];
+		userData[BASIC_PROFILE] = new Users(userId);
+		userData[WHOLE_PROFILE] = AddressInfo.findUserId(userId);
+		userData[LANGUAGE] = new Integer(languageId);;
 		sessionData.put(ua.getToken(), userData);
 	}
 
@@ -102,7 +151,7 @@ public class SessionData {
 	{
 		for(String token: sessionData.keySet())
 		{
-			if (((Users)sessionData.get(token)[0]).getIdUsers() == userId)
+			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
 			{
 				sessionData.remove(token);
 			}
@@ -114,7 +163,7 @@ public class SessionData {
 	{
 		for(String token: sessionData.keySet())
 		{
-			if (((Users)sessionData.get(token)[0]).getIdUsers() == userId)
+			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
 			{
 				sessionData.remove(token);
 				sessionData.put(newToken, data);

@@ -2,6 +2,7 @@ package com.yeswesail.rest.events;
 
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -20,7 +21,7 @@ import com.yeswesail.rest.jsonInt.EventJson;
 
 @Path("/events")
 public class EventsHandler {
-	ApplicationProperties prop = new ApplicationProperties();
+	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Users u = null;
 	Events e = null;
@@ -30,7 +31,7 @@ public class EventsHandler {
 	@Path("/hotEvents")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response hotEvents(EventJson jsonIn)
+	public Response hotEvents(EventJson jsonIn, @HeaderParam("Language") String language)
 	{
 		/*
 		 * TODO 
@@ -41,13 +42,13 @@ public class EventsHandler {
 		Events[] hot = null;
 		try 
 		{
-			hot = Events.findHot();
+			hot = Events.findHot(Constants.getLanguageCode(language));
 		}
 		catch (Exception e) 
 		{
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
 		}
 		
@@ -57,7 +58,7 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(hot, jsonIn.language) != Response.Status.OK)
+		if (jh.jasonize(hot, language) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(jh.json).build();
@@ -70,11 +71,9 @@ public class EventsHandler {
 	@Path("/list")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventList(EventJson jsonIn)
+	public Response eventList(EventJson jsonIn, @HeaderParam("Language") String language)
 	{
 		Events[] eventsFiltered = null;
-		String sql = "SELECT * " +
-					 "FROM yeswesail.Events";
 		String where = " WHERE ";
 		String and = "";
 		if (jsonIn.categoryId != 0)
@@ -98,25 +97,21 @@ public class EventsHandler {
 			where += and + "(";
 			for(String label : jsonIn.labels)
 			{
-				sql += or + " labels LIKE '%" + label + "%'";
+				where += or + " labels LIKE '%" + label + "%'";
 				and = " OR ";
 			}
 		}
 
-		if(where.compareTo(" WHERE ") != 0)
-		{
-			sql += where;
-		}
-		sql += " ORDER BY dateStart ASC";
+		where += " ORDER BY dateStart ASC";
 		
 		try 
 		{
-			eventsFiltered = Events.findByFilter(sql);
+			eventsFiltered = Events.findByFilter(where, Constants.getLanguageCode(language));
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(jsonIn.language), "generic.execError") + " (" + 
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
 		}
 
@@ -126,7 +121,7 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(eventsFiltered, jsonIn.language) != Response.Status.OK)
+		if (jh.jasonize(eventsFiltered, language) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(jh.json).build();

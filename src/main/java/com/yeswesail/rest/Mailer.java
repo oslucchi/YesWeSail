@@ -18,7 +18,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class Mailer {
-	private static ApplicationProperties prop = new ApplicationProperties();
+	private static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
 	public static void sendMail(String to, String subject, String body, String imagePath) 
 			throws AddressException, MessagingException

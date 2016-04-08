@@ -26,7 +26,7 @@ public class LoginConfirm {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response register(@PathParam("token") String token)
 	{
-		ApplicationProperties prop = new ApplicationProperties();
+		ApplicationProperties prop = ApplicationProperties.getInstance();
 		URI location;
 		RegistrationConfirm rc = null;
 		try 
@@ -55,7 +55,8 @@ public class LoginConfirm {
 		catch (URISyntaxException e) 
 		{
 			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage());
-		} catch (Exception e) {
+		}
+		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
 		return Response.status(Response.Status.OK).build();
