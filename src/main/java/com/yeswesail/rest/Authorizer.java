@@ -20,7 +20,8 @@ public class Authorizer implements ContainerRequestFilter
 		String path = request.getUriInfo().getPath();
 		path = path.substring(path.lastIndexOf("/") + 1);
 		if ((path.compareTo("login") == 0) ||
-			(path.compareTo("register") == 0))
+			(path.compareTo("register") == 0) ||
+			(path.compareTo("fbLogin") == 0))
 		{
 			return;
 		}
