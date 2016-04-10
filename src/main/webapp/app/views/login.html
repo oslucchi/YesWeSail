@@ -1,81 +1,83 @@
-<script>
-    $(document)
-        .ready(function () {
-            $('.ui.form')
-                .form({
-                    fields: {
-                        email: {
-                            identifier: 'email',
-                            rules: [
-                                {
-                                    type: 'empty',
-                                    prompt: 'Please enter your e-mail'
+ <script>
+  $(document)
+    .ready(function() {
+      $('.ui.form')
+        .form({
+          fields: {
+            email: {
+              identifier  : 'email',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your e-mail'
                 },
-                                {
-                                    type: 'email',
-                                    prompt: 'Please enter a valid e-mail'
+                {
+                  type   : 'email',
+                  prompt : 'Please enter a valid e-mail'
                 }
               ]
-                        },
-                        password: {
-                            identifier: 'password',
-                            rules: [
-                                {
-                                    type: 'empty',
-                                    prompt: 'Please enter your password'
+            },
+            password: {
+              identifier  : 'password',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your password'
                 },
-                                {
-                                    type: 'length[6]',
-                                    prompt: 'Your password must be at least 6 characters'
+                {
+                  type   : 'length[6]',
+                  prompt : 'Your password must be at least 6 characters'
                 }
               ]
-                        }
-                    }
-                });
-        });
-</script>
+            }
+          }
+        })
+      ;
+    })
+  ;
+  </script>
 
-<div class="login_container" ng-controller="LoginCtrl">
+<div class="login_container">
     <div class="ui container">
-        <div class="ui middle aligned center aligned grid">
-            <div class="column">
-                <h2 class="ui white image header">
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui white image header">
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
         Esegui l'accesso al tuo account
       </div>
     </h2>
-                <form ng-submit="login(credentials)" class="ui large form">
-                    <div class="ui stacked segment">
-                        <div class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</div>
-                        <div class="ui horizontal divider"></div>
-                        <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>
-                        <div class="ui horizontal divider">
-                            Oppure
-                        </div>
-                        <div class="field">
-                            <div class="ui left icon input">
-                                <i class="user icon"></i>
-                                <input type="text" ng-model="credentials.username" name="email" placeholder="E-mail address">
-                            </div>
-                        </div>
-                        <div class="field">
-                            <div class="ui left icon input">
-                                <i class="lock icon"></i>
-                                <input type="password" ng-model="credentials.password" name="password" placeholder="Password">
-                            </div>
-                        </div>
-                        <button type="submit" class="ui fluid large blue submit button">Accedi</button>
-                    </div>
-
-                    <div class="ui error message"></div>
-
-                </form>
-
-                <div class="ui message">
-                    Non hai un account? <a href="#/register">Registrati</a>
-                </div>
-            </div>
+    <form method="post" action="/login" class="ui large form">
+      <div class="ui stacked segment">
+          <a href="https://www.facebook.com/dialog/oauth?client_id=484756285065008&redirect_uri=http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
+           <div class="ui horizontal divider"></div>
+             <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>
+         <div class="ui horizontal divider">
+            Oppure
+          </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="user icon"></i>
+            <input type="text" name="email" placeholder="E-mail address">
+          </div>
         </div>
+        <div class="field">
+          <div class="ui left icon input">
+            <i class="lock icon"></i>
+            <input type="password" name="password" placeholder="Password">
+          </div>
+        </div>
+        <div class="ui fluid large blue submit button">Accedi</div>
+      </div>
+
+      <div class="ui error message"></div>
+
+    </form>
+
+    <div class="ui message">
+      Non hai un account? <a href="#/register">Registrati</a>
     </div>
+  </div>
+</div>
+</div>
 </div>

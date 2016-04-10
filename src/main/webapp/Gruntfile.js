@@ -6,7 +6,7 @@
 // 'test/spec/{,*/}*.js'
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
-
+var proxySnippet = require('grunt-connect-proxy/lib/utils').proxyRequest;
 module.exports = function (grunt) {
 
   // Time how long tasks take. Can help when optimizing build times
@@ -16,7 +16,8 @@ module.exports = function (grunt) {
   require('jit-grunt')(grunt, {
     useminPrepare: 'grunt-usemin',
     ngtemplates: 'grunt-angular-templates',
-    cdnify: 'grunt-google-cdn'
+    cdnify: 'grunt-google-cdn',
+    configureProxies: 'grunt-connect-proxy'
   });
 
   // Configurable paths for the application
@@ -75,11 +76,20 @@ module.exports = function (grunt) {
         hostname: 'localhost',
         livereload: 35730
       },
+            proxies: [
+                {
+                    context: '/YesWeSail',
+                    host: 'yeswesail.ddns.net',
+                    port: 8080,
+                    changeOrigin: true
+                    
+                }
+            ],
       livereload: {
         options: {
           open: true,
           middleware: function (connect) {
-            return [
+            return [proxySnippet,
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',
@@ -432,6 +442,7 @@ module.exports = function (grunt) {
       'wiredep',
       'concurrent:server',
       'postcss:server',
+         'configureProxies',
       'connect:livereload',
       'watch'
     ]);

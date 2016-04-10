@@ -14,7 +14,7 @@ angular.module('yeswesailApp')
         authService.login = function (credentials) {
             return $http
 
-                .post('http://localhost:1337/yeswesail.ddns.net:8080/YesWeSail/rest/auth/login', credentials)
+                
 
                 .post('http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/login', credentials)
 

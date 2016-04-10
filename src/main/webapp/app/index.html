@@ -9,6 +9,8 @@
     <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     <!-- build:css(.) styles/vendor.css -->
     <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog.css" />
+    <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog-theme-default.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -27,7 +29,7 @@
     <!-- Add your site or application content here -->
 
 
-
+  
 
 
     <div class="ui container">
@@ -45,10 +47,10 @@
                     <div class="floating ui red label">2</div>
                 </a>
 
-                <a ng-show="!isAuthenticated()" href="#/register" class="ui item">
+                <a ng-click="popupRegister()" ng-show="!currentUser" class="ui item">
       Registrati
     </a>
-                <a ng-show="!isAuthenticated()" href="#/login" class="ui item">
+                <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">
       Accedi
     </a>
                 <a href="#/comeFunziona" class="ui item">
@@ -57,9 +59,9 @@
                 <a ng-show="currentUser" class="item">
                     <div class="ui dropdown">
                         <div class="text">
-                            <span ng-if="currentUser.name">{{currentUser.name}}</span>
-                            <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span>
-                            <img class="ui avatar image" ng-src="{{currentUser.avatar}}">
+                            <span ng-if="currentUser.user.name">{{currentUser.user.name}}</span>
+                            <span ng-if="!currentUser.user.name">{{currentUser.user.email | noemaildomain}}</span>
+                            <img class="ui avatar image" ng-src="{{currentUser.user.imageURL}}">
                         </div>
                         <i class="dropdown icon"></i>
                         <div class="menu">
@@ -188,6 +190,7 @@
     <script src="bower_components/angular-touch/angular-touch.js"></script>
     <script src="bower_components/semantic/dist/semantic.js"></script>
     <script src="bower_components/angularjs-datepicker/dist/angular-datepicker.min.js"></script>
+    <script src="bower_components/ng-dialog/js/ngDialog.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -202,6 +205,7 @@
     <script src="scripts/services/session.js"></script>
     <script src="scripts/controllers/applicationcontroller.js"></script>
     <script src="scripts/filters/noemaildomain.js"></script>
+    <script src="scripts/controllers/global.js"></script>
     <!-- endbuild -->
 
 </body>

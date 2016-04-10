@@ -16,7 +16,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    '720kb.datepicker'
+    '720kb.datepicker',
+    'ngDialog'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -57,30 +58,39 @@ angular
                 controller: 'SearchCtrl',
                 controllerAs: 'search'
             })
-            .when('/login', {
-                templateUrl: 'views/login.html',
-                controller: 'LoginCtrl',
-                controllerAs: 'login'
-            })
-            .when('/register', {
-                templateUrl: 'views/register.html',
-                controller: 'RegisterCtrl',
-                controllerAs: 'register'
-            })
             .otherwise({
                 redirectTo: '/'
             });
 
 
     })
-    .run(function($rootScope, $cookieStore, $http){
+    .run(function($rootScope, $cookieStore, $http, $location, Session){
         angular.element('.ui.dropdown').dropdown({action: 'hide'});
+        var token=$location.search().token;
         
-        // keep user logged in after page refresh
+        if(token!=null){
+            $http.defaults.headers.common['Authorization'] = token;
+            $http.defaults.headers.common['Language'] = 'IT';
+            $http.post('YesWeSail/rest/users/basic').then(function(res){
+                 
+                Session.create(token, res.data);
+                                                    }, function(err){});
+        }
+    
+        if(token==null){
+            
         $rootScope.globals = $cookieStore.get('globals') || {};
         if ($rootScope.globals.currentUser) {
-            
-            $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.token; // jshint ignore:line
+            $http.defaults.headers.common['Authorization'] = $rootScope.globals.currentUser.token;
+            $http.defaults.headers.common['Language'] = 'IT';
+            $http.post('YesWeSail/rest/users/basic').then(function(res){
+                
+            Session.create($rootScope.globals.currentUser.token, res.data);                
+               
+                }, function(err){});
+        }  
         }
+        
+      
     
 });

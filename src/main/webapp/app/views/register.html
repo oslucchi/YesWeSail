@@ -37,7 +37,7 @@
   ;
   </script>
 
-<div class="register_container" ng-controller="RegisterCtrl">
+<div class="register_container">
     <div class="ui container">
 <div class="ui middle aligned center aligned grid">
   <div class="column">
@@ -45,10 +45,9 @@
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
         Unisciti a noi per navigare
-          {{responseMessage}}
       </div>
     </h2>
-    <form  ng-submit="register(credentials)" class="ui large form">
+    <form method="post" action="/register" class="ui large form">
       <div class="ui stacked segment">
           
           
@@ -61,26 +60,26 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input ng-model="credentials.firstName" type="text" name="name" placeholder="Nome">
+            <input type="text" name="name" placeholder="Nome">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input ng-model="credentials.lastName" type="text" name="lastname" placeholder="Cognome">
+            <input type="text" name="lastname" placeholder="Cognome">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="mail icon"></i>
-            <input ng-model="credentials.username" type="text" name="email" placeholder="Indirizzo email">
+            <input type="text" name="email" placeholder="Indirizzo email">
           </div>
         </div>
           
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input ng-model="credentials.password" type="password" name="password" placeholder="Password">
+            <input type="password" name="password" placeholder="Password">
           </div>
         </div>
         <div class="ui fluid large blue submit button">Registrati</div>
@@ -91,7 +90,7 @@
     </form>
 
     <div class="ui message">
-      Sei già membro? <a href="#/login">Accedi</a>
+      Sei già membro? <a href ng-click="popupLogin()">Accedi</a>
     </div>
   </div>
 </div>

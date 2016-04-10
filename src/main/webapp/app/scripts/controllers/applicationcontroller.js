@@ -8,15 +8,18 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore) {
-        $rootScope.globals = $cookieStore.get('globals') || {};
-        $scope.currentUser = $rootScope.globals.currentUser || {};
-        $scope.userRoles = USER_ROLES;
+    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session) {
+    angular.element('.ui.dropdown').dropdown();    
+    $scope.currentUser=null;
+    $scope.setCurrentUser= function(user){
+        
+    };
+
+    
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.isAuthenticated = AuthService.isAuthenticated;
-        $scope.setCurrentUser = function (user) {
-            $scope.currentUser = user;
-        };
+        
+    
 
         $scope.logout = function () {
             AuthService.logout().then(function () {
@@ -27,5 +30,20 @@ angular.module('yeswesailApp')
                 $rootScope.$broadcast(AUTH_EVENTS.logoutFail);
             });
         };
+    
+    var loginDialog = ngDialog;
+     var registerDialog = ngDialog;
+    
+    
+    $scope.popupLogin = function(){
+        
+        ngDialog.closeAll();
+        loginDialog.open({ template: 'views/login.html', className: 'ngdialog-theme-default', controller: 'LoginCtrl' });    
+    };
+    
+    $scope.popupRegister = function(){
+       ngDialog.closeAll();
+        registerDialog.open({ template: 'views/register.html', className: 'ngdialog-theme-default', controller: 'RegisterCtrl' });    
+    };  
 
     });
