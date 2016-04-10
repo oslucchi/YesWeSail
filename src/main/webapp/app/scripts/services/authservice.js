@@ -16,7 +16,7 @@ angular.module('yeswesailApp')
 
                 
 
-                .post('http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/login', credentials)
+                .post('/YesWeSail/rest/auth/login', credentials)
 
                 .then(function (res) {
                     var jsonResData = JSON.parse(res.data);
@@ -29,7 +29,7 @@ angular.module('yeswesailApp')
             var token = Session.getSessionToken();
 
             return $http
-                .post('http://localhost:1337/yeswesail.ddns.net:8080/YesWeSail/rest/auth/logout', {
+                .post('/YesWeSail/rest/auth/logout', {
                     token: token
                 })
                 .then(function (res) {
@@ -40,7 +40,7 @@ angular.module('yeswesailApp')
 
         authService.register = function (credentials) {
             return $http
-                .post('http://localhost:1337/yeswesail.ddns.net:8080/YesWeSail/rest/auth/register', credentials)
+                .post('/YesWeSail/rest/auth/register', credentials)
                 .then(function (res) {
                     var jsonResData = JSON.parse(res.data);
                     return jsonResData;

@@ -78,8 +78,14 @@ public class Profile {
 	@Path("/basic")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response basicProfile(UsersJson jsonIn, @HeaderParam("Language") String language)
+	public Response basicProfile(@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
+		if (language == null)
+		{
+			language = prop.getDefaultLang();
+		}
+		UsersJson jsonIn = new UsersJson();
+		jsonIn.token = token;
 		String errMsg = getUserData(jsonIn, language);
 		if (errMsg != null)
 		{
@@ -107,8 +113,14 @@ public class Profile {
 	@Path("/whole")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response wholeProfile(UsersJson jsonIn, @HeaderParam("Language") String language)
+	public Response wholeProfile(@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
+		if (language == null)
+		{
+			language = prop.getDefaultLang();
+		}
+		UsersJson jsonIn = new UsersJson();
+		jsonIn.token = token;
 		String errMsg = null;
 		try 
 		{

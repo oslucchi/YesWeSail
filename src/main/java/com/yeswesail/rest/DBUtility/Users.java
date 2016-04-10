@@ -58,6 +58,15 @@ public class Users extends DBInterface
 		this.populateObject(sql, this);
 	}
 
+	public void findByFacebookID(String id) throws Exception
+	{
+		setNames();
+		String sql = "SELECT * " +
+					 "FROM Users " +
+					 "WHERE facebook = '" + id + "'";
+		this.populateObject(sql, this);
+	}
+
 	public int getIdUsers() {
 		return idUsers;
 	}
@@ -92,9 +101,25 @@ public class Users extends DBInterface
 
 	public String getEmail() {
 		return email;
+//		if (this.email.substring(0,5).compareTo("fake.") == 0)
+//		{
+//			return "";
+//		}
+//		else
+//		{
+//			return email;
+//		}
 	}
 
 	public void setEmail(String email) {
+//		if (email.substring(0,5).compareTo("fake.") == 0)
+//		{
+//			this.email = "";
+//		}
+//		else
+//		{
+//			this.email = email;
+//		}
 		this.email = email;
 	}
 

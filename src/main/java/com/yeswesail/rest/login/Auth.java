@@ -45,6 +45,7 @@ public class Auth {
 			u.setSurname(jsonIn.lastName);
 			u.setStatus("D");
 			u.setIsShipOwner("F");
+			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
 			u.setRoleId(1);
 			u.insert("idUsers", u);
@@ -313,6 +314,7 @@ public class Auth {
 		return Response.status(Response.Status.OK).entity(entity)
 				.header("Access-Control-Allow-Origin", "*")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
+				.allow("OPTIONS")
 				.build();
 	}
     
@@ -328,11 +330,7 @@ public class Auth {
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
 		
-		if (fbh.isNewRegistration())
-		{
-			return Response.seeOther(fbh.getLocation()).build();
-		}
-		return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+		return Response.seeOther(fbh.getLocation()).build();
    }
 
 	@POST

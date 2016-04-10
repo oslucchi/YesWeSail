@@ -1,13 +1,9 @@
 package com.yeswesail.rest.login;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.UUID;
 
 
@@ -31,6 +27,7 @@ import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
+import com.yeswesail.rest.jsonInt.AuthJson;
 
 //@ManagedBean(name = "loginPageCode")
 //@SessionScoped
@@ -41,25 +38,46 @@ public class FacebookHandler implements Serializable
 	final Logger log = Logger.getLogger(this.getClass());
 	Genson genson = new Genson();
 	private JSONObject json = null;
-	private boolean newRegistration = false;
 	private String redirectLocation = "";
 	private URI location = null;
 	private String errorMsg = null;
 	private SessionData sd = SessionData.getInstance();
 	
-	public String getAttribute(String attribute) 
+	public String getAttributeAsString(JSONObject obj, String attribute) 
 	{
-		if (json == null)
+		if (obj == null)
 		{
 			return null;
 		}
-		return json.getString(attribute);
+		try {
+			return obj.getString(attribute);
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
+	}
+
+	public JSONObject getAttributeAsObject(JSONObject obj, String attribute) 
+	{
+		if (obj == null)
+		{
+			return null;
+		}
+		try {
+			return obj.getJSONObject(attribute);
+		}
+		catch(Exception e)
+		{
+			return null;
+		}
 	}
 	
 	private JSONObject getJsonResponseFromFb(String accessToken) 
 	{
 		Users u = null;
 		UsersAuth ua = null;
+		String token = UUID.randomUUID().toString();
 		
 		if (accessToken == null && ! "".equals(accessToken)) 
 		{
@@ -84,14 +102,24 @@ public class FacebookHandler implements Serializable
 			// Check if the user is already registered with us
 			try
 			{
-				u = new Users(getAttribute("email"));
-				ua = new UsersAuth(u.getIdUsers());
-				// No exception hence the user is already register. Set the token and redirect to the login page
-				String uri = prop.getWebHost() + "/" + prop.getRedirectOnLogin() + "?token=" + ua.getToken();
+				u = new Users();
+				String id = getAttributeAsString(json, "id");
+				u.findByFacebookID(id);
+				if ((ua = UsersAuth.findUserId(u.getIdUsers())) == null)
+				{
+					log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
+					if ((errorMsg = new Auth().populateUsersAuthTable(token, u.getIdUsers())) != null)
+					{
+						log.error("Error populating the UsersAuth object");
+						return null;
+					}
+				}
+				String uri = null;
 				try 
 				{
+					// No exception hence the user is already register. Set the token and redirect to the login page
+					uri = prop.getRedirectWebHost() + "/" + prop.getRedirectOnLogin() + "?token=" + ua.getToken();
 					location = new URI(uri);
-					newRegistration = true;
 					return json;
 				}
 				catch (URISyntaxException e) 
@@ -106,30 +134,57 @@ public class FacebookHandler implements Serializable
 			{
 				if (e.getMessage().compareTo("No record found") != 0)
 				{
-					if (u != null)
+					// All exceptions. No record found is treated as a particular case
+					errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
+							   e.getMessage() + ")";
+					return null;
+				}
+				else
+				{
+					Auth a = new Auth();
+					AuthJson jsonIn = new AuthJson();
+					jsonIn.firstName = getAttributeAsString(json, "first_name");
+					jsonIn.lastName = getAttributeAsString(json, "last_name");
+					jsonIn.facebookId = getAttributeAsString(json, "id");
+					if (getAttributeAsString(json, "email") == null)
 					{
-						log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
-						String token = UUID.randomUUID().toString();
-						if ((errorMsg = new Auth().populateUsersAuthTable(token, u.getIdUsers())) != null)
-						{
-							errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
-									   e.getMessage() + ")";
-							return null;
-						}
+						jsonIn.username = "fake.fb." + jsonIn.facebookId + "@yeswesail.com";
 					}
-					else
+					if ((errorMsg = a.populateUsersTable(jsonIn)) != null)
+					{
+						return null;
+					}
+					try 
+					{
+						u.findByFacebookID(getAttributeAsString(json, "id"));
+						u.setConnectedVia("F");
+						u.update("idUsers");
+					}
+					catch (Exception e1) 
 					{
 						// All exceptions. No record found is treated as a particular case
-						errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
-								   e.getMessage() + ")";
+						errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + 
+								   "(Unable to create user: " + e1.getMessage() + ")";
+						return null;
+					}
+					if ((errorMsg = a.populateUsersAuthTable(token, u.getIdUsers())) != null)
+					{
+						return null;
+					}
+					try 
+					{
+						ua = UsersAuth.findToken(token);
+					}
+					catch (Exception e1)
+					{
+						errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + 
+								   "(Unable to populate users auth token: " + e1.getMessage() + ")";
 						return null;
 					}
 				}
 			}
 			
-			newRegistration = false;
-			
-			String uri = prop.getWebHost() + "/" + prop.getRedirectRegistrationCompleted() + "?token=" + ua.getToken();
+			String uri = prop.getRedirectWebHost() + "/" + prop.getRedirectRegistrationCompleted() + "?token=" + ua.getToken();
 			try 
 			{
 				location = new URI(uri);
@@ -140,26 +195,22 @@ public class FacebookHandler implements Serializable
 						   e.getMessage() + ")";
 			}
 
-			newUrl = "https://graph.facebook.com/" + getAttribute("id") + "/picture?redirect=0&access_token=" + accessToken;
+			newUrl = "https://graph.facebook.com/" + getAttributeAsString(json, "id") + "/picture?redirect=0&access_token=" + accessToken;
 			httpclient = new DefaultHttpClient();
 			httpget = new HttpGet(newUrl);
 			log.debug("Getting profile picture --> executing request: " + httpget.getURI());
 			responseHandler = new BasicResponseHandler();
 			responseBody = httpclient.execute(httpget, responseHandler);
 			json = new JSONObject(responseBody);
-			InputStream in;
+			JSONObject fbData = getAttributeAsObject(json, "data");
+			String imageURL = getAttributeAsString(fbData, "url");
+			u.setImageURL(imageURL);
 			try {
-				URL url = new URL(getAttribute("data.url"));
-				in = url.openStream();
-				String savePath = "/images/avatars/" + u.getIdUsers() +  
-						 		  url.getPath().substring(url.getPath().lastIndexOf("."));
-				savePath = getClass().getResource(savePath).getPath();
-				Files.copy(in, Paths.get(savePath));
-				u.setImageURL(savePath);
 				u.update("idUsers");
-			} 
-			catch (Exception e) {
-				;
+			}
+			catch(Exception e)
+			{
+				log.warn("Not able to retrieve the avatar's URL");
 			}
 		}
 		catch (ClientProtocolException e) 
@@ -215,10 +266,6 @@ public class FacebookHandler implements Serializable
 		}
 		getJsonResponseFromFb(token);
 		return errorMsg;
-	}
-
-	public boolean isNewRegistration() {
-		return newRegistration;
 	}
 
 	public String getRedirectLocation() {

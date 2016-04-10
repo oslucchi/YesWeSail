@@ -39,6 +39,10 @@ public class EventsHandler {
 		 * For now next 4 expiring with no preference criteria.
 		 * It might be smart to present the one with only few tickets remaining. it just need to change the query
 		 */
+		if (language == null)
+		{
+			language = prop.getDefaultLang();
+		}
 		Events[] hot = null;
 		try 
 		{

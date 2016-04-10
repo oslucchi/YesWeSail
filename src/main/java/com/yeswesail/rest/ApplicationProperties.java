@@ -22,6 +22,8 @@ public class ApplicationProperties {
 	private String redirectOnLogin = "";
 	private String fbApplicationId = "";
 	private String fbApplicationSecret = "";
+	private String redirectWebHost = "";
+	private String defaultLang = "";
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
 	
@@ -70,6 +72,9 @@ public class ApplicationProperties {
     	redirectOnLogin = properties.getProperty("redirectOnLogin");
     	fbApplicationId = properties.getProperty("fbApplicationId");
     	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
+    	redirectWebHost  = properties.getProperty("redirectWebHost");
+    	defaultLang = properties.getProperty("defaultLang");
+
     	try
     	{
     		variable = "sessionExpireTime";
@@ -150,6 +155,14 @@ public class ApplicationProperties {
 
 	public String getFbApplicationSecret() {
 		return fbApplicationSecret;
+	}
+
+	public String getRedirectWebHost() {
+		return redirectWebHost;
+	}
+
+	public String getDefaultLang() {
+		return defaultLang;
 	}		
 
 }

@@ -14,6 +14,7 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 @PreMatching
 public class Authorizer implements ContainerRequestFilter 
 {
+	ApplicationProperties prop = ApplicationProperties.getInstance();
 	@Override
 	public void filter(ContainerRequestContext request) throws IOException 
 	{
@@ -27,6 +28,10 @@ public class Authorizer implements ContainerRequestFilter
 		}
 		String token = request.getHeaderString("Authorization");
 		String language = request.getHeaderString("Language");
+		if (language == null)
+		{
+			language = prop.getDefaultLang();
+		}
 
 		SessionData sd = SessionData.getInstance();
 		Object[] sessionProfile = sd.getSessionData(token);

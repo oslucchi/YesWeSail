@@ -488,10 +488,7 @@ public class DBInterface implements Serializable
 			if(rs.next())
 			{
 				populateObjectAttributesFromRecordset(objInst, rsm, rs);
-			}
-			else
-			{
-				throw(new Exception("No record found"));
+				return objInst;
 			}
 		}
 		catch (Exception e) 
@@ -500,7 +497,7 @@ public class DBInterface implements Serializable
 					  objClass.getName() + "'";
 			throw new Exception(retVal);
 		}
-		return objInst;
+		throw(new Exception("No record found"));
 	}
 
     public static ArrayList<?> populateCollection(String sql, Class<?> objClass) throws Exception

@@ -6,4 +6,6 @@ public class AuthJson {
     public String firstName;
     public String lastName;
     public String token;
+    public String facebookId;
+    public String googleId;
 }

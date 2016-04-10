@@ -9,9 +9,19 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+<!-- 
+  <filter>
+	<filter-name>CORS</filter-name>
+	<filter-class>com.yeswesail.rest.CORSFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>YesWeSail</filter-name>
+    <url-pattern>/rest/*</url-pattern>
+  </filter-mapping>
+ -->
+
   <servlet>
     <servlet-name>YesWeSail</servlet-name>
-
 <!--
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
