@@ -38,7 +38,6 @@ public class FacebookHandler implements Serializable
 	final Logger log = Logger.getLogger(this.getClass());
 	Genson genson = new Genson();
 	private JSONObject json = null;
-	private String redirectLocation = "";
 	private URI location = null;
 	private String errorMsg = null;
 	private SessionData sd = SessionData.getInstance();
@@ -119,6 +118,8 @@ public class FacebookHandler implements Serializable
 				{
 					// No exception hence the user is already register. Set the token and redirect to the login page
 					uri = prop.getRedirectWebHost() + "/" + prop.getRedirectOnLogin() + "?token=" + ua.getToken();
+					log.debug("User '" + u.getEmail() + "' already registered. Returning a valid token");
+					log.debug("Redirect to '" + uri + "'");
 					location = new URI(uri);
 					return json;
 				}
@@ -150,14 +151,24 @@ public class FacebookHandler implements Serializable
 					{
 						jsonIn.username = "fake.fb." + jsonIn.facebookId + "@yeswesail.com";
 					}
+					else
+					{
+						jsonIn.username = getAttributeAsString(json, "email");
+					}
+					log.debug("The user " + jsonIn.firstName + " " + jsonIn.lastName + " " + 
+							  jsonIn.facebookId + " " + jsonIn.username + " is not registered yet"
+							  		+ "populating users table");
 					if ((errorMsg = a.populateUsersTable(jsonIn)) != null)
 					{
+						log.debug("Got an error while populating user '" + errorMsg + "'");
 						return null;
 					}
 					try 
 					{
 						u.findByFacebookID(getAttributeAsString(json, "id"));
 						u.setConnectedVia("F");
+						if (getAttributeAsString(json, "user_birthday") != null)
+							u.setAge(50);
 						u.update("idUsers");
 					}
 					catch (Exception e1) 
@@ -185,6 +196,7 @@ public class FacebookHandler implements Serializable
 			}
 			
 			String uri = prop.getRedirectWebHost() + "/" + prop.getRedirectRegistrationCompleted() + "?token=" + ua.getToken();
+			log.debug("Preparing redirection to '" + uri + "'");
 			try 
 			{
 				location = new URI(uri);
@@ -231,6 +243,7 @@ public class FacebookHandler implements Serializable
 	public String getFacebookAccessToken(String faceCode)
 	{
 		String token = null;
+		log.debug("Trying athetication vs FB servers");
 		
 		if (faceCode != null && ! "".equals(faceCode)) {
 			String appId = prop.getFbApplicationId();
@@ -240,16 +253,17 @@ public class FacebookHandler implements Serializable
 							"&redirect_uri=" + redirectUrl + 
 							"&client_secret=" + faceAppSecret + 
 							"&code=" + faceCode;
-			System.out.println(newUrl);
+			log.debug("Request redirect on: '" + newUrl + "'");
 			HttpClient httpclient = new DefaultHttpClient();
 			try
 			{
 				HttpGet httpget = new HttpGet(newUrl);
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				String responseBody = httpclient.execute(httpget, responseHandler);
-				System.out.println(responseBody);
+				log.debug("FB callback received. Response body '" + responseBody + "'");
 				token = responseBody.substring(13);
 				token = token.substring(0, token.length() - 16);
+				log.debug("authentication token '" + token + "'");
 			}
 			catch (ClientProtocolException e)
 			{
@@ -266,10 +280,6 @@ public class FacebookHandler implements Serializable
 		}
 		getJsonResponseFromFb(token);
 		return errorMsg;
-	}
-
-	public String getRedirectLocation() {
-		return redirectLocation;
 	}
 
 	public URI getLocation() {

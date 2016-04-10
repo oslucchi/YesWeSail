@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 5.7.9, for linux-glibc2.5 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `yeswesail` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `yeswesail`;
+-- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: yeswesail
+-- Host: 127.0.0.1    Database: yeswesail
 -- ------------------------------------------------------
--- Server version	5.6.29
+-- Server version	5.5.47-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -72,7 +74,7 @@ CREATE TABLE `Boats` (
   PRIMARY KEY (`idBoats`),
   KEY `fk_Users_idx` (`ownerId`),
   CONSTRAINT `fk_Boats_Users` FOREIGN KEY (`ownerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -81,6 +83,7 @@ CREATE TABLE `Boats` (
 
 LOCK TABLES `Boats` WRITE;
 /*!40000 ALTER TABLE `Boats` DISABLE KEYS */;
+INSERT INTO `Boats` VALUES (1,73,'V','IT10000','myboat','odissey 44',44,2009,2,2,1,1);
 /*!40000 ALTER TABLE `Boats` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,7 +155,7 @@ CREATE TABLE `EventDescription` (
   KEY `fk_EventDescriptaion_Languges_idx` (`languageId`),
   CONSTRAINT `fk_EventDescriptaion_Languges` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventDescription_Event` FOREIGN KEY (`idEventDescription`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -161,6 +164,7 @@ CREATE TABLE `EventDescription` (
 
 LOCK TABLES `EventDescription` WRITE;
 /*!40000 ALTER TABLE `EventDescription` DISABLE KEYS */;
+INSERT INTO `EventDescription` VALUES (1,2,1,'QUESTA E\' LA DESCRIZIONE DELL\'EVENTO 1'),(2,1,1,'QUESTA E\' LA DESCRIZIONE DELL\'EVENTO 2');
 /*!40000 ALTER TABLE `EventDescription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -250,7 +254,7 @@ CREATE TABLE `Events` (
   CONSTRAINT `fk_Events_Categories` FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`idCategories`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Eventtype` FOREIGN KEY (`eventType`) REFERENCES `EventTypes` (`idEventTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Users` FOREIGN KEY (`shipownerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -259,6 +263,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
+INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-04-27 00:00:00','toscana',1,'http://www.yeswesail.com/wp-content/uploads/2016/02/shutterstock_92113157.jpg',73,1,NULL),(2,1,'2016-04-15 00:00:00','2016-04-17 00:00:00','LIGURIA',1,'http://www.yeswesail.com/wp-content/uploads/2016/03/shutterstock_88066717.jpg',73,1,NULL);
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -373,7 +378,6 @@ CREATE TABLE `RegistrationConfirm` (
 
 LOCK TABLES `RegistrationConfirm` WRITE;
 /*!40000 ALTER TABLE `RegistrationConfirm` DISABLE KEYS */;
-INSERT INTO `RegistrationConfirm` VALUES (17,'2016-03-22 23:13:15','3151eb62-f21b-4a75-b2e3-a53bdfcfcf44',55,'I');
 /*!40000 ALTER TABLE `RegistrationConfirm` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -467,7 +471,7 @@ CREATE TABLE `Users` (
   `name` varchar(45) DEFAULT NULL,
   `surname` varchar(45) DEFAULT NULL,
   `roleId` int(11) NOT NULL,
-  `email` varchar(80) NOT NULL,
+  `email` varchar(128) NOT NULL,
   `password` varchar(45) DEFAULT NULL,
   `phone1` varchar(15) DEFAULT NULL,
   `phone2` varchar(15) DEFAULT NULL,
@@ -481,12 +485,12 @@ CREATE TABLE `Users` (
   `languagesSpoken` varchar(60) DEFAULT NULL,
   `experiences` text,
   `status` char(1) NOT NULL DEFAULT 'D',
-  `imageURL` varchar(120) DEFAULT NULL,
+  `imageURL` varchar(512) DEFAULT NULL,
   PRIMARY KEY (`idUsers`),
   UNIQUE KEY `idx_Users_Email` (`email`),
   KEY `fk_Role_idx` (`roleId`),
   CONSTRAINT `fk_Users_Role` FOREIGN KEY (`roleId`) REFERENCES `Roles` (`idRoles`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=56 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -495,7 +499,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (55,NULL,NULL,1,'osvaldo.lucchini@gmail.com','lamiapassword',NULL,NULL,NULL,0,NULL,NULL,NULL,'P','F',NULL,NULL,'A',NULL);
+INSERT INTO `Users` VALUES (73,'Stefan','Amarie',1,'',NULL,NULL,NULL,NULL,0,'10209676010000980',NULL,NULL,'F','F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xpa1/v/t1.0-1/c0.6.50.50/p50x50/14587_10200353390621322_1989525648_n.jpg?oh=5cdd3c887e879da290db06070eba85e2&oe=57780E81');
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -515,7 +519,7 @@ CREATE TABLE `UsersAuth` (
   PRIMARY KEY (`idUsersAuth`),
   KEY `fk_UsersAuth_Users_idx` (`userId`),
   CONSTRAINT `fk_UsersAuth_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -524,6 +528,7 @@ CREATE TABLE `UsersAuth` (
 
 LOCK TABLES `UsersAuth` WRITE;
 /*!40000 ALTER TABLE `UsersAuth` DISABLE KEYS */;
+INSERT INTO `UsersAuth` VALUES (13,73,'2016-04-10 11:47:11','2016-04-10 11:47:11','89b5f61e-7dbc-4ecc-b7a9-6a6c5a0cce5d');
 /*!40000 ALTER TABLE `UsersAuth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -536,4 +541,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-06 19:24:39
+-- Dump completed on 2016-04-10 15:26:20

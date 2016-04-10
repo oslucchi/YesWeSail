@@ -196,13 +196,13 @@ public class Auth {
 		UsersAuth ua = null;
 		try
 		{
-			log.trace("Setting up the new token for the user in DB");
+			log.debug("Setting up the new token for the user in DB");
 			ua = new UsersAuth();
 			query = "SELECT * FROM UsersAuth WHERE userId = " + u.getIdUsers();
 			ua.populateObject(query, ua);
 			ua.setToken(token);
 			ua.setLastRefreshed(new Date());
-			log.trace("Refreshing the last access");
+			log.debug("Refreshing the last access");
 			ua.update("idUsersAuth");
 		}
 		catch (Exception e) {
@@ -323,13 +323,15 @@ public class Auth {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fbLogin(@QueryParam("code") String code)
 	{
+		log.debug("Authenticating via facebook on code '" + code + "'");
         FacebookHandler fbh = new FacebookHandler();
         String errorMsg = null;
         if ((errorMsg = fbh.getFacebookAccessToken(code)) != null)
         {
+    		log.warn("Got the error '" + errorMsg + "' returning UNAUTHORIZED");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
         }
-		
+		log.debug("Authenticated. Redirect to '" + fbh.getLocation().getPath() + "'");
 		return Response.seeOther(fbh.getLocation()).build();
    }
 

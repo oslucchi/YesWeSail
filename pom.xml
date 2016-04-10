@@ -90,7 +90,7 @@
 	  	<dependency>
 	  		<groupId>log4j</groupId>
 	  		<artifactId>log4j</artifactId>
-	  		<version>1.2.15</version>
+	  		<version>1.2.17</version>
 			<exclusions>
 			    <exclusion>
 			        <groupId>com.sun.jmx</groupId>
@@ -159,6 +159,9 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.1</version>
 				<configuration>
+					<excludes>
+						<exclude>src/main/webapp</exclude>
+					</excludes>
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
