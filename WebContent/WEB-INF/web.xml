@@ -18,11 +18,7 @@
     <filter-name>YesWeSail</filter-name>
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
- -->
 
-  <servlet>
-    <servlet-name>YesWeSail</servlet-name>
-<!--
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
     <init-param>
       <param-name>com.sun.jersey.config.property.packages</param-name>
@@ -32,7 +28,10 @@
 		<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
 		<param-value>com.yeswesail.rest.Authorizer</param-value>
 	</init-param>
--->
+ -->
+
+  <servlet>
+    <servlet-name>YesWeSail</servlet-name>
     <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
     <init-param>
         <param-name>jersey.config.server.provider.packages</param-name>

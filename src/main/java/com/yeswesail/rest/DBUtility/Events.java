@@ -48,7 +48,8 @@ public class Events extends DBInterface
 		String sql = "SELECT a.*, b.description " +
 				 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 "     ON a.idEvents = b.eventId AND " +
-			 	 "        b.languageId = " + languageId + " " +
+			 	 "        b.languageId = " + languageId + " AND " +
+				 "		  b.anchorZone = 0 " +
 				 "WHERE idEvents = " + id;
 		this.populateObject(sql, this);
 	}
@@ -58,7 +59,8 @@ public class Events extends DBInterface
 		String sql = "SELECT *, b.description  " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
-				 	 "        b.languageId = " + languageId + " " +
+				 	 "        b.languageId = " + languageId + " AND " +
+					 "		  b.anchorZone = 0 " +
 				 	 "ORDER BY dateStart " +
 				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
 		@SuppressWarnings("unchecked")
@@ -79,7 +81,8 @@ public class Events extends DBInterface
 		String sql = "SELECT *, b.description  " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
-				 	 "        b.languageId = " + languageId + " " +
+				 	 "        b.languageId = " + languageId + " AND " +
+					 "		  b.anchorZone = 0 " +
 				 	 whereClause;
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
@@ -172,6 +175,14 @@ public class Events extends DBInterface
 
 	public void setLabels(String labels) {
 		this.labels = labels;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	

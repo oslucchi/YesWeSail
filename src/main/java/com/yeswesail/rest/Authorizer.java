@@ -22,7 +22,9 @@ public class Authorizer implements ContainerRequestFilter
 		path = path.substring(path.lastIndexOf("/") + 1);
 		if ((path.compareTo("login") == 0) ||
 			(path.compareTo("register") == 0) ||
-			(path.compareTo("fbLogin") == 0))
+			(path.compareTo("fbLogin") == 0) ||
+			(path.compareTo("hotEvents") == 0)
+		   )
 		{
 			return;
 		}
