@@ -57,7 +57,7 @@ public class Events extends DBInterface
 		sql = "SELECT MIN(price) as minPrice, MAX(price) as maxPrice " +
 			  "FROM EventTickets c " + 
 			  "WHERE c.booked < c.available AND " +
-			  "      c.languageId = " + languageId + " AND " +
+//			  "      c.languageId = " + languageId + " AND " +
 			  "      c.eventId = " + this.idEvents + " " +
 			  "ORDER BY price ASC";
 		@SuppressWarnings("unchecked")
@@ -87,7 +87,7 @@ public class Events extends DBInterface
 			sql = "SELECT price " +
 					  "FROM EventTickets c " + 
 					  "WHERE c.booked < c.available AND " +
-					  "      c.languageId = " + languageId + " AND " +
+//					  "      c.languageId = " + languageId + " AND " +
 					  "      c.eventId = " + e.idEvents + " " +
 					  "ORDER BY price ASC";
 				@SuppressWarnings("unchecked")
@@ -119,6 +119,22 @@ public class Events extends DBInterface
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
+		for(Events e : events)
+		{
+			sql = "SELECT price " +
+					  "FROM EventTickets c " + 
+					  "WHERE c.booked < c.available AND " +
+//					  "      c.languageId = " + languageId + " AND " +
+					  "      c.eventId = " + e.idEvents + " " +
+					  "ORDER BY price ASC";
+				@SuppressWarnings("unchecked")
+				ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+				if (tickets.size() != 0)
+				{
+					e.minPrice = tickets.get(0).price;
+					e.maxPrice = tickets.get(tickets.size() - 1).price;
+				}
+		}
 		return(events.toArray(new Events[events.size()]));
 	}
 

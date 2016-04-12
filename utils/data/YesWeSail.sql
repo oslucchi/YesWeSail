@@ -177,17 +177,13 @@ DROP TABLE IF EXISTS `EventTickets`;
 CREATE TABLE `EventTickets` (
   `idEventTickets` int(11) NOT NULL AUTO_INCREMENT,
   `eventId` int(11) NOT NULL,
-  `languageId` int(11) NOT NULL,
-  `description` varchar(45) NOT NULL,
   `available` int(11) NOT NULL,
   `booked` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   PRIMARY KEY (`idEventTickets`),
   KEY `fk_EventTickets_Events_idx` (`eventId`),
-  KEY `fk_EventTickets_Languages_idx` (`languageId`),
-  CONSTRAINT `fk_EventTickets_Events` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_EventTickets_Languages` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  CONSTRAINT `fk_EventTickets_Events` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -196,7 +192,38 @@ CREATE TABLE `EventTickets` (
 
 LOCK TABLES `EventTickets` WRITE;
 /*!40000 ALTER TABLE `EventTickets` DISABLE KEYS */;
+INSERT INTO `EventTickets` VALUES (1,1,4,2,80),(2,1,2,1,50),(3,2,2,2,120),(4,2,4,2,70);
 /*!40000 ALTER TABLE `EventTickets` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `EventTicketsDescription`
+--
+
+DROP TABLE IF EXISTS `EventTicketsDescription`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `EventTicketsDescription` (
+  `idEventTicketsDescription` int(11) NOT NULL,
+  `languageId` int(11) NOT NULL,
+  `ticketId` int(11) NOT NULL,
+  `description` varchar(128) NOT NULL,
+  PRIMARY KEY (`idEventTicketsDescription`),
+  KEY `fk_EventTicketsDescription_Languages_idx` (`languageId`),
+  KEY `fk_EventTicketsDescription_EventTickets_idx` (`ticketId`),
+  CONSTRAINT `fk_EventTicketsDescription_EventTickets` FOREIGN KEY (`ticketId`) REFERENCES `EventTickets` (`idEventTickets`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EventTicketsDescription_Languages` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `EventTicketsDescription`
+--
+
+LOCK TABLES `EventTicketsDescription` WRITE;
+/*!40000 ALTER TABLE `EventTicketsDescription` DISABLE KEYS */;
+INSERT INTO `EventTicketsDescription` VALUES (1,1,1,'Posto in cuccetta - bagno in comune'),(2,1,2,'Posto in cabina con bagno'),(3,1,3,'Posto in cuccetta - bagno in comune'),(4,1,4,'Cabina armatoriale con bagno e self godeur');
+/*!40000 ALTER TABLE `EventTicketsDescription` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -540,4 +567,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-11 19:41:58
+-- Dump completed on 2016-04-12 21:09:44
