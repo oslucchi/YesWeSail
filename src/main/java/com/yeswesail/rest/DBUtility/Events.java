@@ -21,6 +21,8 @@ public class Events extends DBInterface
 	protected int shipId;
 	protected String labels;
 	protected String description;
+	protected int minPrice;
+	protected int maxPrice;
 	
 	private void setNames()
 	{
@@ -52,6 +54,19 @@ public class Events extends DBInterface
 				 "		  b.anchorZone = 0 " +
 				 "WHERE idEvents = " + id;
 		this.populateObject(sql, this);
+		sql = "SELECT MIN(price) as minPrice, MAX(price) as maxPrice " +
+			  "FROM EventTickets c " + 
+			  "WHERE c.booked < c.available AND " +
+			  "      c.languageId = " + languageId + " AND " +
+			  "      c.eventId = " + this.idEvents + " " +
+			  "ORDER BY price ASC";
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+		if (tickets.size() != 0)
+		{
+			this.minPrice = tickets.get(0).price;
+			this.maxPrice = tickets.get(tickets.size() - 1).price;
+		}
 	}
 	
 	public static Events[] findHot(int languageId) throws Exception
@@ -67,6 +82,22 @@ public class Events extends DBInterface
 		ArrayList<Events> hotEvents = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (hotEvents.size() == 0)
 			return null;
+		for(Events e : hotEvents)
+		{
+			sql = "SELECT price " +
+					  "FROM EventTickets c " + 
+					  "WHERE c.booked < c.available AND " +
+					  "      c.languageId = " + languageId + " AND " +
+					  "      c.eventId = " + e.idEvents + " " +
+					  "ORDER BY price ASC";
+				@SuppressWarnings("unchecked")
+				ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+				if (tickets.size() != 0)
+				{
+					e.minPrice = tickets.get(0).price;
+					e.maxPrice = tickets.get(tickets.size() - 1).price;
+				}
+		}
 		return(hotEvents.toArray(new Events[hotEvents.size()]));
 	}
 
@@ -183,6 +214,22 @@ public class Events extends DBInterface
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public int getMinPrice() {
+		return minPrice;
+	}
+
+	public void setMinPrice(int minPrice) {
+		this.minPrice = minPrice;
+	}
+
+	public int getMaxPrice() {
+		return maxPrice;
+	}
+
+	public void setMaxPrice(int maxPrice) {
+		this.maxPrice = maxPrice;
 	}
 	
 	
