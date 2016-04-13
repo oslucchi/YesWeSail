@@ -23,6 +23,7 @@ public class Events extends DBInterface
 	protected String description;
 	protected int minPrice;
 	protected int maxPrice;
+	protected String status;
 	
 	private static ArrayList<Events> events;
 	
@@ -54,7 +55,8 @@ public class Events extends DBInterface
 				 "     ON a.idEvents = b.eventId AND " +
 			 	 "        b.languageId = " + languageId + " AND " +
 				 "		  b.anchorZone = 0 " +
-				 "WHERE idEvents = " + id;
+				 "WHERE idEvents = " + id + " AND " +
+				 "      status = 'A'";
 		this.populateObject(sql, this);
 		events = new ArrayList<Events>();
 		events.add(this);
@@ -68,7 +70,8 @@ public class Events extends DBInterface
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
-					 "		  b.anchorZone = 0 " +
+					 "		  b.anchorZone = 0 " + " AND " +
+					 "        a.status = 'A' " +
 				 	 "ORDER BY dateStart " +
 				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
 		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
@@ -90,7 +93,8 @@ public class Events extends DBInterface
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
-					 "		  b.anchorZone = 0 " +
+					 "		  b.anchorZone = 0 " + " AND " +
+					 "        a.status = 'A' " +
 				 	 whereClause;
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
@@ -235,6 +239,12 @@ public class Events extends DBInterface
 	public void setMaxPrice(int maxPrice) {
 		this.maxPrice = maxPrice;
 	}
-	
-	
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 }

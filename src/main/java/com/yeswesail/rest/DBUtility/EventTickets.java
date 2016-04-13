@@ -1,5 +1,6 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.util.ArrayList;
 
 public class EventTickets extends DBInterface
 {	
@@ -7,9 +8,11 @@ public class EventTickets extends DBInterface
 
 	protected int idEventTickets;
 	protected int eventId;
+	protected int ticketType;
 	protected int available;
 	protected int booked;
 	protected int price;
+	protected String description;
 	
 	private void setNames()
 	{
@@ -29,6 +32,21 @@ public class EventTickets extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(sql, this);
+	}
+
+	public static EventTickets[] findByEventId(int eventId, int languageId) throws Exception
+	{
+		String sql = "SELECT a.*, b.description " +
+				 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
+				 	 "     a.ticketType = b.ticketType AND " +
+				 	 "     b.languageId = " + languageId + " " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      available > booked " + 
+					 "ORDER BY ticketType, price ASC";
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTickets> tickets=
+			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 
 	public int getIdEventTickets() {
@@ -70,5 +88,20 @@ public class EventTickets extends DBInterface
 	public void setPrice(int price) {
 		this.price = price;
 	}
-	
+
+	public int getTicketType() {
+		return ticketType;
+	}
+
+	public void setTicketType(int ticketType) {
+		this.ticketType = ticketType;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 }

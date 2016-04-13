@@ -1,8 +1,10 @@
--- MySQL dump 10.13  Distrib 5.7.9, for linux-glibc2.5 (x86_64)
+CREATE DATABASE  IF NOT EXISTS `yeswesail` /*!40100 DEFAULT CHARACTER SET latin1 */;
+USE `yeswesail`;
+-- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
 --
--- Host: localhost    Database: yeswesail
+-- Host: 127.0.0.1    Database: yeswesail
 -- ------------------------------------------------------
--- Server version	5.6.29
+-- Server version	5.5.47-0ubuntu0.14.04.1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -96,7 +98,7 @@ CREATE TABLE `Categories` (
   `idCategories` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
   PRIMARY KEY (`idCategories`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -177,13 +179,14 @@ DROP TABLE IF EXISTS `EventTickets`;
 CREATE TABLE `EventTickets` (
   `idEventTickets` int(11) NOT NULL AUTO_INCREMENT,
   `eventId` int(11) NOT NULL,
+  `ticketType` tinyint(4) NOT NULL,
   `available` int(11) NOT NULL,
   `booked` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   PRIMARY KEY (`idEventTickets`),
   KEY `fk_EventTickets_Events_idx` (`eventId`),
   CONSTRAINT `fk_EventTickets_Events` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -192,7 +195,7 @@ CREATE TABLE `EventTickets` (
 
 LOCK TABLES `EventTickets` WRITE;
 /*!40000 ALTER TABLE `EventTickets` DISABLE KEYS */;
-INSERT INTO `EventTickets` VALUES (1,1,4,2,80),(2,1,2,1,50),(3,2,2,2,120),(4,2,4,2,70);
+INSERT INTO `EventTickets` VALUES (1,1,1,1,1,80),(2,1,1,1,0,50),(3,2,0,2,2,120),(4,2,0,4,2,70),(5,1,1,1,0,70);
 /*!40000 ALTER TABLE `EventTickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -206,12 +209,12 @@ DROP TABLE IF EXISTS `EventTicketsDescription`;
 CREATE TABLE `EventTicketsDescription` (
   `idEventTicketsDescription` int(11) NOT NULL,
   `languageId` int(11) NOT NULL,
-  `ticketId` int(11) NOT NULL,
+  `ticketType` int(11) NOT NULL,
   `description` varchar(128) NOT NULL,
   PRIMARY KEY (`idEventTicketsDescription`),
   KEY `fk_EventTicketsDescription_Languages_idx` (`languageId`),
-  KEY `fk_EventTicketsDescription_EventTickets_idx` (`ticketId`),
-  CONSTRAINT `fk_EventTicketsDescription_EventTickets` FOREIGN KEY (`ticketId`) REFERENCES `EventTickets` (`idEventTickets`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  KEY `fk_EventTicketsDescription_EventTickets_idx` (`ticketType`),
+  CONSTRAINT `fk_EventTicketsDescription_EventTickets` FOREIGN KEY (`ticketType`) REFERENCES `EventTickets` (`idEventTickets`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventTicketsDescription_Languages` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -249,7 +252,7 @@ CREATE TABLE `EventTypes` (
 
 LOCK TABLES `EventTypes` WRITE;
 /*!40000 ALTER TABLE `EventTypes` DISABLE KEYS */;
-INSERT INTO `EventTypes` VALUES (1,1,'Esperienza mare'),(2,1,'Esperienza a terra'),(3,2,'See experience'),(4,2,'Land experience');
+INSERT INTO `EventTypes` VALUES (1,1,'Esperienza mare'),(2,1,'Esperienza a terra'),(3,2,'Sailing'),(4,2,'Experience on the ground');
 /*!40000 ALTER TABLE `EventTypes` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -271,6 +274,7 @@ CREATE TABLE `Events` (
   `shipownerId` int(11) NOT NULL,
   `shipId` int(11) NOT NULL,
   `labels` varchar(90) DEFAULT NULL,
+  `status` char(1) NOT NULL,
   PRIMARY KEY (`idEvents`),
   KEY `fk_Users_idx` (`shipownerId`),
   KEY `fk_Events_Boats_idx` (`shipId`),
@@ -289,7 +293,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
-INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-04-27 00:00:00','toscana',1,'http://www.yeswesail.com/wp-content/uploads/2016/02/shutterstock_92113157.jpg',73,1,NULL),(2,1,'2016-04-15 00:00:00','2016-04-17 00:00:00','LIGURIA',1,'http://www.yeswesail.com/wp-content/uploads/2016/03/shutterstock_88066717.jpg',73,1,NULL);
+INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-04-27 00:00:00','toscana',1,'http://www.yeswesail.com/wp-content/uploads/2016/02/shutterstock_92113157.jpg',73,1,NULL,'A'),(2,1,'2016-04-15 00:00:00','2016-04-17 00:00:00','LIGURIA',1,'http://www.yeswesail.com/wp-content/uploads/2016/03/shutterstock_88066717.jpg',73,1,NULL,'A');
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -395,7 +399,7 @@ CREATE TABLE `RegistrationConfirm` (
   PRIMARY KEY (`idRegistrationConfirm`),
   KEY `fk_RegistrationConfirm_Users_idx` (`userId`),
   CONSTRAINT `fk_RegistrationConfirm_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -567,4 +571,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-12 21:09:44
+-- Dump completed on 2016-04-14  0:05:51

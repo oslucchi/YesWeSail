@@ -7,7 +7,7 @@ public class EventTicketsDescription extends DBInterface
 
 	protected int idEventTicketsDescription;
 	protected int eventId;
-	protected int ticketId;
+	protected int ticketType;
 	protected int languageId;
 	protected String description;
 	
@@ -47,12 +47,12 @@ public class EventTicketsDescription extends DBInterface
 		this.eventId = eventId;
 	}
 
-	public int getTicketId() {
-		return ticketId;
+	public int getTicketType() {
+		return ticketType;
 	}
 
-	public void setTicketId(int ticketId) {
-		this.ticketId = ticketId;
+	public void setTicketType(int ticketType) {
+		this.ticketType = ticketType;
 	}
 
 	public int getLanguageId() {

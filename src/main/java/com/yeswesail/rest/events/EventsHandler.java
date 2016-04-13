@@ -64,7 +64,7 @@ public class EventsHandler {
 		
 		if (jh.jasonize(hot, language) != Response.Status.OK)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(jh.json).build();
 		}
 	
@@ -132,6 +132,40 @@ public class EventsHandler {
 		}
 	
 		return Response.status(Response.Status.OK).entity(jh.json).build();
-
 	}
+
+	@POST
+	@Path("/details")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventDEtails(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId;
+		if (language == null)
+		{
+			language = prop.getDefaultLang();
+		}
+		languageId = Constants.getLanguageCode(language);
+
+		Events event = null;
+		try
+		{
+			event = new Events(jsonIn.eventId, languageId);
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+					.entity(LanguageResources.getResource(
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
+								e.getMessage() + ")").build();
+		}
+
+		if (jh.jasonize(event, language) != Response.Status.OK)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(jh.json).build();
+		}
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+
 }
