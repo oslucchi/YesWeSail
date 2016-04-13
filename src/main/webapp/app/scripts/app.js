@@ -58,6 +58,16 @@ angular
                 controller: 'SearchCtrl',
                 controllerAs: 'search'
             })
+            .when('/events', {
+              templateUrl: 'views/events.html',
+              controller: 'EventsCtrl',
+              controllerAs: 'events'
+            })
+            .when('/events/:eventId', {
+              templateUrl: 'views/eventid.html',
+              controller: 'EventidCtrl',
+              controllerAs: 'eventId'
+            })
             .otherwise({
                 redirectTo: '/'
             });
@@ -89,7 +99,7 @@ angular
                
                 }, function(err){});
         }  
-        }
+    }
         
       
     

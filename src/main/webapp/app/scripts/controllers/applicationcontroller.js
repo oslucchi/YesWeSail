@@ -14,13 +14,16 @@ angular.module('yeswesailApp')
     $scope.setCurrentUser= function(user){
         
     };
-
+$scope.credentials={
+		username: '',
+		password: ''
+}
     
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.isAuthenticated = AuthService.isAuthenticated;
         
     
-
+        $scope.login= AuthService.login;
         $scope.logout = function () {
             AuthService.logout().then(function () {
                 $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);

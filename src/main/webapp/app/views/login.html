@@ -47,7 +47,7 @@
         Esegui l'accesso al tuo account
       </div>
     </h2>
-    <form method="post" action="/login" class="ui large form">
+    <form  class="ui large form">
       <div class="ui stacked segment">
           <a href="https://www.facebook.com/dialog/oauth?client_id=484756285065008&redirect_uri=http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
            <div class="ui horizontal divider"></div>
@@ -58,16 +58,16 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="email" placeholder="E-mail address">
+            <input type="text" name="email" ng-model="credentials.username" placeholder="E-mail address">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input type="password" name="password" placeholder="Password">
+            <input type="password" name="password" ng-model="credentials.password" placeholder="Password">
           </div>
         </div>
-        <div class="ui fluid large blue submit button">Accedi</div>
+        <div class="ui fluid large blue button" ng-click=login(credentials)>Accedi</div>
       </div>
 
       <div class="ui error message"></div>
