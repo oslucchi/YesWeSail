@@ -1,0 +1,55 @@
+package com.yeswesail.rest.DBUtility;
+
+public class EventTypes extends DBInterface 
+{
+	private static final long serialVersionUID = 7805943614787085014L;
+
+	protected int idEventTypes;
+	protected int languageId;
+	protected String name;
+	
+	private void setNames()
+	{
+		tableName = "EventTypes";
+		idColName = "idEventTypes";
+	}
+
+	public EventTypes() throws Exception
+	{
+		setNames();
+	}
+
+	public EventTypes(int id) throws Exception
+	{
+		setNames();
+		String sql = "SELECT * " +
+					 "FROM " + tableName + " " +
+					 "WHERE " + idColName + " = " + id;
+		this.populateObject(sql, this);
+	}
+
+	public int getIdEventTypes() {
+		return idEventTypes;
+	}
+
+	public void setIdEventTypes(int idEventTypes) {
+		this.idEventTypes = idEventTypes;
+	}
+
+	public int getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(int languageId) {
+		this.languageId = languageId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+}
