@@ -15,18 +15,23 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 public class Authorizer implements ContainerRequestFilter 
 {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
+	private static String[] authorizedList = null;
+	
 	@Override
 	public void filter(ContainerRequestContext request) throws IOException 
 	{
-		String path = request.getUriInfo().getPath();
-		path = path.substring(path.lastIndexOf("/") + 1);
-		if ((path.compareTo("login") == 0) ||
-			(path.compareTo("register") == 0) ||
-			(path.compareTo("fbLogin") == 0) ||
-			(path.compareTo("hotEvents") == 0)
-		   )
+		if (authorizedList == null)
 		{
-			return;
+			authorizedList = prop.getNoAythorizationRequired().split(",");
+		}
+		String path = request.getUriInfo().getPath();
+//		path = path.substring(path.lastIndexOf("/") + 1);
+		for(String authorized : authorizedList)
+		{
+			if (path.compareTo(authorized) == 0)
+			{
+				return;
+			}
 		}
 		String token = request.getHeaderString("Authorization");
 		String language = request.getHeaderString("Language");

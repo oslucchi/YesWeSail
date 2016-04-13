@@ -10,25 +10,16 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
 <!-- 
+ -->
   <filter>
 	<filter-name>CORS</filter-name>
 	<filter-class>com.yeswesail.rest.CORSFilter</filter-class>
   </filter>
   <filter-mapping>
-    <filter-name>YesWeSail</filter-name>
+    <filter-name>CORS</filter-name>
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>com.yeswesail.rest</param-value>
-    </init-param>
-	<init-param>
-		<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
-		<param-value>com.yeswesail.rest.Authorizer</param-value>
-	</init-param>
- -->
 
   <servlet>
     <servlet-name>YesWeSail</servlet-name>
@@ -47,4 +38,16 @@
     <servlet-name>YesWeSail</servlet-name>
     <url-pattern>/rest/*</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>CORSFilter</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>com.yeswesail.rest</param-value>
+    </init-param>
+	<init-param>
+		<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
+		<param-value>com.yeswesail.rest.CORSFilter</param-value>
+	</init-param>
+  </servlet>
 </web-app>

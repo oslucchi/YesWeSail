@@ -24,6 +24,7 @@ public class ApplicationProperties {
 	private String fbApplicationSecret = "";
 	private String redirectWebHost = "";
 	private String defaultLang = "";
+	private String noAythorizationRequired = "";
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
 	
@@ -74,7 +75,8 @@ public class ApplicationProperties {
     	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
     	redirectWebHost  = properties.getProperty("redirectWebHost");
     	defaultLang = properties.getProperty("defaultLang");
-
+    	noAythorizationRequired = properties.getProperty("noAythorizationRequired");
+    	
     	try
     	{
     		variable = "sessionExpireTime";
@@ -163,6 +165,10 @@ public class ApplicationProperties {
 
 	public String getDefaultLang() {
 		return defaultLang;
+	}
+
+	public String getNoAythorizationRequired() {
+		return noAythorizationRequired;
 	}		
 
 }

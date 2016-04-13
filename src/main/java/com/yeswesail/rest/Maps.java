@@ -1,6 +1,8 @@
 package com.yeswesail.rest;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -13,6 +15,8 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.DBUtility.CategoriesLanguages;
+import com.yeswesail.rest.DBUtility.EventTypes;
+import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.jsonInt.MapsJson;
 
@@ -28,7 +32,7 @@ public class Maps {
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response register(MapsJson jsonIn, @HeaderParam("Language") String language)
+	public Response getMaps(MapsJson jsonIn, @HeaderParam("Language") String language)
 	{
 		String json = null;
 		
@@ -52,9 +56,24 @@ public class Maps {
 					break;
 				
 			case "EVENTTYPES":
+				map = (ArrayList<Object>) 
+					EventTypes.populateCollection("SELECT * " +
+											 	  "FROM EventTypes " +
+											 	  "WHERE languageId = " + Constants.getLanguageCode(language), EventTypes.class);
 				break;
 				
 			case "LOCATION":
+				SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+				ArrayList<Events> events = 
+						(ArrayList<Events>) Events.populateCollection(
+												"SELECT DISTINCT location " +
+												"FROM Events " +
+												"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
+				map = new ArrayList<Object>();
+				for (Events e : events)
+				{
+					map.add(e.getLocation());
+				}
 				break;
 			}
 		} 

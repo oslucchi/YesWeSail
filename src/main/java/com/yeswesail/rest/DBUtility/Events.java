@@ -24,6 +24,8 @@ public class Events extends DBInterface
 	protected int minPrice;
 	protected int maxPrice;
 	
+	private static ArrayList<Events> events;
+	
 	private void setNames()
 	{
 		tableName = "Events";
@@ -54,21 +56,12 @@ public class Events extends DBInterface
 				 "		  b.anchorZone = 0 " +
 				 "WHERE idEvents = " + id;
 		this.populateObject(sql, this);
-		sql = "SELECT MIN(price) as minPrice, MAX(price) as maxPrice " +
-			  "FROM EventTickets c " + 
-			  "WHERE c.booked < c.available AND " +
-//			  "      c.languageId = " + languageId + " AND " +
-			  "      c.eventId = " + this.idEvents + " " +
-			  "ORDER BY price ASC";
-		@SuppressWarnings("unchecked")
-		ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
-		if (tickets.size() != 0)
-		{
-			this.minPrice = tickets.get(0).price;
-			this.maxPrice = tickets.get(tickets.size() - 1).price;
-		}
+		events = new ArrayList<Events>();
+		events.add(this);
+		getTicketMaxAndMin();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public static Events[] findHot(int languageId) throws Exception
 	{
 		String sql = "SELECT *, b.description  " +
@@ -78,27 +71,11 @@ public class Events extends DBInterface
 					 "		  b.anchorZone = 0 " +
 				 	 "ORDER BY dateStart " +
 				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
-		@SuppressWarnings("unchecked")
-		ArrayList<Events> hotEvents = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-		if (hotEvents.size() == 0)
+		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		if (events.size() == 0)
 			return null;
-		for(Events e : hotEvents)
-		{
-			sql = "SELECT price " +
-					  "FROM EventTickets c " + 
-					  "WHERE c.booked < c.available AND " +
-//					  "      c.languageId = " + languageId + " AND " +
-					  "      c.eventId = " + e.idEvents + " " +
-					  "ORDER BY price ASC";
-				@SuppressWarnings("unchecked")
-				ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
-				if (tickets.size() != 0)
-				{
-					e.minPrice = tickets.get(0).price;
-					e.maxPrice = tickets.get(tickets.size() - 1).price;
-				}
-		}
-		return(hotEvents.toArray(new Events[hotEvents.size()]));
+		getTicketMaxAndMin();
+		return(events.toArray(new Events[events.size()]));
 	}
 
 	public static Events[] findHot(String token) throws Exception
@@ -119,22 +96,7 @@ public class Events extends DBInterface
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
-		for(Events e : events)
-		{
-			sql = "SELECT price " +
-					  "FROM EventTickets c " + 
-					  "WHERE c.booked < c.available AND " +
-//					  "      c.languageId = " + languageId + " AND " +
-					  "      c.eventId = " + e.idEvents + " " +
-					  "ORDER BY price ASC";
-				@SuppressWarnings("unchecked")
-				ArrayList<EventTickets> tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
-				if (tickets.size() != 0)
-				{
-					e.minPrice = tickets.get(0).price;
-					e.maxPrice = tickets.get(tickets.size() - 1).price;
-				}
-		}
+		getTicketMaxAndMin();
 		return(events.toArray(new Events[events.size()]));
 	}
 
@@ -144,6 +106,32 @@ public class Events extends DBInterface
 		return(findByFilter(whereClause, languageId));
 	}
 
+	@SuppressWarnings("unchecked")
+	private static void getTicketMaxAndMin()
+	{
+		String sql;
+		for(Events e : events)
+		{
+			sql = "SELECT price " +
+					  "FROM EventTickets c " + 
+					  "WHERE c.booked < c.available AND " +
+					  "      c.eventId = " + e.idEvents + " " +
+					  "ORDER BY price ASC";
+				ArrayList<EventTickets> tickets = null;
+				try {
+					tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+				} 
+				catch (Exception e1) {
+					;
+				}
+				if (tickets != null)
+				{
+					e.minPrice = tickets.get(0).price;
+					e.maxPrice = tickets.get(tickets.size() - 1).price;
+				}
+		}
+	}
+	
 	public int getIdEvents() {
 		return idEvents;
 	}
