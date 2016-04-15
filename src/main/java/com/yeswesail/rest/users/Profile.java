@@ -96,6 +96,7 @@ public class Profile {
 		String json = "";
 		
 		try {
+			u.setPassword("");
 			json = mapper.writeValueAsString(u);
 		} 
 		catch (IOException e) {
@@ -134,6 +135,7 @@ public class Profile {
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
 		}
 		
+		u.setPassword("");
 		ArrayList<Object> toJson = new ArrayList<>();
 		toJson.add(u);
 		toJson.add(ai);

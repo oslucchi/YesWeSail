@@ -2,6 +2,7 @@ package com.yeswesail.rest.login;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,6 +17,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
+import com.yeswesail.rest.DBUtility.UsersAuth;
 
 @Path("/auth/confirmUser")
 public class LoginConfirm {
@@ -50,6 +52,12 @@ public class LoginConfirm {
 			u.update("idUsers");
 			rc.setStatus("I");
 			rc.update("idRegistrationConfirm");
+			UsersAuth ua = new UsersAuth();
+			ua.setCreated(new Date());
+			ua.setLastRefreshed(ua.getCreated());
+			ua.setUserId(u.getIdUsers());
+			ua.setToken(rc.getToken());
+			ua.insert("idUsersAuth", ua);
 			return Response.seeOther(location).build();
 		} 
 		catch (URISyntaxException e) 
