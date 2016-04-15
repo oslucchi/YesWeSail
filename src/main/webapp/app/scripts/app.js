@@ -81,7 +81,7 @@ angular
         if(token!=null){
             $http.defaults.headers.common['Authorization'] = token;
             $http.defaults.headers.common['Language'] = 'IT';
-            $http.post('YesWeSail/rest/users/basic').then(function(res){
+            $http.post('/rest/users/basic').then(function(res){
                  
                 Session.create(token, res.data);
                                                     }, function(err){});
