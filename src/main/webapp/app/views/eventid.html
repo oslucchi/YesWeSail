@@ -1,1 +1,86 @@
-<p>This is the events/:eventId view.</p>
+<div class="cover-img">
+    <h1 class="ui center aligned header">{{event.title}}</h1>
+    <h2 class="ui center aligned sub header">{{event.price}} - {{event.date}}</h2>
+</div>
+<div class="ui six item bottom attached menu">
+    <a class="active item">Gallery</a>
+    <a class="item">Partecipants</a>
+    <a class="item">Logistics</a>
+    <a class="item">Place</a>
+    <a class="item">Packages</a>
+    <a class="item">Optionals</a>
+</div>
+<div class="ui container">
+
+<div class="ui segment">
+    <div class="ui card">
+        <div class="content">
+        <div class="heaader"> Description</div>
+        </div>
+        <div class="content">
+            {{event.description}}
+        </div>
+        
+    </div>
+<div class="ui right internal rail">
+    <div class="ui right floated sticky" style="left: 1356.5px; width: 272px !important; height: 263px !important;">
+
+
+        <table class="ui compact celled definition table">
+            <thead class="full-width">
+                <tr>
+                    <th>Ticket</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Basic</td>
+                    <td>100€</td>
+                    <td>
+                        <div class="ui fluid input">
+                            <input type="text">
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Gold</td>
+                    <td>100€</td>
+                    <td>
+                        <div class="ui fluid input">
+                            <input type="text">
+                        </div>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>Premium</td>
+                    <td>100€</td>
+                    <td>
+                        <div class="ui fluid input">
+                            <input type="text">
+                        </div>
+                    </td>
+
+                </tr>
+
+
+            </tbody>
+            <tfoot class="full-width">
+                <tr>
+
+                    <th colspan="4">
+                        <div class="ui right floated small primary button">
+                            Buy</div>
+
+                    </th>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    </div>
+</div>
+
+</div>

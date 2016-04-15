@@ -47,7 +47,7 @@
         Unisciti a noi per navigare
       </div>
     </h2>
-    <form method="post" action="/register" class="ui large form">
+    <form class="ui large form">
       <div class="ui stacked segment">
           
           
@@ -60,29 +60,29 @@
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="name" placeholder="Nome">
+            <input type="text" ng-model="credentials.firstName" name="name" placeholder="Nome">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="user icon"></i>
-            <input type="text" name="lastname" placeholder="Cognome">
+            <input type="text" ng-model="credentials.lastName" name="lastname" placeholder="Cognome">
           </div>
         </div>
         <div class="field">
           <div class="ui left icon input">
             <i class="mail icon"></i>
-            <input type="text" name="email" placeholder="Indirizzo email">
+            <input type="text" ng-model="credentials.username" name="email" placeholder="Indirizzo email">
           </div>
         </div>
           
         <div class="field">
           <div class="ui left icon input">
             <i class="lock icon"></i>
-            <input type="password" name="password" placeholder="Password">
+            <input type="password" ng-model="credentials.password" name="password" placeholder="Password">
           </div>
         </div>
-        <div class="ui fluid large blue submit button">Registrati</div>
+        <div ng-click="register(credentials)" class="ui fluid large blue button">Registrati</div>
       </div>
 
       <div class="ui error message"></div>

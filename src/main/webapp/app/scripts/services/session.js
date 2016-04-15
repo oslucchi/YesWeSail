@@ -20,6 +20,7 @@ angular.module('yeswesailApp')
                 }
             };
             $rootScope.currentUser=this.userProfile;
+            console.log($rootScope.globals)
             $cookieStore.put('globals', $rootScope.globals);
             
         };

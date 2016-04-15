@@ -42,8 +42,8 @@ angular.module('yeswesailApp')
             return $http
                 .post('/YesWeSail/rest/auth/register', credentials)
                 .then(function (res) {
-                    var jsonResData = JSON.parse(res.data);
-                    return jsonResData;
+                    console.log(res.data);
+                    return res.data;
                 });
         };
 
