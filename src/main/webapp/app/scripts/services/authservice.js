@@ -16,7 +16,7 @@ angular.module('yeswesailApp')
 
                 
 
-                .post('/YesWeSail/rest/auth/login', credentials)
+                .post('rest/auth/login', credentials)
 
                 .then(function (res) {
                     var jsonResData = JSON.parse(res.data);
@@ -29,7 +29,7 @@ angular.module('yeswesailApp')
             var token = Session.getSessionToken();
 
             return $http
-                .post('/YesWeSail/rest/auth/logout', {
+                .post('rest/auth/logout', {
                     token: token
                 })
                 .then(function (res) {
@@ -40,7 +40,7 @@ angular.module('yeswesailApp')
 
         authService.register = function (credentials) {
             return $http
-                .post('/YesWeSail/rest/auth/register', credentials)
+                .post('rest/auth/register', credentials)
                 .then(function (res) {
                     console.log(res.data);
                     return res.data;
