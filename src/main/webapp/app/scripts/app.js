@@ -93,7 +93,7 @@ angular
         if ($rootScope.globals.currentUser) {
             $http.defaults.headers.common['Authorization'] = $rootScope.globals.currentUser.token;
             $http.defaults.headers.common['Language'] = 'IT';
-            $http.post('YesWeSail/rest/users/basic').then(function(res){
+            $http.post('/rest/users/basic').then(function(res){
                 
             Session.create($rootScope.globals.currentUser.token, res.data);                
                
