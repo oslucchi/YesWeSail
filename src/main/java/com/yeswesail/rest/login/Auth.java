@@ -48,7 +48,7 @@ public class Auth {
 			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
 			u.setRoleId(1);
-			u.insert("idUsers", u);
+			u.setIdUsers(u.insertAndReturnId("idUsers", u));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -72,7 +72,7 @@ public class Auth {
 			rc.setUserId(u.getIdUsers());
 			rc.setToken(token);
 			rc.setStatus("A");
-			rc.insert("idRegistrationConfirm", rc);
+			rc.setIdRegistrationConfirm(rc.insertAndReturnId("idRegistrationConfirm", rc));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -97,7 +97,7 @@ public class Auth {
 			ua.setLastRefreshed(ua.getCreated());
 			ua.setUserId(userId);
 			ua.setToken(token);
-			ua.insert("idUsersAuth", ua);
+			ua.setIdUsersAuth(ua.insertAndReturnId("idUsersAuth", ua));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -118,20 +118,30 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response register(AuthJson jsonIn) 
 	{
+		String errorMsg = null; 
+		if (jsonIn.username == null)
+		{
+			errorMsg = LanguageResources.getResource("users.badMail");
+			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+		}
 		token = UUID.randomUUID().toString();
-		String errorMsg = populateUsersTable(jsonIn);
-		if (errorMsg == null)
+		errorMsg = populateUsersTable(jsonIn);
+		if (errorMsg != null)
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 
 		errorMsg = populateRegistrationConfirmTable(jsonIn);
-		if (errorMsg == null)
+		if (errorMsg != null)
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 
 		try
 		{
 			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + token;
 	        String htmlText = LanguageResources.getResource("mail.body");
-	        htmlText.replaceAll("%CNFMLINK%", httpLink);
+	        htmlText.replaceAll("CNFMLINK", httpLink);
+	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
+	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
+	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
+	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
 	        String subject = LanguageResources.getResource("mail.subject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
