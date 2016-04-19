@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.DBUtility.CategoriesLanguages;
+import com.yeswesail.rest.DBUtility.EventTicketsDescription;
 import com.yeswesail.rest.DBUtility.EventTypes;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Roles;
@@ -62,6 +63,13 @@ public class Maps {
 											 	  "WHERE languageId = " + Constants.getLanguageCode(language), EventTypes.class);
 				break;
 				
+			case "TICKETTYPES":
+				map = (ArrayList<Object>) 
+						EventTicketsDescription.populateCollection("SELECT * " +
+											 	  "FROM EventTicketsDescription " +
+											 	  "WHERE languageId = " + Constants.getLanguageCode(language), EventTypes.class);
+				break;
+
 			case "LOCATION":
 				SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
 				ArrayList<Events> events = 
