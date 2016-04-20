@@ -300,21 +300,44 @@ public class EventsHandler {
 			 @FormDataParam("image") InputStream imageBuf, @HeaderParam("Language") String language)
 	{
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		OutputStream os = null;
         MultipartStream multipartStream;
-		try {
+		try 
+		{
 			multipartStream = new MultipartStream(imageBuf, jsonIn.boundary.getBytes(), 1024, null);
 		    boolean nextPart = multipartStream.skipPreamble();
-		    while (nextPart) {
+		    boolean isFirst = true;
+		    String imagePath = null;
+		    int counter = 0;
+		    while (nextPart) 
+		    {
 		        String header = multipartStream.readHeaders();
 		        log.debug("Received header: '" + header + "'");
+		        if (isFirst)
+		        {
+		        	imagePath = "/images/events/ev_" + counter++ + 
+		        				"_main." + header.substring(header.lastIndexOf("."));
+		        	isFirst = true;
+		        }
+		        else
+		        {
+		        	imagePath = "/images/events/ev_" + counter++ + "_" + 
+		        				header.substring(header.lastIndexOf("."));
+		        }
 		        multipartStream.readBodyData(baos);
-		        // TODO Save file
-		        nextPart = multipartStream.readBoundary(); 
 		        log.trace("Received body");
+	        	os = new FileOutputStream(imagePath);
+	            os.write(baos.toByteArray(), 0, baos.size());
+	            os.close();
+		        nextPart = multipartStream.readBoundary(); 
 		    }
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
+								e.getMessage() + ")").build();
 		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}
@@ -323,7 +346,7 @@ public class EventsHandler {
 	@Path("/uploadSingleImage")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadMultipleFile(ImageUploadJson jsonIn, 
+	public Response uploadSingleFile(ImageUploadJson jsonIn, 
 			 @FormDataParam("image") InputStream imageBuf, @QueryParam("imageName") String imageName,
 			 @HeaderParam("Language") String language)
 	{
@@ -338,7 +361,8 @@ public class EventsHandler {
 	        }
 	        else
 	        {
-	        	imagePath = "/images/events/ev_" + jsonIn.referenceId + "_" + jsonIn.imageName;
+	        	imagePath = "/images/events/ev_" + jsonIn.referenceId + "_" + 
+	        				jsonIn.imageName.substring(jsonIn.imageName.lastIndexOf("."));
 	        }
 	        os = new FileOutputStream(imagePath);
 	        byte[] buffer = new byte[1024];
@@ -356,7 +380,6 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
-			DBInterface.TransactionRollback();
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(
 								Constants.getLanguageCode(language), "generic.execError") + " (" + 
