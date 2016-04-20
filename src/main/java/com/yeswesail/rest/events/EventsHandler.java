@@ -1,6 +1,7 @@
 package com.yeswesail.rest.events;
 
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +20,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.apache.tomcat.util.http.fileupload.MultipartStream;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.owlike.genson.Genson;
@@ -291,12 +293,39 @@ public class EventsHandler {
 	}
 	
 	@POST
-	@Path("/uploadImage")
+	@Path("/uploadMultiImage")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadFiles(ImageUploadJson jsonIn, 
-								@FormDataParam("image") InputStream imageBuf, @QueryParam("imageName") String imageName,
-								@HeaderParam("Language") String language)
+	public Response uploadMultipleFile(EventJson jsonIn, 
+			 @FormDataParam("image") InputStream imageBuf, @HeaderParam("Language") String language)
+	{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        MultipartStream multipartStream;
+		try {
+			multipartStream = new MultipartStream(imageBuf, jsonIn.boundary.getBytes(), 1024, null);
+		    boolean nextPart = multipartStream.skipPreamble();
+		    while (nextPart) {
+		        String header = multipartStream.readHeaders();
+		        log.debug("Received header: '" + header + "'");
+		        multipartStream.readBodyData(baos);
+		        // TODO Save file
+		        nextPart = multipartStream.readBoundary(); 
+		        log.trace("Received body");
+		    }
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return Response.status(Response.Status.OK).entity("").build();
+	}
+	
+	@POST
+	@Path("/uploadSingleImage")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response uploadMultipleFile(ImageUploadJson jsonIn, 
+			 @FormDataParam("image") InputStream imageBuf, @QueryParam("imageName") String imageName,
+			 @HeaderParam("Language") String language)
 	{
 		OutputStream os = null;
 		String imagePath = null;

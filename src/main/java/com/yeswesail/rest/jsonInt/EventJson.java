@@ -17,4 +17,5 @@ public class EventJson {
 	public String imageName;
 	public TicketJson[] tickets;
 	public EventDescriptionJson[] eventDescription;
+	public String boundary;
 }
