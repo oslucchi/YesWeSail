@@ -8,45 +8,114 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session) {
-    angular.element('.ui.dropdown').dropdown();    
-    $scope.currentUser=null;
-    $scope.setCurrentUser= function(user){
-        
-    };
-$scope.credentials={
-		username: '',
-		password: ''
-}
+    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http) {
+
+       
+        angular.element('.ui.dropdown').dropdown();
+        $scope.currentUser = null;
+
+        var token = $location.search().token;
+        var invalidEmail = $location.search().invalidEmail;
     
+        if (token != null) {
+
+            $http.defaults.headers.common['Authorization'] = token;
+            $http.defaults.headers.common['Language'] = 'IT';
+            $http.post(URLs.ddns + 'rest/users/basic').then(function (res) {
+
+                Session.create(token, res.data);
+                $scope.currentUser = res.data;
+            }, function (err) {});
+        }
+
+        if (token == null) {
+
+            $rootScope.globals = $cookieStore.get('globals') || {};
+            if ($rootScope.globals.currentUser) {
+                $http.defaults.headers.common['Authorization'] = $rootScope.globals.currentUser.token;
+                $http.defaults.headers.common['Language'] = 'IT';
+                $http.post(URLs.ddns + 'rest/users/basic').then(function (res) {
+
+                    Session.create($rootScope.globals.currentUser.token, res.data);
+
+                }, function (err) {
+                    if (err.status == 401) {
+                        Session.destroy();
+                    }
+                });
+            }
+        }
+
+
+    
+
+        $scope.credentials = {
+            username: ''
+            , password: ''
+        }
+
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.isAuthenticated = AuthService.isAuthenticated;
-        
-    
-        $scope.login= AuthService.login;
+        $scope.invalidMail=function(){
+            if($scope.currentUser==null){
+                return false;
+            }
+            if($scope.currentUser.email.startsWith('fake.') && $scope.currentUser.email.endsWith('yeswesail.com')){
+                return true;
+            }
+                                                                                                                  
+                
+        }
+
+        $scope.login = AuthService.login;
+
+
+
+
+
         $scope.logout = function () {
             AuthService.logout().then(function () {
                 $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
-                $scope.setCurrentUser(null);
+                $scope.currentUser=null;
                 $location.path('/#');
             }, function () {
                 $rootScope.$broadcast(AUTH_EVENTS.logoutFail);
             });
         };
-    
-    var loginDialog = ngDialog;
-     var registerDialog = ngDialog;
-    
-    
-    $scope.popupLogin = function(){
+
+        var loginDialog = ngDialog;
+        var registerDialog = ngDialog;
+        var invalidEmailDialog = ngDialog;
+
+        $scope.popupLogin = function () {
+
+            ngDialog.closeAll();
+            loginDialog.open({
+                template: 'views/login.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'LoginCtrl'
+            });
+        };
+
+        $scope.popupRegister = function () {
+            ngDialog.closeAll();
+            registerDialog.open({
+                template: 'views/register.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'RegisterCtrl'
+            });
+        };
+    if(invalidEmail=='true'){
+        invalidEmailDialog.open({
+                template: 'views/invalidemail.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'InvalidEmailCtrl',
+            closeByEscape: false,
+            showClose: false,
+            closeByNavigation:false,
+            closeByDocument: false
+            });
+    }
         
-        ngDialog.closeAll();
-        loginDialog.open({ template: 'views/login.html', className: 'ngdialog-theme-default', controller: 'LoginCtrl' });    
-    };
-    
-    $scope.popupRegister = function(){
-       ngDialog.closeAll();
-        registerDialog.open({ template: 'views/register.html', className: 'ngdialog-theme-default', controller: 'RegisterCtrl' });    
-    };  
 
     });

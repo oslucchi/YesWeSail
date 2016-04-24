@@ -11,6 +11,7 @@
     <!-- bower:css -->
     <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog.css" />
     <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog-theme-default.css" />
+    <link rel="stylesheet" href="bower_components/angular-carousel/dist/angular-carousel.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -28,7 +29,6 @@
 
     <!-- Add your site or application content here -->
 
-
   
 
 
@@ -39,8 +39,8 @@
             </div>
 
             <div class="right menu">
-                <a ng-hide="isAuthorized(userRoles.sailor)" class="ui item">
-                    <button class="ui basic button">Diventa armatore</button>
+                <a ng-show="currentUser"  class="ui item">
+                    <button class="ui inverted basic button">Diventa armatore</button>
                 </a>
                 <a class="item">
                     <i class="cart icon"></i>
@@ -56,12 +56,14 @@
                 <a href="#/comeFunziona" class="ui item">
       Come funziona
     </a>
+       
                 <a ng-show="currentUser" class="item">
                     <div class="ui dropdown">
                         <div class="text">
-                            <span ng-if="currentUser.user.name">{{currentUser.user.name}}</span>
-                            <span ng-if="!currentUser.user.name">{{currentUser.user.email | noemaildomain}}</span>
-                            <img class="ui avatar image" ng-src="{{currentUser.user.imageURL}}">
+                            <img class="ui avatar image" ng-src="{{currentUser.imageURL}}">
+                            <span ng-if="currentUser.name">{{currentUser.name}}</span>
+                            <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span>
+                            
                         </div>
                         <i class="dropdown icon"></i>
                         <div class="menu">
@@ -191,6 +193,9 @@
     <script src="bower_components/semantic/dist/semantic.js"></script>
     <script src="bower_components/angularjs-datepicker/dist/angular-datepicker.min.js"></script>
     <script src="bower_components/ng-dialog/js/ngDialog.js"></script>
+    <script src="bower_components/angular-carousel/dist/angular-carousel.js"></script>
+    <script src="bower_components/angular-deferred-bootstrap/angular-deferred-bootstrap.js"></script>
+    <script src="bower_components/ng-lodash/build/ng-lodash.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -208,6 +213,8 @@
     <script src="scripts/controllers/global.js"></script>
     <script src="scripts/controllers/events.js"></script>
     <script src="scripts/controllers/eventid.js"></script>
+    <script src="scripts/controllers/invalidemail.js"></script>
+    <script src="scripts/services/categories.js"></script>
     <!-- endbuild -->
 
 </body>

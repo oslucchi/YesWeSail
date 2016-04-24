@@ -77,13 +77,13 @@ module.exports = function (grunt) {
         livereload: 35730
       },
             proxies: [
-                {
-                    context: '/YesWeSail',
-                    host: 'yeswesail.ddns.net',
-                    port: 8080,
-                    changeOrigin: true
-                    
-                }
+//                {
+//                    context: 'rest/',
+//                    host: 'yeswesail.ddns.net/YesWeSail',
+//                    port: 8080,
+//                    changeOrigin: true
+//                    
+//                }
             ],
       livereload: {
         options: {
