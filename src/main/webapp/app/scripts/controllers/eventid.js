@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventidCtrl', function ($scope, $http, URLs) {
+    .controller('EventidCtrl', function ($scope, $http, URLs, $routeParams) {
 
         $scope.event = {
             image: 'http://placehold.it/1900x400?text='
@@ -36,5 +36,7 @@ angular.module('yeswesailApp')
         ]
         };
 
-        $http.get(URLs.ddns + 'rest/')
+        $http.post(URLs.ddns + 'rest/events/details', {eventId: $routeParams.eventId}).then(function(res){
+            console.log(res.data);
+        }, function(err){});
     });

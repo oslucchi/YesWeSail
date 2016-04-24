@@ -12,27 +12,44 @@ angular
     .module('yeswesailApp', [
     'ngAnimate'
 
+
+
         
         , 'ngCookies'
+
+
 
         
         , 'ngResource'
 
+
+
         
         , 'ngRoute'
+
+
 
         
         , 'ngSanitize'
 
+
+
         
         , 'ngTouch'
+
+
 
         
         , '720kb.datepicker'
 
+
+
         
         , 'ngDialog'
-    , 'angular-carousel'
+
+        
+        , 'angular-carousel',
+    'ngLodash'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success'
@@ -45,16 +62,24 @@ angular
         , notAuthenticated: 'auth-not-authenticated'
         , notAuthorized: 'auth-not-authorized'
     })
-    .constant('USER_ROLES', {
-        all: '*'
-        , user: 'user'
-        , admin: 'admin'
-        , sailor: 'sailor'
-    })
-    .constant('URLs', {
-        ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
-    })
-    .config(function ($routeProvider) {
+
+
+.constant('USER_ROLES', {
+    all: '*'
+    , user: 'user'
+    , admin: 'admin'
+    , sailor: 'sailor'
+})
+
+
+
+.constant('URLs', {
+    ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
+})
+
+
+
+.config(function ($routeProvider) {
         $routeProvider
             .when('/', {
                 templateUrl: 'views/main.html'
@@ -93,11 +118,12 @@ angular
 
     })
     .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs) {
+        $http.defaults.headers.common['Language'] = 'IT';
         angular.element('.ui.dropdown').dropdown({
             action: 'hide'
         });
 
-
+       
 
 
     });

@@ -9,9 +9,11 @@
  */
 angular.module('yeswesailApp')
     .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http) {
+
+       
         angular.element('.ui.dropdown').dropdown();
         $scope.currentUser = null;
-$http.defaults.headers.common['Language'] = 'IT';
+
         var token = $location.search().token;
         var invalidEmail = $location.search().invalidEmail;
     
@@ -45,7 +47,7 @@ $http.defaults.headers.common['Language'] = 'IT';
         }
 
 
-
+    
 
         $scope.credentials = {
             username: ''

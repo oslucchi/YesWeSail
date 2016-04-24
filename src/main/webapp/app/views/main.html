@@ -16,11 +16,7 @@
                     Regione
                     <i class="dropdown icon"></i>
                     <div class="menu">
-                        <a class="item">Electronics</a>
-                        <a class="item">Electronics</a>
-                        <a class="item">Electronics</a>
-                        <a class="item">Electronics</a>
-                        <a class="item">Electronics</a>
+                        <a ng-repeat="item in locations" class="item">{{location.description}}</a>
                     </div>
                 </div>
                 <div class="ui dropdown item">
@@ -50,13 +46,30 @@
 
         <h1>Le migliori proposte</h1>
 
-        <div class="ui horizontal segments">
-            <div ng-repeat="proposal in proposals" style="background-image: url({{proposal.imgUrl}}); background-size: cover;" class="ui segment">
-                <div class="proposal_card">
-                    {{proposal.title}} {{proposal.price}}€ {{proposal.description}} {{proposal.start}}-{{proposal.end}}
-                </div>
-            </div>
-        </div>
+        <div class="ui four stackable cards">
+  <div ng-style="{'background-image':'url({{proposal.imageURL}})'}" style="background-repeat:no-repeat; background-size: cover; color: white !important; height: 300px;" ng-repeat="proposal in hotEvents" class="card">
+      <div class="content">
+    <div style="color: white !important;" class="header">{{proposal.description}}</div>
+    <div style="color: white !important;" class="meta">{{proposal.dateStart | date:'dd MMM'}} - {{proposal.dateEnd | date:'dd MMM'}}</div>
+    <div style="color: white !important;" class="meta">{{proposal.minPrice}}€<span ng-if="proposal.minPrice != proposal.maxPrice"> - {{proposal.maxPrice}}€</span></div>
+    <div style="color: white !important;" class="meta">{{getCategory(proposal.categoryId)}}</div>
+    <div style="color: white !important;" class="description">
+    {{proposal.location}}
+    </div>
+  </div>
+
+
+  </div>
+
+</div>
+        
+        
+        
+        
+        
+        
+        
+        
 
 
         <h1>Esplora</h1>
