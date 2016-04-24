@@ -19,13 +19,11 @@ angular.module('yeswesailApp')
                     token: this.token
                 }
             };
-            $rootScope.currentUser=this.userProfile;
-            console.log($rootScope.globals)
             $cookieStore.put('globals', $rootScope.globals);
+            
             
         };
         this.getCurrentUser= function(){
-            console.log(this.userProfile);
             return this.userProfile;
         };
         this.destroy = function () {

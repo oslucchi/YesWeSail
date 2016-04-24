@@ -22,6 +22,8 @@
         </div>
         
     </div>
+    
+
 <div class="ui right internal rail">
     <div class="ui right floated sticky" style="left: 1356.5px; width: 272px !important; height: 263px !important;">
 
@@ -84,3 +86,10 @@
 </div>
 
 </div>
+    <ul rn-carousel class="image">
+  <li ng-repeat="image in event.images track by $index">
+    <div class="layer">{{ image }}</div>
+  </li>
+</ul>
+
+

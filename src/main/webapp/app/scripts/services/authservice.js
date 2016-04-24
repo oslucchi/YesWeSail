@@ -8,7 +8,7 @@
  * Service in the yeswesailApp.
  */
 angular.module('yeswesailApp')
-    .factory('AuthService', function ($http, Session) {
+    .factory('AuthService', function ($http, Session, URLs, $rootScope) {
         var authService = {};
 
         authService.login = function (credentials) {
@@ -16,21 +16,21 @@ angular.module('yeswesailApp')
 
                 
 
-                .post('rest/auth/login', credentials)
+                .post(URLs.ddns + 'rest/auth/login', credentials)
 
                 .then(function (res) {
-                    var jsonResData = JSON.parse(res.data);
-                    Session.create(jsonResData.token, jsonResData.user.idUsers, jsonResData.user.roleId);
-                    return jsonResData.user;
+                    var jsonResData = res.data;
+                    Session.create(jsonResData.token, jsonResData.user);
+                    return jsonResData.token;
                 });
         };
 
         authService.logout = function () {
-            var token = Session.getSessionToken();
+           
 
             return $http
-                .post('rest/auth/logout', {
-                    token: token
+                .post(URLs.ddns + 'rest/auth/logout', {
+                    token: $rootScope.globals.currentUser.token
                 })
                 .then(function (res) {
                     Session.destroy();
@@ -40,9 +40,8 @@ angular.module('yeswesailApp')
 
         authService.register = function (credentials) {
             return $http
-                .post('rest/auth/register', credentials)
+                .post(URLs.ddns + 'rest/auth/register', credentials)
                 .then(function (res) {
-                    console.log(res.data);
                     return res.data;
                 });
         };
@@ -58,7 +57,6 @@ angular.module('yeswesailApp')
             return (authService.isAuthenticated() && authorizedRoles.indexOf(Session.userRole) !== 1);
         };
     
-        
         
     
         return authService;

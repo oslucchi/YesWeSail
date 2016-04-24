@@ -33,6 +33,7 @@ module.exports = function(config) {
       'bower_components/semantic/dist/semantic.js',
       'bower_components/angularjs-datepicker/dist/angular-datepicker.min.js',
       'bower_components/ng-dialog/js/ngDialog.js',
+      'bower_components/angular-carousel/dist/angular-carousel.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

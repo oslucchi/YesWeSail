@@ -1,0 +1,58 @@
+ <script>
+  $(document)
+    .ready(function() {
+      $('.ui.form')
+        .form({
+          fields: {
+            email: {
+              identifier  : 'email',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your e-mail'
+                },
+                {
+                  type   : 'email',
+                  prompt : 'Please enter a valid e-mail'
+                }
+              ]
+            }
+          }
+        })
+      ;
+    })
+  ;
+  </script>
+
+<div class="ui segment">
+
+    <h2 class="ui center aligned header">Controlla e completa i tuoi dati</h2>
+    <p>
+    Per poter proseguire con la registrazione abbiamo bisogno che completi i seguenti dati non forniti da Facebook.
+    </p>
+
+</div>
+
+
+
+<div class="ui form">
+    <div class="ui segment">
+        
+        <div class="field">
+            <label>Email</label>
+            <div class="ui right icon input">
+            <i class="mail icon"></i>
+            <input type="text" name="email" placeholder="Email" ng-model="correctEmail">
+            </div>
+            
+        </div>
+        
+        <button ng-click="confirmRegistration()" class="ui button primary">Completa registrazione</button>
+<div ng-if="errorMessage" class="ui  message">
+  <div class="header">
+    {{errorMessage}}
+  </div>
+ 
+</div>
+    </div>
+</div>
