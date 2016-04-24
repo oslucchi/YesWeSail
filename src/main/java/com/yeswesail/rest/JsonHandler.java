@@ -30,6 +30,4 @@ public class JsonHandler {
 		}
 		return Response.Status.OK;
 	}
-	
-
 }

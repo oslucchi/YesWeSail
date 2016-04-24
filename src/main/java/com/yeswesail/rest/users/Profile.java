@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -31,7 +30,7 @@ public class Profile {
 	UsersAuth ua = null;
 	AddressInfo[] ai = new AddressInfo[2];
 
-	private String getUserData(UsersJson jsonIn, String language)
+	private String getUserData(UsersJson jsonIn, int languageId)
 	{
 		String errMsg = null;
 		u = SessionData.getInstance().getBasicProfile(jsonIn.token);
@@ -49,11 +48,11 @@ public class Profile {
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
 					errMsg = LanguageResources.getResource(
-								Constants.getLanguageCode(language), "auth.loginTokenNotExist");
+								languageId, "auth.loginTokenNotExist");
 				}
 				else
 				{
-					errMsg = LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError") + " (" +
+					errMsg = LanguageResources.getResource(languageId, "generic.execError") + " (" +
 							 e.getMessage() + ")";
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
@@ -61,12 +60,12 @@ public class Profile {
 
 			try 
 			{
-				SessionData.getInstance().addUser(jsonIn.token, Constants.getLanguageCode(language));
+				SessionData.getInstance().addUser(jsonIn.token, languageId);
 				u = SessionData.getInstance().getBasicProfile(jsonIn.token);
 			}
 			catch(Exception e)
 			{
-				errMsg = LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError") + " (" +
+				errMsg = LanguageResources.getResource(languageId, "generic.execError") + " (" +
 						 e.getMessage() + ")";
 			}
 		}
@@ -78,17 +77,15 @@ public class Profile {
 	@Path("/basic")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response basicProfile(@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	public Response basicProfile(@HeaderParam("Authorization") String token)
 	{
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
 		UsersJson jsonIn = new UsersJson();
 		jsonIn.token = token;
-		String errMsg = getUserData(jsonIn, language);
+		int languageId = SessionData.getInstance().getLanguage(token);
+		String errMsg = getUserData(jsonIn, languageId);
 		if (errMsg != null)
 		{
+			log.error("Error " + errMsg + " retrieving userData");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
 		}
 		
@@ -103,7 +100,7 @@ public class Profile {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
+							languageId, "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
 		}
 
@@ -114,12 +111,9 @@ public class Profile {
 	@Path("/whole")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response wholeProfile(@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	public Response wholeProfile(@HeaderParam("Authorization") String token)
 	{
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
+		int languageId = SessionData.getInstance().getLanguage(token);
 		UsersJson jsonIn = new UsersJson();
 		jsonIn.token = token;
 		String errMsg = null;
@@ -130,7 +124,7 @@ public class Profile {
 		catch (Exception e) {
 			log.error("Error retrieving AddressInfo for user " + u.getIdUsers() + " (" + e.getMessage() + ")");
 			errMsg = LanguageResources.getResource(
-						Constants.getLanguageCode(language), "users.addressInfoException") + " (" +
+						languageId, "users.addressInfoException") + " (" +
 						e.getMessage() + ")";
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
 		}
@@ -150,7 +144,7 @@ public class Profile {
 			log.error("Error jasonizing whole profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(LanguageResources.getResource(
-							Constants.getLanguageCode(language), "generic.execError") + " (" + 
+							languageId, "generic.execError") + " (" + 
 							e.getMessage() + ")").build();
 		}
 

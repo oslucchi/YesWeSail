@@ -21,12 +21,12 @@ public class CORSFilter implements Filter {
 			throws IOException, ServletException 
 	{
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
-		log.debug("Request: " + request.getMethod());
+		log.debug("Request: " + request.getMethod() + " to " + request.getRequestURI());
 
 		HttpServletResponse resp = (HttpServletResponse) servletResponse;
 		resp.addHeader("Access-Control-Allow-Origin","*");
 		resp.addHeader("Access-Control-Allow-Methods","GET,POST");
-		resp.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept");
+		resp.addHeader("Access-Control-Allow-Headers","Origin, X-Requested-With, Content-Type, Accept, Authorization, Language");
 
 		// Just ACCEPT and REPLY OK if OPTIONS
 		if ( request.getMethod().equals("OPTIONS") ) {

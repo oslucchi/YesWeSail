@@ -83,7 +83,7 @@ public class FacebookHandler implements Serializable
 			log.error("Token for facebook is null");
 			return null;
 		}
-		
+		String uri = null;
 		HttpClient httpclient = new DefaultHttpClient();
 		try 
 		{
@@ -107,17 +107,19 @@ public class FacebookHandler implements Serializable
 				if ((ua = UsersAuth.findUserId(u.getIdUsers())) == null)
 				{
 					log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
-					if ((errorMsg = new Auth().populateUsersAuthTable(token, u.getIdUsers())) != null)
+					if ((errorMsg = new Auth().populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang())) != null)
 					{
 						log.error("Error populating the UsersAuth object");
 						return null;
 					}
+					ua = UsersAuth.findUserId(u.getIdUsers());
 				}
-				String uri = null;
+				uri = null;
 				try 
 				{
 					// No exception hence the user is already register. Set the token and redirect to the login page
-					uri = prop.getRedirectWebHost() + "/" + prop.getRedirectOnLogin() + "?token=" + ua.getToken();
+					uri = prop.getRedirectWebHost() + "/" + prop.getRedirectOnLogin() + 
+						  "?token=" + ua.getToken() + "&invalidEmail=" + (u.isAFakeEmail() ? "true" : "false");
 					log.debug("User '" + u.getEmail() + "' already registered. Returning a valid token");
 					log.debug("Redirect to '" + uri + "'");
 					location = new URI(uri);
@@ -158,7 +160,7 @@ public class FacebookHandler implements Serializable
 					log.debug("The user " + jsonIn.firstName + " " + jsonIn.lastName + " " + 
 							  jsonIn.facebookId + " " + jsonIn.username + " is not registered yet"
 							  		+ "populating users table");
-					if ((errorMsg = a.populateUsersTable(jsonIn)) != null)
+					if ((errorMsg = a.populateUsersTable(jsonIn, true, prop.getDefaultLang())) != null)
 					{
 						log.debug("Got an error while populating user '" + errorMsg + "'");
 						return null;
@@ -178,7 +180,7 @@ public class FacebookHandler implements Serializable
 								   "(Unable to create user: " + e1.getMessage() + ")";
 						return null;
 					}
-					if ((errorMsg = a.populateUsersAuthTable(token, u.getIdUsers())) != null)
+					if ((errorMsg = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang())) != null)
 					{
 						return null;
 					}
@@ -195,7 +197,17 @@ public class FacebookHandler implements Serializable
 				}
 			}
 			
-			String uri = prop.getRedirectWebHost() + "/" + prop.getRedirectRegistrationCompleted() + "?token=" + ua.getToken();
+			uri = prop.getRedirectWebHost() + "/" + prop.getRedirectRegistrationCompleted() + 
+				  "?token=" + ua.getToken() + "&invalidEmail=";
+			if (getAttributeAsString(json, "email") == null)
+			{
+				uri += "true";
+			}
+			else
+			{
+				uri += "false";
+			}
+			
 			log.debug("Preparing redirection to '" + uri + "'");
 			try 
 			{

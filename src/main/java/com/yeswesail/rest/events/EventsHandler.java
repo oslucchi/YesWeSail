@@ -291,7 +291,7 @@ public class EventsHandler {
 		
 		return Response.status(Response.Status.OK).entity("").build();
 	}
-	
+/*	
 	@POST
 	@Path("/uploadMultiImage")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -400,4 +400,5 @@ public class EventsHandler {
 		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}
+*/
 }

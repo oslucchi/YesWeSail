@@ -8,13 +8,14 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
-import com.yeswesail.rest.LanguageResources;
+import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
@@ -26,24 +27,52 @@ public class LoginConfirm {
 	@GET
 	@Path("/{token}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response register(@PathParam("token") String token)
+	public Response register(@PathParam("token") String token, @QueryParam("email") String email)
 	{
 		ApplicationProperties prop = ApplicationProperties.getInstance();
 		URI location;
 		RegistrationConfirm rc = null;
-		try 
-		{
-			String query = "SELECT * FROM RegistrationConfirm WHERE token = '" + token + "'";
-			rc = new RegistrationConfirm();
-			rc.populateObject(query, rc);
-		}
-		catch (Exception e) 
-		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource("auth.confirmTokenInvalid")).build();
-		}
-		
 		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
+
+		if (email == null)
+		{
+			try 
+			{
+				String query = "SELECT * FROM RegistrationConfirm WHERE token = '" + token + "'";
+				rc = new RegistrationConfirm();
+				rc.populateObject(query, rc);
+			}
+			catch (Exception e) 
+			{
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+			}
+		}
+		else
+		{
+			if (email.compareTo("") == 0)
+			{
+				return Response.status(Response.Status.BAD_REQUEST)
+						.entity(ResponseEntityCreator.formatEntity("auth.invalidEmail", prop.getDefaultLang())).build();
+			}
+			try 
+			{
+				UsersAuth ua = UsersAuth.findToken(token);
+				ua.setLastRefreshed(new Date());
+				ua.update("idUsersAuth");
+				Users u = new Users(ua.getUserId());
+				u.setEmail(email);
+				u.setStatus("A");
+				u.update("idUsers");
+				return Response.status(Response.Status.OK).build();
+			}
+			catch(Exception e)
+			{
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+			}
+		}
+			
 		try 
 		{
 			location = new URI(uri);

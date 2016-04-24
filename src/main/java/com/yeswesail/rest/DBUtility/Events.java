@@ -66,7 +66,7 @@ public class Events extends DBInterface
 	@SuppressWarnings("unchecked")
 	public static Events[] findHot(int languageId) throws Exception
 	{
-		String sql = "SELECT *, b.description  " +
+		String sql = "SELECT *, b.description " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +

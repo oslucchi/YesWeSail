@@ -3,6 +3,7 @@ package com.yeswesail.rest;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
@@ -12,8 +13,10 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.jasper.tagplugins.jstl.core.Otherwise;
 import org.apache.log4j.Logger;
 
+import com.owlike.genson.Genson;
 import com.yeswesail.rest.DBUtility.CategoriesLanguages;
 import com.yeswesail.rest.DBUtility.EventTicketsDescription;
 import com.yeswesail.rest.DBUtility.EventTypes;
@@ -36,7 +39,8 @@ public class Maps {
 	public Response getMaps(MapsJson jsonIn, @HeaderParam("Language") String language)
 	{
 		String json = null;
-		
+		SimpleDateFormat sdf = null;
+		ArrayList<Events> events = null;;
 		ArrayList<Object> map = new ArrayList<>();
 		try {
 			switch(jsonIn.mapName.toUpperCase())
@@ -71,8 +75,8 @@ public class Maps {
 				break;
 
 			case "LOCATION":
-				SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
-				ArrayList<Events> events = 
+				sdf = new SimpleDateFormat("YYYY-MM-DD");
+				events = 
 						(ArrayList<Events>) Events.populateCollection(
 												"SELECT DISTINCT location " +
 												"FROM Events " +
@@ -83,6 +87,57 @@ public class Maps {
 					map.add(e.getLocation());
 				}
 				break;
+			
+			default:
+				
+				HashMap<String, Object> jsonResponse = new HashMap<>();
+				JsonHandler jh = new JsonHandler();
+				
+				map = (ArrayList<Object>) 
+					CategoriesLanguages.populateCollection("SELECT * " +
+													   "FROM CategoriesLanguages " +
+													   "WHERE languageId = " + 
+													   		Constants.getLanguageCode(language), CategoriesLanguages.class);
+				if (jh.jasonize(map, language) != Response.Status.OK)
+				{
+					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+							.entity(jh.json).build();
+				}
+				jsonResponse.put("CATEGORIES", jh.json);
+
+				map = (ArrayList<Object>) 
+						Roles.populateCollection("SELECT * " +
+												 "FROM RolesLanguages " +
+												 "WHERE languageId = " + Constants.getLanguageCode(language), Roles.class);
+				if (jh.jasonize(map, language) != Response.Status.OK)
+				{
+					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+							.entity(jh.json).build();
+				}
+				jsonResponse.put("ROLES", jh.json);
+
+				sdf = new SimpleDateFormat("YYYY-MM-DD");
+				events = 
+						(ArrayList<Events>) Events.populateCollection(
+												"SELECT DISTINCT location " +
+												"FROM Events " +
+												"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
+				map = new ArrayList<Object>();
+				for (Events e : events)
+				{
+					map.add(e.getLocation());
+				}
+
+				if (jh.jasonize(map, language) != Response.Status.OK)
+				{
+					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+							.entity(jh.json).build();
+				}
+				jsonResponse.put("LOCATION", jh.json);
+				Genson genson = new Genson();
+				String entity = genson.serialize(jsonResponse);
+				return Response.status(Response.Status.OK)
+						.entity(entity).build();
 			}
 		} 
 		catch (Exception e) {
@@ -90,7 +145,7 @@ public class Maps {
 			json = LanguageResources.getResource(
 					Constants.getLanguageCode(language), "generic.execError") + " (" + 
 					e.getMessage() + ")";
-			return Response.status(Response.Status.UNAUTHORIZED)
+			return Response.status(Response.Status.OK)
 					.entity(json).build();
 		}
 		// No record found. return an empty object

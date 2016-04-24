@@ -12,7 +12,7 @@ public class Users extends DBInterface
 	protected String password;
 	protected String phone1;
 	protected String phone2;
-	protected String selfComments;
+	protected String interests;
 	protected int age;
 	protected String facebook;
 	protected String twitter;
@@ -101,25 +101,9 @@ public class Users extends DBInterface
 
 	public String getEmail() {
 		return email;
-//		if (this.email.substring(0,5).compareTo("fake.") == 0)
-//		{
-//			return "";
-//		}
-//		else
-//		{
-//			return email;
-//		}
 	}
 
 	public void setEmail(String email) {
-//		if (email.substring(0,5).compareTo("fake.") == 0)
-//		{
-//			this.email = "";
-//		}
-//		else
-//		{
-//			this.email = email;
-//		}
 		this.email = email;
 	}
 
@@ -147,12 +131,12 @@ public class Users extends DBInterface
 		this.phone2 = phone2;
 	}
 
-	public String getSelfComments() {
-		return selfComments;
+	public String getInterests() {
+		return interests;
 	}
 
-	public void setSelfComments(String selfComments) {
-		this.selfComments = selfComments;
+	public void setInterests(String interests) {
+		this.interests = interests;
 	}
 
 	public int getAge() {
@@ -233,5 +217,13 @@ public class Users extends DBInterface
 
 	public void setImageURL(String imageURL) {
 		this.imageURL = imageURL;
+	}
+	
+	public boolean isAFakeEmail() {
+		if (email.startsWith("fake.") && email.endsWith("@yeswesail.com"))
+		{
+			return true;
+		}
+		return false;
 	}
 }

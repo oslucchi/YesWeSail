@@ -46,7 +46,18 @@ public class UsersAuth extends DBInterface
 		String sql = "SELECT * " +
 				 	 "FROM UsersAuth " +
 				 	 "WHERE userId = " + userId;
-		UsersAuth ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+		UsersAuth ua = null;
+		try
+		{
+			ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") != 0)
+			{
+				return null;
+			}
+		}
 		return(ua);
 	}
 

@@ -15,8 +15,8 @@ import org.apache.log4j.Logger;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
-import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.Mailer;
+import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
@@ -33,7 +33,7 @@ public class Auth {
 	private String token = null;
 	private Users u = null;
 	
-	protected String populateUsersTable(AuthJson jsonIn)
+	protected String populateUsersTable(AuthJson jsonIn, boolean accessByExternalAuth, String language)
 	{
 		String errorMsg = null;
 		try 
@@ -53,17 +53,20 @@ public class Auth {
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
-				errorMsg = LanguageResources.getResource("users.alreadyRegistered");
+				if (!accessByExternalAuth)
+					errorMsg = ResponseEntityCreator.formatEntity(language, "users.alreadyRegistered");
+				else
+					errorMsg = null;
 			}
 			else
 			{
-				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 		}
 		return errorMsg;
 	}
 	
-	protected String populateRegistrationConfirmTable(AuthJson jsonIn)
+	protected String populateRegistrationConfirmTable(AuthJson jsonIn, String language)
 	{
 		String errorMsg = null;
 		try 
@@ -77,17 +80,17 @@ public class Auth {
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
-				errorMsg = LanguageResources.getResource("users.alreadyRegistered");
+				errorMsg = ResponseEntityCreator.formatEntity(language, "users.alreadyRegistered");
 			}
 			else
 			{
-				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 		}
 		return errorMsg;
 	}
 	
-	protected String populateUsersAuthTable(String token, int userId)
+	protected String populateUsersAuthTable(String token, int userId, String language)
 	{
 		String errorMsg = null;
 		try 
@@ -102,11 +105,11 @@ public class Auth {
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
-				errorMsg = LanguageResources.getResource("users.tokenAlreadyExistent");
+				errorMsg = ResponseEntityCreator.formatEntity(language, "users.tokenAlreadyExistent");
 			}
 			else
 			{
-				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 		}
 		return errorMsg;
@@ -116,45 +119,45 @@ public class Auth {
 	@Path("/register")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response register(AuthJson jsonIn) 
+	public Response register(AuthJson jsonIn, @HeaderParam("Language") String language) 
 	{
 		String errorMsg = null; 
 		if (jsonIn.username == null)
 		{
-			errorMsg = LanguageResources.getResource("users.badMail");
+			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
 		token = UUID.randomUUID().toString();
-		errorMsg = populateUsersTable(jsonIn);
+		errorMsg = populateUsersTable(jsonIn, false, language);
 		if (errorMsg != null)
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 
-		errorMsg = populateRegistrationConfirmTable(jsonIn);
+		errorMsg = populateRegistrationConfirmTable(jsonIn, language);
 		if (errorMsg != null)
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 
 		try
 		{
 			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + token;
-	        String htmlText = LanguageResources.getResource("mail.body");
+	        String htmlText = ResponseEntityCreator.formatEntity(language, "mail.body");
 	        htmlText.replaceAll("CNFMLINK", httpLink);
 	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
 	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
 	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
 	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        String subject = LanguageResources.getResource("mail.subject");
+	        String subject = ResponseEntityCreator.formatEntity(language, "mail.subject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
 			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{
-			errorMsg = LanguageResources.getResource("mailer.sendError") + " (" + e.getMessage() + ")";
+			errorMsg = ResponseEntityCreator.formatEntity(language, "mailer.sendError") + " (" + e.getMessage() + ")";
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 		}
 		
 		return Response.status(Response.Status.OK)
-				.entity(LanguageResources.getResource("auth.registerRedirectMsg")).build();
+				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
 	}
 
 	
@@ -162,7 +165,7 @@ public class Auth {
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response login(AuthJson jsonIn) 
+	public Response login(AuthJson jsonIn, @HeaderParam("Language") String language) 
 	{ 
 		String username = jsonIn.username; 
 		String password = jsonIn.password; 
@@ -185,7 +188,7 @@ public class Auth {
 			if (u.getPassword().compareTo(password) != 0)
 			{
 				log.debug("Wrong password, returning UNAUTHORIZED");
-				errorMsg = LanguageResources.getResource("auth.wrongCredentials");
+				errorMsg = ResponseEntityCreator.formatEntity(language, "auth.wrongCredentials");
 				return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 			}
 		}
@@ -193,12 +196,12 @@ public class Auth {
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
 				log.debug("Email not found, returning UNAUTHORIZED");
-				errorMsg = LanguageResources.getResource("auth.mailNotRegistered");
+				errorMsg = ResponseEntityCreator.formatEntity(language, "auth.mailNotRegistered");
 			}
 			else
 			{
 				log.debug("Generic error " + e.getMessage());
-				errorMsg = LanguageResources.getResource("generic.execError") + " (" + e.getMessage() + ")";
+				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
@@ -233,7 +236,7 @@ public class Auth {
 			}
 			else
 			{
-				errorMsg = LanguageResources.getResource("generic.execError") +  " (" + e.getMessage() + ")";
+				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") +  " (" + e.getMessage() + ")";
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 			}
 		}
@@ -258,10 +261,7 @@ public class Auth {
 		jsonResponse.put("token", token);
 		jsonResponse.put("user", u);
 		String entity = genson.serialize(jsonResponse);
-		return Response.status(Response.Status.OK).entity(entity)
-				.header("Access-Control-Allow-Origin", "*")
-				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
-				.build();
+		return Response.status(Response.Status.OK).entity(entity).build();
 	}
 	
 	@POST
@@ -283,14 +283,14 @@ public class Auth {
 				{
 					ua.delete(ua.getIdUsersAuth());
 					sa.removeUser(token);
-					errorMsg = LanguageResources.getResource("auth.sessionExpired");
+					errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
 					return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 				}
 			}
 		}
 		catch (Exception e) {
 			sa.removeUser(token);
-			errorMsg = LanguageResources.getResource("auth.sessionExpired");
+			errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
 
@@ -349,7 +349,7 @@ public class Auth {
 	@Path("/logout")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response logout(@HeaderParam("Authorization") String token)
+	public Response logout(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
 	{
 		try 
 		{
@@ -360,7 +360,7 @@ public class Auth {
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.NOT_FOUND).
-					entity(LanguageResources.getResource("auth.tokenNotFound")).build();
+					entity(ResponseEntityCreator.formatEntity(language, "auth.tokenNotFound")).build();
 		}
 		
 		SessionData.getInstance().removeUser(token);
