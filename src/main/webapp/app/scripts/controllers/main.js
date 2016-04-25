@@ -10,17 +10,20 @@
 angular.module('yeswesailApp')
   .controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash ) {
  
-        $scope.cat=[];
+        $scope.CATEGORIES=[];
+        $scope.LOCATIONS=[];
     
         $scope.hotEvents=null;
         $http.post(URLs.ddns +'rest/events/hotEvents' ).then(function(res){
             $scope.hotEvents=res.data;
-            $scope.cat = MAPS.getCategories();
+            $scope.CATEGORIES = MAPS.getMap('CATEGORIES');
+            $scope.LOCATIONS = MAPS.getMap('LOCATIONS');
         }, function(err){})
       
+       
      $scope.getCategory=function(catId){
          
-         return lodash.find($scope.cat, ['categoryId', catId]).description;
+         return lodash.find($scope.CATEGORIES, ['categoryId', catId]).description;
      }
      
       
