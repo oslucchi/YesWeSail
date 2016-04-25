@@ -8,26 +8,15 @@
 
             <div class="ui fluid three item menu">
                 
-                
-                <select >
+                <select ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
                 
                 </select>
-                <div class="ui dropdown item">
-                    Regione
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <a ng-repeat="item in locations" class="item">{{location.description}}</a>
-                    </div>
-                </div>
-                <div class="ui dropdown item">
-                    Stile
-                    <i class="dropdown icon"></i>
-                    <div class="menu">
-                        <a class="item">Electronics</a>
-                    </div>
-                </div>
+                <select ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                
+                </select>
+                
 
-                <a href="#/search/{{selectedPlace}}/{{selectedStyle}}" class="item">Cerca</a>
+                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="item">Cerca</a>
 
             </div>
 

@@ -161,10 +161,27 @@ body {
 .cover-img{
     width: 100vw;
     height: 400px;
-    background-image: url('http://placehold.it/1900x400');
+   
     padding-top: 290px;
 }
 
+ul[rn-carousel], .image-slide {
+    width: 100%;
+    height: 500px;
+    margin: 0 auto;
+}
 
+#event-container{
+    background-color: white;
+}
 
+.header-container{
+    max-height: 250px;
+}
 
+.angular-google-map-container { height: 400px; }
+
+.floating.ui.red.label{
+        top: 10px;
+    left: 46px;
+}

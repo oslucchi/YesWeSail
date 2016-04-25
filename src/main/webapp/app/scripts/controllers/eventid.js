@@ -9,34 +9,78 @@
  */
 angular.module('yeswesailApp')
     .controller('EventidCtrl', function ($scope, $http, URLs, $routeParams) {
+        angular.element('.ui.anchor-menu')
+            .sticky({
+                context: '#event-container',
+            offset: 60
+            });
+    angular.element('.ui.book')
+            .sticky({
+                context: '#event-container',
+            offset: 105
+            });
 
-        $scope.event = {
-            image: 'http://placehold.it/1900x400?text='
-            , price: '100'
-            , date: '20160505'
-            , title: 'Event Title'
-            , description: 'Phasellus  et  felis  posuere,  suscipit  purus  in,  lacinia  sem.  Nunc  tincidunt  tellus egestas, volutpat  justo ultrices,  consequat  ante. Aliquam ac vestibulum  tortor,  et fermentum  lorem.  Cras  lacinia  a  velit  at  fermentum.  Aliquam  erat  volutpat. Vestibulum ac tempus purus. Praesent dolor leo, placerat quis accumsan et, iaculis sit amet risus. Praesent fringilla lectus id porta egestas. Aliquam vitae erat est. Nam et elit sit amet metus tempor gravida at quis diam.'
-            , images: [{
-                    url: 'http://placehold.it/500x300'
-                    , desc: 'test'
-                }
-                , {
-                    url: 'http://placehold.it/500x300'
-                    , desc: 'test'
-                }
-                , {
-                    url: 'http://placehold.it/500x300'
-                    , desc: 'test'
-                }
-                , {
-                    url: 'http://placehold.it/500x300'
-                    , desc: 'test'
-                }
 
-        ]
+        $http.post(URLs.ddns + 'rest/events/details', {
+            eventId: $routeParams.eventId
+        }).then(function (res) {
+            $scope.event = res.data.event;
+            $scope.event.title=res.data.event.description;
+            $scope.shipOwner = res.data.shipOwner;
+            $scope.event.images = res.data.images;
+            $scope.event.tickets = res.data.tickets;
+            $scope.event.description=res.data.description.description;
+            $scope.event.participants=res.data.participants;
+            $scope.event.logistics= res.data.logistics;
+            $scope.event.includes= res.data.includes;
+            $scope.event.excludes= res.data.excludes;
+            
+        }, function (err) {});
+
+
+        $scope.testTickets = [[{
+                "available": 4
+                , "booked": 0
+                , "cabinRef": 0
+                , "description": "Posto in cuccetta - bagno in comune"
+                , "eventId": 5
+                , "idEventTickets": 10
+                , "price": 400
+                , "ticketType": 1
+    }]
+    , [
+                {
+                    "available": 1
+                    , "booked": 0
+                    , "cabinRef": 1
+                    , "description": "Posto in cabina con bagno"
+                    , "eventId": 5
+                    , "idEventTickets": 11
+                    , "price": 450
+                    , "ticketType": 2
+    }
+                , {
+                    "available": 1
+                    , "booked": 0
+                    , "cabinRef": 1
+                    , "description": "Posto in cabina con bagno"
+                    , "eventId": 5
+                    , "idEventTickets": 11
+                    , "price": 480
+                    , "ticketType": 2
+    }
+    ]
+  ];
+
+
+        $scope.map = {
+            center: {
+                latitude: 45
+                , longitude: -73
+            }
+            , zoom: 8
+            , options: {
+                scrollwheel: false
+            }
         };
-
-        $http.post(URLs.ddns + 'rest/events/details', {eventId: $routeParams.eventId}).then(function(res){
-            console.log(res.data);
-        }, function(err){});
     });
