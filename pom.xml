@@ -161,6 +161,10 @@
 				        <directory>src/main/webapp/bower_components</directory> 
 				        <targetPath>/bower_components</targetPath>
 				      </resource> 
+				      <resource> 
+				        <directory>images/events</directory> 
+				        <targetPath>/images/events</targetPath>
+				      </resource> 
 				    </webResources> 
 
 				</configuration>
