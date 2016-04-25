@@ -71,6 +71,27 @@ public class FacebookHandler implements Serializable
 			return null;
 		}
 	}
+
+	private void getFriendsList(String accessToken)
+	{
+		try 
+		{
+			String newUrl = "https://graph.facebook.com/" + getAttributeAsString(json, "id") + "/friendlists?access_token=" + accessToken;
+			HttpClient httpclient = new DefaultHttpClient();
+			HttpGet httpget = new HttpGet(newUrl);
+			log.debug("Getting friendlists --> executing request: " + httpget.getURI());
+			ResponseHandler<String> responseHandler = new BasicResponseHandler();
+			String responseBody = null;
+			responseBody = httpclient.execute(httpget, responseHandler);
+			JSONObject json = new JSONObject(responseBody);
+			if (json != null)
+				log.debug(getAttributeAsString(json, "data"));
+		} 
+		catch (IOException e)
+		{
+			;
+		}
+	}
 	
 	private JSONObject getJsonResponseFromFb(String accessToken) 
 	{
@@ -88,7 +109,7 @@ public class FacebookHandler implements Serializable
 		try 
 		{
 			// Request profile data 
-			String newUrl = "https://graph.facebook.com/me?fields=id,email,first_name,last_name&access_token=" + accessToken;
+			String newUrl = "https://graph.facebook.com/me?fields=id,email,first_name,last_name,birthday&access_token=" + accessToken;
 			httpclient = new DefaultHttpClient();
 			HttpGet httpget = new HttpGet(newUrl);
 			log.debug("Get info from face --> executing request: " + httpget.getURI());
@@ -104,6 +125,22 @@ public class FacebookHandler implements Serializable
 				u = new Users();
 				String id = getAttributeAsString(json, "id");
 				u.findByFacebookID(id);
+				boolean changed = false;
+				if (u.isAFakeEmail() && getAttributeAsString(json, "email") != null)
+				{
+					u.setEmail(getAttributeAsString(json, "email"));
+					changed = true;
+				}
+				if ((u.getBirthday() == null) && (getAttributeAsString(json, "birthday") != null))
+				{
+					changed = true;
+					u.setBirthday(getAttributeAsString(json, "birthday") , "MM/dd/yyyy");
+				}
+				if (changed)
+				{
+					u.update("idUsers");
+				}
+				getFriendsList(accessToken);
 				if ((ua = UsersAuth.findUserId(u.getIdUsers())) == null)
 				{
 					log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");

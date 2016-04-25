@@ -1,30 +1,30 @@
 package com.yeswesail.rest.DBUtility;
 
-public class CategoriesLanguages extends DBInterface
+public class RolesLanguages extends DBInterface
 {
 	private static final long serialVersionUID = -2207431265593111520L;
 
-	protected int categoryId;
+	protected int roleId;
 	protected int languageId;
 	protected String description;
 	
 	private void setNames()
 	{
-		tableName = "CategoriesLanguages";
+		tableName = "RolesLanguages";
 		idColName = "";
 	}
 
-	public CategoriesLanguages() throws Exception
+	public RolesLanguages() throws Exception
 	{
 		setNames();
 	}
 
-	public int getCategoryId() {
-		return categoryId;
+	public int getRoleId() {
+		return roleId;
 	}
 
-	public void setCategoryId(int categoryId) {
-		this.categoryId = categoryId;
+	public void setRoleId(int roleId) {
+		this.roleId = roleId;
 	}
 
 	public int getLanguageId() {

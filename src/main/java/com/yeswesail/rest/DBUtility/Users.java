@@ -1,8 +1,15 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import org.apache.log4j.Logger;
+
 public class Users extends DBInterface
 {	
 	private static final long serialVersionUID = -4849479160608801245L;
+	final Logger log = Logger.getLogger(this.getClass());
 	
 	protected int idUsers;
 	protected String name;
@@ -23,6 +30,7 @@ public class Users extends DBInterface
 	protected String experiences;
 	protected String status;
 	protected String imageURL;
+	protected Date birthday;
 	
 	private void setNames()
 	{
@@ -220,10 +228,35 @@ public class Users extends DBInterface
 	}
 	
 	public boolean isAFakeEmail() {
+		if (email == null)
+		{
+			return true;
+		}
 		if (email.startsWith("fake.") && email.endsWith("@yeswesail.com"))
 		{
 			return true;
 		}
 		return false;
 	}
+
+	public Date getBirthday() {
+		return birthday;
+	}
+
+	public void setBirthday(Date birthday) {
+		this.birthday = birthday;
+	}
+	
+	public void setBirthday(String birthday, String format) {
+		SimpleDateFormat sdf = new SimpleDateFormat(format);
+		try 
+		{
+			this.birthday = sdf.parse(birthday);
+		}
+		catch (ParseException e) 
+		{
+			log.warn("Exception " + e.getMessage() + " convertind " + birthday + " to a date");
+		}
+	}
+	
 }

@@ -60,7 +60,7 @@ public class Events extends DBInterface
 		this.populateObject(sql, this);
 		events = new ArrayList<Events>();
 		events.add(this);
-		getTicketMaxAndMin();
+		getTicketMaxAndMin(events);
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -77,7 +77,7 @@ public class Events extends DBInterface
 		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
-		getTicketMaxAndMin();
+		getTicketMaxAndMin(events);
 		return(events.toArray(new Events[events.size()]));
 	}
 
@@ -100,7 +100,7 @@ public class Events extends DBInterface
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
-		getTicketMaxAndMin();
+		getTicketMaxAndMin(events);
 		return(events.toArray(new Events[events.size()]));
 	}
 
@@ -111,7 +111,7 @@ public class Events extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void getTicketMaxAndMin()
+	private static void getTicketMaxAndMin(ArrayList<Events> events)
 	{
 		String sql;
 		for(Events e : events)

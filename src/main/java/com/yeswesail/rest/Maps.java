@@ -13,15 +13,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.jasper.tagplugins.jstl.core.Otherwise;
 import org.apache.log4j.Logger;
 
-import com.owlike.genson.Genson;
 import com.yeswesail.rest.DBUtility.CategoriesLanguages;
 import com.yeswesail.rest.DBUtility.EventTicketsDescription;
 import com.yeswesail.rest.DBUtility.EventTypes;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Roles;
+import com.yeswesail.rest.DBUtility.RolesLanguages;
 import com.yeswesail.rest.jsonInt.MapsJson;
 
 
@@ -30,114 +29,129 @@ public class Maps {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	JsonHandler jh = new JsonHandler();
+	SimpleDateFormat sdf =new SimpleDateFormat("YYYY-MM-DD");
+	String[] mapNames = {
+			"CATEGORIES",
+			"ROLES",
+			"EVENTTYPES",
+			"TICKETTYPES",
+			"LOCATIONS"
+	};
+	static ArrayList<Object> categories = null;;
+	static ArrayList<Object> roles = null;;
+	static ArrayList<Object> eventTypes = null;;
+	static ArrayList<Object> eventTicketDescription = null;;
+	static ArrayList<Events> events = null;;
 
 	@SuppressWarnings("unchecked")
+	private ArrayList<Object> getCategories(int languageId) throws Exception
+	{
+		if (categories == null)
+		{
+			CategoriesLanguages c = new CategoriesLanguages();
+			categories =
+					(ArrayList<Object>) c.populateCollectionOnCondition(
+								"WHERE languageId = " + languageId, CategoriesLanguages.class);
+		}
+		return categories;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Object> getRoles(int languageId) throws Exception
+	{
+		if (roles == null)
+		{
+			Roles r = new Roles();
+			roles = (ArrayList<Object>) r.populateCollectionOnCondition(
+							"WHERE languageId = " + languageId, RolesLanguages.class);
+		}
+		return roles;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Object> getEventTypes(int languageId) throws Exception
+	{
+		if (eventTypes == null)
+		{
+			EventTypes e = new EventTypes();
+			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
+							"WHERE languageId = " + languageId, EventTypes.class);
+		}
+		return eventTypes;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Object> getTicketTypes(int languageId) throws Exception
+	{
+		if (eventTicketDescription == null)
+		{
+			EventTicketsDescription e = new EventTicketsDescription();
+			eventTicketDescription = (ArrayList<Object>) e.populateCollectionOnCondition(
+						"WHERE languageId = " + languageId, EventTicketsDescription.class);
+		}
+		return eventTicketDescription ;
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Events> getEvents() throws Exception
+	{
+		if (events == null)
+		{
+			Events e = new Events();
+			events = 
+					(ArrayList<Events>) e.populateCollectionOnCondition(
+							"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
+		}
+		return events;
+	}
+	
 	@POST
 	@Path("/")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@SuppressWarnings("unchecked")
 	public Response getMaps(MapsJson jsonIn, @HeaderParam("Language") String language)
 	{
 		String json = null;
-		SimpleDateFormat sdf = null;
-		ArrayList<Events> events = null;;
-		ArrayList<Object> map = new ArrayList<>();
+		ArrayList<Object>[] mapArray = new ArrayList[5];
+		int languageId = Constants.getLanguageCode(language);
 		try {
 			switch(jsonIn.mapName.toUpperCase())
 			{
 			case "CATEGORIES":
-				map = (ArrayList<Object>) 
-					CategoriesLanguages.populateCollection("SELECT * " +
-														   "FROM CategoriesLanguages " +
-														   "WHERE languageId = " + 
-														   		Constants.getLanguageCode(language), CategoriesLanguages.class);
+				mapArray[0] = getCategories(languageId);
 				break;
 			
 			case "ROLES":
-				map = (ArrayList<Object>) 
-					Roles.populateCollection("SELECT * " +
-											 "FROM RolesLanguages " +
-											 "WHERE languageId = " + Constants.getLanguageCode(language), Roles.class);
-					break;
+				mapArray[0] = getRoles(languageId);
+				break;
 				
 			case "EVENTTYPES":
-				map = (ArrayList<Object>) 
-					EventTypes.populateCollection("SELECT * " +
-											 	  "FROM EventTypes " +
-											 	  "WHERE languageId = " + Constants.getLanguageCode(language), EventTypes.class);
+				mapArray[0] = getEventTypes(languageId);
 				break;
 				
 			case "TICKETTYPES":
-				map = (ArrayList<Object>) 
-						EventTicketsDescription.populateCollection("SELECT * " +
-											 	  "FROM EventTicketsDescription " +
-											 	  "WHERE languageId = " + Constants.getLanguageCode(language), EventTypes.class);
+				mapArray[0] = getTicketTypes(languageId);
 				break;
 
-			case "LOCATION":
-				sdf = new SimpleDateFormat("YYYY-MM-DD");
-				events = 
-						(ArrayList<Events>) Events.populateCollection(
-												"SELECT DISTINCT location " +
-												"FROM Events " +
-												"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
-				map = new ArrayList<Object>();
-				for (Events e : events)
+			case "LOCATIONS":
+				mapArray[0] = new ArrayList<Object>();
+				for (Events e : getEvents())
 				{
-					map.add(e.getLocation());
+					mapArray[0].add(e.getLocation());
 				}
 				break;
 			
 			default:
-				
-				HashMap<String, Object> jsonResponse = new HashMap<>();
-				JsonHandler jh = new JsonHandler();
-				
-				map = (ArrayList<Object>) 
-					CategoriesLanguages.populateCollection("SELECT * " +
-													   "FROM CategoriesLanguages " +
-													   "WHERE languageId = " + 
-													   		Constants.getLanguageCode(language), CategoriesLanguages.class);
-				if (jh.jasonize(map, language) != Response.Status.OK)
+				mapArray[0] = getCategories(languageId);
+				mapArray[1] = getRoles(languageId);
+				mapArray[2] = getEventTypes(languageId);
+				mapArray[3] = getTicketTypes(languageId);
+				mapArray[4] = new ArrayList<Object>();
+				for (Events e : getEvents())
 				{
-					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-							.entity(jh.json).build();
+					mapArray[4].add(e.getLocation());
 				}
-				jsonResponse.put("CATEGORIES", jh.json);
-
-				map = (ArrayList<Object>) 
-						Roles.populateCollection("SELECT * " +
-												 "FROM RolesLanguages " +
-												 "WHERE languageId = " + Constants.getLanguageCode(language), Roles.class);
-				if (jh.jasonize(map, language) != Response.Status.OK)
-				{
-					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-							.entity(jh.json).build();
-				}
-				jsonResponse.put("ROLES", jh.json);
-
-				sdf = new SimpleDateFormat("YYYY-MM-DD");
-				events = 
-						(ArrayList<Events>) Events.populateCollection(
-												"SELECT DISTINCT location " +
-												"FROM Events " +
-												"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
-				map = new ArrayList<Object>();
-				for (Events e : events)
-				{
-					map.add(e.getLocation());
-				}
-
-				if (jh.jasonize(map, language) != Response.Status.OK)
-				{
-					return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-							.entity(jh.json).build();
-				}
-				jsonResponse.put("LOCATION", jh.json);
-				Genson genson = new Genson();
-				String entity = genson.serialize(jsonResponse);
-				return Response.status(Response.Status.OK)
-						.entity(entity).build();
 			}
 		} 
 		catch (Exception e) {
@@ -149,18 +163,18 @@ public class Maps {
 					.entity(json).build();
 		}
 		// No record found. return an empty object
-
-		if (map == null)
-		{
-			return Response.status(Response.Status.OK).entity("{}").build();
-		}
 		
-		if (jh.jasonize(map, language) != Response.Status.OK)
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		for(int i = 0; i < 5 && mapArray[i] != null; i++)
+		{
+			jsonResponse.put(mapNames[i], mapArray[i]);
+		}
+		JsonHandler jh = new JsonHandler();
+		if (jh.jasonize(jsonResponse, language) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(jh.json).build();
 		}
-		
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 }

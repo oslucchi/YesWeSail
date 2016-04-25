@@ -1,27 +1,24 @@
 package com.yeswesail.rest.events;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.File;
+import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.apache.tomcat.util.http.fileupload.MultipartStream;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
@@ -29,18 +26,22 @@ import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.DBUtility.Boats;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventDescription;
 import com.yeswesail.rest.DBUtility.EventTickets;
+import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
-import com.yeswesail.rest.jsonInt.ImageUploadJson;
 import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/events")
 public class EventsHandler {
+	@Context
+	private ServletContext context;
+
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Users u = null;
@@ -91,18 +92,24 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 	
-	@POST
-	@Path("/list")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventList(EventJson jsonIn, @HeaderParam("Language") String language)
+	private String buildWhereCondition(EventJson jsonIn)
 	{
-		Events[] eventsFiltered = null;
 		String where = " WHERE ";
 		String and = "";
+				
+		if (jsonIn.eventType != 0)
+		{
+			where += and + " eventType = " + jsonIn.eventType;
+			and = " AND ";
+		}
+		if (jsonIn.location != null)
+		{
+			where += and + " location = '" + jsonIn.location + "'";
+			and = " AND ";
+		}
 		if (jsonIn.categoryId != 0)
 		{
-			where += " categoryId = " + jsonIn.categoryId;
+			where += and + " categoryId = " + jsonIn.categoryId;
 			and = " AND ";
 		}
 		if (jsonIn.dateStart != null)
@@ -125,12 +132,21 @@ public class EventsHandler {
 				and = " OR ";
 			}
 		}
-
 		where += " ORDER BY dateStart ASC";
-		
+		return(where);
+	}
+	
+	@POST
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventList(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		Events[] eventsFiltered = null;
 		try 
 		{
-			eventsFiltered = Events.findByFilter(where, Constants.getLanguageCode(language));
+			eventsFiltered = Events.findByFilter(buildWhereCondition(jsonIn), 
+												 Constants.getLanguageCode(language));
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
@@ -182,19 +198,26 @@ public class EventsHandler {
 								e.getMessage() + ")").build();
 		}
 
-		if (jh.jasonize(event, language) != Response.Status.OK)
-		{
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(jh.json).build();
-		}
-
 		HashMap<String, Object> jsonResponse = new HashMap<>();
-		jsonResponse.put("event", jh.json);
+		jsonResponse.put("event", event);
 		
-		EventTickets[] tickets = null;
+		EventTickets[] allTickets = null;
 		try
 		{
-			tickets = EventTickets.findByEventId(event.getIdEvents(), languageId);
+			allTickets = EventTickets.findByEventId(event.getIdEvents(), languageId);
+			ArrayList<ArrayList<EventTickets>> tickets = new ArrayList<>();
+			int ticketType = -1;
+			int index = -1;
+			for (int i = 0; i < allTickets.length; i++)
+			{
+				if (allTickets[i].getTicketType() != ticketType)
+				{
+					ticketType = allTickets[i].getTicketType();
+					index++;
+					tickets.add(new ArrayList<EventTickets>());
+				}
+				tickets.get(index).add(allTickets[i]);
+			}
 			jsonResponse.put("tickets", tickets);
 		}
 		catch(Exception e)
@@ -203,6 +226,83 @@ public class EventsHandler {
 					.entity(LanguageResources.getResource(
 								Constants.getLanguageCode(language), "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
+		}
+
+		Users[] participants = null;
+		try
+		{
+			participants = EventTicketsSold.findParticipants(event.getIdEvents(), languageId);
+			jsonResponse.put("participants", participants);
+		}
+		catch(Exception e)
+		{
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+					.entity(LanguageResources.getResource(
+								Constants.getLanguageCode(language), "generic.execError") + " (" + 
+								e.getMessage() + ")").build();
+		}
+		
+		try {
+			EventDescription[] ed = EventDescription.findByEventId(event.getIdEvents(), languageId);
+			for(int i = 0; i < ed.length; i++)
+			{
+				switch(ed[i].getAnchorZone())
+				{
+				case 1:
+					jsonResponse.put("description", ed[i]);
+					break;
+				case 2:
+					jsonResponse.put("logistics", ed[i]);
+					break;
+				case 3:
+					jsonResponse.put("includes", ed[i]);
+					break;
+				case 4:
+					jsonResponse.put("excludes", ed[i]);
+					break;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			log.warn("Unable to populate descriptions (" + e.getMessage() + ")");
+		}
+
+		try {
+			String path = context.getResource("/images/events").getPath();
+			File directory = new File(path);
+	        File[] fList = directory.listFiles();
+	        ArrayList<String> imageURLs = new ArrayList<>();
+	        for (File file : fList)
+	        {
+	            if (!file.isFile() || (!file.getName().startsWith("ev_" + event.getIdEvents() + "_")))
+	            	continue;
+	            
+	            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+	        }
+			jsonResponse.put("images", imageURLs);
+		} 
+		catch (MalformedURLException e1) 
+		{
+			log.warn("Unable to get images as resources for the required event (" + e1.getMessage() + ")");
+		}
+
+		try
+		{
+			Users u = new Users(event.getShipownerId());
+			jsonResponse.put("shipOwner", u);
+		}
+		catch (Exception e) {
+			jsonResponse.put("shipOwner", "{}");
+		}
+
+		try
+		{
+			Boats b = new Boats(event.getShipId());
+			jsonResponse.put("boat", b);
+		}
+		catch (Exception e) {
+			jsonResponse.put("boat", "{}");
 		}
 
 		String entity = genson.serialize(jsonResponse);

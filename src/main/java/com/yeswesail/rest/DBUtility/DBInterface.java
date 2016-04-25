@@ -60,6 +60,7 @@ public class DBInterface implements Serializable
 		{
 			if(rs.next())
 				count = rs.getInt("count");
+			rs.close();
 		}
 		catch (SQLException e) 
 		{
@@ -434,7 +435,10 @@ public class DBInterface implements Serializable
 		try 
 		{
 			if (rs.next())
+			{
 		    	populateObjectAttributesFromRecordset(tbObj, conn.getRsm(), rs);
+		    	rs.close();
+			}
 			else
 				throw new Exception("No record found");	
 		}
@@ -488,6 +492,7 @@ public class DBInterface implements Serializable
 			if(rs.next())
 			{
 				populateObjectAttributesFromRecordset(objInst, rsm, rs);
+				rs.close();
 				return objInst;
 			}
 		}
@@ -518,6 +523,7 @@ public class DBInterface implements Serializable
 				populateObjectAttributesFromRecordset(objInst, rsm, rs);
 				aList.add(objInst);
 			}
+			rs.close();
 		}
 		catch (Exception e) 
 		{
