@@ -2,10 +2,8 @@
 <Context docBase="YesWeSail" path="/YesWeSail" reloadable="true" source="org.eclipse.jst.jee.server:YesWeSail">
 	<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" 
 				maxTotal="20" maxIdle="20" 
+				removeAbandonedOnBorrow="true" removeAbandonedTimeout="60" logAbandoned="true"
 				username="yeswesail" password="yeswesail"
 				name="jdbc/YesWeSail" type="javax.sql.DataSource" 
 				url="jdbc:mysql://localhost:3306/yeswesail"/>
-	<Resource auth="Container" name="java/YesWeSailConnection" 
-				type="com.yeswesail.DBUtility.DBConnection" 
-				singleton="true" closeMethod="finalize"/>
 </Context>
