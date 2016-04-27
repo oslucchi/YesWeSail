@@ -16,9 +16,11 @@ angular.module('yeswesailApp')
         $scope.login = function (credentials) {
             
             AuthService.login(credentials).then(function (token) {
+                
+                $location.path('/#/?token='+token);
                 $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
                  ngDialog.closeAll();
-                $location.path('/#/?token='+token);
+                
                 
                 
             }, function () {

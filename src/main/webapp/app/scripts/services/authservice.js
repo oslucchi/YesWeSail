@@ -12,7 +12,7 @@ angular.module('yeswesailApp')
         var authService = {};
 
         authService.login = function (credentials) {
-            return $http
+            var promise = $http
 
                 
 
@@ -23,6 +23,7 @@ angular.module('yeswesailApp')
                     Session.create(jsonResData.token, jsonResData.user);
                     return jsonResData.token;
                 });
+            return promise;
         };
 
         authService.logout = function () {
