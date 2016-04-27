@@ -113,7 +113,6 @@ public class DBConnection
 				(queryType.compareTo("ROLLBACK") == 0))
 			{
 				st.execute(sql);
-				st.close();
 			}
 			else
 			{

@@ -67,14 +67,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			try 
-			{
-				conn.finalize();
-			}
-			catch (Throwable e)
-			{
-				;
-			}
+			conn.finalize();
 		}
 		return(count);
 	}
@@ -444,12 +437,11 @@ public class DBInterface implements Serializable
 	{
 		conn = new DBConnection();
 		conn.executeQuery(sql);
-		ResultSet rs = conn.getRs();
 		try 
 		{
-			if (rs.next())
+			if (conn.getRs().next())
 			{
-		    	populateObjectAttributesFromRecordset(tbObj, conn.getRsm(), rs);
+		    	populateObjectAttributesFromRecordset(tbObj, conn.getRsm(), conn.getRs());
 			}
 			else
 				throw new Exception("No record found");	
@@ -501,13 +493,11 @@ public class DBInterface implements Serializable
 		conn = new DBConnection();
     	conn.executeQuery(sql);
     	
-		ResultSet rs = conn.getRs();
-		ResultSetMetaData rsm = conn.getRsm();
 		try
 		{
-			if(rs.next())
+			if(conn.getRs().next())
 			{
-				populateObjectAttributesFromRecordset(objInst, rsm, rs);
+				populateObjectAttributesFromRecordset(objInst, conn.getRsm(), conn.getRs());
 				return objInst;
 			}
 		}
@@ -532,14 +522,12 @@ public class DBInterface implements Serializable
 		conn = new DBConnection();
     	conn.executeQuery(sql);
     	
-		ResultSet rs = conn.getRs();
-		ResultSetMetaData rsm = conn.getRsm();
 		try
 		{
-			while(rs.next())
+			while(conn.getRs().next())
 			{
 				Object objInst = objClass.newInstance();
-				populateObjectAttributesFromRecordset(objInst, rsm, rs);
+				populateObjectAttributesFromRecordset(objInst, conn.getRsm(), conn.getRs());
 				aList.add(objInst);
 			}
 		}
@@ -656,6 +644,7 @@ public class DBInterface implements Serializable
 		sql += " " + whereClause;
 		conn = new DBConnection();
 		conn.executeQuery(sql);
+		conn.finalize();
     }
 
 	public void update(String idColumns) throws Exception
@@ -693,6 +682,7 @@ public class DBInterface implements Serializable
 			}
 			conn.executeQuery(sql);
     	}
+    	conn.finalize();
 	}
 
 	public void insert(String idColName, Object objectToInsert) throws Exception
@@ -706,20 +696,20 @@ public class DBInterface implements Serializable
 		sql += this.getUpdateStatement(sqlQueryColNames, objectToInsert, idColName);
 		conn = new DBConnection();
 		conn.executeQuery(sql);
+    	conn.finalize();
 	}
 
 	public int insertAndReturnId(String idColName, Object objectToInsert) throws Exception
 	{
 		int id = -1;
 		insert(idColName, objectToInsert);
-		ResultSet rs = null;
+		conn = new DBConnection();
 		conn.executeQuery("SELECT LAST_INSERT_ID() AS id");
 		try 
 		{
-			rs = conn.getRs();
-			if (rs.next())
+			if (conn.getRs().next())
 			{
-				id = rs.getInt("id");
+				id = conn.getRs().getInt("id");
 			}
 		}
 		catch (Exception e) 
@@ -752,18 +742,21 @@ public class DBInterface implements Serializable
 			sql += (((DBInterface) collection.get(i))).getUpdateStatement(sqlQueryColNames, collection.get(i), idColName);
 			conn.executeQuery(sql);
     	}
+    	conn.finalize();
 	}
 
 	public void delete(String sql) throws Exception
 	{
 		conn = new DBConnection();
 		conn.executeQuery(sql);
+    	conn.finalize();
 	}
 		
 	public void delete(int id) throws Exception
 	{
 		conn = new DBConnection();
 		conn.executeQuery("DELETE FROM " + tableName + " WHERE " + idColName + " = " + id);
+    	conn.finalize();
 	}
 
 	public static void executeStatement(String sql, boolean inTransaction) 
@@ -797,12 +790,14 @@ public class DBInterface implements Serializable
 	{
 		conn = new DBConnection();
 		conn.executeQuery("START TRANSACTION");
+    	conn.finalize();
 	}
 
 	public static void TransactionCommit() throws Exception 
 	{
 		conn = new DBConnection();
 		conn.executeQuery("COMMIT");
+    	conn.finalize();
 	}
 
 	public static void TransactionRollback() 
@@ -815,6 +810,10 @@ public class DBInterface implements Serializable
 		catch (Exception e)
 		{
 			;
+		}
+		finally
+		{
+	    	conn.finalize();
 		}
 	}
 	
