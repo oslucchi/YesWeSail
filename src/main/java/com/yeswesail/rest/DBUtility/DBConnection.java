@@ -19,32 +19,25 @@ public class DBConnection
     private Statement st = null;
 	private Connection conn = null;
 	
-	private static DBConnection singletonInstance = new DBConnection();
-	
-	public void getConnection() throws Exception  
-	{
-		if (conn != null)
-		{
-			try
-			{
-				st.execute("SELECT 1");
-				return;
-			} 
-			catch (SQLException e) 
-			{
-				;
-			}
-			try 
-			{
-				finalize();
-			}
-			catch (Throwable e) 
-			{
-				;
-			}
+	public DBConnection() throws Exception  
+	{		
+		try {
+			Class.forName("com.mysql.jdbc.Driver").newInstance();
+		} 
+		catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
-    	String retVal = null;
+
+		String retVal = null;
  		Exception e1 = null;
 		try
 		{
@@ -77,21 +70,18 @@ public class DBConnection
 		}
 	}
     
-	protected void finalize() throws Throwable 
+	protected void finalize() 
 	{
 		try 
 		{
 			ds = null;
-			rsm = null;
 			if (rs != null)
 			{
 				rs.close();
-				rs = null;
 			}
 			if (st != null)
 			{
 				st.close();
-				st = null;
 			}
 			if(conn != null)
 			{
@@ -113,31 +103,17 @@ public class DBConnection
 		{
 			queryType = stok.nextToken().toUpperCase();
 		}
-
-		if (st == null)
-		{
-			try 
-			{
-				finalize();
-				getConnection();
-			} 
-			catch(Exception e)
-			{
-				throw e;
-			}
-			catch (Throwable e) 
-			{
-				// No action required
-				throw new Exception(e);
-			}
-		}
 		try
 		{
 			if ((queryType.compareTo("INSERT") == 0) ||
 				(queryType.compareTo("DELETE") == 0) ||
-				(queryType.compareTo("UPDATE") == 0))
+				(queryType.compareTo("UPDATE") == 0) ||
+				(queryType.compareTo("START") == 0) ||
+				(queryType.compareTo("COMMIT") == 0) ||
+				(queryType.compareTo("ROLLBACK") == 0))
 			{
 				st.execute(sql);
+				st.close();
 			}
 			else
 			{
@@ -162,47 +138,5 @@ public class DBConnection
 	public Statement getSt()
 	{
 		return st;
-	}
-	
-	private DBConnection()
-	{
-		try {
-			Class.forName("com.mysql.jdbc.Driver").newInstance();
-		} 
-		catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return;
-	}
-	
-	public static DBConnection getInstance() throws Exception
-	{
-		if ((singletonInstance.conn == null) || 
-			(singletonInstance.ds == null) ||
-			(singletonInstance.st == null))
-		{
-			try 
-			{
-				singletonInstance.finalize();
-			}
-			catch (Throwable e) 
-			{
-				// no actions
-				;
-			}
-			singletonInstance = new DBConnection();
-		}
-		
-		singletonInstance.getConnection();
-		return singletonInstance;
 	}
 }
