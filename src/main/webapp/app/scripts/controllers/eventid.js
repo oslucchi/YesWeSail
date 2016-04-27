@@ -83,4 +83,8 @@ angular.module('yeswesailApp')
                 scrollwheel: false
             }
         };
+    
+    $scope.bookTicket=function(){
+        
+    };
     });

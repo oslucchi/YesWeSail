@@ -111,23 +111,24 @@
                             <tr>
                                 <th>Ticket</th>
                                 <th>Price</th>
+                                <th>Available</th>
                                 <th>Qty</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="ticket in event.tickets">
-
-                                <span ng-repeat="ticketInstance in ticket">
-                                {{ticketInstance}}
-                                <td>{{ticketInstance.description}}</td>
-                                <td>{{ticket.price}}€</td>
+                            <tr ng-if="ticket[0]" ng-repeat="ticket in event.tickets">
+                                
+                                <td>{{ticket[0].description}}</td>
+                                <td>{{ticket[0].price}}€</td>
+                                <td>{{ticket[0].available-ticket[0].booked}}</td>
+                                
                                 <td>
                                     <div class="ui fluid input">
                                         <input type="text">
                                     </div>
                                 </td>
 
-                                </span>
+                               
 
                             </tr>
 
@@ -138,7 +139,7 @@
                             <tr>
 
                                 <th colspan="4">
-                                    <div class="ui right floated small primary button">
+                                    <div ng-click="bookTicket()" class="ui right floated small primary button">
                                         Buy</div>
 
                                 </th>
@@ -146,6 +147,12 @@
                         </tfoot>
                     </table>
 
+                    
+                    
+                    
+
+                    
+                    
 
                     <div class="ui segment">
                         <p>Share with a friend!</p>
@@ -170,8 +177,8 @@
         </div>
         <div class="ui divider"></div>
         <div class="row">
-            <div class="twelve wide column"></div>
-            <div ng-bind-html="event.description"></div>
+            <div class="twelve wide column"><div ng-bind-html="event.description"></div></div>
+            
         </div>
         <div class="ui divider"></div>
         <div class="row">
