@@ -11,9 +11,12 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
+
 public class DBConnection 
 {
-    private DataSource ds = null;
+	final Logger log = Logger.getLogger(this.getClass());
+	private DataSource ds = null;
     private ResultSet rs = null;
     private ResultSetMetaData rsm = null;
     private Statement st = null;
@@ -49,6 +52,8 @@ public class DBConnection
 			ds = (DataSource) envCtx.lookup("jdbc/YesWeSail");
 			conn = ds.getConnection();
 			st = conn.createStatement();
+			log.debug("Creted connection (" + conn + ") and statement (" + st + ")");
+
 		}
 		catch (SQLException e) 
 		{
@@ -72,6 +77,7 @@ public class DBConnection
     
 	protected void finalize() 
 	{
+		log.debug("Closing resources");
 		try 
 		{
 			ds = null;
@@ -112,10 +118,12 @@ public class DBConnection
 				(queryType.compareTo("COMMIT") == 0) ||
 				(queryType.compareTo("ROLLBACK") == 0))
 			{
+				log.debug("exec straigth query. statement is ("  + st + "). SQL '" + sql + "'");
 				st.execute(sql);
 			}
 			else
 			{
+				log.debug("building a new recordset ("  + st + "). SQL '" + sql + "'");
 				rs = st.executeQuery(sql);
 				rsm = rs.getMetaData();
 			}

@@ -37,11 +37,11 @@ public class Maps {
 			"TICKETTYPES",
 			"LOCATIONS"
 	};
-	static ArrayList<Object> categories = null;;
-	static ArrayList<Object> roles = null;;
-	static ArrayList<Object> eventTypes = null;;
-	static ArrayList<Object> eventTicketDescription = null;;
-	static ArrayList<Events> events = null;;
+	ArrayList<Object> categories = null;;
+	ArrayList<Object> roles = null;;
+	ArrayList<Object> eventTypes = null;;
+	ArrayList<Object> eventTicketDescription = null;;
+	ArrayList<Events> events = null;;
 
 	@SuppressWarnings("unchecked")
 	private ArrayList<Object> getCategories(int languageId) throws Exception
