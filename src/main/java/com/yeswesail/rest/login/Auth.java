@@ -1,5 +1,7 @@
 package com.yeswesail.rest.login;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 import java.util.HashMap;
@@ -115,6 +117,36 @@ public class Auth {
 		return errorMsg;
 	}
 
+	private String prepareAndSendMail(String bodyProperty, String subjectProperty, 
+									  String language, String confirmLink, AuthJson jsonIn)
+	{
+		String errorMsg;
+		token = UUID.randomUUID().toString();		
+		errorMsg = populateRegistrationConfirmTable(jsonIn, language);
+		if (errorMsg != null)
+			return errorMsg;
+
+		try
+		{
+			String httpLink = prop.getWebHost() + "/rest/auth/" + confirmLink + "/" + token;
+	        String htmlText = ResponseEntityCreator.formatEntity(language, bodyProperty);
+	        htmlText.replaceAll("CNFMLINK", httpLink);
+	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
+	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
+	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
+	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
+	        String subject = ResponseEntityCreator.formatEntity(language, subjectProperty);
+			URL url = getClass().getResource("/images/mailLogo.png");
+			String imagePath = url.getPath();
+			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
+		}
+		catch(MessagingException e)
+		{
+			errorMsg = ResponseEntityCreator.formatEntity(language, "mailer.sendError") + " (" + e.getMessage() + ")";
+		}
+		return null;
+	}
+
 	@POST
 	@Path("/register")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -127,34 +159,13 @@ public class Auth {
 			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
-		token = UUID.randomUUID().toString();
 		errorMsg = populateUsersTable(jsonIn, false, language);
 		if (errorMsg != null)
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 
-		errorMsg = populateRegistrationConfirmTable(jsonIn, language);
+		errorMsg = prepareAndSendMail("mail.body", "mail.subject", "confirmUser", language, jsonIn);
 		if (errorMsg != null)
-			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
-
-		try
-		{
-			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + token;
-	        String htmlText = ResponseEntityCreator.formatEntity(language, "mail.body");
-	        htmlText.replaceAll("CNFMLINK", httpLink);
-	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
-	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
-	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        String subject = ResponseEntityCreator.formatEntity(language, "mail.subject");
-			URL url = getClass().getResource("/images/mailLogo.png");
-			String imagePath = url.getPath();
-			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
-		}
-		catch(MessagingException e)
-		{
-			errorMsg = ResponseEntityCreator.formatEntity(language, "mailer.sendError") + " (" + e.getMessage() + ")";
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
-		}
 		
 		return Response.status(Response.Status.OK)
 				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
@@ -327,6 +338,87 @@ public class Auth {
 				.allow("OPTIONS")
 				.build();
 	}
+    
+	@POST
+	@Path("/chgPasswd")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response changePassword(AuthJson jsonIn, @HeaderParam("Language") String language)
+	{
+		String errorMsg = null;
+		if (jsonIn.username == null)
+		{
+			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
+			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
+		}
+		try 
+		{
+			u = new Users(jsonIn.username);
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.FORBIDDEN)
+					.entity(ResponseEntityCreator.formatEntity(language, "users.badMail"))
+					.build();
+		}
+		errorMsg = prepareAndSendMail("mail.passwordChange", "mail.passwordChangeSubject", 
+									  "confirmPasswordChange", language, jsonIn);
+		if (errorMsg != null)
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+		
+		return Response.status(Response.Status.OK)
+				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
+	}
+
+	@POST
+	@Path("/confirmPasswordChange")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response confirmPasswordChange(AuthJson jsonIn, @PathParam("token") String token, @HeaderParam("Language") String language) 
+	{
+		ApplicationProperties prop = ApplicationProperties.getInstance();
+		URI location = null;
+		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + jsonIn.token;
+
+		RegistrationConfirm rc = null;
+		try 
+		{
+			rc = new RegistrationConfirm();
+			rc.findActiveRecordByToken(jsonIn.token);
+			Users u = new Users(rc.getUserId());
+			u.setPassword(jsonIn.password);
+			u.update("idUsers");
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+				.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+		}
+		try 
+		{
+			rc.setStatus("I");
+			rc.update("idRegistrationConfirm");
+		}
+		catch(Exception e)
+		{
+			log.error("Exception updating the registration confirm record. (" + e.getMessage() + ")");
+		}
+		
+		try 
+		{
+			location = new URI(uri);
+			return Response.seeOther(location).build();
+		}
+		catch (URISyntaxException e) 
+		{
+			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage());
+		}
+		catch (Exception e) {
+			log.error("Exception " + e.getMessage() + " updating user and registration token");
+		}
+		return Response.status(Response.Status.OK)
+				.entity("").build();
+	}
+
     
 	@GET
 	@Path("/fbLogin")
