@@ -132,6 +132,10 @@ public class EventsHandler {
 				and = " OR ";
 			}
 		}
+		if (where.trim().compareTo("WHERE") == 0)
+		{
+			where = "";
+		}
 		where += " ORDER BY dateStart ASC";
 		return(where);
 	}

@@ -27,11 +27,5 @@ public class YesWeSail {
 	public YesWeSail()
 	{
 		prop = ApplicationProperties.getInstance();
-		try 
-		{
-			conn = DBConnection.getInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 }
