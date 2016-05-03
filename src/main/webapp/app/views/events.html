@@ -17,28 +17,17 @@
 
 
         </div>-->
-        <div class="ui fluid three item menu">
+       <div class="ui fluid three item menu">
+                
+                <select after-render="initializeSelect()" ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
+                
+                </select>
+                <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                
+                </select>
+                
 
-                        <div class="ui dropdown item">
-                            Regione
-                            <i class="dropdown icon"></i>
-                            <div class="menu">
-                                <a class="item">Electronics</a>
-                                <a class="item">Electronics</a>
-                                <a class="item">Electronics</a>
-                                <a class="item">Electronics</a>
-                                <a class="item">Electronics</a>
-                            </div>
-                        </div>
-                        <div class="ui dropdown item">
-                            Stile
-                            <i class="dropdown icon"></i>
-                            <div class="menu">
-                                <a class="item">Electronics</a>
-                            </div>
-                        </div>
-
-                        <a href="#/search/{{selectedPlace}}/{{selectedStyle}}" class="item">Cerca</a>
+                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="item">Cerca</a>
 
             </div>
         </div>
@@ -47,10 +36,16 @@
         
         
         <div class="ui container">
-        <div class="ui four stackable cards">
+
+          
+            
+            <div class="ui segment results">
+
+                        <div class="ui four stackable cards">
             <div ng-repeat="event in events" class="ui card">
               <div class="content">
-                <div class="right floated"><h2>{{event.price}}€</h2></div>
+                  
+                <div class="right floated"><h4></h4></div>
                     
                   <a href="#/events/{{event.idEvents}}">{{event.description}}</a>
                   
@@ -58,35 +53,30 @@
               <div class="image">
                 <img ng-src="{{event.imageURL}}">
               </div>
-                <div class="content">
-                  <div class="description">
-                    {{result.description}}
-                  </div>
-                    
-               
-              </div>
+             
                  <div class="content">
 
-
+Starting at {{event.minPrice}}€
                       <div>{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
                 </div>
-             <div class="content">
-                
-                <span class="right floated">
-                  <i class="heart outline like icon"></i>
-                  17 likes
-                </span>
-                <i class="comment icon"></i>
-                3 comments
-              </div>
-              <div class="extra content">
-                <div class="ui large transparent left icon input">
-                  <i class="heart outline icon"></i>
-                  <input type="text" placeholder="Add Comment...">
-                </div>
-              </div>
+          
+            
             </div>
         </div>
-        
+                
+                
+  <div class="ui inverted dimmer">
+    <div class="content">
+      <div class="center">
+        <h4 class="ui icon header">
+          <i class="warning big sign icon"></i>
+          No results!
+        </h4>
+      </div>
+    </div>
+  </div>
+</div>
+            
+            
         </div>
     </div>

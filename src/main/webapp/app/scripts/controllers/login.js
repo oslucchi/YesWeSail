@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('LoginCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, $location, ngDialog) {
+    .controller('LoginCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, $location, ngDialog, $window, $route) {
         $scope.credentials = {
             username: '',
             password: ''
@@ -17,7 +17,8 @@ angular.module('yeswesailApp')
             
             AuthService.login(credentials).then(function (token) {
                 
-                $location.path('/#/?token='+token);
+                $window.location.href = '/#/?token='+token;
+                $window.location.reload();
                 $rootScope.$broadcast(AUTH_EVENTS.loginSuccess);
                  ngDialog.closeAll();
                 

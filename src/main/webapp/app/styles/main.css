@@ -185,3 +185,8 @@ ul[rn-carousel], .image-slide {
         top: 10px;
     left: 46px;
 }
+
+
+.results{
+    min-height: 500px;
+}
