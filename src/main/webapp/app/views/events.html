@@ -20,10 +20,10 @@
        <div class="ui fluid three item menu">
                 
                 <select after-render="initializeSelect()" ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
-                
+                    <option value="">Location</option>
                 </select>
                 <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
-                
+                    <option value="">Category</option>
                 </select>
                 
 

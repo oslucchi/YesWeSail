@@ -9,10 +9,11 @@
             <div class="ui fluid three item menu">
                 
                 <select  ng-model="selectedLocation"  class="ui dropdown item">
+                    <option value="">Location</option>
                     <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
                 </select>
                 <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
-                
+                <option value="">Category</option>
                 </select>
                 
 
