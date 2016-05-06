@@ -11,14 +11,20 @@ angular.module('yeswesailApp')
   .factory('MAPS', function ($http) {
     var MAPS={};
     var MAPSService={};
-    $http.post('http://yeswesail.ddns.net:8080/YesWeSail/rest/maps', {mapName: 'all'}).then(function(res){
-            
-            MAPS=res.data;
-        
-        },function(err){});
+    
+    
+  
     
     MAPSService.getMap=function(map){
-        return MAPS[map];
+        var promise =   $http.post('http://yeswesail.ddns.net:8080/YesWeSail/rest/maps', {mapName: 'all'}).then(function(res){
+            
+            return res.data[map];
+        
+        },function(err){
+            return err;
+        });
+        
+        return promise;
     };
     
     return MAPSService;

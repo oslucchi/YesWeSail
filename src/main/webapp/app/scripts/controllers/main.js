@@ -12,21 +12,28 @@ angular.module('yeswesailApp')
         
         $scope.CATEGORIES=[];
         $scope.LOCATIONS=[];
+        
+        MAPS.getMap('LOCATIONS').then(function(res){
+                     $scope.LOCATIONS = res;   
+        }   
+        );
+        MAPS.getMap('CATEGORIES').then(function(res){
+                     $scope.CATEGORIES = res;   
+        }   
+        );
+    
     
         $scope.hotEvents=null;
         
         $http.post(URLs.ddns +'rest/events/hotEvents' ).then(function(res){
             $scope.hotEvents=res.data;
-            $scope.CATEGORIES = MAPS.getMap('CATEGORIES');
-            $scope.LOCATIONS = MAPS.getMap('LOCATIONS');
         }, function(err){})
       
-       
-//     $scope.getCategory=function(catId){
-//         
-//         return lodash.find($scope.CATEGORIES, ['categoryId', catId]).description;
-//     }
-//     
+  
+//  $scope.getCategory=function(catId){
+//      return lodash.find($scope.CATEGORIES, ['categoryId', catId]).description;
+//  }
+  
       
   
    $scope.initializeSelect = function () {
