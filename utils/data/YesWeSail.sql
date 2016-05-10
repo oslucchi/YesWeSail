@@ -155,8 +155,8 @@ CREATE TABLE `EventDescription` (
   PRIMARY KEY (`idEventDescription`),
   KEY `fk_EventDescriptaion_Languges_idx` (`languageId`),
   KEY `fk_EventDescription_Event_idx` (`eventId`),
-  CONSTRAINT `fk_EventDescription_Event` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_EventDescriptaion_Languges` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_EventDescriptaion_Languges` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_EventDescription_Event` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -306,6 +306,10 @@ CREATE TABLE `Events` (
   `shipId` int(11) NOT NULL,
   `labels` varchar(90) DEFAULT NULL,
   `status` char(1) NOT NULL,
+  `earlyBooking` char(1) DEFAULT NULL,
+  `lastMinute` char(1) DEFAULT NULL,
+  `eventRef` varchar(15) DEFAULT NULL,
+  `aggregateKey` varchar(15) DEFAULT NULL,
   PRIMARY KEY (`idEvents`),
   KEY `fk_Users_idx` (`shipownerId`),
   KEY `fk_Events_Boats_idx` (`shipId`),
@@ -324,7 +328,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
-INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-04-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,1,NULL,'A'),(2,1,'2016-04-15 00:00:00','2016-04-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,1,NULL,'A'),(3,1,'2016-05-01 00:00:00','2016-05-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,1,'','A'),(4,1,'2016-05-05 00:00:00','2016-05-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,1,'','A'),(5,1,'2016-04-23 00:00:00','2016-04-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_5_0.jpg',74,1,'','A');
+INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-04-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,1,NULL,'A',NULL,NULL,NULL,NULL),(2,1,'2016-04-15 00:00:00','2016-04-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,1,NULL,'A',NULL,NULL,NULL,NULL),(3,1,'2016-05-01 00:00:00','2016-05-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,1,'','A',NULL,NULL,NULL,NULL),(4,1,'2016-05-05 00:00:00','2016-05-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,1,'','A',NULL,NULL,NULL,NULL),(5,1,'2016-04-23 00:00:00','2016-04-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_5_0.jpg',74,1,'','A',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -563,7 +567,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (74,'Osvaldo','Lucchini',1,'osvaldo.lucchini@gmail.com','12345678',NULL,NULL,NULL,50,'10208802349917933',NULL,NULL,'F','F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xfp1/v/t1.0-1/c0.13.50.50/p50x50/1897878_10203059351146553_1428969181_n.jpg?oh=c3ffa149b5ffe35c012f9512d7b1ef8a&oe=57B248A5','1964-12-24'),(91,'Stefan','Amarie',1,'amarie.stefan@gmail.com',NULL,NULL,NULL,NULL,0,'10209676010000980',NULL,NULL,'F','F',NULL,NULL,'A','https://scontent.xx.fbcdn.net/hprofile-xpa1/v/t1.0-1/c0.6.50.50/p50x50/14587_10200353390621322_1989525648_n.jpg?oh=70c7ed4ecbf677c2ee2db3645e6f7928&oe=579F9B81',NULL),(94,'Stefan','Amarie',1,'s.amarie@itsoftware.it','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P','F',NULL,NULL,'A',NULL,NULL),(95,'Jacopo','Gazzola',1,'flutejb@gmail.com',NULL,NULL,NULL,NULL,0,'10154319055151159',NULL,NULL,'F','F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xla1/v/t1.0-1/p50x50/12963374_10154271812561159_4618465219709942847_n.jpg?oh=35c25aa08fea0da67c048870112b2a01&oe=57B3588A',NULL);
+INSERT INTO `Users` VALUES (74,'Osvaldo','Lucchini',1,'osvaldo.lucchini@gmail.com','12345678',NULL,NULL,NULL,50,'10208802349917933',NULL,NULL,'F','F',NULL,NULL,'D','https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-1/c0.41.153.153/1897878_10203059351146553_1428969181_n.jpg?oh=631c448bf10972dd6feddc9b68d55f6a&oe=579B2AAB','1964-12-24'),(91,'Stefan','Amarie',1,'amarie.stefan@gmail.com','test1234',NULL,NULL,NULL,0,'10209676010000980',NULL,NULL,'F','F',NULL,NULL,'A','https://scontent.xx.fbcdn.net/hprofile-xpa1/v/t1.0-1/c0.6.50.50/p50x50/14587_10200353390621322_1989525648_n.jpg?oh=70c7ed4ecbf677c2ee2db3645e6f7928&oe=579F9B81','1991-12-25'),(94,'Stefan','Amarie',1,'s.amarie@itsoftware.it','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P','F',NULL,NULL,'A',NULL,NULL),(95,'Jacopo','Gazzola',1,'flutejb@gmail.com',NULL,NULL,NULL,NULL,0,'10154319055151159',NULL,NULL,'F','F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xla1/v/t1.0-1/p50x50/12963374_10154271812561159_4618465219709942847_n.jpg?oh=35c25aa08fea0da67c048870112b2a01&oe=57B3588A',NULL);
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -583,7 +587,7 @@ CREATE TABLE `UsersAuth` (
   PRIMARY KEY (`idUsersAuth`),
   KEY `fk_UsersAuth_Users_idx` (`userId`),
   CONSTRAINT `fk_UsersAuth_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -592,7 +596,7 @@ CREATE TABLE `UsersAuth` (
 
 LOCK TABLES `UsersAuth` WRITE;
 /*!40000 ALTER TABLE `UsersAuth` DISABLE KEYS */;
-INSERT INTO `UsersAuth` VALUES (34,91,'2016-04-24 15:35:43','2016-04-24 15:35:43','743d76a5-799e-4e21-9557-b43ee5f19b70'),(36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539');
+INSERT INTO `UsersAuth` VALUES (36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539'),(51,91,'2016-05-03 22:55:44','2016-05-03 23:28:43','a3e8d2bd-013a-44b8-b9ae-ab14ffb08685');
 /*!40000 ALTER TABLE `UsersAuth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -605,4 +609,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-04-26  0:36:54
+-- Dump completed on 2016-05-11  0:25:36

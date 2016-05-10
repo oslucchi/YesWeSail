@@ -334,6 +334,7 @@ public class EventsHandler {
 		}
 		catch (Exception e) 
 		{
+			DBInterface.TransactionRollback();
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(
 								Constants.getLanguageCode(language), "generic.execError") + " (" + 
@@ -358,31 +359,37 @@ public class EventsHandler {
 		event.setLocation(jsonIn.location);
 		event.setShipId(jsonIn.shipId);
 		event.setShipownerId(SessionData.getInstance().getBasicProfile(token).getIdUsers());
+		event.setEventRef(jsonIn.eventRef);
 		event.setStatus("P");
+		event.setEarlyBooking("N");
+		event.setLastMinute("N");
 		int eventId = -1;
 		try
 		{
 			eventId = event.insertAndReturnId("idEvents", event);
-			for (EventDescriptionJson anchor : jsonIn.eventDescription)
-			{
-				EventDescription ed = new EventDescription();
-				ed.setEventId(eventId);
-				ed.setLanguageId(languageId);
-				ed.setAnchorZone(anchor.anchorZone);
-				ed.setDescription(anchor.description);
-				ed.insert("idEVentDescription", ed);
-			}
+			EventDescription ed = new EventDescription();
+			ed.setEventId(eventId);
+			ed.setLanguageId(languageId);
+			ed.setAnchorZone(0);
+			ed.setDescription(jsonIn.title);
+			ed.insert("idEVentDescription", ed);
 
-			for (TicketJson ticket : jsonIn.tickets)
-			{
-				EventTickets et = new EventTickets();
-				et.setEventId(eventId);
-				et.setAvailable(ticket.onSale);
-				et.setTicketType(ticket.ticketType);
-				et.setPrice(ticket.price);
-				et.setBooked(0);
-				et.insert("idEventTickets", et);
-			}
+			ed.setAnchorZone(1);
+			ed.setDescription(jsonIn.description);
+			ed.insert("idEVentDescription", ed);
+
+			ed.setAnchorZone(2);
+			ed.setDescription(jsonIn.logistics);
+			ed.insert("idEVentDescription", ed);
+
+			ed.setAnchorZone(3);
+			ed.setDescription(jsonIn.includes);
+			ed.insert("idEVentDescription", ed);
+
+			ed.setAnchorZone(4);
+			ed.setDescription(jsonIn.excludes);
+			ed.insert("idEVentDescription", ed);
+
 			DBInterface.TransactionCommit();
 		} 
 		catch (Exception e) {
@@ -395,6 +402,7 @@ public class EventsHandler {
 		
 		return Response.status(Response.Status.OK).entity("").build();
 	}
+	
 /*	
 	@POST
 	@Path("/uploadMultiImage")

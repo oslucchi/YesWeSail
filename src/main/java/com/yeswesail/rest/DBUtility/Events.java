@@ -24,6 +24,11 @@ public class Events extends DBInterface
 	protected int minPrice;
 	protected int maxPrice;
 	protected String status;
+	protected String earlyBooking;
+	protected String lastMinute;
+	protected String eventRef;
+	protected String aggregateKey;
+	
 	
 	private static ArrayList<Events> events;
 	
@@ -247,4 +252,37 @@ public class Events extends DBInterface
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public String getEarlyBooking() {
+		return earlyBooking;
+	}
+
+	public void setEarlyBooking(String earlyBooking) {
+		this.earlyBooking = earlyBooking;
+	}
+
+	public String getLastMinute() {
+		return lastMinute;
+	}
+
+	public void setLastMinute(String lastMinute) {
+		this.lastMinute = lastMinute;
+	}
+
+	public String getEventRef() {
+		return eventRef;
+	}
+
+	public void setEventRef(String eventRef) {
+		this.eventRef = eventRef;
+	}
+
+	public String getAggregateKey() {
+		return aggregateKey;
+	}
+
+	public void setAggregateKey(String aggregateKey) {
+		this.aggregateKey = aggregateKey;
+	}
+
 }
