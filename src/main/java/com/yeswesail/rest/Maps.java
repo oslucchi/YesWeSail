@@ -29,7 +29,7 @@ public class Maps {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	JsonHandler jh = new JsonHandler();
-	SimpleDateFormat sdf =new SimpleDateFormat("YYYY-MM-DD");
+	SimpleDateFormat sdf =new SimpleDateFormat("YYYY-MM-d");
 	String[] mapNames = {
 			"CATEGORIES",
 			"ROLES",
