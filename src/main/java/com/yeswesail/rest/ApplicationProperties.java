@@ -27,6 +27,7 @@ public class ApplicationProperties {
 	private String noAythorizationRequired = "";
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
+	private boolean useCoars = false;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -76,6 +77,7 @@ public class ApplicationProperties {
     	redirectWebHost  = properties.getProperty("redirectWebHost");
     	defaultLang = properties.getProperty("defaultLang");
     	noAythorizationRequired = properties.getProperty("noAythorizationRequired");
+		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
     	
     	try
     	{
@@ -169,6 +171,9 @@ public class ApplicationProperties {
 
 	public String getNoAythorizationRequired() {
 		return noAythorizationRequired;
-	}		
+	}
 
+	public boolean isUseCoars() {
+		return useCoars;
+	}		
 }

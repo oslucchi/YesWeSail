@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class CORSFilter implements Filter {
 	private final Logger log = (Logger) Logger.getLogger(getClass());
-
+	private final ApplicationProperties prop = ApplicationProperties.getInstance();
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException 
 	{
@@ -20,6 +20,8 @@ public class CORSFilter implements Filter {
 	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) 
 			throws IOException, ServletException 
 	{
+		if (!prop.isUseCoars())
+			return;
 		HttpServletRequest request = (HttpServletRequest) servletRequest;
 		log.debug("Request: " + request.getMethod() + " to " + request.getRequestURI());
 
