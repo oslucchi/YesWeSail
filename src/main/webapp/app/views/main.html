@@ -38,7 +38,7 @@
         <div class="ui four stackable cards">
   <div ng-style="{'background-image':'url({{proposal.imageURL}})'}" style="background-repeat:no-repeat; background-size: cover; color: white !important; height: 300px;" ng-repeat="proposal in hotEvents" class="card">
       <div class="content">
-    <div style="color: white !important;" class="header">{{proposal.description}}</div>
+    <a href="/#/events/{{proposal.eventId}}" style="color: white !important;" class="header">{{proposal.description}}</a>
     <div style="color: white !important;" class="meta">{{proposal.dateStart | date:'dd MMM'}} - {{proposal.dateEnd | date:'dd MMM'}}</div>
     <div style="color: white !important;" class="meta">{{proposal.minPrice}}€<span ng-if="proposal.minPrice != proposal.maxPrice"> - {{proposal.maxPrice}}€</span></div>
     <div style="color: white !important;" class="meta">{{getCategory(proposal.categoryId)}}</div>
