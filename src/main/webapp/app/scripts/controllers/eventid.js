@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventidCtrl', function ($scope, $http, URLs, $routeParams) {
+    .controller('EventidCtrl', function ($scope, $http, URLs, $stateParams) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -22,7 +22,7 @@ angular.module('yeswesailApp')
 
 
         $http.post(URLs.ddns + 'rest/events/details', {
-            eventId: $routeParams.eventId
+            eventId: $stateParams.eventId
         }).then(function (res) {
             $scope.event = res.data.event;
             $scope.event.title=res.data.event.description;

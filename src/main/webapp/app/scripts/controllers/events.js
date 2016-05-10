@@ -8,10 +8,10 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventsCtrl', function ($scope, URLs, $http, $routeParams, MAPS) {
+    .controller('EventsCtrl', function ($scope, URLs, $http, $stateParams, MAPS) {
         var body = {};
-        $scope.selectedCategory = $routeParams.categoryId;
-        $scope.selectedLocation = $routeParams.location;
+        $scope.selectedCategory = $stateParams.categoryId;
+        $scope.selectedLocation = $stateParams.location;
     
         $scope.CATEGORIES=[];
         $scope.LOCATIONS=[];
@@ -26,12 +26,12 @@ angular.module('yeswesailApp')
         );
     
     
-        if ($routeParams.location != '') {
-            body.location = $routeParams.location;
+        if ($stateParams.location != '') {
+            body.location = $stateParams.location;
 
         }
-        if ($routeParams.categoryId != '') {
-            body.categoryId = $routeParams.categoryId;
+        if ($stateParams.categoryId != '') {
+            body.categoryId = $stateParams.categoryId;
 
         }
         $http.post(URLs.ddns + 'rest/events/search', body).then(function (res) {

@@ -13,14 +13,14 @@ angular
     'ngAnimate'
         , 'ngCookies'
         , 'ngResource'
-        , 'ngRoute'
         , 'ngSanitize'
         , 'ngTouch'
         , '720kb.datepicker'
         , 'ngDialog'
         , 'angular-carousel'
     , 'ngLodash'
-    , 'uiGmapgoogle-maps'
+    , 'uiGmapgoogle-maps',
+    'ui.router'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -50,40 +50,59 @@ angular
 
 
 
-.config(function ($routeProvider) {
-        $routeProvider
-            .when('/', {
-                templateUrl: 'views/main.html',
-                controller: 'MainCtrl',
-                controllerAs: 'main'
-            })
-            .when('/about', {
-                templateUrl: 'views/about.html',
-                controller: 'AboutCtrl',
-                controllerAs: 'about'
-            })
-            .when('/comeFunziona', {
-                templateUrl: 'views/comefunziona.html',
-                controller: 'ComefunzionaCtrl',
-                controllerAs: 'comeFunziona'
-            })
-            .when('/search/:place?/:style?', {
-                templateUrl: 'views/search.html',
-                controller: 'SearchCtrl',
-                controllerAs: 'search'
-            })
-            .when('/events', {
-                templateUrl: 'views/events.html',
-                controller: 'EventsCtrl'
-            })
-            .when('/events/:eventId', {
-                templateUrl: 'views/eventid.html',
-                controller: 'EventidCtrl',
-                controllerAs: 'eventId'
-            })
-            .otherwise({
-                redirectTo: '/'
-            });
+.config(function ($stateProvider, $urlRouterProvider) {
+    
+    // For any unmatched url, redirect to /state1
+  $urlRouterProvider.otherwise("/");
+  //
+  // Now set up the states
+  $stateProvider
+    .state('main', {
+      url: "/",
+      templateUrl: 'views/main.html',
+      controller:'MainCtrl'
+    })
+    .state('howitworks', {
+      url: "/howitworks",
+      templateUrl: 'views/comefunziona.html',
+      controller:  'ComefunzionaCtrl'
+    })
+    .state('events', {
+      url: "/events?location&categoryId",
+      templateUrl: 'views/events.html',
+      controller:  'EventsCtrl'
+    })
+    .state('event', {
+      url: "/events/:eventId",
+      templateUrl:  'views/eventid.html',
+      controller: 'EventidCtrl'
+    })
+      .state('admin', {
+      url: "/admin",
+      templateUrl:  'views/admin.html',
+      controller: 'AdminCtrl'
+    }) 
+      .state('admin.events', {
+      url: "/events",
+      templateUrl:  'views/admin.events.html',
+      controller: 'AdminCtrl'
+    })
+      .state('admin.mail', {
+      url: "/mail",
+      templateUrl:  'views/admin.events.html',
+      controller: 'AdminCtrl'
+    });
+    
+    
+    
+    
+    
+    
+    
+    
+    
+       
+           
 
 
     })

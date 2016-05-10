@@ -89,82 +89,14 @@
         </div>
     </div>
 
-    <div ng-view=""></div>
+   <div ui-view></div>
 
 
 
-    <div class="join_us">
-        <div class="ui container">
-            <div class="ui middle aligned divided list">
-                <div class="item">
-                    <div class="right floated content">
-                        <div class="ui big button">Registrati</div>
-                    </div>
-                    <div class="content">
-                        <h1>UNISCITI A NOI</h1>
-                        <p>Iscriviti per accedere ai contenuti del sito e per entrare nella Community di YesWeSail.</p>
-                    </div>
-                </div>
-                <div class="item">
 
 
-                    <div class="content">
-                        <h1>ISCRIVITI ALLA NEWSLETTER</h1>
-                        <p>Rimani aggiornato sulle migliori offerte e segui le iniziative dedicate alla Community.</p>
-                        <div class="ui labeled input">
-                            <div class="ui label">
-                                @
-                            </div>
-                            <input type="text" placeholder="indirizzo email">
-                        </div>
-                        <div class="ui button">Iscriviti</div>
-                    </div>
-                </div>
-            </div>
 
-        </div>
-    </div>
-
-
-    <div class="ui inverted vertical footer segment">
-        <div class="ui center aligned container">
-            <div class="ui stackable inverted divided grid">
-                <div class="three wide column">
-                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered image">
-                </div>
-                <div class="three wide column">
-                    <h4 class="ui inverted header">Società</h4>
-                    <div class="ui inverted link list">
-                        <a href="#" class="item">Chi siamo</a>
-                        <a href="#" class="item">Come funziona</a>
-                        <a href="#" class="item">Contatti</a>
-
-                    </div>
-                </div>
-                <div class="three wide column">
-                    <h4 class="ui inverted header">Note legali</h4>
-                    <div class="ui inverted link list">
-                        <a href="#" class="item">Termini e condizioni</a>
-                        <a href="#" class="item">Noleggio occasionale</a>
-                        <a href="#" class="item">Privacy Utente-Cliente</a>
-                        <a href="#" class="item">Privacy YesWeSail Utente - Organizzatore</a>
-                    </div>
-                </div>
-                <div class="seven wide column">
-                    <h4 class="ui inverted header">Social</h4>
-                    <p>TODO - Insert social Icons</p>
-                </div>
-            </div>
-            <div class="ui inverted section divider"></div>
-            <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered mini image">
-            <div class="ui horizontal inverted small divided link list">
-                <a class="item" href="#">Site Map</a>
-                <a class="item" href="#">Contact Us</a>
-                <a class="item" href="#">Terms and Conditions</a>
-                <a class="item" href="#">Privacy Policy</a>
-            </div>
-        </div>
-    </div>
+ 
 
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
@@ -199,12 +131,14 @@
     <script src="bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>
+    <script src="scripts/controllers/admin.js"></script>
     <script src="scripts/controllers/comefunziona.js"></script>
     <script src="scripts/controllers/login.js"></script>
     <script src="scripts/controllers/register.js"></script>
@@ -218,7 +152,7 @@
     <script src="scripts/controllers/invalidemail.js"></script>
     <script src="scripts/services/mapsservice.js"></script>
     <script src="scripts/directives/afterRenderDirective.js"></script>
-    <script src="scripts/services/events.js"></script>
+<!--    <script src="scripts/services/events.js"></script>-->
     <!-- endbuild -->
 
 </body>

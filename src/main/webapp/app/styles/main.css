@@ -190,3 +190,14 @@ ul[rn-carousel], .image-slide {
 .results{
     min-height: 500px;
 }
+
+.admin-menu-container{
+    height: calc(100vh - 60.2px);
+    width: 84px;
+    background-color: #1B1C1D;
+    float: left;
+}
+
+.admin-content-container{
+    margin-left: 84px;
+}

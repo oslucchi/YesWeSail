@@ -37,6 +37,8 @@
         <h1>Le migliori proposte</h1>
 
         <div class="ui four stackable cards">
+            
+            <a href="#/events/{{proposal.eventId}}">
   <div ng-style="{'background-image':'url({{proposal.imageURL}})'}" style="background-repeat:no-repeat; background-size: cover; color: white !important; height: 300px;" ng-repeat="proposal in hotEvents" class="card">
       <div class="content">
     <a href="/#/events/{{proposal.eventId}}" style="color: white !important;" class="header">{{proposal.description}}</a>
@@ -50,7 +52,7 @@
 
 
   </div>
-
+</a>
 </div>
         
         
@@ -122,3 +124,44 @@
     <div class="why_us_right">
     </div>
 </div>
+
+
+   <div class="ui inverted vertical footer segment">
+        <div class="ui center aligned container">
+            <div class="ui stackable inverted divided grid">
+                <div class="three wide column">
+                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered image">
+                </div>
+                <div class="three wide column">
+                    <h4 class="ui inverted header">Società</h4>
+                    <div class="ui inverted link list">
+                        <a href="#" class="item">Chi siamo</a>
+                        <a href="#" class="item">Come funziona</a>
+                        <a href="#" class="item">Contatti</a>
+
+                    </div>
+                </div>
+                <div class="three wide column">
+                    <h4 class="ui inverted header">Note legali</h4>
+                    <div class="ui inverted link list">
+                        <a href="#" class="item">Termini e condizioni</a>
+                        <a href="#" class="item">Noleggio occasionale</a>
+                        <a href="#" class="item">Privacy Utente-Cliente</a>
+                        <a href="#" class="item">Privacy YesWeSail Utente - Organizzatore</a>
+                    </div>
+                </div>
+                <div class="seven wide column">
+                    <h4 class="ui inverted header">Social</h4>
+                    <p>TODO - Insert social Icons</p>
+                </div>
+            </div>
+            <div class="ui inverted section divider"></div>
+            <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered mini image">
+            <div class="ui horizontal inverted small divided link list">
+                <a class="item" href="#">Site Map</a>
+                <a class="item" href="#">Contact Us</a>
+                <a class="item" href="#">Terms and Conditions</a>
+                <a class="item" href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
