@@ -20,7 +20,8 @@ angular
         , 'angular-carousel'
     , 'ngLodash'
     , 'uiGmapgoogle-maps',
-    'ui.router'
+    'ui.router',
+    'textAngular'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -76,6 +77,11 @@ angular
       url: "/events/:eventId",
       templateUrl:  'views/eventid.html',
       controller: 'EventidCtrl'
+    })
+    .state('createEvent', {
+      url: "/create-event",
+      templateUrl:  'views/create.eventid.html',
+      controller: 'CreateEventidCtrl'
     })
       .state('admin', {
       url: "/admin",

@@ -16,7 +16,8 @@
     "angular-deferred-bootstrap": "^0.1.9",
     "ng-lodash": "^0.4.0",
     "angular-google-maps": "^2.3.2",
-    "angular-ui-router": "^0.2.18"
+    "angular-ui-router": "^0.2.18",
+    "textAngular": "^1.5.1"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

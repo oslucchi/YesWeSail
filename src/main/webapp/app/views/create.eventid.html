@@ -51,18 +51,16 @@
                         <div class="ui items">
                             <div class="item">
                                 <div class="image">
-                                    <img ng-src="{{shipOwner.imageURL}}">
-                                    <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
+                                    <img ng-src="{{event.shipOwner.imageURL}}">
+                                    <h4 class="ui center aligned header">{{event.shipOwner.name}} {{event.shipOwner.surname}}</h4>
                                 </div>
                                 <div class="content">
                                     
                                     
+                                    <a class="header"><div click-to-edit="event.title"></div></a>
                                     
-                                    
-                                    
-                                    <a class="header">{{event.title}}</a>
                                     <div class="meta">
-                                        <span>{{event.location}}</span>
+                                       <div click-to-edit="event.location"></div>
                                     </div>
                                     <div class="extra">
                                         {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}
@@ -163,12 +161,18 @@
         </div>
         <div class="ui divider"></div>
         <div class="row">
-            <div class="twelve wide column"><div ng-bind-html="event.description"></div></div>
+            
+            <div class="twelve wide column">
+                <div class="ui header">Description</div>
+                <div text-angular ng-model="event.description"></div>
+                <div >{{event.description}}</div>
+            </div>
             
         </div>
         <div class="ui divider"></div>
         <div class="row">
             <div class="twelve wide column">
+<!--
 
                 <ul rn-carousel-auto-slide rn-carousel class="image">
                     <li ng-repeat="image in event.images">
@@ -177,29 +181,11 @@
                         
                     </li>
                 </ul>
+-->
 
                 </div>
         </div>
-        <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
-                <h2 class="ui left aligned header">
-  <i class="users icon"></i>
-  Partecipants
-</h2>
-                <div class="ui massive horizontal divided list">
-                    <div ng-repeat="participant in event.participants" class="item">
-                        <img class="ui avatar image" ng-src="{{participant.imageURL}}">
-                        <div class="content">
-                            <div class="header">{{participant.name}}</div>
-                        </div>
-                    </div>
-                </div>
 
-
-            </div>
-
-        </div>
         <div class="ui divider"></div>
 
         <div class="row">
