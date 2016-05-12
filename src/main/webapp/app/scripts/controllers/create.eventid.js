@@ -30,6 +30,7 @@ angular.module('yeswesailApp')
                 description: 'Description',
                 logistics: 'Logistics',
                 includes: 'Includes',
+                excludes: 'Excludes',
                 location: 'Location',
                 dateStart:'1460671200000',
                 dateEnd: '1460844000000'

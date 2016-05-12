@@ -55,18 +55,20 @@
                                     <h4 class="ui center aligned header">{{event.shipOwner.name}} {{event.shipOwner.surname}}</h4>
                                 </div>
                                 <div class="content">
-                                    
-                                    
-                                    <a class="header"><div click-to-edit="event.title"></div></a>
-                                    
+
+
+                                    <a class="header">
+                                        <div click-to-edit="event.title"></div>
+                                    </a>
+
                                     <div class="meta">
-                                       <div click-to-edit="event.location"></div>
+                                        <div click-to-edit="event.location"></div>
                                     </div>
                                     <div class="extra">
                                         {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}
                                     </div>
                                     <div class="description">
-                                        
+
                                     </div>
 
 
@@ -88,70 +90,15 @@
             <div class="four wide column">
                 <div class="ui book sticky">
 
-
-
-                    <table class="ui compact celled definition table">
-                        <thead class="full-width">
-                            <tr>
-                                <th>Ticket</th>
-                                <th>Price</th>
-                                <th>Available</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-if="ticket[0]" ng-repeat="ticket in event.tickets">
-                                
-                                <td>{{ticket[0].description}}</td>
-                                <td>{{ticket[0].price}}€</td>
-                                <td>{{ticket[0].available-ticket[0].booked}}</td>
-                                
-                                <td>
-                                    <div class="ui fluid input">
-                                        <input type="text">
-                                    </div>
-                                </td>
-
-                               
-
-                            </tr>
-
-
-
-                        </tbody>
-                        <tfoot class="full-width">
-                            <tr>
-
-                                <th colspan="4">
-                                    <div ng-click="bookTicket()" class="ui right floated small primary button">
-                                        Buy</div>
-
-                                </th>
-                            </tr>
-                        </tfoot>
-                    </table>
-
-                    
-                    
-                    
-
-                    
-                    
-
                     <div class="ui segment">
-                        <p>Share with a friend!</p>
+                        <p class="ui header">Editor Options</p>
                         <button class="ui blue icon button">
-                            <i class="facebook icon"></i>
+                            Save
                         </button>
                         <button class="ui teal icon button">
-                            <i class="twitter icon"></i>
+                            Cancel
                         </button>
-                        <button class="ui red icon button">
-                            <i class="google plus icon"></i>
-                        </button>
-                        <button class="ui icon button">
-                            <i class="linkify icon"></i>
-                        </button>
+
 
                     </div>
                 </div>
@@ -161,18 +108,57 @@
         </div>
         <div class="ui divider"></div>
         <div class="row">
-            
+
+            <div class="twelve wide column">
+                <div class="ui header">Tickets</div>
+                <table class="ui compact celled table">
+                    <thead>
+                        <tr>
+                            <th>Ticket</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                           
+                            <td><div class="ui input"><input type="text"></div></td>
+                            <td><div class="ui input"><input type="text"></div></td>
+                            <td><div class="ui input"><input type="text"></div></td>
+                        </tr>
+                       
+                    </tbody>
+                    <tfoot class="full-width">
+                        <tr>
+                            
+                            <th colspan="4">
+                                <div class="ui right floated small primary labeled icon button">
+                                    <i class="tag icon"></i> Add Ticket
+                                </div>
+                                
+                            </th>
+                        </tr>
+                    </tfoot>
+                </table>
+
+            </div>
+
+        </div>
+        <div class="ui divider"></div>
+        <div class="row">
+
             <div class="twelve wide column">
                 <div class="ui header">Description</div>
                 <div text-angular ng-model="event.description"></div>
-                <div >{{event.description}}</div>
+                <div>{{event.description}}</div>
             </div>
-            
+
         </div>
         <div class="ui divider"></div>
         <div class="row">
             <div class="twelve wide column">
-<!--
+                <!--
 
                 <ul rn-carousel-auto-slide rn-carousel class="image">
                     <li ng-repeat="image in event.images">
@@ -183,7 +169,7 @@
                 </ul>
 -->
 
-                </div>
+            </div>
         </div>
 
         <div class="ui divider"></div>
@@ -194,7 +180,7 @@
                   <i class="users icon"></i>
                   Logistics
                 </h2>
-                <div ng-bind-html="event.logistics.description"></div>
+                <div text-angular ng-model="event.logistics"></div>
             </div>
 
         </div>
@@ -206,7 +192,7 @@
                   <i class="users icon"></i>
                   Includes
                 </h2>
-                <div ng-bind-html="event.includes.description"></div>
+                <div text-angular ng-model="event.includes"></div>
             </div>
 
         </div>
@@ -216,7 +202,7 @@
                   <i class="users icon"></i>
                   Excludes
                 </h2>
-                <div ng-bind-html="event.excludes.description"></div>
+                <div text-angular ng-model="event.excludes"></div>
             </div>
 
         </div>
