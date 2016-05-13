@@ -2,13 +2,17 @@ package com.yeswesail.rest.events;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -18,7 +22,13 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
@@ -33,9 +43,7 @@ import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Users;
-import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
-import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/events")
 public class EventsHandler {
@@ -47,7 +55,8 @@ public class EventsHandler {
 	Users u = null;
 	Events e = null;
 	JsonHandler jh = new JsonHandler();
-
+	String contextPath = null;
+	
 	@POST
 	@Path("/hotEvents")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -273,23 +282,24 @@ public class EventsHandler {
 		}
 
 		try {
-			String path = context.getResource("/images/events").getPath();
-			File directory = new File(path);
-	        File[] fList = directory.listFiles();
-	        ArrayList<String> imageURLs = new ArrayList<>();
-	        for (File file : fList)
-	        {
-	            if (!file.isFile() || (!file.getName().startsWith("ev_" + event.getIdEvents() + "_")))
-	            	continue;
-	            
-	            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
-	        }
-			jsonResponse.put("images", imageURLs);
-		} 
-		catch (MalformedURLException e1) 
-		{
-			log.warn("Unable to get images as resources for the required event (" + e1.getMessage() + ")");
+			contextPath = context.getResource("/images/events").getPath();
 		}
+		catch (MalformedURLException e) 
+		{
+			contextPath = null;
+			log.warn("Exception " + e.getMessage() + " retrieving context path");	
+		}
+		File directory = new File(contextPath);
+        File[] fList = directory.listFiles();
+        ArrayList<String> imageURLs = new ArrayList<>();
+        for (File file : fList)
+        {
+            if (!file.isFile() || (!file.getName().startsWith("ev_" + event.getIdEvents() + "_")))
+            	continue;
+            
+            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+        }
+		jsonResponse.put("images", imageURLs);
 
 		try
 		{
@@ -403,114 +413,85 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity("").build();
 	}
 	
-/*	
-	@POST
-	@Path("/uploadMultiImage")
+    @POST
+    @Path("/uploadImages")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadMultipleFile(EventJson jsonIn, 
-			 @FormDataParam("image") InputStream imageBuf, @HeaderParam("Language") String language)
-	{
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		OutputStream os = null;
-        MultipartStream multipartStream;
+    public Response uploadImages(@Context HttpServletRequest request)
+    {
 		try 
 		{
-			multipartStream = new MultipartStream(imageBuf, jsonIn.boundary.getBytes(), 1024, null);
-		    boolean nextPart = multipartStream.skipPreamble();
-		    boolean isFirst = true;
-		    String imagePath = null;
-		    int counter = 0;
-		    while (nextPart) 
-		    {
-		        String header = multipartStream.readHeaders();
-		        log.debug("Received header: '" + header + "'");
-		        if (isFirst)
-		        {
-		        	imagePath = "/images/events/ev_" + counter++ + 
-		        				"_main." + header.substring(header.lastIndexOf("."));
-		        	isFirst = true;
-		        }
-		        else
-		        {
-		        	imagePath = "/images/events/ev_" + counter++ + "_" + 
-		        				header.substring(header.lastIndexOf("."));
-		        }
-		        multipartStream.readBodyData(baos);
-		        log.trace("Received body");
-	        	os = new FileOutputStream(imagePath);
-	            os.write(baos.toByteArray(), 0, baos.size());
-	            os.close();
-		        nextPart = multipartStream.readBoundary(); 
-		    }
-		} 
-		catch (IOException e) 
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+			contextPath = context.getResource("/images/events").getPath();
 		}
-		return Response.status(Response.Status.OK).entity("").build();
-	}
-	
-	@POST
-	@Path("/uploadSingleImage")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response uploadSingleFile(ImageUploadJson jsonIn, 
-			 @FormDataParam("image") InputStream imageBuf, @QueryParam("imageName") String imageName,
-			 @HeaderParam("Language") String language)
-	{
-		OutputStream os = null;
-		String imagePath = null;
-		try
+		catch (MalformedURLException e) 
 		{
-	        if (jsonIn.isMainPicture)
-	        {
-	        	imagePath = "/images/events/ev_" + jsonIn.referenceId + 
-	        				"_main." + jsonIn.imageName.substring(jsonIn.imageName.lastIndexOf("."));
-	        }
-	        else
-	        {
-	        	imagePath = "/images/events/ev_" + jsonIn.referenceId + "_" + 
-	        				jsonIn.imageName.substring(jsonIn.imageName.lastIndexOf("."));
-	        }
-	        os = new FileOutputStream(imagePath);
-	        byte[] buffer = new byte[1024];
-	        int bytesRead;
-	        while((bytesRead = imageBuf.read(buffer)) !=-1)
-	        {
-	            os.write(buffer, 0, bytesRead);
-	        }
-	        if (jsonIn.isMainPicture)
-	        {
-	        	Events ev = new Events(jsonIn.referenceId);
-	    		ev.setImageURL(imagePath);
-	    		ev.update("idEvents");
-	        }
+			contextPath = null;
+			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		catch(Exception e)
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
-		}
-		finally
-		{
-	        try 
-	        {
-				imageBuf.close();
-		        os.flush();
-		        os.close();
-			} 
-	        catch (IOException e) 
-	        {
-	        	;
-			}
-		}
-		return Response.status(Response.Status.OK).entity("").build();
-	}
-*/
+        
+        //checks whether there is a file upload request or not
+        if (ServletFileUpload.isMultipartContent(request))
+        {
+            final FileItemFactory factory = new DiskFileItemFactory();
+            final ServletFileUpload fileUpload = new ServletFileUpload(factory);
+            try
+            {
+                /*
+                 * parseRequest returns a list of FileItem
+                 * but in old (pre-java5) style
+                 */
+                final List<FileItem> items = fileUpload.parseRequest(request);
+                log.trace(items.size() + " elements in the request");
+
+                ArrayList<byte[]> files = new ArrayList<byte[]>();
+                
+
+                JSONObject jsonIn = null;
+                int imageRef = 0;
+                if (items != null)
+                {
+                    final Iterator<FileItem> iter = items.iterator();
+                    while (iter.hasNext())
+                    {
+                        final FileItem item = (FileItem) iter.next();
+                        final String fieldName = item.getFieldName(); 
+                        final String fieldValue = item.getString();
+                        if (item.isFormField())
+                        {
+                            final String jsonStr = fieldName + " : " + fieldValue;
+                            log.trace("it's a form field. Name '" + fieldName + "'" +
+                            		  " value: '" + fieldValue + "'");
+                            jsonIn = new JSONObject(jsonStr);
+                        }
+                        else
+                        {
+                            byte[] byteStream = new byte[(int) item.getSize()];
+                            item.getInputStream().read(byteStream);
+                            files.add(byteStream);
+                        }
+                    }
+                     for (byte[] item : files)
+                    {
+                        final String itemName = "ev_" + jsonIn.getString("eventId") + "_" + imageRef++ + ".jpg";
+                        final FileOutputStream savedFile = new FileOutputStream(contextPath + File.separator + itemName);
+                        log.debug("Saving the file: '" + itemName + "'");
+                        savedFile.write(item);
+                        savedFile.close();
+                    }
+                }
+            }
+            catch (FileUploadException fue)
+            {
+                fue.printStackTrace();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{}").build();
+
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{}").build();
+            }
+        }        
+        return Response.status(Response.Status.OK).entity("{}").build();
+    }
 }

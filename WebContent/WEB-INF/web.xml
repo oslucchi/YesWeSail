@@ -9,6 +9,12 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <resource-ref>
+	<description>DB Connection</description>
+	<res-ref-name>jdbc/YesWeSail</res-ref-name>
+	<res-type>javax.sql.DataSource</res-type>
+	<res-auth>Container</res-auth>
+  </resource-ref>
 <!-- 
  -->
   <filter>
@@ -30,7 +36,7 @@
     </init-param>
     <init-param>
         <param-name>jersey.config.server.provider.classnames</param-name>
-        <param-value>com.yeswesail.rest.Authorizer</param-value>
+        <param-value>org.glassfish.jersey.media.multipart.MultiPartFeature;com.yeswesail.rest.Authorizer</param-value>
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
