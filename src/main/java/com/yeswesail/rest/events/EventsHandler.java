@@ -2,14 +2,12 @@ package com.yeswesail.rest.events;
 
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
@@ -22,13 +20,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
@@ -36,6 +29,7 @@ import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.DBUtility.Boats;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventDescription;
@@ -417,81 +411,44 @@ public class EventsHandler {
     @Path("/uploadImages")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadImages(@Context HttpServletRequest request)
+    public Response uploadImages(@Context HttpServletRequest request, @HeaderParam("Language") String language)
     {
+		boolean errorMoving = false;
 		try 
 		{
-			contextPath = context.getResource("/images/events").getPath();
+			contextPath = context.getResource("/").getPath();
 		}
 		catch (MalformedURLException e) 
 		{
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-        
-        //checks whether there is a file upload request or not
-        if (ServletFileUpload.isMultipartContent(request))
-        {
-            final FileItemFactory factory = new DiskFileItemFactory();
-            final ServletFileUpload fileUpload = new ServletFileUpload(factory);
-            try
-            {
-                /*
-                 * parseRequest returns a list of FileItem
-                 * but in old (pre-java5) style
-                 */
-                final List<FileItem> items = fileUpload.parseRequest(request);
-                log.trace(items.size() + " elements in the request");
-
-                ArrayList<byte[]> files = new ArrayList<byte[]>();
-                
-
-                JSONObject jsonIn = null;
-                int imageRef = 0;
-                if (items != null)
-                {
-                    final Iterator<FileItem> iter = items.iterator();
-                    while (iter.hasNext())
-                    {
-                        final FileItem item = (FileItem) iter.next();
-                        final String fieldName = item.getFieldName(); 
-                        final String fieldValue = item.getString();
-                        if (item.isFormField())
-                        {
-                            final String jsonStr = fieldName + " : " + fieldValue;
-                            log.trace("it's a form field. Name '" + fieldName + "'" +
-                            		  " value: '" + fieldValue + "'");
-                            jsonIn = new JSONObject(jsonStr);
-                        }
-                        else
-                        {
-                            byte[] byteStream = new byte[(int) item.getSize()];
-                            item.getInputStream().read(byteStream);
-                            files.add(byteStream);
-                        }
-                    }
-                     for (byte[] item : files)
-                    {
-                        final String itemName = "ev_" + jsonIn.getString("eventId") + "_" + imageRef++ + ".jpg";
-                        final FileOutputStream savedFile = new FileOutputStream(contextPath + File.separator + itemName);
-                        log.debug("Saving the file: '" + itemName + "'");
-                        savedFile.write(item);
-                        savedFile.close();
-                    }
-                }
-            }
-            catch (FileUploadException fue)
-            {
-                fue.printStackTrace();
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{}").build();
-
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("{}").build();
-            }
-        }        
-        return Response.status(Response.Status.OK).entity("{}").build();
+		
+		if (ServletFileUpload.isMultipartContent(request))
+		{
+			String token = UUID.randomUUID().toString();
+			UploadFiles up = new UploadFiles();
+			try 
+			{
+				up.uploadMultipartFiles(request, contextPath, "eventId", token);
+				errorMoving = up.moveFiles(contextPath, token, "ev_");
+			}
+			catch (Exception e) 
+			{
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+						.entity(LanguageResources.getResource(
+									Constants.getLanguageCode(language), "events.imageUploadError") + " (" + 
+									e.getMessage() + ")").build();
+			}
+		}
+		else
+		{
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(LanguageResources.getResource(
+								Constants.getLanguageCode(language), "generic.uploadFileNoMultipart")).build();
+		}
+        return Response.status(Response.Status.OK).entity(
+        		(errorMoving ? LanguageResources.getResource(Constants.getLanguageCode(language), "events.imageUploadError "): "{}"))
+        		.build();
     }
 }
