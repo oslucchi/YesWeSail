@@ -48,14 +48,16 @@ angular.module('yeswesailApp')
         };
 
         authService.isAuthenticated = function () {
-            return !!Session.userId;
+            return !!Session.getCurrentUser();
         };
 
-        authService.isAuthorized = function (authorizedRoles) {
-            if (!angular.isArray(authorizedRoles)) {
-                authorizedRoles = [authorizedRoles];
+        authService.isAuthorized = function (location) {
+            if(location=='editPage'){
+                return false;    
+            }else{
+                return true;
             }
-            return (authService.isAuthenticated() && authorizedRoles.indexOf(Session.userRole) !== 1);
+            
         };
     
         

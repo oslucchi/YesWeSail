@@ -1,0 +1,86 @@
+ <script>
+  $(document)
+    .ready(function() {
+      $('.ui.form')
+        .form({
+          fields: {
+            email: {
+              identifier  : 'email',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your e-mail'
+                },
+                {
+                  type   : 'email',
+                  prompt : 'Please enter a valid e-mail'
+                }
+              ]
+            },
+            password: {
+              identifier  : 'password',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your password'
+                },
+                {
+                  type   : 'length[6]',
+                  prompt : 'Your password must be at least 6 characters'
+                }
+              ]
+            }
+          }
+        })
+      ;
+    })
+  ;
+  </script>
+
+<div class="login_container">
+    <div class="ui container">
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui white image header">
+      <img src="images/cropped-cropped-YWS-60x70.png" class="image">
+      <div class="content">
+        Crea un evento
+      </div>
+    </h2>
+    <form  class="ui large form">
+      <div class="ui stacked segment">
+           <div class="ui horizontal divider"></div>
+
+        <div class="field">
+          <div class="ui left input">
+            <input type="text" name="title" ng-model="tempEvent.title" placeholder="Title...">
+          </div>
+        </div>
+        <div class="field">
+          
+            <select after-render="initializeSelect()" ng-model="tempEvent.eventType" ng-options="eventType.idEventTypes as eventType.description for eventType in EVENTTYPES" class="ui dropdown item">
+                <option value="">Type...</option>
+            </select>
+   
+        </div>
+        <div class="field">
+            <angucomplete-alt field-required="true" id="ex1" placeholder="Ship Owner..." pause="100" selected-object="suggestedOwner" local-data="shipOwners" search-fields="name,surname" image-field="imageURL"
+                                title-field="name,surname",
+                                description-field="name"
+                                minlength="1"/>
+         
+
+        </div>
+        <div class="ui large primary button" ng-click=create(tempEvent)>Create</div>
+        <div class="ui large button" ng-click="ngDialog.closeAll()">Cancel</div>
+      </div>
+
+      <div class="ui error message"></div>
+
+    </form>
+
+  
+  </div>
+</div>
+</div>
+</div>

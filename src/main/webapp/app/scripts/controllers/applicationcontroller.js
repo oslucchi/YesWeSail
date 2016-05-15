@@ -8,9 +8,13 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http) {
-
-       
+    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log) {
+//        $rootScope.$on("$locationChangeStart", function(event, next, current) { 
+//            if(!AuthService.isAuthenticated()){
+//                 event.preventDefault()
+//            }
+//      });
+        
         angular.element('.ui.dropdown').dropdown();
         $scope.currentUser = null;
 
@@ -37,7 +41,7 @@ angular.module('yeswesailApp')
                 $http.post(URLs.ddns + 'rest/users/basic').then(function (res) {
 
                     Session.create($rootScope.globals.currentUser.token, res.data);
-
+                    $scope.currentUser = res.data;
                 }, function (err) {
                     if (err.status == 401) {
                         Session.destroy();
@@ -104,6 +108,16 @@ angular.module('yeswesailApp')
                 , className: 'ngdialog-theme-default'
                 , controller: 'RegisterCtrl'
             });
+        }; 
+    $scope.popupCreateEventDialog = function () {
+            ngDialog.closeAll();
+        
+            registerDialog.open({
+                template: 'views/createEvent.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'CreateEventCtrl'
+            });
+            
         };
     if(invalidEmail=='true'){
         invalidEmailDialog.open({
@@ -117,5 +131,4 @@ angular.module('yeswesailApp')
             });
     }
         
-
     });

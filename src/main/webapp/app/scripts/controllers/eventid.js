@@ -82,6 +82,7 @@ angular.module('yeswesailApp')
             , options: {
                 scrollwheel: false
             }
+            
         };
     
     $scope.bookTicket=function(){

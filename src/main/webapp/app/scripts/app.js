@@ -21,7 +21,9 @@ angular
     , 'ngLodash'
     , 'uiGmapgoogle-maps',
     'ui.router',
-    'textAngular'
+    'textAngular',
+    'angucomplete-alt',
+    'ngAutocomplete'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -79,7 +81,7 @@ angular
       controller: 'EventidCtrl'
     })
     .state('createEvent', {
-      url: "/create-event",
+      url: "/edit-event/:eventId",
       templateUrl:  'views/create.eventid.html',
       controller: 'CreateEventidCtrl'
     })

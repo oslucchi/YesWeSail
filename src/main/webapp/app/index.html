@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="bower_components/ng-dialog/css/ngDialog-theme-default.css" />
     <link rel="stylesheet" href="bower_components/angular-carousel/dist/angular-carousel.css" />
     <link rel="stylesheet" href="bower_components/textAngular/dist/textAngular.css" />
+    <link rel="stylesheet" href="bower_components/angucomplete-alt/angucomplete-alt.css" />
+    <link rel="stylesheet" href="bower_components/trix/dist/trix.css" />
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
@@ -21,7 +23,7 @@
     <!-- endbuild -->
     <link rel="stylesheet" href="bower_components/semantic/dist/semantic.css">
     <link rel="stylesheet" href="bower_components/angularjs-datepicker/dist/angular-datepicker.min.css">
-<script src='//maps.googleapis.com/maps/api/js?sensor=false'></script>
+
 </head>
 
 <body ng-app="yeswesailApp" ng-controller="ApplicationCtrl">
@@ -36,7 +38,7 @@
 
     <div class="ui container">
         <div class="ui stackable top blue inverted fixed menu">
-            <a href="/#/" class="item">
+            <a href="#/" class="item">
                 <img src="images/cropped-cropped-YWS-60x70.png">
             </a>
 
@@ -71,6 +73,9 @@
                         <div class="menu">
                             <div class="item">
                                 I tuoi viaggi
+                            </div>
+                            <div ng-click="popupCreateEventDialog()" class="item">
+                                Crea Evento
                             </div>
 
                             <div class="item">
@@ -113,7 +118,7 @@
         ga('create', 'UA-XXXXX-X');
         ga('send', 'pageview');
     </script>
-
+    <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?libraries=places&sensor=false"></script>
     <!-- build:js(.) scripts/vendor.js -->
     <!-- bower:js -->
     <script src="bower_components/jquery/dist/jquery.js"></script>
@@ -132,6 +137,11 @@
     <script src="bower_components/ng-lodash/build/ng-lodash.js"></script>
     <script src="bower_components/angular-simple-logger/dist/angular-simple-logger.js"></script>
     <script src="bower_components/lodash/lodash.js"></script>
+    <script src="bower_components/markerclustererplus/src/markerclusterer.js"></script>
+    <script src="bower_components/google-maps-utility-library-v3-markerwithlabel/dist/markerwithlabel.js"></script>
+    <script src="bower_components/google-maps-utility-library-v3-infobox/dist/infobox.js"></script>
+    <script src="bower_components/google-maps-utility-library-v3-keydragzoom/dist/keydragzoom.js"></script>
+    <script src="bower_components/js-rich-marker/src/richmarker.js"></script>
     <script src="bower_components/angular-google-maps/dist/angular-google-maps.js"></script>
     <script src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="bower_components/rangy/rangy-core.js"></script>
@@ -143,6 +153,10 @@
     <script src="bower_components/textAngular/dist/textAngular.js"></script>
     <script src="bower_components/textAngular/dist/textAngular-sanitize.js"></script>
     <script src="bower_components/textAngular/dist/textAngularSetup.js"></script>
+    <script src="bower_components/angucomplete-alt/angucomplete-alt.js"></script>
+    <script src="bower_components/trix/dist/trix.js"></script>
+    <script src="bower_components/angular-trix/dist/angular-trix.js"></script>
+    <script src="bower_components/ngAutocomplete/src/ngAutocomplete.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
@@ -162,12 +176,15 @@
     <script src="scripts/controllers/eventid.js"></script>
     <script src="scripts/controllers/invalidemail.js"></script>
     <script src="scripts/controllers/create.eventid.js"></script>
+    <script src="scripts/controllers/createEvent.js"></script>
     <script src="scripts/services/mapsservice.js"></script>
     <script src="scripts/directives/afterRenderDirective.js"></script>
     <script src="scripts/directives/clickToEdit.js"></script>
 <!--    <script src="scripts/services/events.js"></script>-->
     <!-- endbuild -->
-
+    <script src="scripts/libs/textAngular_custom/textAngular.js"></script>
+    <script src="scripts/libs/textAngular_custom/textAngular-sanitize.js"></script>
+    <script src="scripts/libs/textAngular_custom/textAngularSetup.js"></script>
 </body>
 
 </html>
