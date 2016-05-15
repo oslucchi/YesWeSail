@@ -1,9 +1,9 @@
 package com.yeswesail.rest.jsonInt;
 
 public class EventJson {
-	public String eventRef;
 	public int categoryId;
 	public int eventId;
+	public int shipOwnerId;
 	public int shipId;
 	public int eventType;
 	public String dateStart;
@@ -17,5 +17,5 @@ public class EventJson {
 	public String notes;
 	public String imageName;
 	public String[] labels;
-	public String boundary;
+	public EventDescriptionJson[] eventDetails;
 }
