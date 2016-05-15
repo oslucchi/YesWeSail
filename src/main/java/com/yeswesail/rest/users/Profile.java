@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -106,7 +108,43 @@ public class Profile {
 
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
-	
+
+	@GET
+	@Path("/suggestion/{roleId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response usersSuggestion(@PathParam("roleId") int roleId, @HeaderParam("Authorization") String token)
+	{
+		int languageId = SessionData.getInstance().getLanguage(token);
+		ArrayList<Users> uList = null;
+		try 
+		{
+			uList = Users.findUsersbyRole(roleId);
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(uList.toArray());
+		} 
+		catch (IOException e) {
+			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
 	@POST
 	@Path("/whole")
 	@Produces(MediaType.APPLICATION_JSON)

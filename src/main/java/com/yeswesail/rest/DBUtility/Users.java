@@ -2,6 +2,7 @@ package com.yeswesail.rest.DBUtility;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -59,7 +60,6 @@ public class Users extends DBInterface
 
 	public void findByEmail(String email) throws Exception
 	{
-		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE email = '" + email + "'";
@@ -68,13 +68,21 @@ public class Users extends DBInterface
 
 	public void findByFacebookID(String id) throws Exception
 	{
-		setNames();
 		String sql = "SELECT * " +
 					 "FROM Users " +
 					 "WHERE facebook = '" + id + "'";
 		this.populateObject(sql, this);
 	}
 
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Users> findUsersbyRole(int role) throws Exception
+	{
+		String sql = "SELECT name, surname, idUsers, imageURL " +
+				 "FROM Users " +
+				 "WHERE roleId = " + role;
+		return (ArrayList<Users>) populateCollection(sql, Users.class);
+	}
+	
 	public int getIdUsers() {
 		return idUsers;
 	}

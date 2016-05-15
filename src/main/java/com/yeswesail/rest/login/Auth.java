@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
+import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.SessionData;
@@ -128,14 +129,14 @@ public class Auth {
 
 		try
 		{
-			String httpLink = prop.getWebHost() + "/rest/auth/" + confirmLink + "/" + token;
+			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + confirmLink + "/" + token;
 	        String htmlText = ResponseEntityCreator.formatEntity(language, bodyProperty);
-	        htmlText.replaceAll("CNFMLINK", httpLink);
+	        // htmlText.replaceAll("CNFMLINK", httpLink);
 	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
 	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
 	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
 	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        String subject = ResponseEntityCreator.formatEntity(language, subjectProperty);
+	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.subject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
 			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
@@ -391,7 +392,7 @@ public class Auth {
 		catch (Exception e) 
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
-				.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+				.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 		}
 		try 
 		{

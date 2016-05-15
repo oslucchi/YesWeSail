@@ -45,6 +45,13 @@ public class EventDescription extends DBInterface
 		return(eventDescriptions.toArray(new EventDescription[eventDescriptions.size()]));
 	}
 
+	public static void deleteOnWhere(String whereClause) throws Exception
+	{
+		DBConnection conn = null;
+		conn = new DBConnection();
+		conn.executeQuery("DELETE FROM EventDescription " + whereClause);
+	}
+	
 
 	public int getIdEventDescription() {
 		return idEventDescription;

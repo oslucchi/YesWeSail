@@ -45,7 +45,7 @@ public class LoginConfirm {
 			catch (Exception e) 
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
 		else
@@ -53,7 +53,7 @@ public class LoginConfirm {
 			if (email.compareTo("") == 0)
 			{
 				return Response.status(Response.Status.BAD_REQUEST)
-						.entity(ResponseEntityCreator.formatEntity("auth.invalidEmail", prop.getDefaultLang())).build();
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
 			try 
 			{
@@ -69,7 +69,7 @@ public class LoginConfirm {
 			catch(Exception e)
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(ResponseEntityCreator.formatEntity("auth.confirmTokenInvalid", prop.getDefaultLang())).build();
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
 			

@@ -3,12 +3,15 @@ package com.yeswesail.rest.DBUtility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import org.apache.log4j.Logger;
+
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.SessionData;
 
 public class Events extends DBInterface
 {	
 	private static final long serialVersionUID = 2658938461796360575L;
+	private static final Logger log = Logger.getLogger(DBInterface.class);
 	
 	protected int idEvents;
 	protected int eventType;
@@ -28,7 +31,8 @@ public class Events extends DBInterface
 	protected String lastMinute;
 	protected String eventRef;
 	protected String aggregateKey;
-	
+	protected int createdBy;
+	protected Date createdOn;
 	
 	private static ArrayList<Events> events;
 	
@@ -68,6 +72,26 @@ public class Events extends DBInterface
 		getTicketMaxAndMin(events);
 	}
 	
+	public Events(int id, int languageId, boolean onlyActive) throws Exception
+	{
+		setNames();
+		String sql = "SELECT a.*, b.description " +
+				 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
+				 "     ON a.idEvents = b.eventId AND " +
+				 "        b.languageId = " + languageId + " AND " +
+				 "		  b.anchorZone = 0 " + 
+				 "WHERE idEvents = " + id;
+		if (onlyActive)
+		{			
+			sql += " AND status = 'A'";
+		}
+		
+		this.populateObject(sql, this);
+		events = new ArrayList<Events>();
+		events.add(this);
+		getTicketMaxAndMin(events);
+	}
+
 	@SuppressWarnings("unchecked")
 	public static Events[] findHot(int languageId) throws Exception
 	{
@@ -118,7 +142,7 @@ public class Events extends DBInterface
 	@SuppressWarnings("unchecked")
 	private static void getTicketMaxAndMin(ArrayList<Events> events)
 	{
-		String sql;
+		String sql = null;
 		for(Events e : events)
 		{
 			sql = "SELECT price " +
@@ -131,12 +155,17 @@ public class Events extends DBInterface
 					tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
 				} 
 				catch (Exception e1) {
-					;
+					log.warn("Exception '" + e1.getMessage() + "' ");
 				}
-				if (tickets != null)
+				if (tickets.size() != 0)
 				{
 					e.minPrice = tickets.get(0).price;
 					e.maxPrice = tickets.get(tickets.size() - 1).price;
+				}
+				else
+				{
+					e.minPrice = 0;
+					e.maxPrice = 0;
 				}
 		}
 	}
@@ -285,4 +314,19 @@ public class Events extends DBInterface
 		this.aggregateKey = aggregateKey;
 	}
 
+	public int getCreatedBy() {
+		return createdBy;
+	}
+
+	public void setCreatedBy(int createdBy) {
+		this.createdBy = createdBy;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
 }

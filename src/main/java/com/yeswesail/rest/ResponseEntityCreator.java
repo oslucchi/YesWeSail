@@ -14,7 +14,7 @@ public class ResponseEntityCreator {
 		jsonResponse.put("message", LanguageResources.getResource(languageId, property));
 		return g.serialize(jsonResponse);
 	}
-	public static String formatEntity(String property, String language)
+	public static String formatEntity(String language, String property)
 	{
 		if (language == null)
 		{

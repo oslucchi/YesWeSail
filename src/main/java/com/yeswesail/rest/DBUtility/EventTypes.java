@@ -6,7 +6,7 @@ public class EventTypes extends DBInterface
 
 	protected int idEventTypes;
 	protected int languageId;
-	protected String name;
+	protected String description;
 	
 	private void setNames()
 	{
@@ -44,12 +44,12 @@ public class EventTypes extends DBInterface
 		this.languageId = languageId;
 	}
 
-	public String getName() {
-		return name;
+	public String getDescription() {
+		return description;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 }

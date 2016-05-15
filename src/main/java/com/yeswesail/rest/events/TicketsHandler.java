@@ -17,6 +17,7 @@ import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.Events;
@@ -86,13 +87,15 @@ public class TicketsHandler {
 
 		String errMsg = null;
 		EventTickets et = null;
+		DBConnection conn = null;
+
 		try 
 		{
-			DBInterface.TransactionStart();
+			conn = DBInterface.TransactionStart();
 			et = new EventTickets(jsonIn.eventTicketId);
 			if (et.getAvailable() - et.getBooked() < jsonIn.quantity)
 			{
-				DBInterface.TransactionRollback();
+				DBInterface.TransactionRollback(conn);
 				return Response.status(Response.Status.NOT_ACCEPTABLE)
 						.entity(LanguageResources.getResource(
 									Constants.getLanguageCode(language), "ticket.fareNotAvailable"))
@@ -105,11 +108,11 @@ public class TicketsHandler {
 			tl.setBookedTo((jsonIn.bookedTo != null ? jsonIn.bookedTo : 
 							SessionData.getInstance().getBasicProfile(token).getEmail()));
 			tl.insert("idTicketLocks", tl);
-			DBInterface.TransactionCommit();
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			DBInterface.TransactionRollback();
+			DBInterface.TransactionRollback(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
 				errMsg = LanguageResources.getResource(
@@ -137,17 +140,18 @@ public class TicketsHandler {
 		{
 			language = prop.getDefaultLang();
 		}
+		DBConnection conn = null;
 
 		try 
 		{
-			DBInterface.TransactionStart();
+			conn = DBInterface.TransactionStart();
 			TicketLocks tl = new TicketLocks();
 			tl.delete(jsonIn.eventTicketId);
-			DBInterface.TransactionCommit();
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			DBInterface.TransactionRollback();
+			DBInterface.TransactionRollback(conn);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError"))
 					.build();

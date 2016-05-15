@@ -28,12 +28,14 @@ public class Authorizer implements ContainerRequestFilter
 		if (path.startsWith("/auth/confirmUser"))
 			return;
 		
-//		path = path.substring(path.lastIndexOf("/") + 1);
-		for(String authorized : authorizedList)
+		if (request.getHeaderString("Edit-Mode") == null)
 		{
-			if (path.compareTo(authorized) == 0)
+			for(String authorized : authorizedList)
 			{
-				return;
+				if (path.compareTo(authorized) == 0)
+				{
+					return;
+				}
 			}
 		}
 		String token = request.getHeaderString("Authorization");

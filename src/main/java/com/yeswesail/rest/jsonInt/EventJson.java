@@ -15,7 +15,7 @@ public class EventJson {
 	public String includes;
 	public String excludes;
 	public String notes;
-	public String imageName;
+	public String imageURL;
 	public String[] labels;
 	public EventDescriptionJson[] eventDetails;
 }

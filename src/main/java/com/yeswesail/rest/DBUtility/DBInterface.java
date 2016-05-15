@@ -554,6 +554,14 @@ public class DBInterface implements Serializable
 		return(populateCollection("SELECT * FROM " + tableName + " " + whereClause, objClass));
 	}
 	
+	public ArrayList<?> populateCollectionOfDistinctsOnCondition(String whereClause, String distinctColumn, Class<?> objClass) throws Exception
+	{
+		return(populateCollection("SELECT DISTINCT * " +
+								  "FROM " + tableName + " " + 
+								  whereClause + " " +
+								  "GROUP BY " + distinctColumn, objClass));
+	}
+
 	protected ArrayList<String[]> getObjectChanges(Object oldInst, Object newInst) throws Exception
 	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -694,6 +702,13 @@ public class DBInterface implements Serializable
 
 	public void insert(String idColName, Object objectToInsert) throws Exception
 	{
+		DBConnection conn = null;
+		conn = new DBConnection();
+		insert(conn, idColName, objectToInsert);
+	}
+
+	public void insert(DBConnection conn , String idColName, Object objectToInsert) throws Exception
+	{
     	String sql = "";
     	/*
     	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
@@ -701,18 +716,20 @@ public class DBInterface implements Serializable
 		String sqlQueryColNames = "SELECT * FROM " + ((DBInterface) objectToInsert).tableName + " WHERE 1 = 0";	    	
 		sql = "INSERT INTO " + ((DBInterface) objectToInsert).tableName + " SET ";
 		sql += this.getUpdateStatement(sqlQueryColNames, objectToInsert, idColName);
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery(sql);
     	// conn.finalize();
 	}
 
 	public int insertAndReturnId(String idColName, Object objectToInsert) throws Exception
 	{
+		DBConnection conn = new DBConnection();
+		return(insertAndReturnId(conn, idColName, objectToInsert));
+	}
+
+	public int insertAndReturnId(DBConnection conn, String idColName, Object objectToInsert) throws Exception
+	{
 		int id = -1;
-		insert(idColName, objectToInsert);
-		DBConnection conn = null;
-		conn = new DBConnection();
+		insert(conn, idColName, objectToInsert);
 		conn.executeQuery("SELECT LAST_INSERT_ID() AS id");
 		try 
 		{
@@ -775,20 +792,21 @@ public class DBInterface implements Serializable
 			throws Exception 
 	{
 		DBConnection conn = null;
-		conn = new DBConnection();
     	if (inTransaction)
-    		TransactionStart();
+    		conn = TransactionStart();
+    	else
+    		conn = new DBConnection();
     	try
     	{
     		conn.executeQuery(sql);
         	if (inTransaction)
-        		TransactionCommit();
+        		TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
 			if (inTransaction)
 			{
-				TransactionRollback();
+				TransactionRollback(conn);
 			}
 			throw e;
 		}
@@ -799,25 +817,22 @@ public class DBInterface implements Serializable
     	
 	}
 	
-	public static void TransactionStart() throws Exception
+	public static DBConnection TransactionStart() throws Exception
 	{
 		DBConnection conn = null;
 		conn = new DBConnection();
 		conn.executeQuery("START TRANSACTION");
-    	// conn.finalize();
+    	return conn;
 	}
 
-	public static void TransactionCommit() throws Exception 
+	public static void TransactionCommit(DBConnection conn) throws Exception 
 	{
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery("COMMIT");
     	// conn.finalize();
 	}
 
-	public static void TransactionRollback() 
+	public static void TransactionRollback(DBConnection conn) 
 	{
-		DBConnection conn = null;
 		try 
 		{
 			conn = new DBConnection();

@@ -75,7 +75,7 @@ public class Maps {
 		{
 			EventTypes e = new EventTypes();
 			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
-							"WHERE languageId = " + languageId, EventTypes.class);
+					"WHERE languageId = " + languageId, EventTypes.class);
 		}
 		return eventTypes;
 	}
@@ -89,7 +89,7 @@ public class Maps {
 			eventTicketDescription = (ArrayList<Object>) e.populateCollectionOnCondition(
 						"WHERE languageId = " + languageId, EventTicketsDescription.class);
 		}
-		return eventTicketDescription ;
+		return eventTicketDescription;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -98,9 +98,9 @@ public class Maps {
 		if (events == null)
 		{
 			Events e = new Events();
-			events = 
-					(ArrayList<Events>) e.populateCollectionOnCondition(
-							"WHERE dateEnd > " + sdf.format(new Date()), Events.class);
+			events = (ArrayList<Events>) e.populateCollectionOfDistinctsOnCondition(
+					"WHERE dateEnd > '" + sdf.format(new Date()) + "' AND " +
+					"      location != 'TBD'", "location" , Events.class);
 		}
 		return events;
 	}

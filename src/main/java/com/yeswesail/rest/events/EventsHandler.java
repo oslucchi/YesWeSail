@@ -3,9 +3,9 @@ package com.yeswesail.rest.events;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -14,7 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -30,14 +32,18 @@ import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
+import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.Boats;
+import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventDescription;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Users;
+import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
+import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/events")
 public class EventsHandler {
@@ -63,10 +69,8 @@ public class EventsHandler {
 		 * For now next 4 expiring with no preference criteria.
 		 * It might be smart to present the one with only few tickets remaining. it just need to change the query
 		 */
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
+		int languageId = Utils.setLanguageId(language);
+
 		Events[] hot = null;
 		try 
 		{
@@ -75,9 +79,8 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
 		
 		// No record found. return an empty object
@@ -149,6 +152,8 @@ public class EventsHandler {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response eventList(EventJson jsonIn, @HeaderParam("Language") String language)
 	{
+		int languageId = Utils.setLanguageId(language);
+
 		Events[] eventsFiltered = null;
 		try 
 		{
@@ -157,9 +162,8 @@ public class EventsHandler {
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
 
 		// No record found. return an empty object
@@ -177,32 +181,34 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
+	
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventDetails(EventJson jsonIn, @HeaderParam("Language") String language)
+	public Response eventDetails(EventJson jsonIn, 
+								 @HeaderParam("Language") String language, @HeaderParam("Edit-Mode") boolean editMode)
 	{
 		Genson genson = new Genson();
-
-		int languageId;
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
-		languageId = Constants.getLanguageCode(language);
+		int languageId = Utils.setLanguageId(language);
 
 		Events event = null;
 		try
 		{
-			event = new Events(jsonIn.eventId, languageId);
+			if (editMode)
+			{
+				event = new Events(jsonIn.eventId, languageId, false);
+			}
+			else
+			{
+				event = new Events(jsonIn.eventId, languageId);
+			}
 		}
 		catch (Exception e) 
 		{
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();
@@ -230,9 +236,8 @@ public class EventsHandler {
 		catch(Exception e)
 		{
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
 
 		Users[] participants = null;
@@ -244,9 +249,8 @@ public class EventsHandler {
 		catch(Exception e)
 		{
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
 		
 		try {
@@ -316,103 +320,305 @@ public class EventsHandler {
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity).build();
 	}
+	
+	private Events handleInsertUpdate(EventJson jsonIn, int actionType, 
+									  DBConnection conn, int userId) throws Exception // 0 Insert - 1 Update
+	{
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Events event = null;
+		if (actionType == 1)
+		{
+			event = new Events(jsonIn.eventId);
+		}
+		else
+		{
+			event = new Events();
+			event.setCreatedBy(userId);
+			event.setCreatedOn(new Date());
+		}
+		event.setCategoryId(jsonIn.categoryId);
+		if (jsonIn.dateStart == null)
+		{
+			jsonIn.dateStart = "1970-01-01";
+			jsonIn.dateEnd = "1970-01-01";
+		}
+		try
+		{
+			event.setDateStart(new Date(Long.valueOf(jsonIn.dateStart).longValue()));
+		}
+		catch(NumberFormatException e)
+		{
+			event.setDateStart(sdf.parse(jsonIn.dateStart));
+		}
+		try
+		{
+			event.setDateEnd(new Date(Long.valueOf(jsonIn.dateEnd).longValue()));
+		}
+		catch(NumberFormatException e)
+		{
+			event.setDateEnd(sdf.parse(jsonIn.dateEnd));
+		}
+		event.setEventType(jsonIn.eventType);
+		if (jsonIn.location == null)
+			jsonIn.location = "TBD";
+		event.setLocation(jsonIn.location);
+		event.setShipId(jsonIn.shipId);
+		event.setShipownerId(jsonIn.shipOwnerId);
+		event.setStatus("P");
+		event.setEarlyBooking("N");
+		event.setLastMinute("N");
+		if (jsonIn.imageURL == null)
+		{
+			event.setImageURL("http://www.placehold.it/1920x600?text=Here goes your event image");
+		}
+		else
+		{
+			event.setImageURL(jsonIn.imageURL);
+		}
+		int eventId = -1;
+		if (actionType == 0)
+		{
+			eventId = event.insertAndReturnId(conn, "idEvents", event);
+			event.setIdEvents(eventId);
+		}
+		else
+		{
+			event.update("idEvents");
+		}
+		return event;
+	}
 
+	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, int actionType, DBConnection conn) throws Exception // 0 Insert - 1 Update
+	{
+		jsonIn.eventDetails = new EventDescriptionJson[5];
+		for(int i = 0; i < 5; i++)
+		{
+			jsonIn.eventDetails[i] = new EventDescriptionJson();
+			jsonIn.eventDetails[i].eventId = jsonIn.eventId; 
+			jsonIn.eventDetails[i].anchorZone = i; 
+			jsonIn.eventDetails[i].languageId = languageId; 
+		}
+		jsonIn.eventDetails[0].description = jsonIn.title; 
+		jsonIn.eventDetails[1].description = jsonIn.description; 
+		jsonIn.eventDetails[2].description = jsonIn.logistics; 
+		jsonIn.eventDetails[3].description = jsonIn.includes; 
+		jsonIn.eventDetails[4].description = jsonIn.excludes; 
+
+		if (actionType == 1)
+		{
+			EventDescription.deleteOnWhere("WHERE eventId = " + jsonIn.eventDetails[0].eventId + " AND " +
+										   "      languageId = " + languageId);
+		}
+
+		EventDescription ed =  new EventDescription();
+		for(EventDescriptionJson item : jsonIn.eventDetails)
+		{
+			if (item.description != null)
+			{
+				ed.setEventId(item.eventId);
+				ed.setLanguageId(languageId);
+				ed.setAnchorZone(item.anchorZone);
+				ed.setDescription(item.description);
+				ed.insert(conn, "idEventDescription", ed);
+			}
+		}
+	}
+
+	private Response eventHandler(EventJson jsonIn, String language, String token, int actionType)
+	{
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		Events event = null;
+		try
+		{
+			conn = DBInterface.TransactionStart();
+			event = handleInsertUpdate(jsonIn, actionType, conn, 
+									   SessionData.getInstance().getBasicProfile(token).getIdUsers());
+			jsonIn.eventId = event.getIdEvents();
+			handleInsertUpdateDetails(jsonIn, languageId, actionType, conn);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+
+		if (jh.jasonize(event, language) != Response.Status.OK)
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(jh.json).build();
+		}
+
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+	
+	private Response eventDetailsHandler(EventJson jsonIn, String language, int actionType)
+	{
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.TransactionStart();
+			handleInsertUpdateDetails(jsonIn, languageId, actionType, conn);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		return Response.status(Response.Status.OK).entity("").build();
+	}
+	
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventCreate(EventJson jsonIn, @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	public Response eventCreate(EventJson jsonIn, 
+								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
-		int languageId;
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
-		languageId = Constants.getLanguageCode(language);
+		return eventHandler(jsonIn, language, token, 0); // Create event
+	}
+	
+	@PUT
+	@Path("/{eventId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventUpdate(EventJson jsonIn, @PathParam("eventId") int eventId, 
+								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	{
+		jsonIn.eventId = eventId;
+		return eventHandler(jsonIn, language, token, 1); // Update event
+	}
+	
+	@POST
+	@Path("/addDescriptionLanguage")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventAddLanguage(EventJson jsonIn, 
+									 @HeaderParam("Language") String language)
+	{
+		return eventDetailsHandler(jsonIn, language, 0);
+	}
 
-		Events event = null;
+	
+	@POST
+	@Path("/updateDescriptionLanguage")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventUpdateLanguage(EventJson jsonIn, 
+										@HeaderParam("Language") String language)
+	{
+		return eventDetailsHandler(jsonIn, language, 1);
+	}
+
+	@POST
+	@Path("/addTickets")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addTickets(TicketJson[] jsonIn, @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		EventTickets et = null;
+		DBConnection conn = null;
 		try
 		{
-			DBInterface.TransactionStart();
-			event = new Events();
+			conn = DBInterface.TransactionStart();
+			for(TicketJson t : jsonIn)
+			{
+				et = new EventTickets();
+				et.setAvailable(t.quantity);
+				et.setBooked(0);
+				et.setCabinRef(t.cabinRef);
+				et.setEventId(t.eventId);
+				et.setPrice(t.price);
+				et.setTicketType(t.ticketType);
+				et.insert(conn, "eventTicketId", t);
+			}
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			DBInterface.TransactionRollback();
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
 		}
-		SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
-		event.setCategoryId(jsonIn.categoryId);
-		try 
-		{
-			event.setDateStart(sdf.parse(jsonIn.dateStart));
-			event.setDateStart(sdf.parse(jsonIn.dateEnd));
-		}
-		catch (ParseException e) {
-			DBInterface.TransactionRollback();
-			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
-		}
-		
-		event.setEventType(jsonIn.eventType);
-		event.setLocation(jsonIn.location);
-		event.setShipId(jsonIn.shipId);
-		event.setShipownerId(SessionData.getInstance().getBasicProfile(token).getIdUsers());
-		event.setEventRef(jsonIn.eventRef);
-		event.setStatus("P");
-		event.setEarlyBooking("N");
-		event.setLastMinute("N");
-		int eventId = -1;
+		return Response.status(Response.Status.OK).entity("").build();
+	}	
+	
+	
+	@POST
+	@Path("/updateTicket")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		EventTickets et = null;
+		DBConnection conn = null;
 		try
 		{
-			eventId = event.insertAndReturnId("idEvents", event);
-			EventDescription ed = new EventDescription();
-			ed.setEventId(eventId);
-			ed.setLanguageId(languageId);
-			ed.setAnchorZone(0);
-			ed.setDescription(jsonIn.title);
-			ed.insert("idEVentDescription", ed);
-
-			ed.setAnchorZone(1);
-			ed.setDescription(jsonIn.description);
-			ed.insert("idEVentDescription", ed);
-
-			ed.setAnchorZone(2);
-			ed.setDescription(jsonIn.logistics);
-			ed.insert("idEVentDescription", ed);
-
-			ed.setAnchorZone(3);
-			ed.setDescription(jsonIn.includes);
-			ed.insert("idEVentDescription", ed);
-
-			ed.setAnchorZone(4);
-			ed.setDescription(jsonIn.excludes);
-			ed.insert("idEVentDescription", ed);
-
-			DBInterface.TransactionCommit();
-		} 
-		catch (Exception e) {
-			DBInterface.TransactionRollback();
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+			conn = DBInterface.TransactionStart();
+			et = new EventTickets(jsonIn.eventTicketId);
+			et.setAvailable(jsonIn.quantity);
+			et.setBooked(jsonIn.sold);
+			et.setCabinRef(jsonIn.cabinRef);
+			et.setEventId(jsonIn.eventId);
+			et.setPrice(jsonIn.price);
+			et.setTicketType(jsonIn.ticketType);
+			et.insert("eventTicketId", jsonIn);
+			DBInterface.TransactionCommit(conn);
 		}
-		
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
 		return Response.status(Response.Status.OK).entity("").build();
-	}
+	}	
+
 	
-    @POST
+	@POST
+	@Path("/deleteTicket")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response deleteTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.TransactionStart();
+			new EventTickets().delete(jsonIn.eventTicketId);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		return Response.status(Response.Status.OK).entity("").build();
+	}	
+
+	@POST
     @Path("/uploadImages")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
     public Response uploadImages(@Context HttpServletRequest request, @HeaderParam("Language") String language)
     {
+		int languageId = Utils.setLanguageId(language);
 		boolean errorMoving = false;
 		try 
 		{
@@ -436,19 +642,18 @@ public class EventsHandler {
 			catch (Exception e) 
 			{
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(LanguageResources.getResource(
-									Constants.getLanguageCode(language), "events.imageUploadError") + " (" + 
-									e.getMessage() + ")").build();
+						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + 
+								" (" + e.getMessage() + ")")
+						.build();
 			}
 		}
 		else
 		{
 			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.uploadFileNoMultipart")).build();
+					.entity(LanguageResources.getResource(languageId, "generic.uploadFileNoMultipart")).build();
 		}
-        return Response.status(Response.Status.OK).entity(
-        		(errorMoving ? LanguageResources.getResource(Constants.getLanguageCode(language), "events.imageUploadError "): "{}"))
+        return Response.status(Response.Status.OK)
+        		.entity((errorMoving ? LanguageResources.getResource(languageId, "events.imageUploadError "): "{}"))
         		.build();
     }
 }
