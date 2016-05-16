@@ -74,11 +74,14 @@ public class EventsHandler {
 		Events[] hot = null;
 		try 
 		{
+			log.trace("Getting hot events via findHot method");
 			hot = Events.findHot(Constants.getLanguageCode(language));
+			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 
 		{
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
@@ -86,15 +89,18 @@ public class EventsHandler {
 		// No record found. return an empty object
 		if (hot == null)
 		{
+			log.trace("No record found");
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
 		if (jh.jasonize(hot, language) != Response.Status.OK)
 		{
+			log.error("Error '" + jh.json + "' jsonizing the hot event object");
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(jh.json).build();
 		}
 	
+		log.trace("Returning an array of ");
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 	

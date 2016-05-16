@@ -103,10 +103,14 @@ public class Events extends DBInterface
 					 "        a.status = 'A' " +
 				 	 "ORDER BY dateStart " +
 				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
+		log.trace("trying to populate collection with sql '" + sql + "'");
 		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		log.trace("Done. There are " + events.size() + " elemets");
 		if (events.size() == 0)
 			return null;
+		log.trace("Get tickets for the event");
 		getTicketMaxAndMin(events);
+		log.trace("Returning to caller");
 		return(events.toArray(new Events[events.size()]));
 	}
 

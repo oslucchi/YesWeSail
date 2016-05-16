@@ -8,6 +8,8 @@ import javax.ws.rs.container.PreMatching;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import org.apache.log4j.Logger;
+
 import com.yeswesail.rest.DBUtility.UsersAuth;
 
 @Provider
@@ -15,6 +17,8 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 public class Authorizer implements ContainerRequestFilter 
 {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
+	private final Logger log = Logger.getLogger(this.getClass());
+	
 	private static String[] authorizedList = null;
 	
 	@Override
@@ -34,6 +38,7 @@ public class Authorizer implements ContainerRequestFilter
 			{
 				if (path.compareTo(authorized) == 0)
 				{
+					log.trace("Publicly avalable request (" + path + "). It is authorized");
 					return;
 				}
 			}
@@ -53,6 +58,7 @@ public class Authorizer implements ContainerRequestFilter
 			{
 				sd.setLanguage(token, Constants.getLanguageCode(language));
 			}
+			log.trace("Recognized valid token '" + token + "' for this session. language " + language + ". Request authorized");
 			return;
 		}
 		UsersAuth ua = null;
@@ -61,10 +67,12 @@ public class Authorizer implements ContainerRequestFilter
 			sd.addUser(ua.getUserId(), Constants.getLanguageCode(language));
 		} 
 		catch (Exception e) {
+			log.warn("Exception '" + e.getMessage() + "' retrieving token '" + token + "'. Returning anauthorized");
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
 					.entity("Token not recognized")
 					.build());;
 		}
+		log.trace("Request on '" + path + "' language " + language + " authorized");
 		return;
 	}
 
