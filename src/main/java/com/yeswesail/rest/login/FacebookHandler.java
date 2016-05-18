@@ -25,6 +25,8 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.DBUtility.DBConnection;
+import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.AuthJson;
@@ -106,6 +108,7 @@ public class FacebookHandler implements Serializable
 		}
 		String uri = null;
 		HttpClient httpclient = new DefaultHttpClient();
+		DBConnection conn = null;
 		try 
 		{
 			// Request profile data 
@@ -122,9 +125,10 @@ public class FacebookHandler implements Serializable
 			// Check if the user is already registered with us
 			try
 			{
+				conn = DBInterface.connect();
 				u = new Users();
 				String id = getAttributeAsString(json, "id");
-				u.findByFacebookID(id);
+				u.findByFacebookID(conn, id);
 				boolean changed = false;
 				if (u.isAFakeEmail() && getAttributeAsString(json, "email") != null)
 				{
@@ -138,7 +142,7 @@ public class FacebookHandler implements Serializable
 				}
 				if (changed)
 				{
-					u.update("idUsers");
+					u.update(conn, "idUsers");
 				}
 				getFriendsList(accessToken);
 				if ((ua = UsersAuth.findUserId(u.getIdUsers())) == null)
@@ -204,11 +208,11 @@ public class FacebookHandler implements Serializable
 					}
 					try 
 					{
-						u.findByFacebookID(getAttributeAsString(json, "id"));
+						u.findByFacebookID(conn, getAttributeAsString(json, "id"));
 						u.setConnectedVia("F");
 						if (getAttributeAsString(json, "user_birthday") != null)
 							u.setAge(50);
-						u.update("idUsers");
+						u.update(conn, "idUsers");
 					}
 					catch (Exception e1) 
 					{
@@ -267,7 +271,7 @@ public class FacebookHandler implements Serializable
 			String imageURL = getAttributeAsString(fbData, "url");
 			u.setImageURL(imageURL);
 			try {
-				u.update("idUsers");
+				u.update(conn, "idUsers");
 			}
 			catch(Exception e)
 			{
@@ -285,6 +289,7 @@ public class FacebookHandler implements Serializable
 		finally 
 		{
 			httpclient.getConnectionManager().shutdown();
+			DBInterface.disconnect(conn);
 		}
 	    return json;
 	}    

@@ -26,13 +26,13 @@ public class EventTickets extends DBInterface
 		setNames();
 	}
 
-	public EventTickets(int id) throws Exception
+	public EventTickets(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public static EventTickets[] findByEventId(int eventId, int languageId) throws Exception

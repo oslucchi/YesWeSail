@@ -47,16 +47,16 @@ public class Events extends DBInterface
 		setNames();
 	}
 
-	public Events(int id) throws Exception
+	public Events(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 	
-	public Events(int id, int languageId) throws Exception
+	public Events(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description " +
@@ -66,13 +66,13 @@ public class Events extends DBInterface
 				 "		  b.anchorZone = 0 " +
 				 "WHERE idEvents = " + id + " AND " +
 				 "      status = 'A'";
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 		events = new ArrayList<Events>();
 		events.add(this);
 		getTicketMaxAndMin(events);
 	}
 	
-	public Events(int id, int languageId, boolean onlyActive) throws Exception
+	public Events(DBConnection conn, int id, int languageId, boolean onlyActive) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description " +
@@ -86,7 +86,7 @@ public class Events extends DBInterface
 			sql += " AND status = 'A'";
 		}
 		
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 		events = new ArrayList<Events>();
 		events.add(this);
 		getTicketMaxAndMin(events);

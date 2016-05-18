@@ -48,9 +48,8 @@ public class DBInterface implements Serializable
 		return strQuoted;
 	}
 
-	public static int numberOfRecords(String table, String where) throws Exception 
+	public static int numberOfRecords(DBConnection conn, String table, String where) throws Exception 
 	{
-		DBConnection conn = null;
 		String retVal = null;
 		int count = -1;
 		
@@ -67,13 +66,9 @@ public class DBInterface implements Serializable
 		{
 			throw new Exception(retVal);
 		}
-		finally
-		{
-			// conn.finalize();
-		}
 		return(count);
 	}
-	
+		
     protected static Field[] getAllFields(Class<?> cType)
 	{
 		List<Field> fields = new ArrayList<Field>();
@@ -94,7 +89,7 @@ public class DBInterface implements Serializable
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public String getUpdateStatement(String sql, Object tbObj, String avoidColumn) throws Exception
+	public String getUpdateStatement(DBConnection conn, String sql, Object tbObj, String avoidColumn) throws Exception
 	{
     	String sSep = "";
     	String[] avoidCols = null;
@@ -115,8 +110,6 @@ public class DBInterface implements Serializable
 			avoidCols[0] = avoidColumn;
     	}
 		
-		DBConnection conn = null;
-		conn = new DBConnection();
     	conn.executeQuery(sql);
 
     	retSql = "";
@@ -129,7 +122,6 @@ public class DBInterface implements Serializable
 		catch (SQLException e) 
 		{
 			retSql = "Error " + e.getMessage() + " retrieving column count from result set. (" + Utils.printStackTrace(e) + ")"; 
-			// conn.finalize();
 			throw new Exception(retSql);
 		}
     	
@@ -146,7 +138,6 @@ public class DBInterface implements Serializable
 			catch (SQLException e) 
 			{
 				retSql = "Error " + e.getMessage() + " retrieving column details. (" + Utils.printStackTrace(e) + ")"; 
-				// conn.finalize();
 				throw new Exception(retSql);
 			}
 			
@@ -266,7 +257,6 @@ public class DBInterface implements Serializable
 				}						
 			}
 		}
-		// conn.finalize();
 		return retSql;
 	}
 	
@@ -435,10 +425,8 @@ public class DBInterface implements Serializable
 		}
 	}
 	
-	public void populateObject(String sql, Object tbObj) throws Exception
+	public void populateObject(DBConnection conn, String sql, Object tbObj) throws Exception
 	{
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery(sql);
 		try 
 		{
@@ -453,16 +441,12 @@ public class DBInterface implements Serializable
 		{
 			throw new Exception(e);
 		}
-		finally
-		{
-			// conn.finalize();
-		}
 	}
 
     /*
      * It works only for numeric id... the sql string will be invalid otherwise
      */
-    public void populateObject(String idName) throws Exception
+    public void populateObject(DBConnection conn, String idName) throws Exception
 	{
     	Exception e = null;
 		String sql = "SELECT * FROM " + tableName + " WHERE " + idName + " = ";
@@ -485,7 +469,7 @@ public class DBInterface implements Serializable
 		{
 			throw new Exception(e);
 		}
-		populateObject(sql, this);
+		populateObject(conn, sql, this);
 	}
 	
 	public static Object populateByQuery(String sql, Class<?> objClass) throws Exception
@@ -494,11 +478,10 @@ public class DBInterface implements Serializable
 		Object objInst = objClass.newInstance();
     	
 		DBConnection conn = null;
-		conn = new DBConnection();
-    	conn.executeQuery(sql);
-    	
 		try
 		{
+			conn = new DBConnection();
+	    	conn.executeQuery(sql);
 			if(conn.getRs().next())
 			{
 				populateObjectAttributesFromRecordset(objInst, conn.getRsm(), conn.getRs());
@@ -513,7 +496,8 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			// conn.finalize();
+			conn.getSt().close();
+			conn.getRs().close();
 		}
 		throw(new Exception("No record found"));
 	}
@@ -524,11 +508,10 @@ public class DBInterface implements Serializable
     	ArrayList<Object> aList = new ArrayList<Object>();
     	
 		DBConnection conn = null;
-		conn = new DBConnection();
-    	conn.executeQuery(sql);
-    	
 		try
 		{
+			conn = new DBConnection();
+	    	conn.executeQuery(sql);
 			while(conn.getRs().next())
 			{
 				Object objInst = objClass.newInstance();
@@ -544,7 +527,8 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			// conn.finalize();
+			conn.getSt().close();
+			conn.getRs().close();
 		}
 		return aList;
 	}
@@ -644,7 +628,7 @@ public class DBInterface implements Serializable
 	}
 	
 	
-	public void update(String avoidColumns, String whereClause) throws Exception
+	public void update(DBConnection conn, String avoidColumns, String whereClause) throws Exception
 	{
     	String sql = null;
 
@@ -653,17 +637,14 @@ public class DBInterface implements Serializable
     	 */
 		String sqlQueryColNames = "SELECT * FROM " + tableName + " WHERE 1 = 0";
 		sql = "UPDATE " + tableName + " SET ";
-		sql += this.getUpdateStatement(sqlQueryColNames, this, avoidColumns);
+		sql += this.getUpdateStatement(conn, sqlQueryColNames, this, avoidColumns);
 		sql += " " + whereClause;
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery(sql);
-		// conn.finalize();
     }
 
-	public void update(String idColumns) throws Exception
+	public void update(DBConnection conn, String idColumns) throws Exception
 	{
-		update(idColumns, getWhereClauseOnId(idColumns));
+		update(conn, idColumns, getWhereClauseOnId(idColumns));
     }
 
 	public static void updateCollection(ArrayList<?> collection, String idColName, Class<?> objectClass) 
@@ -682,7 +663,8 @@ public class DBInterface implements Serializable
 	    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
 	    	 */
 			sql = "UPDATE " + tableName + " SET ";
-			sql += (((DBInterface) collection.get(i))).getUpdateStatement(sqlQueryColNames, collection.get(i), idColName);
+			sql += (((DBInterface) collection.get(i)))
+					.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
 			// Get the id of the current object 
 			Class<?> c = collection.get(i).getClass();
 			Method m;
@@ -693,18 +675,14 @@ public class DBInterface implements Serializable
 			}
 			catch (Exception e) 
 			{
+				conn.getSt().close();
+				conn.getRs().close();
 				throw new Exception(e);
 			}
 			conn.executeQuery(sql);
     	}
-    	conn.finalize();
-	}
-
-	public void insert(String idColName, Object objectToInsert) throws Exception
-	{
-		DBConnection conn = null;
-		conn = new DBConnection();
-		insert(conn, idColName, objectToInsert);
+		conn.getSt().close();
+		conn.getRs().close();
 	}
 
 	public void insert(DBConnection conn , String idColName, Object objectToInsert) throws Exception
@@ -715,15 +693,8 @@ public class DBInterface implements Serializable
     	 */
 		String sqlQueryColNames = "SELECT * FROM " + ((DBInterface) objectToInsert).tableName + " WHERE 1 = 0";	    	
 		sql = "INSERT INTO " + ((DBInterface) objectToInsert).tableName + " SET ";
-		sql += this.getUpdateStatement(sqlQueryColNames, objectToInsert, idColName);
+		sql += this.getUpdateStatement(conn, sqlQueryColNames, objectToInsert, idColName);
 		conn.executeQuery(sql);
-    	// conn.finalize();
-	}
-
-	public int insertAndReturnId(String idColName, Object objectToInsert) throws Exception
-	{
-		DBConnection conn = new DBConnection();
-		return(insertAndReturnId(conn, idColName, objectToInsert));
 	}
 
 	public int insertAndReturnId(DBConnection conn, String idColName, Object objectToInsert) throws Exception
@@ -742,11 +713,6 @@ public class DBInterface implements Serializable
 		{
 			throw new Exception(e);
 		}
-		finally
-		{
-			// conn.finalize();
-		}
-
 		return(id);
 	}
 
@@ -766,61 +732,38 @@ public class DBInterface implements Serializable
 	    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
 	    	 */
 			sql = "INSERT INTO " + tableName + " SET ";
-			sql += (((DBInterface) collection.get(i))).getUpdateStatement(sqlQueryColNames, collection.get(i), idColName);
+			sql += (((DBInterface) collection.get(i)))
+					.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
 			conn.executeQuery(sql);
     	}
-    	// conn.finalize();
 	}
 
-	public void delete(String sql) throws Exception
+	public void delete(DBConnection conn, String sql) throws Exception
 	{
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery(sql);
-    	// conn.finalize();
 	}
 		
-	public void delete(int id) throws Exception
+	public void delete(DBConnection conn, int id) throws Exception
 	{
-		DBConnection conn = null;
-		conn = new DBConnection();
 		conn.executeQuery("DELETE FROM " + tableName + " WHERE " + idColName + " = " + id);
-    	// conn.finalize();
 	}
 
-	public static void executeStatement(String sql, boolean inTransaction) 
+	public static void executeStatement(DBConnection conn, String sql, boolean inTransaction) 
 			throws Exception 
 	{
-		DBConnection conn = null;
-    	if (inTransaction)
-    		conn = TransactionStart();
-    	else
-    		conn = new DBConnection();
     	try
     	{
     		conn.executeQuery(sql);
-        	if (inTransaction)
-        		TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			if (inTransaction)
-			{
-				TransactionRollback(conn);
-			}
 			throw e;
 		}
-    	finally
-    	{
-			// conn.finalize();
-    	}
-    	
 	}
 	
 	public static DBConnection TransactionStart() throws Exception
 	{
-		DBConnection conn = null;
-		conn = new DBConnection();
+		DBConnection conn = new DBConnection();
 		conn.executeQuery("START TRANSACTION");
     	return conn;
 	}
@@ -828,24 +771,27 @@ public class DBInterface implements Serializable
 	public static void TransactionCommit(DBConnection conn) throws Exception 
 	{
 		conn.executeQuery("COMMIT");
-    	// conn.finalize();
 	}
 
 	public static void TransactionRollback(DBConnection conn) 
 	{
 		try 
 		{
-			conn = new DBConnection();
 			conn.executeQuery("ROLLBACK");
 		}
 		catch (Exception e)
 		{
 			;
 		}
-		finally
-		{
-	    	// conn.finalize();
-		}
 	}
 	
+	public static DBConnection connect() throws Exception
+	{
+		return new DBConnection();
+	}
+	
+	public static void disconnect(DBConnection conn) 
+	{
+		conn.finalize();
+	}
 }

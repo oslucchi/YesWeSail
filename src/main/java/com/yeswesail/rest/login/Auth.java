@@ -22,6 +22,8 @@ import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.DBUtility.AddressInfo;
+import com.yeswesail.rest.DBUtility.DBConnection;
+import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
@@ -39,8 +41,10 @@ public class Auth {
 	protected String populateUsersTable(AuthJson jsonIn, boolean accessByExternalAuth, String language)
 	{
 		String errorMsg = null;
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			u = new Users();
 			u.setEmail(jsonIn.username);
 			u.setPassword(jsonIn.password);
@@ -51,7 +55,7 @@ public class Auth {
 			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
 			u.setRoleId(1);
-			u.setIdUsers(u.insertAndReturnId("idUsers", u));
+			u.setIdUsers(u.insertAndReturnId(conn, "idUsers", u));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -66,19 +70,25 @@ public class Auth {
 				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return errorMsg;
 	}
 	
 	protected String populateRegistrationConfirmTable(AuthJson jsonIn, String language)
 	{
 		String errorMsg = null;
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			RegistrationConfirm rc = new RegistrationConfirm();
 			rc.setUserId(u.getIdUsers());
 			rc.setToken(token);
 			rc.setStatus("A");
-			rc.setIdRegistrationConfirm(rc.insertAndReturnId("idRegistrationConfirm", rc));
+			rc.setIdRegistrationConfirm(rc.insertAndReturnId(conn, "idRegistrationConfirm", rc));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -90,20 +100,26 @@ public class Auth {
 				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return errorMsg;
 	}
 	
 	protected String populateUsersAuthTable(String token, int userId, String language)
 	{
 		String errorMsg = null;
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			UsersAuth ua = new UsersAuth();
 			ua.setCreated(new Date());
 			ua.setLastRefreshed(ua.getCreated());
 			ua.setUserId(userId);
 			ua.setToken(token);
-			ua.setIdUsersAuth(ua.insertAndReturnId("idUsersAuth", ua));
+			ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -114,6 +130,10 @@ public class Auth {
 			{
 				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return errorMsg;
 	}
@@ -190,12 +210,14 @@ public class Auth {
 		 */
 		String token = UUID.randomUUID().toString();
 		log.debug("Login called. Parameters: '" + username + "|" + password + "'");
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			query = "SELECT * FROM Users WHERE email = '" + username + "'";
 			u = new Users();
 			log.debug("Select user by email");
-			u.populateObject(query, u);
+			u.populateObject(conn, query, u);
 			log.debug("Found. Password in database is '" + u.getPassword() + "'");
 			if (u.getPassword().compareTo(password) != 0)
 			{
@@ -217,6 +239,11 @@ public class Auth {
 			}
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		// Check if this user already has a token
 		UsersAuth ua = null;
 		try
@@ -224,11 +251,11 @@ public class Auth {
 			log.debug("Setting up the new token for the user in DB");
 			ua = new UsersAuth();
 			query = "SELECT * FROM UsersAuth WHERE userId = " + u.getIdUsers();
-			ua.populateObject(query, ua);
+			ua.populateObject(conn, query, ua);
 			ua.setToken(token);
 			ua.setLastRefreshed(new Date());
 			log.debug("Refreshing the last access");
-			ua.update("idUsersAuth");
+			ua.update(conn, "idUsersAuth");
 		}
 		catch (Exception e) {
 			if (e.getMessage().compareTo("No record found") == 0)
@@ -240,7 +267,7 @@ public class Auth {
 				ua.setLastRefreshed(ua.getCreated());
 				try 
 				{
-					ua.insert("idUsersAuth", ua);
+					ua.insert(conn, "idUsersAuth", ua);
 				} 
 				catch (Exception e1) {
 					log.error("Error inserting token for user id " + u.getIdUsers());
@@ -252,6 +279,11 @@ public class Auth {
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
 			}
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		SessionData sa = SessionData.getInstance();
 		Object[] userProfile = sa.getWholeProfile(u.getIdUsers());
 		if (userProfile == null)
@@ -286,16 +318,19 @@ public class Auth {
 		UsersAuth ua = null;
 		SessionData sa = SessionData.getInstance();
 
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			ua = UsersAuth.findToken(token);
 			if (prop.getSessionExpireTime() != 0)
 			{
 				if (ua.getLastRefreshed().getTime() + prop.getSessionExpireTime() * 1000 < new Date().getTime())
 				{
-					ua.delete(ua.getIdUsersAuth());
+					ua.delete(conn, ua.getIdUsersAuth());
 					sa.removeUser(token);
 					errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
+					DBInterface.disconnect(conn);
 					return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 				}
 			}
@@ -303,6 +338,7 @@ public class Auth {
 		catch (Exception e) {
 			sa.removeUser(token);
 			errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
+			DBInterface.disconnect(conn);
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
 
@@ -310,7 +346,7 @@ public class Auth {
 		try  
 		{
 			ua.setLastRefreshed(new Date());
-			ua.update("idUsersAuth");
+			ua.update(conn, "idUsersAuth");
 			if (userProfile == null)
 			{
 				sa.addUser(ua.getUserId(), Constants.getLanguageCode(language));
@@ -319,7 +355,7 @@ public class Auth {
 			}
 			else
 			{
-				userProfile[SessionData.BASIC_PROFILE] = new Users(ua.getUserId());
+				userProfile[SessionData.BASIC_PROFILE] = new Users(conn, ua.getUserId());
 				userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
 				userProfile[SessionData.LANGUAGE] = Constants.getLanguageCode(language);
 				sa.updateSession(token, userProfile);
@@ -327,6 +363,10 @@ public class Auth {
 		}
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " setting up sessionData");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		
 		HashMap<String, Object> jsonResponse = new HashMap<>();
@@ -352,9 +392,11 @@ public class Auth {
 			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
 			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
 		}
+		DBConnection conn = null;
 		try 
 		{
-			u = new Users(jsonIn.username);
+			conn = DBInterface.connect();
+			u = new Users(conn, jsonIn.username);
 		}
 		catch (Exception e) 
 		{
@@ -362,6 +404,11 @@ public class Auth {
 					.entity(ResponseEntityCreator.formatEntity(language, "users.badMail"))
 					.build();
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		errorMsg = prepareAndSendMail("mail.passwordChange", "mail.passwordChangeSubject", 
 									  "confirmPasswordChange", language, jsonIn);
 		if (errorMsg != null)
@@ -381,23 +428,27 @@ public class Auth {
 		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + jsonIn.token;
 
 		RegistrationConfirm rc = null;
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			rc = new RegistrationConfirm();
-			rc.findActiveRecordByToken(jsonIn.token);
-			Users u = new Users(rc.getUserId());
+			rc.findActiveRecordByToken(conn, jsonIn.token);
+			Users u = new Users(conn, rc.getUserId());
 			u.setPassword(jsonIn.password);
-			u.update("idUsers");
+			u.update(conn, "idUsers");
 		}
 		catch (Exception e) 
 		{
+			DBInterface.disconnect(conn);
 			return Response.status(Response.Status.UNAUTHORIZED)
 				.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 		}
+		
 		try 
 		{
 			rc.setStatus("I");
-			rc.update("idRegistrationConfirm");
+			rc.update(conn, "idRegistrationConfirm");
 		}
 		catch(Exception e)
 		{
@@ -407,6 +458,7 @@ public class Auth {
 		try 
 		{
 			location = new URI(uri);
+			DBInterface.disconnect(conn);
 			return Response.seeOther(location).build();
 		}
 		catch (URISyntaxException e) 
@@ -416,6 +468,7 @@ public class Auth {
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
+		DBInterface.disconnect(conn);
 		return Response.status(Response.Status.OK)
 				.entity("").build();
 	}
@@ -444,16 +497,22 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response logout(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
 	{
+		DBConnection conn = null;
 		try 
 		{
+			conn = DBInterface.connect();
 			String query = "SELECT * FROM UsersAuth WHERE token = '" + token + "'";
 			UsersAuth ua = new UsersAuth();
-			ua.populateObject(query, ua);
-			ua.delete(ua.getIdUsersAuth());
+			ua.populateObject(conn, query, ua);
+			ua.delete(conn, ua.getIdUsersAuth());
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.NOT_FOUND).
 					entity(ResponseEntityCreator.formatEntity(language, "auth.tokenNotFound")).build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		
 		SessionData.getInstance().removeUser(token);

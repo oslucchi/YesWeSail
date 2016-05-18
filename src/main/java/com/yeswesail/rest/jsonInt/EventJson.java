@@ -17,5 +17,6 @@ public class EventJson {
 	public String notes;
 	public String imageURL;
 	public String[] labels;
+	public String aggregateKey;
 	public EventDescriptionJson[] eventDetails;
 }

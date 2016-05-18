@@ -1,8 +1,10 @@
 package com.yeswesail.rest.events;
 
 
+import java.beans.EventSetDescriptor;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,6 +14,7 @@ import java.util.UUID;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -56,6 +59,7 @@ public class EventsHandler {
 	Events e = null;
 	JsonHandler jh = new JsonHandler();
 	String contextPath = null;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	
 	@POST
 	@Path("/hotEvents")
@@ -188,6 +192,72 @@ public class EventsHandler {
 	}
 
 	
+	@PUT
+	@Path("/activate")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventActivate(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		Events ev = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			ev = new Events(conn, jsonIn.eventId);
+			ev.setStatus("A");
+		}
+		catch (Exception e) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}	
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+
+	
+	@POST
+	@Path("/clone")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventClone(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		Events ev = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.TransactionStart();
+			ev = new Events(conn, jsonIn.eventId);
+			if (jsonIn.aggregateKey.compareTo(ev.getAggregateKey()) != 0)
+			{
+				ev.setAggregateKey(jsonIn.aggregateKey);
+				ev.update(conn, "idEvents");
+			}
+			ev = fillEvent(jsonIn, ev, languageId);
+			jsonIn.eventId = ev.insertAndReturnId(conn, "idEvents", ev);
+			handleInsertUpdateDetails(jsonIn, languageId, 0, conn);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) {
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}	
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -199,19 +269,22 @@ public class EventsHandler {
 		int languageId = Utils.setLanguageId(language);
 
 		Events event = null;
-		try
+		DBConnection conn = null;
+		try 
 		{
+			conn = DBInterface.connect();
 			if (editMode)
 			{
-				event = new Events(jsonIn.eventId, languageId, false);
+				event = new Events(conn, jsonIn.eventId, languageId, false);
 			}
 			else
 			{
-				event = new Events(jsonIn.eventId, languageId);
+				event = new Events(conn, jsonIn.eventId, languageId);
 			}
 		}
 		catch (Exception e) 
 		{
+			DBInterface.disconnect(conn);
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -241,6 +314,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
+			DBInterface.disconnect(conn);
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -254,6 +328,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
+			DBInterface.disconnect(conn);
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -307,7 +382,7 @@ public class EventsHandler {
 
 		try
 		{
-			Users u = new Users(event.getShipownerId());
+			Users u = new Users(conn, event.getShipownerId());
 			jsonResponse.put("shipOwner", u);
 		}
 		catch (Exception e) {
@@ -316,7 +391,7 @@ public class EventsHandler {
 
 		try
 		{
-			Boats b = new Boats(event.getShipId());
+			Boats b = new Boats(conn, event.getShipId());
 			jsonResponse.put("boat", b);
 		}
 		catch (Exception e) {
@@ -326,22 +401,9 @@ public class EventsHandler {
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity).build();
 	}
-	
-	private Events handleInsertUpdate(EventJson jsonIn, int actionType, 
-									  DBConnection conn, int userId) throws Exception // 0 Insert - 1 Update
+
+	private Events fillEvent(EventJson jsonIn, Events event, int languageId)
 	{
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Events event = null;
-		if (actionType == 1)
-		{
-			event = new Events(jsonIn.eventId);
-		}
-		else
-		{
-			event = new Events();
-			event.setCreatedBy(userId);
-			event.setCreatedOn(new Date());
-		}
 		event.setCategoryId(jsonIn.categoryId);
 		if (jsonIn.dateStart == null)
 		{
@@ -354,7 +416,15 @@ public class EventsHandler {
 		}
 		catch(NumberFormatException e)
 		{
-			event.setDateStart(sdf.parse(jsonIn.dateStart));
+			try 
+			{
+				event.setDateStart(sdf.parse(jsonIn.dateStart));
+			}
+			catch (ParseException e1)
+			{
+				jsonIn.dateStart = "1970-01-01";
+				log.warn("Exception parsing jsonIn.dateStart = " + jsonIn.dateStart + ". Date set to epoch");
+			}
 		}
 		try
 		{
@@ -362,7 +432,15 @@ public class EventsHandler {
 		}
 		catch(NumberFormatException e)
 		{
-			event.setDateEnd(sdf.parse(jsonIn.dateEnd));
+			try 
+			{
+				event.setDateEnd(sdf.parse(jsonIn.dateEnd));
+			}
+			catch (ParseException e1)
+			{
+				jsonIn.dateEnd = "1970-01-01";
+				log.warn("Exception parsing jsonIn.dateEnd = " + jsonIn.dateEnd + ". Date set to epoch");
+			}
 		}
 		event.setEventType(jsonIn.eventType);
 		if (jsonIn.location == null)
@@ -375,13 +453,31 @@ public class EventsHandler {
 		event.setLastMinute("N");
 		if (jsonIn.imageURL == null)
 		{
-			event.setImageURL("http://www.placehold.it/1920x600?text=Here goes your event image");
+			event.setImageURL(LanguageResources.getResource(languageId, "events.placeholder.url"));
 		}
 		else
 		{
 			event.setImageURL(jsonIn.imageURL);
 		}
+		return event;
+	}
+
+	private Events handleInsertUpdate(EventJson jsonIn, int actionType, 
+									  DBConnection conn, int userId, int languageId) throws Exception // 0 Insert - 1 Update
+	{
+		Events event = null;
+		if (actionType == 1)
+		{
+			event = new Events(conn, jsonIn.eventId);
+		}
+		else
+		{
+			event = new Events();
+			event.setCreatedBy(userId);
+			event.setCreatedOn(new Date());
+		}
 		int eventId = -1;
+		event = fillEvent(jsonIn, event, languageId);
 		if (actionType == 0)
 		{
 			eventId = event.insertAndReturnId(conn, "idEvents", event);
@@ -389,7 +485,7 @@ public class EventsHandler {
 		}
 		else
 		{
-			event.update("idEvents");
+			event.update(conn, "idEvents");
 		}
 		return event;
 	}
@@ -439,7 +535,7 @@ public class EventsHandler {
 		{
 			conn = DBInterface.TransactionStart();
 			event = handleInsertUpdate(jsonIn, actionType, conn, 
-									   SessionData.getInstance().getBasicProfile(token).getIdUsers());
+									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonIn.eventId = event.getIdEvents();
 			handleInsertUpdateDetails(jsonIn, languageId, actionType, conn);
 			DBInterface.TransactionCommit(conn);
@@ -480,7 +576,41 @@ public class EventsHandler {
 		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}
-	
+
+	@DELETE
+	@Path("/delete")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventDelete(EventJson jsonIn, 
+								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		Events ev = null;
+		EventDescription ed = null;
+		try
+		{
+			conn = DBInterface.TransactionStart();
+			ev = new Events(conn, jsonIn.eventId);
+			ev.delete(conn, jsonIn.eventId);
+			ed = new EventDescription();
+			ed.delete(conn, "DELETE FROM EventDescription WHERE eventId = " + jsonIn.eventId);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("").build();
+	}
+
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -556,6 +686,10 @@ public class EventsHandler {
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}	
 	
@@ -573,14 +707,14 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			et = new EventTickets(jsonIn.eventTicketId);
+			et = new EventTickets(conn, jsonIn.eventTicketId);
 			et.setAvailable(jsonIn.quantity);
 			et.setBooked(jsonIn.sold);
 			et.setCabinRef(jsonIn.cabinRef);
 			et.setEventId(jsonIn.eventId);
 			et.setPrice(jsonIn.price);
 			et.setTicketType(jsonIn.ticketType);
-			et.insert("eventTicketId", jsonIn);
+			et.insert(conn, "eventTicketId", jsonIn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -589,6 +723,10 @@ public class EventsHandler {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}	
@@ -605,7 +743,7 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			new EventTickets().delete(jsonIn.eventTicketId);
+			new EventTickets().delete(conn, jsonIn.eventTicketId);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -614,6 +752,10 @@ public class EventsHandler {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}	

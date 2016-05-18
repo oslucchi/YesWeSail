@@ -29,13 +29,13 @@ public class AddressInfo extends DBInterface
 		setNames();
 	}
 
-	public AddressInfo(int id) throws Exception
+	public AddressInfo(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public static AddressInfo[] findUserId(int userId) throws Exception

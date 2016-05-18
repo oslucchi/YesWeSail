@@ -16,6 +16,8 @@ import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.ResponseEntityCreator;
+import com.yeswesail.rest.DBUtility.DBConnection;
+import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
@@ -34,16 +36,26 @@ public class LoginConfirm {
 		RegistrationConfirm rc = null;
 		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
 
+		DBConnection conn = null;
+		try {
+			conn = DBInterface.connect();
+		} 
+		catch (Exception e1) {
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(ResponseEntityCreator.formatEntity(
+								prop.getDefaultLang(), "generic.execError")).build();
+		};
 		if (email == null)
 		{
 			try 
 			{
 				String query = "SELECT * FROM RegistrationConfirm WHERE token = '" + token + "'";
 				rc = new RegistrationConfirm();
-				rc.populateObject(query, rc);
+				rc.populateObject(conn, query, rc);
 			}
 			catch (Exception e) 
 			{
+				DBInterface.disconnect(conn);
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
@@ -52,6 +64,7 @@ public class LoginConfirm {
 		{
 			if (email.compareTo("") == 0)
 			{
+				DBInterface.disconnect(conn);
 				return Response.status(Response.Status.BAD_REQUEST)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
@@ -59,11 +72,11 @@ public class LoginConfirm {
 			{
 				UsersAuth ua = UsersAuth.findToken(token);
 				ua.setLastRefreshed(new Date());
-				ua.update("idUsersAuth");
-				Users u = new Users(ua.getUserId());
+				ua.update(conn, "idUsersAuth");
+				Users u = new Users(conn, ua.getUserId());
 				u.setEmail(email);
 				u.setStatus("A");
-				u.update("idUsers");
+				u.update(conn, "idUsers");
 				return Response.status(Response.Status.OK).build();
 			}
 			catch(Exception e)
@@ -76,17 +89,17 @@ public class LoginConfirm {
 		try 
 		{
 			location = new URI(uri);
-			Users u = new Users(rc.getUserId());
+			Users u = new Users(conn,rc.getUserId());
 			u.setStatus("A");
-			u.update("idUsers");
+			u.update(conn, "idUsers");
 			rc.setStatus("I");
-			rc.update("idRegistrationConfirm");
+			rc.update(conn, "idRegistrationConfirm");
 			UsersAuth ua = new UsersAuth();
 			ua.setCreated(new Date());
 			ua.setLastRefreshed(ua.getCreated());
 			ua.setUserId(u.getIdUsers());
 			ua.setToken(rc.getToken());
-			ua.insert("idUsersAuth", ua);
+			ua.insert(conn, "idUsersAuth", ua);
 			return Response.seeOther(location).build();
 		} 
 		catch (URISyntaxException e) 

@@ -27,13 +27,13 @@ public class Boats extends DBInterface
 		setNames();
 	}
 
-	public Boats(int id) throws Exception
+	public Boats(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public int getIdBoats() {

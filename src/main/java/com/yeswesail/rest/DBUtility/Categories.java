@@ -18,13 +18,13 @@ public class Categories extends DBInterface
 		setNames();
 	}
 
-	public Categories(int id) throws Exception
+	public Categories(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public int getIdCategories() {

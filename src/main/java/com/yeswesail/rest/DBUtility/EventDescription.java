@@ -23,13 +23,13 @@ public class EventDescription extends DBInterface
 		setNames();
 	}
 
-	public EventDescription(int id) throws Exception
+	public EventDescription(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public static EventDescription[] findByEventId(int eventId, int languageId) throws Exception

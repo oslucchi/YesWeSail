@@ -20,6 +20,8 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.DBUtility.AddressInfo;
+import com.yeswesail.rest.DBUtility.DBConnection;
+import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.UsersJson;
@@ -39,11 +41,13 @@ public class Profile {
 		
 		if (u == null)
 		{
+			DBConnection conn = null;
 			try 
 			{
+				conn = DBInterface.connect();
 				ua = new UsersAuth();
 				String query = "SELECT * FROM UsersAuth WHERE token = '" + jsonIn.token + "'";
-				ua.populateObject(query, ua);
+				ua.populateObject(conn, query, ua);
 			}
 			catch (Exception e) 
 			{
@@ -58,6 +62,10 @@ public class Profile {
 							 e.getMessage() + ")";
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
+			}
+			finally
+			{
+				DBInterface.disconnect(conn);
 			}
 
 			try 

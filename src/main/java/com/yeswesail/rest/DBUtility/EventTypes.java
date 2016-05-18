@@ -19,13 +19,13 @@ public class EventTypes extends DBInterface
 		setNames();
 	}
 
-	public EventTypes(int id) throws Exception
+	public EventTypes(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	public int getIdEventTypes() {

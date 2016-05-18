@@ -44,34 +44,34 @@ public class Users extends DBInterface
 		setNames();
 	}
 
-	public Users(int id) throws Exception
+	public Users(DBConnection conn, int id) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
-	public Users(String email) throws Exception
+	public Users(DBConnection conn, String email) throws Exception
 	{
-		findByEmail(email);
+		findByEmail(conn, email);
 	}
 
-	public void findByEmail(String email) throws Exception
+	public void findByEmail(DBConnection conn, String email) throws Exception
 	{
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE email = '" + email + "'";
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
-	public void findByFacebookID(String id) throws Exception
+	public void findByFacebookID(DBConnection conn, String id) throws Exception
 	{
 		String sql = "SELECT * " +
 					 "FROM Users " +
 					 "WHERE facebook = '" + id + "'";
-		this.populateObject(sql, this);
+		this.populateObject(conn, sql, this);
 	}
 
 	@SuppressWarnings("unchecked")

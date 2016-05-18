@@ -92,7 +92,7 @@ public class TicketsHandler {
 		try 
 		{
 			conn = DBInterface.TransactionStart();
-			et = new EventTickets(jsonIn.eventTicketId);
+			et = new EventTickets(conn, jsonIn.eventTicketId);
 			if (et.getAvailable() - et.getBooked() < jsonIn.quantity)
 			{
 				DBInterface.TransactionRollback(conn);
@@ -107,7 +107,7 @@ public class TicketsHandler {
 			tl.setLockTime(new Date());
 			tl.setBookedTo((jsonIn.bookedTo != null ? jsonIn.bookedTo : 
 							SessionData.getInstance().getBasicProfile(token).getEmail()));
-			tl.insert("idTicketLocks", tl);
+			tl.insert(conn, "idTicketLocks", tl);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -125,6 +125,10 @@ public class TicketsHandler {
 			}
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
 					.entity(errMsg + " (" + e.getMessage() + ")").build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		
 		return Response.status(Response.Status.OK).entity("").build();
@@ -146,7 +150,7 @@ public class TicketsHandler {
 		{
 			conn = DBInterface.TransactionStart();
 			TicketLocks tl = new TicketLocks();
-			tl.delete(jsonIn.eventTicketId);
+			tl.delete(conn, jsonIn.eventTicketId);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -155,6 +159,10 @@ public class TicketsHandler {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError"))
 					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		
 		return Response.status(Response.Status.OK).entity("").build();

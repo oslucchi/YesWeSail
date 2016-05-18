@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.yeswesail.rest.DBUtility.AddressInfo;
+import com.yeswesail.rest.DBUtility.DBConnection;
+import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 
@@ -98,10 +100,13 @@ public class SessionData {
 			return;
 		Object[] userData = new Object[SESSION_ELEMENTS];
 		UsersAuth ua = UsersAuth.findToken(token);
-		userData[BASIC_PROFILE] = new Users(ua.getUserId());
+		DBConnection conn = new DBConnection();
+		userData[BASIC_PROFILE] = new Users(conn, ua.getUserId());
 		userData[WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
-		userData[LANGUAGE] = new Integer(languageId);;
+		userData[LANGUAGE] = new Integer(languageId);
 		sessionData.put(token, userData);
+		conn.getSt().close();
+		conn.getRs().close();
 		return;
 	}
 
@@ -141,10 +146,13 @@ public class SessionData {
 			return;
 
 		Object[] userData = new Object[SESSION_ELEMENTS];
-		userData[BASIC_PROFILE] = new Users(userId);
-		userData[WHOLE_PROFILE] = AddressInfo.findUserId(userId);
-		userData[LANGUAGE] = new Integer(languageId);;
+		DBConnection conn = new DBConnection();
+		userData[BASIC_PROFILE] = new Users(conn, ua.getUserId());
+		userData[WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+		userData[LANGUAGE] = new Integer(languageId);
 		sessionData.put(ua.getToken(), userData);
+		conn.getSt().close();
+		conn.getRs().close();
 	}
 
 	public void removeUser(int userId)

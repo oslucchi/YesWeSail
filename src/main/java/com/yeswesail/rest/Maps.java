@@ -71,7 +71,7 @@ public class Maps {
 		}
 		for(Object e : roles)
 		{
-			((Roles)e).setDescription(((Roles)e).getDescription().toUpperCase());
+			((RolesLanguages)e).setDescription(((RolesLanguages)e).getDescription().toUpperCase());
 		}
 		return roles;
 	}
