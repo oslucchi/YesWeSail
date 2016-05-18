@@ -2,9 +2,9 @@ CREATE DATABASE  IF NOT EXISTS `yeswesail` /*!40100 DEFAULT CHARACTER SET latin1
 USE `yeswesail`;
 -- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
 --
--- Host: 127.0.0.1    Database: yeswesail
+-- Host: 192.168.200.3    Database: yeswesail
 -- ------------------------------------------------------
--- Server version	5.5.47-0ubuntu0.14.04.1
+-- Server version	5.5.49-0+deb7u1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -74,7 +74,7 @@ CREATE TABLE `Boats` (
   PRIMARY KEY (`idBoats`),
   KEY `fk_Users_idx` (`ownerId`),
   CONSTRAINT `fk_Boats_Users` FOREIGN KEY (`ownerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -318,11 +318,11 @@ CREATE TABLE `Events` (
   KEY `fk_Events_Eventtype_idx` (`eventType`),
   KEY `fk_Events_Categories_idx` (`categoryId`),
   KEY `fk_Events_Users_create_idx` (`createdBy`),
-  CONSTRAINT `fk_Events_Users_create` FOREIGN KEY (`createdBy`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Boats` FOREIGN KEY (`shipId`) REFERENCES `Boats` (`idBoats`) ON DELETE NO ACTION,
   CONSTRAINT `fk_Events_Categories` FOREIGN KEY (`categoryId`) REFERENCES `Categories` (`idCategories`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Eventtype` FOREIGN KEY (`eventType`) REFERENCES `EventTypes` (`idEventTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Events_Users` FOREIGN KEY (`shipownerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
+  CONSTRAINT `fk_Events_Users` FOREIGN KEY (`shipownerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  CONSTRAINT `fk_Events_Users_create` FOREIGN KEY (`createdBy`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -332,7 +332,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
-INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-12-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(2,1,'2016-04-15 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(3,1,'2016-05-01 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,'','A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(4,1,'2016-05-05 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,'','A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-04-23 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://www.placehold.it/1920x400?text=Here goes your event image',74,2,'','P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(18,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','Corsica',1,'http://www.placehold.it/1920x400?text=Here goes your event image',74,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(21,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(22,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(23,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(24,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(25,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(26,2,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',1,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(28,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',74,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(29,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x400?text=Here goes your event image',95,1,NULL,'P','N','N',NULL,NULL,1,'2016-05-14 23:12:11'),(30,2,'1970-01-01 00:00:00','1970-01-01 00:00:00','Mar Ionio',1,'http://www.placehold.it/1920x600?text=Here goes your event image',95,1,NULL,'P','N','N',NULL,NULL,74,'2016-05-15 22:19:52');
+INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-12-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(2,1,'2016-04-15 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(3,1,'2016-05-01 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,'','A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(4,1,'2016-05-05 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,'','A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-04-23 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,'','A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(18,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Corsica',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(21,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(22,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(23,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Caraibi',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',1,1,NULL,'A','f','t',NULL,NULL,1,'2016-05-14 23:12:11'),(24,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Croazia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(25,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Puglia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(26,2,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(28,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,1,NULL,'A','f','t',NULL,NULL,1,'2016-05-14 23:12:11'),(29,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Ciao',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',95,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(30,2,'1970-01-01 00:00:00','1970-01-01 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',95,1,NULL,'P','f','f',NULL,NULL,74,'2016-05-15 22:19:52');
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -438,7 +438,7 @@ CREATE TABLE `RegistrationConfirm` (
   PRIMARY KEY (`idRegistrationConfirm`),
   KEY `fk_RegistrationConfirm_Users_idx` (`userId`),
   CONSTRAINT `fk_RegistrationConfirm_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -562,7 +562,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `idx_Users_Email` (`email`),
   KEY `fk_Role_idx` (`roleId`),
   CONSTRAINT `fk_Users_Role` FOREIGN KEY (`roleId`) REFERENCES `Roles` (`idRoles`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=103 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=96 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -591,7 +591,7 @@ CREATE TABLE `UsersAuth` (
   PRIMARY KEY (`idUsersAuth`),
   KEY `fk_UsersAuth_Users_idx` (`userId`),
   CONSTRAINT `fk_UsersAuth_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -600,7 +600,7 @@ CREATE TABLE `UsersAuth` (
 
 LOCK TABLES `UsersAuth` WRITE;
 /*!40000 ALTER TABLE `UsersAuth` DISABLE KEYS */;
-INSERT INTO `UsersAuth` VALUES (36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539'),(60,74,'2016-05-15 22:19:00','2016-05-15 22:19:00','f972e2e9-6eab-4186-a4dd-51f5e367d0da');
+INSERT INTO `UsersAuth` VALUES (36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539'),(60,74,'2016-05-15 22:19:00','2016-05-15 22:19:00','f972e2e9-6eab-4186-a4dd-51f5e367d0da'),(63,91,'2016-05-18 23:07:35','2016-05-18 23:07:35','961efb2e-b350-438a-9c26-fc059e9560fc');
 /*!40000 ALTER TABLE `UsersAuth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -613,4 +613,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-15 22:41:39
+-- Dump completed on 2016-05-19  1:35:34
