@@ -39,7 +39,7 @@ angular.module('yeswesailApp')
    $scope.initializeSelect = function () {
 
 
-            angular.element('.ui.dropdown').dropdown();
+            angular.element('.ui.dropdown.item').dropdown();
 
 
 

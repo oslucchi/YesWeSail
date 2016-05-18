@@ -1,45 +1,28 @@
  
-    <div class="ui container">
         <div class="main_search_content">
-        <!--<div class="ui menu">
   
-            <div class="item">
-            <div class="ui action input">
-              <input type="text" placeholder="Navigate to...">
-                                <select ng-model="style" class="ui compact selection dropdown">
-                    <option value="">Stile</option>
-                    <option value="pesca">Pesca</option>
-                    <option value="relax">Relax</option>
-                </select>
-              <div ng-click="getResults()" class="ui button">Go</div>
-            </div>
-          </div> 
-
-
-        </div>-->
-       <div class="ui fluid three item menu">
-                
-                <select after-render="initializeSelect()" ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
+       <div class="ui three  column grid">
+               
+               <div class="three wide column"> <select  ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
                     <option value="">Location</option>
-                </select>
-                <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                </select></div>
+                <div class="three wide column"><select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
                     <option value="">Category</option>
-                </select>
+                </select></div>
                 
 
-                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="item">Cerca</a>
+               <div class="two wide column"> <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="ui blue button">Cerca</a></div>
 
             </div>
         </div>
         
-        <div class="ui divider"></div>
         
         
-        <div class="ui container">
 
             
             <div class="ui segment results">
 
+<!--
                         <div class="ui four stackable cards">
             <div ng-repeat="event in events" class="ui card">
               <div class="content">
@@ -62,7 +45,19 @@ Starting at {{event.minPrice}}€
             
             </div>
         </div>
+-->
                 
+                
+                <div class="ui stackable four column grid">
+                <div class="column result-cards"  ng-repeat="event in events">
+                    <div class="result card">
+                        <div class="contents">
+                            <img ng-src="{{event.imageURL}}">
+                        </div>
+                    </div>
+                </div>
+                
+                </div> 
                 
   <div class="ui inverted dimmer">
     <div class="content">
@@ -76,6 +71,4 @@ Starting at {{event.minPrice}}€
   </div>
 </div>
             
-            
-        </div>
-    </div>
+          

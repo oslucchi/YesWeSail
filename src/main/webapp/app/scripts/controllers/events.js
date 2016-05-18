@@ -37,9 +37,9 @@ angular.module('yeswesailApp')
         $http.post(URLs.ddns + 'rest/events/search', body).then(function (res) {
             $scope.events = res.data;
             if (res.data[0] == null) {
-                angular.element('.dimmer').dimmer({
-                    closable: false
-                }).dimmer('show');
+//                angular.element('.dimmer').dimmer({
+//                    closable: false
+//                }).dimmer('show');
             }
         }, function (err) {});
 
@@ -47,7 +47,7 @@ angular.module('yeswesailApp')
         $scope.initializeSelect = function () {
 
 
-            angular.element('.ui.dropdown').dropdown();
+            angular.element('.ui.dropdown.item').dropdown();
 
 
 

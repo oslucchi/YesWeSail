@@ -55,7 +55,7 @@ angular
 
 .config(function ($stateProvider, $urlRouterProvider) {
     
-    // For any unmatched url, redirect to /state1
+    // For any unmatched url, redirect to /
   $urlRouterProvider.otherwise("/");
   //
   // Now set up the states
@@ -116,9 +116,7 @@ angular
     })
     .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs) {
         $http.defaults.headers.common['Language'] = 'IT';
-        angular.element('.ui.dropdown').dropdown({
-            action: 'hide'
-        });
+//        angular.element('.ui.usermenu.dropdown').dropdown();
 
 
 
