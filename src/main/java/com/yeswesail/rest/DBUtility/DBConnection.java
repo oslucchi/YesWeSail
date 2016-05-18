@@ -53,7 +53,7 @@ public class DBConnection
 			conn = ds.getConnection();
 			st = conn.createStatement();
 			log.debug("Creted connection (" + conn + ") and statement (" + st + ")");
-
+			st.executeQuery("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
 		}
 		catch (SQLException e) 
 		{
