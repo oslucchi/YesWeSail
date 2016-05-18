@@ -241,7 +241,6 @@
 		    </plugin>
 		</plugins>
     <finalName>YesWeSail</finalName>
-<!-- 
     <pluginManagement>
     	<plugins>
     		<plugin>
@@ -251,6 +250,23 @@
     			<configuration>
     				<lifecycleMappingMetadata>
     					<pluginExecutions>
+    						<pluginExecution>
+    							<pluginExecutionFilter>
+    								<groupId>org.codehaus.mojo</groupId>
+    								<artifactId>
+    									maven-clean-plugin
+    								</artifactId>
+    								<versionRange>
+    									2.5
+    								</versionRange>
+    								<goals>
+    									<goal>clean</goal>
+    								</goals>
+    							</pluginExecutionFilter>
+    							<action>
+    								<ignore></ignore>
+    							</action>
+    						</pluginExecution>
     						<pluginExecution>
     							<pluginExecutionFilter>
     								<groupId>org.codehaus.mojo</groupId>
@@ -271,9 +287,9 @@
     					</pluginExecutions>
     				</lifecycleMappingMetadata>
     			</configuration>
+    			
     		</plugin>
     	</plugins>
     </pluginManagement>
- -->
 	</build>	
 </project>

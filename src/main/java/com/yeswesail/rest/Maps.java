@@ -53,6 +53,10 @@ public class Maps {
 					(ArrayList<Object>) c.populateCollectionOnCondition(
 								"WHERE languageId = " + languageId, CategoriesLanguages.class);
 		}
+		for(Object e : categories)
+		{
+			((CategoriesLanguages)e).setDescription(((CategoriesLanguages)e).getDescription().toUpperCase());
+		}
 		return categories;
 	}
 
@@ -64,6 +68,10 @@ public class Maps {
 			Roles r = new Roles();
 			roles = (ArrayList<Object>) r.populateCollectionOnCondition(
 							"WHERE languageId = " + languageId, RolesLanguages.class);
+		}
+		for(Object e : roles)
+		{
+			((Roles)e).setDescription(((Roles)e).getDescription().toUpperCase());
 		}
 		return roles;
 	}
@@ -77,6 +85,10 @@ public class Maps {
 			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
 					"WHERE languageId = " + languageId, EventTypes.class);
 		}
+		for(Object e : eventTypes)
+		{
+			((EventTypes)e).setDescription(((EventTypes)e).getDescription().toUpperCase());
+		}
 		return eventTypes;
 	}
 
@@ -88,6 +100,10 @@ public class Maps {
 			EventTicketsDescription e = new EventTicketsDescription();
 			eventTicketDescription = (ArrayList<Object>) e.populateCollectionOnCondition(
 						"WHERE languageId = " + languageId, EventTicketsDescription.class);
+		}
+		for(Object e : eventTicketDescription)
+		{
+			((EventTicketsDescription)e).setDescription(((EventTicketsDescription)e).getDescription().toUpperCase());
 		}
 		return eventTicketDescription;
 	}
@@ -101,6 +117,10 @@ public class Maps {
 			events = (ArrayList<Events>) e.populateCollectionOfDistinctsOnCondition(
 					"WHERE dateEnd > '" + sdf.format(new Date()) + "' AND " +
 					"      location != 'TBD'", "location" , Events.class);
+		}
+		for(Events e : events)
+		{
+			e.setLocation(e.getLocation().toUpperCase());
 		}
 		return events;
 	}
