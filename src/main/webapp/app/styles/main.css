@@ -53,10 +53,36 @@ body {
 }
 
 .main_search_content{
-    padding-top: 154px;
-    text-align: center;
+  background-color: white;
 }
 
+.main_search_content > div{
+  margin-top: 0px !important;
+    width: 1100px;
+    margin-left: 0px !important;
+}
+
+.result.card{
+    width:100%;
+    background-color: aqua;
+        padding-bottom: 56.25%;
+    
+}
+
+.column.result-cards{
+    margin:12.5px;
+}
+
+.contents {
+    position: absolute;
+    top: 0;  bottom: 0;  left: 0;  right: 0;	
+    overflow: hidden;   
+    
+}
+
+.contents > *{
+    width:100%;
+}
 
 .main_search_content > h1 {
     font-size: 62px !important;
@@ -71,35 +97,29 @@ body {
 
 
 .why_us{
-    height: 1080px;
+    height: 600px;
     width: 100%;
     background-color:white;
 }
 
-.why_us_left{
+.register.banner{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1990;
+    background-color: #DE7A2F;
+    height: 90px;
     
-    width: 50%;
-    position: relative;
-    float: left;
-    padding-top: 168px;
-    color: #737373;
 }
-.why_us_left > h1{
-    text-align: center;
+.register.banner > .ui.container > .ui.grid{
+    margin-top:13px !important; 
+    
 }
-
-
-.why_us_right{
-
-    background-image:url(http://www.yeswesail.com/wp-content/uploads/2016/02/VACANZE.jpeg); 
-    background-repeat: no-repeat;
-    background-size: cover;
-    width: 50%;
-    height: 1080px;
-    position: relative;
-    float: right;
+.register.banner > div > div > div > div{
+    margin-top:3px !important; 
+    color: white !important;
 }
-
 
 
 .featured_content{

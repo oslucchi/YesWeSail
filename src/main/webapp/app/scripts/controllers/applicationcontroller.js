@@ -15,7 +15,9 @@ angular.module('yeswesailApp')
 //            }
 //      });
         
-        angular.element('.ui.dropdown').dropdown();
+        angular.element('.ui.dropdown').dropdown().dropdown({
+            action: 'nothing'
+        });
         $scope.currentUser = null;
 
         var token = $location.search().token;

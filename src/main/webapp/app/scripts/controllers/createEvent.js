@@ -61,5 +61,5 @@ angular.module('yeswesailApp')
 
 
         };
-     angular.element('.ui.dropdown').dropdown();
+     angular.element('.ui.type.dropdown').dropdown();
     });
