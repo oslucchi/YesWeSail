@@ -52,12 +52,21 @@ body {
     
 }
 
-.main_search_content{
+.search_content{
   background-color: white;
 }
 
-.main_search_content > div{
+.search_content > div{
   margin-top: 0px !important;
+    width: 1100px;
+    margin-left: 0px !important;
+}
+.main_search_content{
+  
+}
+
+.main_search_content > div{
+   margin-top: 140px !important;
     width: 1100px;
     margin-left: 0px !important;
 }
@@ -66,7 +75,21 @@ body {
     width:100%;
     background-color: aqua;
         padding-bottom: 56.25%;
-    
+    cursor: pointer;
+}
+
+
+.last-minute-stamp, .last-minute-stamp>img{
+    width: 50px;
+    height: 50px;
+}
+
+
+.last-minute-stamp{
+    z-index: 999999;
+    top: 20px;
+    right: -410px;
+    position: absolute;
 }
 
 .column.result-cards{
@@ -108,7 +131,7 @@ body {
     left: 0;
     width: 100%;
     z-index: 1990;
-    background-color: #DE7A2F;
+    background-color: rgba(222,122,47,0.9);
     height: 90px;
     
 }

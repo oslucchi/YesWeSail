@@ -1,28 +1,31 @@
- 
-        <div class="main_search_content">
-  
-       <div class="ui three  column grid">
-               
-               <div class="three wide column"> <select  ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
-                    <option value="">Location</option>
-                </select></div>
-                <div class="three wide column"><select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
-                    <option value="">Category</option>
-                </select></div>
-                
+<div class="search_content">
 
-               <div class="two wide column"> <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="ui blue button">Cerca</a></div>
+    <div class="ui three  column grid">
 
-            </div>
+        <div class="three wide column">
+            <select ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
+                <option value="">Location</option>
+            </select>
         </div>
-        
-        
-        
+        <div class="three wide column">
+            <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                <option value="">Category</option>
+            </select>
+        </div>
 
-            
-            <div class="ui segment results">
 
-<!--
+        <div class="two wide column"> <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="ui blue button">Cerca</a></div>
+
+    </div>
+</div>
+
+
+
+
+
+<div class="ui segment results">
+
+    <!--
                         <div class="ui four stackable cards">
             <div ng-repeat="event in events" class="ui card">
               <div class="content">
@@ -46,29 +49,36 @@ Starting at {{event.minPrice}}€
             </div>
         </div>
 -->
-                
-                
-                <div class="ui stackable four column grid">
-                <div class="column result-cards"  ng-repeat="event in events">
-                    <div class="result card">
-                        <div class="contents">
-                            <img ng-src="{{event.imageURL}}">
-                        </div>
-                    </div>
+
+
+    <div class="ui stackable four column grid">
+        <div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in events">
+            
+            <div class="result card">
+                <div class="contents">
+                    <img ng-src="{{event.imageURL}}">
+                    <div class="last-minute-stamp">
+                    <img src="images/last-minute.png">
+                </div>
+                </div>
+                <div class="ui huge blue ribbon label">
+                        {{event.minPrice}}€
                 </div>
                 
-                </div> 
                 
-  <div class="ui inverted dimmer">
-    <div class="content">
-      <div class="center">
-        <h4 class="ui icon header">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="ui inverted dimmer">
+        <div class="content">
+            <div class="center">
+                <h4 class="ui icon header">
           <i class="warning big sign icon"></i>
           No results!
         </h4>
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-            
-          
