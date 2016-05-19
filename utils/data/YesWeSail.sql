@@ -1,10 +1,8 @@
-CREATE DATABASE  IF NOT EXISTS `yeswesail` /*!40100 DEFAULT CHARACTER SET latin1 */;
-USE `yeswesail`;
--- MySQL dump 10.13  Distrib 5.5.47, for debian-linux-gnu (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.9, for linux-glibc2.5 (x86_64)
 --
--- Host: 192.168.200.3    Database: yeswesail
+-- Host: localhost    Database: yeswesail
 -- ------------------------------------------------------
--- Server version	5.5.49-0+deb7u1
+-- Server version	5.6.29
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -185,6 +183,7 @@ CREATE TABLE `EventTickets` (
   `booked` int(11) NOT NULL,
   `price` int(11) NOT NULL,
   `cabinRef` tinyint(4) DEFAULT NULL,
+  `bookedTo` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`idEventTickets`),
   KEY `fk_EventTickets_Events_idx` (`eventId`),
   CONSTRAINT `fk_EventTickets_Events` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
@@ -197,7 +196,7 @@ CREATE TABLE `EventTickets` (
 
 LOCK TABLES `EventTickets` WRITE;
 /*!40000 ALTER TABLE `EventTickets` DISABLE KEYS */;
-INSERT INTO `EventTickets` VALUES (1,1,1,1,1,80,NULL),(2,1,1,1,0,50,NULL),(3,2,2,2,2,120,NULL),(4,2,2,4,2,70,NULL),(5,1,1,1,0,70,NULL),(6,3,1,1,0,63,0),(7,3,2,2,0,80,0),(8,4,1,2,1,73,0),(9,4,2,1,0,90,NULL),(10,5,1,4,2,400,0),(11,5,2,1,0,450,1),(12,5,2,1,0,480,1);
+INSERT INTO `EventTickets` VALUES (1,1,1,1,1,80,NULL,NULL),(2,1,1,1,0,50,NULL,NULL),(3,2,2,2,2,120,NULL,NULL),(4,2,2,4,2,70,NULL,NULL),(5,1,1,1,0,70,NULL,NULL),(6,3,1,1,0,63,0,NULL),(7,3,2,2,0,80,0,NULL),(8,4,1,2,1,73,0,NULL),(9,4,2,1,0,90,NULL,NULL),(10,5,1,4,2,400,0,NULL),(11,5,2,1,0,450,1,NULL),(12,5,2,1,0,480,1,NULL);
 /*!40000 ALTER TABLE `EventTickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -301,13 +300,13 @@ CREATE TABLE `Events` (
   `dateEnd` datetime NOT NULL,
   `location` varchar(45) NOT NULL,
   `categoryId` int(11) NOT NULL,
-  `imageURL` varchar(120) DEFAULT NULL,
+  `imageURL` varchar(256) DEFAULT NULL,
   `shipownerId` int(11) NOT NULL,
   `shipId` int(11) NOT NULL,
   `labels` varchar(90) DEFAULT NULL,
   `status` char(1) NOT NULL,
-  `earlyBooking` char(1) DEFAULT NULL,
-  `lastMinute` char(1) DEFAULT NULL,
+  `earlyBooking` tinyint(4) DEFAULT NULL,
+  `lastMinute` tinyint(4) DEFAULT NULL,
   `eventRef` varchar(15) DEFAULT NULL,
   `aggregateKey` varchar(15) DEFAULT NULL,
   `createdBy` int(11) NOT NULL,
@@ -332,7 +331,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
-INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-12-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(2,1,'2016-04-15 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(3,1,'2016-05-01 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,'','A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(4,1,'2016-05-05 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,'','A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-04-23 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,'','A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(18,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Corsica',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(21,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(22,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(23,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Caraibi',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',1,1,NULL,'A','f','t',NULL,NULL,1,'2016-05-14 23:12:11'),(24,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Croazia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(25,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Puglia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(26,2,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A','t','f',NULL,NULL,1,'2016-05-14 23:12:11'),(28,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,1,NULL,'A','f','t',NULL,NULL,1,'2016-05-14 23:12:11'),(29,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Ciao',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',95,1,NULL,'A','f','f',NULL,NULL,1,'2016-05-14 23:12:11'),(30,2,'1970-01-01 00:00:00','1970-01-01 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',95,1,NULL,'P','f','f',NULL,NULL,74,'2016-05-15 22:19:52');
+INSERT INTO `Events` VALUES (1,1,'2016-04-25 00:00:00','2016-12-27 00:00:00','toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(2,1,'2016-04-15 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(3,1,'2016-05-01 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,'','A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(4,1,'2016-05-05 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,'','A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-04-23 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,'','A',1,0,'','',1,'2016-05-14 23:12:11'),(18,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Corsica',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(21,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(22,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Sardegna',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(23,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Caraibi',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(24,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Croazia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(25,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Puglia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(26,2,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',1,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(28,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Grecia',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,1,NULL,'A',NULL,NULL,NULL,NULL,1,'2016-05-14 23:12:11'),(29,1,'1970-01-01 00:00:00','2016-12-23 00:00:00','Ciao',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',95,1,NULL,'A',NULL,1,'0',NULL,1,'2016-05-14 23:12:11'),(30,2,'1970-01-01 00:00:00','1970-01-01 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',95,1,NULL,'P',NULL,NULL,'0',NULL,74,'2016-05-15 22:19:52');
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -613,4 +612,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-05-19  1:35:34
+-- Dump completed on 2016-05-19 18:50:25
