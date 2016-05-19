@@ -13,6 +13,7 @@ public class EventTickets extends DBInterface
 	protected int booked;
 	protected int price;
 	protected int cabinRef;
+	protected String bookedTo;
 	protected String description;
 	
 	private void setNames()
@@ -121,4 +122,14 @@ public class EventTickets extends DBInterface
 	public void releaseATicket() {
 		booked --;
 	}
+
+	public String getBookedTo() {
+		return bookedTo;
+	}
+
+	public void setBookedTo(String bookedTo) {
+		this.bookedTo = bookedTo;
+	}
+	
+	
 }

@@ -133,7 +133,7 @@ public class DBInterface implements Serializable
 			try 
 			{
 				columnType = rsm.getColumnType(i);
-				columnName = rsm.getColumnName(i);
+				columnName = rsm.getColumnLabel(i);
 			}
 			catch (SQLException e) 
 			{
@@ -168,10 +168,17 @@ public class DBInterface implements Serializable
 						case Types.TINYINT:
 						case Types.NUMERIC:
 						case Types.BIT:
-							if (clFields[y].getType().getName().compareTo("long") == 0)
+							switch(clFields[y].getType().getName())
+							{
+							case "long":
 								retSql += sSep + columnName + " = " + clFields[y].getLong(tbObj);
-							else
+								break;
+							case "boolean":
+								retSql += sSep + columnName + " = " + clFields[y].getBoolean(tbObj);
+								break;
+							default:
 								retSql += sSep + columnName + " = " + clFields[y].getInt(tbObj);
+							}
 							sSep = ", ";
 							break;
 							
@@ -352,7 +359,8 @@ public class DBInterface implements Serializable
 			{
 				for(int y = 0; y < clFields.length; y++)
 				{
-					if (clFields[y].getName().compareTo(rsm.getColumnName(i)) == 0)
+					System.out.println("cfield " + clFields[y].getName() + " rsm " + rsm.getColumnLabel(i));
+					if (clFields[y].getName().compareTo(rsm.getColumnLabel(i)) == 0)
 					{
 						switch(rsm.getColumnType(i))
 						{
@@ -362,7 +370,14 @@ public class DBInterface implements Serializable
 						case Types.TINYINT:
 						case Types.NUMERIC:
 						case Types.BIT:
-							clFields[y].setInt(objInst, rs.getInt(clFields[y].getName()));
+							switch(clFields[y].getType().getName())
+							{
+							case "boolean":
+								clFields[y].setBoolean(objInst, rs.getBoolean(clFields[y].getName()));
+								break;
+							default:
+								clFields[y].setInt(objInst, rs.getInt(clFields[y].getName()));
+							}
 							break;
 							
 						case Types.DATE:
@@ -496,8 +511,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			conn.getSt().close();
-			conn.getRs().close();
+			conn.finalize();
 		}
 		throw(new Exception("No record found"));
 	}
@@ -527,8 +541,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			conn.getSt().close();
-			conn.getRs().close();
+			conn.finalize();
 		}
 		return aList;
 	}
@@ -657,32 +670,32 @@ public class DBInterface implements Serializable
 		String sqlQueryColNames = "SELECT * FROM " + tableName + " WHERE 1 = 0";
 		DBConnection conn = null;
 		conn = new DBConnection();
-    	for(int i = 0; i < collection.size(); i++)
-    	{
-	    	/*
-	    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
-	    	 */
-			sql = "UPDATE " + tableName + " SET ";
-			sql += (((DBInterface) collection.get(i)))
-					.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
-			// Get the id of the current object 
-			Class<?> c = collection.get(i).getClass();
-			Method m;
-			try 
-			{
-				m = c.getMethod("get" + idColName.substring(0,1).toUpperCase() + idColName.substring(1), new Class[] {});
-				sql += " WHERE " + idColName + " = " + ((Integer) m.invoke(collection.get(i))).intValue();
-			}
-			catch (Exception e) 
-			{
-				conn.getSt().close();
-				conn.getRs().close();
-				throw new Exception(e);
-			}
-			conn.executeQuery(sql);
-    	}
-		conn.getSt().close();
-		conn.getRs().close();
+		try 
+		{
+	    	for(int i = 0; i < collection.size(); i++)
+	    	{
+		    	/*
+		    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
+		    	 */
+				sql = "UPDATE " + tableName + " SET ";
+				sql += (((DBInterface) collection.get(i)))
+						.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
+				// Get the id of the current object 
+				Class<?> c = collection.get(i).getClass();
+				Method m;
+					m = c.getMethod("get" + idColName.substring(0,1).toUpperCase() + idColName.substring(1), new Class[] {});
+					sql += " WHERE " + idColName + " = " + ((Integer) m.invoke(collection.get(i))).intValue();
+					conn.executeQuery(sql);
+	    	}
+		}
+		catch (Exception e) 
+		{
+			throw new Exception(e);
+		}
+		finally
+		{
+			conn.finalize();
+		}
 	}
 
 	public void insert(DBConnection conn , String idColName, Object objectToInsert) throws Exception
@@ -792,6 +805,7 @@ public class DBInterface implements Serializable
 	
 	public static void disconnect(DBConnection conn) 
 	{
-		conn.finalize();
+		if (conn != null)
+			conn.finalize();
 	}
 }

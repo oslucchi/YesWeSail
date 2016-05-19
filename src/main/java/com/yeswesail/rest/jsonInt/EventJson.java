@@ -1,5 +1,6 @@
 package com.yeswesail.rest.jsonInt;
 
+
 public class EventJson {
 	public int categoryId;
 	public int eventId;
@@ -10,13 +11,16 @@ public class EventJson {
 	public String dateEnd;
 	public String location;
 	public String title;
-	public String description;
-	public String logistics;
-	public String includes;
-	public String excludes;
+	public EventDescriptionJson description;
+	public EventDescriptionJson logistics;
+	public EventDescriptionJson includes;
+	public EventDescriptionJson excludes;
 	public String notes;
 	public String imageURL;
 	public String[] labels;
 	public String aggregateKey;
-	public EventDescriptionJson[] eventDetails;
+	public boolean earlyBooking;
+	public boolean lastMinute;
+	public UsersJson participants;
+	public TicketJson[] tickets;
 }

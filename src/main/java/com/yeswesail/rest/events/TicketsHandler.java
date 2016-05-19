@@ -92,8 +92,8 @@ public class TicketsHandler {
 		try 
 		{
 			conn = DBInterface.TransactionStart();
-			et = new EventTickets(conn, jsonIn.eventTicketId);
-			if (et.getAvailable() - et.getBooked() < jsonIn.quantity)
+			et = new EventTickets(conn, jsonIn.idEventTickets);
+			if (et.getAvailable() - et.getBooked() < jsonIn.buyQuantity)
 			{
 				DBInterface.TransactionRollback(conn);
 				return Response.status(Response.Status.NOT_ACCEPTABLE)
@@ -103,7 +103,7 @@ public class TicketsHandler {
 			}
 			et.bookATicket();
 			TicketLocks tl = new TicketLocks();
-			tl.setEventTicketId(jsonIn.eventTicketId);
+			tl.setEventTicketId(jsonIn.idEventTickets);
 			tl.setLockTime(new Date());
 			tl.setBookedTo((jsonIn.bookedTo != null ? jsonIn.bookedTo : 
 							SessionData.getInstance().getBasicProfile(token).getEmail()));
@@ -150,7 +150,7 @@ public class TicketsHandler {
 		{
 			conn = DBInterface.TransactionStart();
 			TicketLocks tl = new TicketLocks();
-			tl.delete(conn, jsonIn.eventTicketId);
+			tl.delete(conn, jsonIn.idEventTickets);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 

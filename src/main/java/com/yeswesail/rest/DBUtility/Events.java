@@ -23,12 +23,12 @@ public class Events extends DBInterface
 	protected int shipownerId;
 	protected int shipId;
 	protected String labels;
-	protected String description;
+	protected String title;
 	protected int minPrice;
 	protected int maxPrice;
 	protected String status;
-	protected String earlyBooking;
-	protected String lastMinute;
+	protected boolean earlyBooking;
+	protected boolean lastMinute;
 	protected String eventRef;
 	protected String aggregateKey;
 	protected int createdBy;
@@ -59,7 +59,7 @@ public class Events extends DBInterface
 	public Events(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description " +
+		String sql = "SELECT a.*, b.description AS `title` " +
 				 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 "     ON a.idEvents = b.eventId AND " +
 			 	 "        b.languageId = " + languageId + " AND " +
@@ -75,7 +75,7 @@ public class Events extends DBInterface
 	public Events(DBConnection conn, int id, int languageId, boolean onlyActive) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description " +
+		String sql = "SELECT a.*, b.description AS `title` " +
 				 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
 				 "     ON a.idEvents = b.eventId AND " +
 				 "        b.languageId = " + languageId + " AND " +
@@ -95,7 +95,7 @@ public class Events extends DBInterface
 	@SuppressWarnings("unchecked")
 	public static Events[] findHot(int languageId) throws Exception
 	{
-		String sql = "SELECT *, b.description " +
+		String sql = "SELECT a.*, b.description AS `title` " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
@@ -122,7 +122,7 @@ public class Events extends DBInterface
 
 	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
 	{
-		String sql = "SELECT *, b.description  " +
+		String sql = "SELECT a.*, b.description AS `title` " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
@@ -254,12 +254,12 @@ public class Events extends DBInterface
 		this.labels = labels;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setTitle(String title) {
+		this.title = title;
 	}
 
 	public int getMinPrice() {
@@ -286,19 +286,19 @@ public class Events extends DBInterface
 		this.status = status;
 	}
 
-	public String getEarlyBooking() {
+	public boolean getEarlyBooking() {
 		return earlyBooking;
 	}
 
-	public void setEarlyBooking(String earlyBooking) {
+	public void setEarlyBooking(boolean earlyBooking) {
 		this.earlyBooking = earlyBooking;
 	}
 
-	public String getLastMinute() {
+	public boolean getLastMinute() {
 		return lastMinute;
 	}
 
-	public void setLastMinute(String lastMinute) {
+	public void setLastMinute(boolean lastMinute) {
 		this.lastMinute = lastMinute;
 	}
 

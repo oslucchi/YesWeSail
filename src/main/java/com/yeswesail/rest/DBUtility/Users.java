@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 public class Users extends DBInterface
 {	
 	private static final long serialVersionUID = -4849479160608801245L;
-	final Logger log = Logger.getLogger(this.getClass());
+	private final Logger log = Logger.getLogger(this.getClass());
 	
 	protected int idUsers;
 	protected String name;

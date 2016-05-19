@@ -1,7 +1,6 @@
 package com.yeswesail.rest.events;
 
 
-import java.beans.EventSetDescriptor;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.text.ParseException;
@@ -383,6 +382,7 @@ public class EventsHandler {
 		try
 		{
 			Users u = new Users(conn, event.getShipownerId());
+			u.setPassword("*******");
 			jsonResponse.put("shipOwner", u);
 		}
 		catch (Exception e) {
@@ -449,8 +449,8 @@ public class EventsHandler {
 		event.setShipId(jsonIn.shipId);
 		event.setShipownerId(jsonIn.shipOwnerId);
 		event.setStatus("P");
-		event.setEarlyBooking("N");
-		event.setLastMinute("N");
+		event.setEarlyBooking(false);
+		event.setLastMinute(false);
 		if (jsonIn.imageURL == null)
 		{
 			event.setImageURL(LanguageResources.getResource(languageId, "events.placeholder.url"));
@@ -492,33 +492,26 @@ public class EventsHandler {
 
 	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, int actionType, DBConnection conn) throws Exception // 0 Insert - 1 Update
 	{
-		jsonIn.eventDetails = new EventDescriptionJson[5];
-		for(int i = 0; i < 5; i++)
-		{
-			jsonIn.eventDetails[i] = new EventDescriptionJson();
-			jsonIn.eventDetails[i].eventId = jsonIn.eventId; 
-			jsonIn.eventDetails[i].anchorZone = i; 
-			jsonIn.eventDetails[i].languageId = languageId; 
-		}
-		jsonIn.eventDetails[0].description = jsonIn.title; 
-		jsonIn.eventDetails[1].description = jsonIn.description; 
-		jsonIn.eventDetails[2].description = jsonIn.logistics; 
-		jsonIn.eventDetails[3].description = jsonIn.includes; 
-		jsonIn.eventDetails[4].description = jsonIn.excludes; 
+		EventDescriptionJson[] eventDetails = new EventDescriptionJson[4];
+		eventDetails[0] = jsonIn.description; 
+		eventDetails[1] = jsonIn.logistics; 
+		eventDetails[2] = jsonIn.includes; 
+		eventDetails[3] = jsonIn.excludes; 
+		eventDetails[4] = jsonIn.excludes; 
 
 		if (actionType == 1)
 		{
-			EventDescription.deleteOnWhere("WHERE eventId = " + jsonIn.eventDetails[0].eventId + " AND " +
+			EventDescription.deleteOnWhere("WHERE eventId = " + jsonIn.eventId + " AND " +
 										   "      languageId = " + languageId);
 		}
 
 		EventDescription ed =  new EventDescription();
-		for(EventDescriptionJson item : jsonIn.eventDetails)
+		for(EventDescriptionJson item : eventDetails)
 		{
 			if (item.description != null)
 			{
 				ed.setEventId(item.eventId);
-				ed.setLanguageId(languageId);
+				ed.setLanguageId(item.languageId);
 				ed.setAnchorZone(item.anchorZone);
 				ed.setDescription(item.description);
 				ed.insert(conn, "idEventDescription", ed);
@@ -669,7 +662,7 @@ public class EventsHandler {
 			for(TicketJson t : jsonIn)
 			{
 				et = new EventTickets();
-				et.setAvailable(t.quantity);
+				et.setAvailable(t.buyQuantity);
 				et.setBooked(0);
 				et.setCabinRef(t.cabinRef);
 				et.setEventId(t.eventId);
@@ -707,14 +700,14 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			et = new EventTickets(conn, jsonIn.eventTicketId);
-			et.setAvailable(jsonIn.quantity);
-			et.setBooked(jsonIn.sold);
+			et = new EventTickets(conn, jsonIn.idEventTickets);
+			et.setAvailable(jsonIn.buyQuantity);
+			et.setBooked(jsonIn.booked);
 			et.setCabinRef(jsonIn.cabinRef);
 			et.setEventId(jsonIn.eventId);
 			et.setPrice(jsonIn.price);
 			et.setTicketType(jsonIn.ticketType);
-			et.insert(conn, "eventTicketId", jsonIn);
+			et.insert(conn, "idEventTickets", jsonIn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -743,7 +736,7 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			new EventTickets().delete(conn, jsonIn.eventTicketId);
+			new EventTickets().delete(conn, jsonIn.idEventTickets);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
