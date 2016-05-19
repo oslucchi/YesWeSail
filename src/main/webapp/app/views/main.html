@@ -35,7 +35,42 @@
 
 
         <h1>Le migliori proposte</h1>
+            <div class="ui stackable four column grid">
+   
+            
 
+<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in hotEvents">
+            
+            <div class="result card">
+                
+                <div class="contents">
+                    <img ng-src="{{event.imageURL}}">
+                    
+                </div>
+                
+                
+                
+            </div>
+            <div class="ui huge blue ribbon label">
+                        {{event.minPrice}}€
+                </div>
+            <div ng-if="event.lastMinute" class="last-minute-stamp">
+                        <img src="images/last-minute.png">
+                    </div>
+            <div ng-if="event.earlyBooking" class="early-booking-stamp">
+                        <img src="images/early-booking.png">
+                    </div>
+            <ship-owner></ship-owner>
+        </div>
+
+
+    </div>
+        
+        
+        
+        
+<!--
+        
         <div class="ui four stackable cards">
             
   <div ng-style="{'background-image':'url({{proposal.imageURL}})'}" style="background-repeat:no-repeat; background-size: cover; color: white !important; height: 300px;"  ng-repeat="proposal in hotEvents" class="card">
@@ -52,6 +87,7 @@
 
   </div>
 </div>
+-->
         
         
         

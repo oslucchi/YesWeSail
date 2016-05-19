@@ -34,6 +34,8 @@ angular.module('yeswesailApp')
             body.categoryId = $stateParams.categoryId;
 
         }
+    
+        body.activeOnly=true;
         $http.post(URLs.ddns + 'rest/events/search', body).then(function (res) {
             $scope.events = res.data;
             if (res.data[0] == null) {

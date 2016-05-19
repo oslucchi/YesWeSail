@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('CreateEventidCtrl', function ($scope, $http, URLs, $stateParams) {
+    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',

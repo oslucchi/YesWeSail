@@ -1,65 +1,86 @@
 
-
-
-<table class="ui compact celled definition table">
+<div class="admin-events-container">
+ 
+<table class="ui compact sortable selectable celled  table">
   <thead>
     <tr>
+      <th>Select</th>
+      <th  class="ui fitted center aligned">Actions</th>
+      <th>Status</th>
+      <th>Early booking</th>
       <th>Last minute</th>
-      <th>Name</th>
-      <th>Registration Date</th>
-      <th>E-mail address</th>
-      <th>Premium Plan</th>
+      <th>ID</th>
+      <th>Title</th>
+      <th>Created By</th>
+      <th>Created On</th>
+      <th>Location</th>
+     
+        
     </tr>
   </thead>
+    
   <tbody>
-    <tr>
-      <td class="collapsing">
-        <div class="ui fitted  checkbox">
-          <input type="checkbox"> <label></label>
+    <tr ng-class="{'error': event.status=='C', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
+        <td class="collapsing">
+         <div class="ui fitted center aligned checkbox">
+          <input type="checkbox" ng-model="selectedEvents"> <label></label>
         </div>
       </td>
-      <td>John Lilki</td>
-      <td>September 14, 2013</td>
-      <td>jhlilk22@yahoo.com</td>
-      <td>No</td>
-    </tr>
-    <tr>
       <td class="collapsing">
-        <div class="ui fitted  checkbox">
-          <input type="checkbox"> <label></label>
+        <div class="ui center aligned">
+              <i ng-click="activate(event)" class="large green checkmark link icon"></i>
+              <i ng-click="remove(event)" class="large red remove link icon"></i>
+              <i ng-click="deactivate(event)" class="large yellow ban link icon"></i>
+              <i ng-click="clone(event)" class="large grey copy link icon"></i>
+              <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i>
+        </div>
+          
+      </td>
+        <td class="collapsing">
+        <div class="ui center aligned">
+            <div ng-switch="event.status">
+              <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
+              <div ng-switch-when="I"><i class="large red remove icon"></i></div>
+              <div ng-switch-when="P"><i class="large yellow ban icon"></i></div>
+              <div ng-switch-default>
+               
+              </div>
+            </div>
         </div>
       </td>
-      <td>Jamie Harington</td>
-      <td>January 11, 2014</td>
-      <td>jamieharingonton@yahoo.com</td>
-      <td>Yes</td>
-    </tr>
-    <tr>
-      <td class="collapsing">
-        <div class="ui fitted  checkbox">
-          <input type="checkbox"> <label></label>
+        <td class="collapsing">
+        <div class="ui fitted center aligned checkbox">
+          <input type="checkbox" ng-model="event.earlyBooking" ng-checked="event.earlyBooking"> <label></label>
         </div>
       </td>
-      <td>Jill Lewis</td>
-      <td>May 11, 2014</td>
-      <td>jilsewris22@yahoo.com</td>
-      <td>Yes</td>
+        <td class="collapsing">
+        <div class="ui fitted center aligned checkbox">
+          <input type="checkbox" ng-model="event.lastMinute" ng-checked="event.lastMinute"> <label></label>
+        </div>
+      </td>
+      <td class="collapsing">{{event.idEvents}}</td>
+      <td class="collapsing">{{event.title}}</td>
+      <td class="collapsing">{{event.createdBy}}</td>
+      <td>{{event.createdOn | date}}</td>
+      <td>{{event.location}}</td>
+       
     </tr>
+   
   </tbody>
   <tfoot class="full-width">
     <tr>
-      <th></th>
-      <th colspan="4">
-        <div class="ui right floated small primary labeled icon button">
-          <i class="user icon"></i> Add User
-        </div>
-        <div class="ui small button">
-          Approve
-        </div>
-        <div class="ui small  disabled button">
+      <th><div class="ui small  disabled button">
           Approve All
+        </div></th>
+      <th colspan="9">
+        <div ng-click="popupCreateEventDialog()" class="ui right floated small primary labeled icon button">
+          <i class="user icon"></i> Add Event
         </div>
+        
+        
       </th>
     </tr>
   </tfoot>
 </table>
+
+</div>

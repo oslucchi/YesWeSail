@@ -47,7 +47,7 @@
         Crea un evento
       </div>
     </h2>
-    <form  class="ui large form">
+    <ng-form  ng-submit="create(tempEvent)" class="ui large form">
       <div class="ui stacked segment">
            <div class="ui horizontal divider"></div>
 
@@ -71,13 +71,13 @@
          
 
         </div>
-        <div class="ui large primary button" ng-click=create(tempEvent)>Create</div>
+        <button type="submit" class="ui large primary button" ng-click="create(tempEvent)">Create</button>
         <div class="ui large button" ng-click="ngDialog.closeAll()">Cancel</div>
       </div>
 
       <div class="ui error message"></div>
 
-    </form>
+    </ng-form>
 
   
   </div>

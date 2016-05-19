@@ -52,22 +52,59 @@ Starting at {{event.minPrice}}€
 
 
     <div class="ui stackable four column grid">
-        <div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in events">
+<!--
+        <div class="column result-cards">
             
             <div class="result card">
+                
                 <div class="contents">
                     <img ng-src="{{event.imageURL}}">
-                    <div class="last-minute-stamp">
-                    <img src="images/last-minute.png">
+                    
                 </div>
-                </div>
-                <div class="ui huge blue ribbon label">
-                        {{event.minPrice}}€
-                </div>
+                
                 
                 
             </div>
+            <div class="ui huge blue ribbon label">
+                        {{event.minPrice}}€
+                </div>
+            <div class="last-minute-stamp">
+                        <img src="images/last-minute.png">
+                    </div>
+            <div class="early-booking-stamp">
+                        <img src="images/early-booking.png">
+                    </div>
+
+            <ship-owner></ship-owner>
         </div>
+-->
+            
+            
+
+<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in events">
+            
+            <div class="result card">
+                
+                <div class="contents">
+                    <img ng-src="{{event.imageURL}}">
+                    
+                </div>
+                
+                
+                
+            </div>
+            <div class="ui huge blue ribbon label">
+                        {{event.minPrice}}€
+                </div>
+            <div ng-if="event.lastMinute" class="last-minute-stamp">
+                        <img src="images/last-minute.png">
+                    </div>
+            <div ng-if="event.earlyBooking" class="early-booking-stamp">
+                        <img src="images/early-booking.png">
+                    </div>
+            <ship-owner></ship-owner>
+        </div>
+
 
     </div>
 

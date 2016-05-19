@@ -53,6 +53,8 @@ module.exports = function(config) {
       'bower_components/trix/dist/trix.js',
       'bower_components/angular-trix/dist/angular-trix.js',
       'bower_components/ngAutocomplete/src/ngAutocomplete.js',
+      'bower_components/AngularJS-Toaster/toaster.js',
+      'bower_components/angular-toastr/dist/angular-toastr.tpls.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

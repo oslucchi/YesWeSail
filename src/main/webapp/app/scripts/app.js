@@ -23,7 +23,8 @@ angular
     'ui.router',
     'textAngular',
     'angucomplete-alt',
-    'ngAutocomplete'
+    'ngAutocomplete',
+    'toastr'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -80,10 +81,10 @@ angular
       templateUrl:  'views/eventid.html',
       controller: 'EventidCtrl'
     })
-    .state('createEvent', {
+    .state('editEvent', {
       url: "/edit-event/:eventId",
       templateUrl:  'views/create.eventid.html',
-      controller: 'CreateEventidCtrl'
+      controller: 'EditEventCtrl'
     })
       .state('admin', {
       url: "/admin",
