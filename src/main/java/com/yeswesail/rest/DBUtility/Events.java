@@ -20,7 +20,7 @@ public class Events extends DBInterface
 	protected String location;
 	protected int categoryId;
 	protected String imageURL;
-	protected int shipownerId;
+	protected int shipOwnerId;
 	protected int shipId;
 	protected String labels;
 	protected String title;
@@ -126,8 +126,7 @@ public class Events extends DBInterface
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
-					 "		  b.anchorZone = 0 " + " AND " +
-					 "        a.status = 'A' " +
+					 "		  b.anchorZone = 0 " + 
 				 	 whereClause;
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
@@ -230,12 +229,12 @@ public class Events extends DBInterface
 		this.imageURL = imageURL;
 	}
 
-	public int getShipownerId() {
-		return shipownerId;
+	public int getShipOwnerId() {
+		return shipOwnerId;
 	}
 
-	public void setShipownerId(int shipownerId) {
-		this.shipownerId = shipownerId;
+	public void setShipOwnerId(int shipOwnerId) {
+		this.shipOwnerId = shipOwnerId;
 	}
 
 	public int getShipId() {

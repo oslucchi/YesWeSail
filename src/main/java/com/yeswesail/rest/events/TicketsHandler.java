@@ -1,5 +1,6 @@
 package com.yeswesail.rest.events;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.ws.rs.Consumes;
@@ -17,6 +18,7 @@ import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
@@ -33,17 +35,9 @@ public class TicketsHandler {
 	Events e = null;
 	JsonHandler jh = new JsonHandler();
 
-	@POST
-	@Path("/eventTickets")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	private Response getTikectsFromDB(TicketJson jsonIn, String language)
 	{
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
-		int languageId = Constants.getLanguageCode(language);
+		int languageId = Utils.setLanguageId(language);
 		
 		EventTickets[] tickets = null;
 		try 
@@ -52,7 +46,7 @@ public class TicketsHandler {
 		}
 		catch (Exception e)
 		{
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(
 								Constants.getLanguageCode(language), "generic.execError") + " (" + 
 								e.getMessage() + ")").build();
@@ -64,7 +58,22 @@ public class TicketsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(tickets, language) != Response.Status.OK)
+		int ticketType = -1;
+		int index = -1;
+		ArrayList<ArrayList<EventTickets>> toReturn = new ArrayList<>();
+
+		for (int i = 0; i < tickets.length; i++)
+		{
+			if (tickets[i].getTicketType() != ticketType)
+			{
+				ticketType = tickets[i].getTicketType();
+				index++;
+				toReturn.add(new ArrayList<EventTickets>());
+			}
+			toReturn.get(index).add(tickets[i]);
+		}
+
+		if (jh.jasonize(toReturn, language) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(jh.json).build();
@@ -72,42 +81,54 @@ public class TicketsHandler {
 		
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+	
+	@POST
+	@Path("/eventTickets")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	{
+		return getTikectsFromDB(jsonIn, language);
+	}
 
 	@POST
 	@Path("/bookTicket")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response bookTicket(TicketJson jsonIn, @HeaderParam("Language") String language, 
+	public Response bookTicket(TicketJson[] jsonIn, @HeaderParam("Language") String language, 
 							   @HeaderParam("Authorization") String token)
 	{
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
+		int languageId = Utils.setLanguageId(language);
 
 		String errMsg = null;
 		EventTickets et = null;
 		DBConnection conn = null;
+		Users u = SessionData.getInstance().getBasicProfile(token);
 
 		try 
 		{
 			conn = DBInterface.TransactionStart();
-			et = new EventTickets(conn, jsonIn.idEventTickets);
-			if (et.getAvailable() - et.getBooked() < jsonIn.buyQuantity)
+			for (TicketJson t : jsonIn)
 			{
-				DBInterface.TransactionRollback(conn);
-				return Response.status(Response.Status.NOT_ACCEPTABLE)
-						.entity(LanguageResources.getResource(
-									Constants.getLanguageCode(language), "ticket.fareNotAvailable"))
-						.build();
+				et = new EventTickets(conn, t.idEventTickets);
+				if (et.getAvailable() - et.getBooked() <= 0)
+				{
+					DBInterface.TransactionRollback(conn);
+					return Response.status(Response.Status.NOT_ACCEPTABLE)
+							.entity(LanguageResources.getResource(languageId, "ticket.fareNotAvailable"))
+							.build();
+				}
+				et.bookATicket();
+				et.update(conn, "idEventTickets");
+				TicketLocks tl = new TicketLocks();
+				tl.setEventTicketId(t.idEventTickets);
+				tl.setLockTime(new Date());
+				tl.setBookedTo((t.bookedTo != null ? t.bookedTo : 
+								SessionData.getInstance().getBasicProfile(token).getEmail()));
+				tl.setUserId(u.getIdUsers());
+				tl.setStatus("P");
+				tl.insert(conn, "idTicketLocks", tl);
 			}
-			et.bookATicket();
-			TicketLocks tl = new TicketLocks();
-			tl.setEventTicketId(jsonIn.idEventTickets);
-			tl.setLockTime(new Date());
-			tl.setBookedTo((jsonIn.bookedTo != null ? jsonIn.bookedTo : 
-							SessionData.getInstance().getBasicProfile(token).getEmail()));
-			tl.insert(conn, "idTicketLocks", tl);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -130,34 +151,40 @@ public class TicketsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		
-		return Response.status(Response.Status.OK).entity("").build();
+
+		return(getTikectsFromDB(jsonIn[0], language));
 	}
 
 	@POST
-	@Path("/buyTicket")
+	@Path("/buyTickets")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response buyTicket(TicketJson jsonIn, @HeaderParam("Language") String language)
+	public Response buyTickets(TicketJson[][] jsonIn, @HeaderParam("Language") String language)
 	{
-		if (language == null)
-		{
-			language = prop.getDefaultLang();
-		}
+		int languageId = Utils.setLanguageId(language);
+
 		DBConnection conn = null;
 
 		try 
 		{
 			conn = DBInterface.TransactionStart();
 			TicketLocks tl = new TicketLocks();
-			tl.delete(conn, jsonIn.idEventTickets);
+			for(int i = 0; i < jsonIn.length; i++)
+			{
+				for(TicketJson t : jsonIn[i])
+				{
+					tl = new TicketLocks(conn, t.idEventTickets);
+					tl.setStatus("S");
+					tl.update(conn, "idTicketLocks");
+				}
+			}
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(Constants.getLanguageCode(language), "generic.execError"))
+					.entity(LanguageResources.getResource(languageId, "generic.execError"))
 					.build();
 		}
 		finally

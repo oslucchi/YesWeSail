@@ -51,7 +51,7 @@ public class Auth {
 			u.setName(jsonIn.firstName);
 			u.setSurname(jsonIn.lastName);
 			u.setStatus("D");
-			u.setIsShipOwner("F");
+			u.setIsShipOwner(false);
 			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
 			u.setRoleId(1);
@@ -227,6 +227,7 @@ public class Auth {
 			}
 		}
 		catch (Exception e) {
+			DBInterface.disconnect(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
 				log.debug("Email not found, returning UNAUTHORIZED");
@@ -238,10 +239,6 @@ public class Auth {
 				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
 			}
 			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
 		}
 
 		// Check if this user already has a token

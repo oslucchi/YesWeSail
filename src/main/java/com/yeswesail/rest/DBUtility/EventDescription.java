@@ -45,6 +45,17 @@ public class EventDescription extends DBInterface
 		return(eventDescriptions.toArray(new EventDescription[eventDescriptions.size()]));
 	}
 
+	public void findEventTitleyId(DBConnection conn, int eventId, int languageId) throws Exception
+	{
+		String sql = "SELECT * " +
+				 	 "FROM EventDescription a " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      languageId = " + languageId + " AND " +
+					 "      anchorZone = 0 ";
+		this.populateObject(conn, sql, this);
+	}
+
+
 	public static void deleteOnWhere(String whereClause) throws Exception
 	{
 		DBConnection conn = null;

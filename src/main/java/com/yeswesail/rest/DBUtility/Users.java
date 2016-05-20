@@ -26,7 +26,7 @@ public class Users extends DBInterface
 	protected String twitter;
 	protected String google;
 	protected String connectedVia;
-	protected String isShipOwner;
+	protected boolean isShipOwner;
 	protected String languagesSpoken;
 	protected String experiences;
 	protected String status;
@@ -195,11 +195,11 @@ public class Users extends DBInterface
 		this.connectedVia = connectedVia;
 	}
 
-	public String getIsShipOwner() {
+	public boolean getIsShipOwner() {
 		return isShipOwner;
 	}
 
-	public void setIsShipOwner(String isShipOwner) {
+	public void setIsShipOwner(boolean isShipOwner) {
 		this.isShipOwner = isShipOwner;
 	}
 

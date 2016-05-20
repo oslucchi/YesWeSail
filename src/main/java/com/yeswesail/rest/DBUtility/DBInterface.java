@@ -359,7 +359,6 @@ public class DBInterface implements Serializable
 			{
 				for(int y = 0; y < clFields.length; y++)
 				{
-					System.out.println("cfield " + clFields[y].getName() + " rsm " + rsm.getColumnLabel(i));
 					if (clFields[y].getName().compareTo(rsm.getColumnLabel(i)) == 0)
 					{
 						switch(rsm.getColumnType(i))

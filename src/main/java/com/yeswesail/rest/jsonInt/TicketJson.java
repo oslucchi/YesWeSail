@@ -10,5 +10,4 @@ public class TicketJson {
 	public int cabinRef;
 	public String bookedTo;
 	protected String description;
-	public int buyQuantity;
 }

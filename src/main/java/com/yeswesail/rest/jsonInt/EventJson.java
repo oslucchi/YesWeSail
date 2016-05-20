@@ -4,9 +4,11 @@ package com.yeswesail.rest.jsonInt;
 public class EventJson {
 	public int categoryId;
 	public int eventId;
+	public int idEvents;
 	public int shipOwnerId;
 	public int shipId;
 	public int eventType;
+	public String status;
 	public String dateStart;
 	public String dateEnd;
 	public String location;
@@ -23,4 +25,5 @@ public class EventJson {
 	public boolean lastMinute;
 	public UsersJson participants;
 	public TicketJson[] tickets;
+	public boolean activeOnly;
 }

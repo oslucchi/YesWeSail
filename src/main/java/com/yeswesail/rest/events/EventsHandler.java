@@ -137,6 +137,11 @@ public class EventsHandler {
 			where += and + " dateEnd < '" + jsonIn.dateEnd + "'";
 			and = " AND ";
 		}
+		if (jsonIn.activeOnly)
+		{
+			where += and + "a.status = 'A' ";
+			and = " AND ";
+		}
 		if (jsonIn.labels != null)
 		{
 			String or = "";
@@ -154,20 +159,13 @@ public class EventsHandler {
 		where += " ORDER BY dateStart ASC";
 		return(where);
 	}
-	
-	@POST
-	@Path("/search")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventList(EventJson jsonIn, @HeaderParam("Language") String language)
-	{
-		int languageId = Utils.setLanguageId(language);
 
+	private Response handleSearch(EventJson jsonIn, int languageId)
+	{
 		Events[] eventsFiltered = null;
 		try 
 		{
-			eventsFiltered = Events.findByFilter(buildWhereCondition(jsonIn), 
-												 Constants.getLanguageCode(language));
+			eventsFiltered = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
@@ -181,13 +179,35 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(eventsFiltered, language) != Response.Status.OK)
+		if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(jh.json).build();
 		}
 	
 		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+
+	@POST
+	@Path("/search/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response searchAll(EventJson jsonIn, 
+							  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		return handleSearch(jsonIn, languageId);
+	}
+
+	@POST
+	@Path("/search/actives")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response searchActives(EventJson jsonIn, 
+								  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		return handleSearch(jsonIn, languageId);
 	}
 
 	
@@ -204,8 +224,8 @@ public class EventsHandler {
 		try 
 		{
 			conn = DBInterface.connect();
-			ev = new Events(conn, jsonIn.eventId);
-			ev.setStatus("A");
+			ev = new Events(conn, jsonIn.idEvents);
+			ev.setStatus(jsonIn.status);
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -216,7 +236,7 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
 	
@@ -233,15 +253,23 @@ public class EventsHandler {
 		try 
 		{
 			conn = DBInterface.TransactionStart();
-			ev = new Events(conn, jsonIn.eventId);
-			if (jsonIn.aggregateKey.compareTo(ev.getAggregateKey()) != 0)
+			ev = new Events(conn, jsonIn.idEvents);
+			
+			if ((jsonIn.aggregateKey != null) && (jsonIn.aggregateKey.compareTo(ev.getAggregateKey()) != 0))
 			{
 				ev.setAggregateKey(jsonIn.aggregateKey);
 				ev.update(conn, "idEvents");
 			}
 			ev = fillEvent(jsonIn, ev, languageId);
-			jsonIn.eventId = ev.insertAndReturnId(conn, "idEvents", ev);
-			handleInsertUpdateDetails(jsonIn, languageId, 0, conn);
+			int idEvents = ev.insertAndReturnId(conn, "idEvents", ev);
+			ev.setIdEvents(idEvents);
+			String sql = 
+					"INSERT INTO EventDescription " +
+				    "  SELECT anchorZone, language, description, " + jsonIn.idEvents + " " +
+					"  FROM EventDescription " +
+				    "  WHERE idEvents = " + jsonIn.idEvents;
+			EventDescription.executeStatement(conn, sql, true);
+			// handleInsertUpdateDetails(jsonIn, languageId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) {
@@ -253,6 +281,12 @@ public class EventsHandler {
 		finally
 		{
 			DBInterface.disconnect(conn);
+		}
+
+		if (jh.jasonize(ev, language) != Response.Status.OK)
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(jh.json).build();
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
@@ -381,7 +415,7 @@ public class EventsHandler {
 
 		try
 		{
-			Users u = new Users(conn, event.getShipownerId());
+			Users u = new Users(conn, event.getShipOwnerId());
 			u.setPassword("*******");
 			jsonResponse.put("shipOwner", u);
 		}
@@ -447,7 +481,7 @@ public class EventsHandler {
 			jsonIn.location = "TBD";
 		event.setLocation(jsonIn.location);
 		event.setShipId(jsonIn.shipId);
-		event.setShipownerId(jsonIn.shipOwnerId);
+		event.setShipOwnerId(jsonIn.shipOwnerId);
 		event.setStatus("P");
 		event.setEarlyBooking(false);
 		event.setLastMinute(false);
@@ -462,20 +496,31 @@ public class EventsHandler {
 		return event;
 	}
 
-	private Events handleInsertUpdate(EventJson jsonIn, int actionType, 
-									  DBConnection conn, int userId, int languageId) throws Exception // 0 Insert - 1 Update
+	private Events handleInsertUpdate(EventJson jsonIn, DBConnection conn, 
+									  int userId, int languageId) throws Exception // 0 Insert - 1 Update
 	{
 		Events event = null;
-		if (actionType == 1)
+		int actionType = 0;
+		try
 		{
 			event = new Events(conn, jsonIn.eventId);
+			actionType = 1;
 		}
-		else
+		catch(Exception e)
 		{
-			event = new Events();
-			event.setCreatedBy(userId);
-			event.setCreatedOn(new Date());
+			if (e.getMessage().compareTo("No record found") == 0)
+			{
+				event = new Events();
+				event.setCreatedBy(userId);
+				event.setCreatedOn(new Date());
+				actionType = 0;
+			}
+			else
+			{
+				throw e;
+			}
 		}
+
 		int eventId = -1;
 		event = fillEvent(jsonIn, event, languageId);
 		if (actionType == 0)
@@ -486,40 +531,70 @@ public class EventsHandler {
 		else
 		{
 			event.update(conn, "idEvents");
+			eventId = event.getIdEvents();
+		}
+		
+		EventDescription eventDetails = new EventDescription();
+		try
+		{
+			eventDetails.findEventTitleyId(conn, eventId, languageId);
+			eventDetails.setDescription(jsonIn.title);
+			eventDetails.update(conn, "idEventDescription");
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") == 0)
+			{
+				eventDetails.setAnchorZone(0);
+				eventDetails.setEventId(eventId);
+				eventDetails.setLanguageId(languageId);
+				eventDetails.setDescription(jsonIn.title);
+				eventDetails.insert(conn, "idEventDescription", eventDetails);
+			}
+			else
+			{
+				throw e;
+			}
 		}
 		return event;
 	}
 
-	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, int actionType, DBConnection conn) throws Exception // 0 Insert - 1 Update
+	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, DBConnection conn) throws Exception // 0 Insert - 1 Update
 	{
 		EventDescriptionJson[] eventDetails = new EventDescriptionJson[4];
 		eventDetails[0] = jsonIn.description; 
 		eventDetails[1] = jsonIn.logistics; 
 		eventDetails[2] = jsonIn.includes; 
 		eventDetails[3] = jsonIn.excludes; 
-		eventDetails[4] = jsonIn.excludes; 
 
-		if (actionType == 1)
+		try
 		{
 			EventDescription.deleteOnWhere("WHERE eventId = " + jsonIn.eventId + " AND " +
 										   "      languageId = " + languageId);
 		}
+		catch(Exception e)
+		{
+			;
+		}
 
 		EventDescription ed =  new EventDescription();
+		int zone = 1;
 		for(EventDescriptionJson item : eventDetails)
 		{
+			if (item == null)
+				continue;
 			if (item.description != null)
 			{
-				ed.setEventId(item.eventId);
-				ed.setLanguageId(item.languageId);
-				ed.setAnchorZone(item.anchorZone);
+				ed.setEventId(jsonIn.idEvents);
+				ed.setLanguageId(languageId);
+				ed.setAnchorZone(zone++);
 				ed.setDescription(item.description);
 				ed.insert(conn, "idEventDescription", ed);
 			}
 		}
 	}
 
-	private Response eventHandler(EventJson jsonIn, String language, String token, int actionType)
+	private Response eventHandler(EventJson jsonIn, String language, String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 		DBConnection conn = null;
@@ -527,10 +602,12 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			event = handleInsertUpdate(jsonIn, actionType, conn, 
+			event = handleInsertUpdate(jsonIn, conn, 
 									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonIn.eventId = event.getIdEvents();
-			handleInsertUpdateDetails(jsonIn, languageId, actionType, conn);
+			handleInsertUpdateDetails(jsonIn, languageId, conn);
+			if (jsonIn.tickets != null)
+				handleInsertTicket(jsonIn.tickets, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -557,7 +634,7 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			handleInsertUpdateDetails(jsonIn, languageId, actionType, conn);
+			handleInsertUpdateDetails(jsonIn, languageId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -571,10 +648,10 @@ public class EventsHandler {
 	}
 
 	@DELETE
-	@Path("/delete")
+	@Path("/delete/{idEvents}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventDelete(EventJson jsonIn, 
+	public Response eventDelete(@PathParam("idEvents") int idEvents, 
 								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
@@ -584,10 +661,10 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			ev = new Events(conn, jsonIn.eventId);
-			ev.delete(conn, jsonIn.eventId);
 			ed = new EventDescription();
-			ed.delete(conn, "DELETE FROM EventDescription WHERE eventId = " + jsonIn.eventId);
+			ed.delete(conn, "DELETE FROM EventDescription WHERE eventId = " + idEvents);
+			ev = new Events(conn, idEvents);
+			ev.delete(conn, idEvents);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -611,7 +688,7 @@ public class EventsHandler {
 	public Response eventCreate(EventJson jsonIn, 
 								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
-		return eventHandler(jsonIn, language, token, 0); // Create event
+		return eventHandler(jsonIn, language, token); // Create event
 	}
 	
 	@PUT
@@ -622,7 +699,7 @@ public class EventsHandler {
 								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		jsonIn.eventId = eventId;
-		return eventHandler(jsonIn, language, token, 1); // Update event
+		return eventHandler(jsonIn, language, token); // Update event
 	}
 	
 	@POST
@@ -646,6 +723,22 @@ public class EventsHandler {
 		return eventDetailsHandler(jsonIn, language, 1);
 	}
 
+	private void handleInsertTicket(TicketJson[] jsonIn, DBConnection conn) throws Exception
+	{
+		EventTickets et = null;
+		for(TicketJson t : jsonIn)
+		{
+			et = new EventTickets();
+			et.setAvailable(t.available);
+			et.setBooked(0);
+			et.setCabinRef(t.cabinRef);
+			et.setEventId(t.eventId);
+			et.setPrice(t.price);
+			et.setTicketType(t.ticketType);
+			et.insert(conn, "eventTicketId", t);
+		}
+	}
+	
 	@POST
 	@Path("/addTickets")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -654,36 +747,25 @@ public class EventsHandler {
 	{
 		int languageId = Utils.setLanguageId(language);
 
-		EventTickets et = null;
 		DBConnection conn = null;
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			for(TicketJson t : jsonIn)
-			{
-				et = new EventTickets();
-				et.setAvailable(t.buyQuantity);
-				et.setBooked(0);
-				et.setCabinRef(t.cabinRef);
-				et.setEventId(t.eventId);
-				et.setPrice(t.price);
-				et.setTicketType(t.ticketType);
-				et.insert(conn, "eventTicketId", t);
-			}
+			handleInsertTicket(jsonIn, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			DBInterface.TransactionRollback(conn);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
 		finally
 		{
-			DBInterface.disconnect(conn);
+			DBInterface.TransactionRollback(conn);
 		}
 		return Response.status(Response.Status.OK).entity("").build();
+
 	}	
 	
 	
@@ -691,7 +773,7 @@ public class EventsHandler {
 	@Path("/updateTicket")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	public Response updateTicket(TicketJson jsonIn, @HeaderParam("Language") String language)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -701,13 +783,13 @@ public class EventsHandler {
 		{
 			conn = DBInterface.TransactionStart();
 			et = new EventTickets(conn, jsonIn.idEventTickets);
-			et.setAvailable(jsonIn.buyQuantity);
+			et.setAvailable(jsonIn.available);
 			et.setBooked(jsonIn.booked);
 			et.setCabinRef(jsonIn.cabinRef);
 			et.setEventId(jsonIn.eventId);
 			et.setPrice(jsonIn.price);
 			et.setTicketType(jsonIn.ticketType);
-			et.insert(conn, "idEventTickets", jsonIn);
+			et.update(conn, "idEventTickets");
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 

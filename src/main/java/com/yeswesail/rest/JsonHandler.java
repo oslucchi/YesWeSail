@@ -14,6 +14,11 @@ public class JsonHandler {
 
 	public Status jasonize(Object obj, String language) 
 	{
+		return jasonize(obj, Constants.getLanguageCode(language));
+	}
+
+	public Status jasonize(Object obj, int languageId) 
+	{
 		ObjectMapper mapper = new ObjectMapper();
 		
 		try
@@ -23,8 +28,7 @@ public class JsonHandler {
 		catch (IOException e) 
 		{
 			log.error("Error jasonizing the object (" + e.getMessage() + ")");
-			json = LanguageResources.getResource(
-					Constants.getLanguageCode(language), "generic.execError") + " (" + 
+			json = LanguageResources.getResource(languageId, "generic.execError") + " (" + 
 					e.getMessage() + ")";
 			return Response.Status.UNAUTHORIZED;
 		}

@@ -1,6 +1,10 @@
 package com.yeswesail.rest.DBUtility;
 
 public class Roles extends DBInterface {
+	public static final int TRAVELLER = 1;
+	public static final int SHIP_OWNER = 2;
+	public static final int ADMINISTRATOR = 3;
+	
 	private static final long serialVersionUID = 188496684307289805L;
 
 	protected int roleId;

@@ -9,7 +9,7 @@ public class Constants {
 	
 	public static int getLanguageCode(String language)
 	{
-		switch(language)
+		switch(language.toUpperCase())
 		{
 		case "IT":
 			return(LNG_IT);

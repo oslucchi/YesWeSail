@@ -9,12 +9,22 @@ public class TicketLocks extends DBInterface
 	protected int idTicketLocks;
 	protected int eventTicketId;
 	protected Date lockTime;
+	protected int userId;
 	protected String bookedTo;
+	protected String status;
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	private void setNames()
 	{
-		tableName = this.getClass().getName();
-		idColName = "id" + tableName;
+		tableName = "TicketLocks";
+		idColName = "idTicketLocks";
 	}
 
 	public TicketLocks() throws Exception
@@ -27,7 +37,7 @@ public class TicketLocks extends DBInterface
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
-					 "WHERE " + idColName + " = " + id;
+					 "WHERE eventTicketId = " + id;
 		this.populateObject(conn, sql, this);
 	}
 
@@ -61,6 +71,14 @@ public class TicketLocks extends DBInterface
 
 	public void setBookedTo(String bookedTo) {
 		this.bookedTo = bookedTo;
+	}
+
+	public int getUserId() {
+		return userId;
+	}
+
+	public void setUserId(int userId) {
+		this.userId = userId;
 	}
 
 }

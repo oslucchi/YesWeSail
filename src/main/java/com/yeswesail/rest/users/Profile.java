@@ -153,6 +153,49 @@ public class Profile {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
+	@GET
+	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response userProfileById(@PathParam("userId") int userId, @HeaderParam("Authorization") String token)
+	{
+		int languageId = SessionData.getInstance().getLanguage(token);
+		Users u = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			u = new Users(conn, userId);
+			u.setPassword("******");
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(u);
+		} 
+		catch (IOException e) {
+			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
 	@POST
 	@Path("/whole")
 	@Produces(MediaType.APPLICATION_JSON)

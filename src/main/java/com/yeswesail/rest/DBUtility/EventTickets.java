@@ -5,7 +5,11 @@ import java.util.ArrayList;
 public class EventTickets extends DBInterface
 {	
 	private static final long serialVersionUID = -643395528484801051L;
-
+	public static final int BUNK = 1;
+	public static final int CABIN_NO_BATH = 2;
+	public static final int CABIN_BATH = 3;
+	public static final int CABIN_VIP = 4;
+	
 	protected int idEventTickets;
 	protected int eventId;
 	protected int ticketType;
@@ -18,8 +22,8 @@ public class EventTickets extends DBInterface
 	
 	private void setNames()
 	{
-		tableName = "Events";
-		idColName = "idEvents";
+		tableName = "EventTickets";
+		idColName = "idEventTickets";
 	}
 
 	public EventTickets() throws Exception
@@ -33,6 +37,18 @@ public class EventTickets extends DBInterface
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
+		this.populateObject(conn, sql, this);
+	}
+	
+	public EventTickets(DBConnection conn, int id, int languageId) throws Exception
+	{
+		setNames();
+		String sql = "SELECT a.*, b.description " +
+			 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
+			 	 "     a.ticketType = b.ticketType AND " +
+			 	 "     b.languageId = " + languageId + " " +
+				 "WHERE eventId = " + id + " AND " +
+			 	 "      available > booked ";
 		this.populateObject(conn, sql, this);
 	}
 
