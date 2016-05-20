@@ -255,7 +255,7 @@ ul[rn-carousel], .image-slide {
 }
 
 .admin-menu-container{
-    height: calc(100vh - 60.2px);
+    height: calc(100vh - 100.2px);
     width: 84px;
     background-color: #1B1C1D;
     float: left;

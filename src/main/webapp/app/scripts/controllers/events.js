@@ -36,7 +36,7 @@ angular.module('yeswesailApp')
         }
     
         body.activeOnly=true;
-        $http.post(URLs.ddns + 'rest/events/search', body).then(function (res) {
+        $http.post(URLs.ddns + 'rest/events/search/actives', body).then(function (res) {
             $scope.events = res.data;
             if (res.data[0] == null) {
 //                angular.element('.dimmer').dimmer({

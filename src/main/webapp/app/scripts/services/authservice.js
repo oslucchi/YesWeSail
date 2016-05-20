@@ -21,7 +21,8 @@ angular.module('yeswesailApp')
                 .then(function (res) {
                     var jsonResData = res.data;
                     Session.create(jsonResData.token, jsonResData.user);
-                    return jsonResData.token;
+                    
+                    return jsonResData;
                 });
             return promise;
         };
@@ -51,13 +52,13 @@ angular.module('yeswesailApp')
             return !!Session.getCurrentUser();
         };
 
-        authService.isAuthorized = function (location) {
-            if(location=='editPage'){
-                return false;    
-            }else{
-                return true;
+        authService.isAuthorized = function (roleId) {
+            if(Session.userProfile){
+
+                if(roleId<=Session.userProfile.roleId){
+                    return true;
+                }   
             }
-            
         };
     
         

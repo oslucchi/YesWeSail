@@ -18,8 +18,11 @@ angular.module('yeswesailApp')
         angular.element('.ui.dropdown').dropdown().dropdown({
             action: 'nothing'
         });
+    
         $scope.currentUser = null;
-
+        $scope.setCurrentUser=function(user){
+            $scope.currentUser=user;
+        }
         var token = $location.search().token;
         var invalidEmail = $location.search().invalidEmail;
     
@@ -30,7 +33,7 @@ angular.module('yeswesailApp')
             $http.post(URLs.ddns + 'rest/users/basic').then(function (res) {
 
                 Session.create(token, res.data);
-                $scope.currentUser = res.data;
+                $scope.setCurrentUser(res.data);
             }, function (err) {});
         }
 
@@ -82,13 +85,15 @@ angular.module('yeswesailApp')
         $scope.logout = function () {
             AuthService.logout().then(function () {
                 $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
-                $scope.currentUser=null;
-                $location.path('/#');
+                $scope.setCurrentUser(null);
+                $location.path('#/');
             }, function () {
                 $rootScope.$broadcast(AUTH_EVENTS.logoutFail);
             });
         };
-
+    
+        
+    
         var loginDialog = ngDialog;
         var registerDialog = ngDialog;
         var invalidEmailDialog = ngDialog;
@@ -99,7 +104,8 @@ angular.module('yeswesailApp')
             loginDialog.open({
                 template: 'views/login.html'
                 , className: 'ngdialog-theme-default'
-                , controller: 'LoginCtrl'
+                , controller: 'LoginCtrl',
+                scope: $scope
             });
         };
 
@@ -132,5 +138,15 @@ angular.module('yeswesailApp')
             closeByDocument: false
             });
     }
-        
+    
+    
+//       $rootScope.$on("$stateChangeStart", 
+//    function (event, toState, toParams, 
+//              fromState, fromParams) {
+//    if (!AuthService.isAuthorized(toState.data.accessLevel)) {
+//        $rootScope.error = "Access denied";
+//        event.preventDefault();
+//
+//    }
+//}); 
     });

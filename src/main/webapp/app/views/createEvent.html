@@ -63,7 +63,7 @@
             </select>
    
         </div>
-        <div class="field">
+        <div ng-show="isAuthorized(3)" class="field">
             <angucomplete-alt field-required="true" id="ex1" placeholder="Ship Owner..." pause="100" selected-object="suggestedOwner" local-data="shipOwners" search-fields="name,surname" image-field="imageURL"
                                 title-field="name,surname",
                                 description-field="name"

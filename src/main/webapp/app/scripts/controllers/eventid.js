@@ -25,7 +25,7 @@ angular.module('yeswesailApp')
             eventId: $stateParams.eventId
         }).then(function (res) {
             $scope.event = res.data.event;
-            $scope.event.title=res.data.event.description;
+            $scope.event.title=res.data.event.title;
             $scope.shipOwner = res.data.shipOwner;
             $scope.event.images = res.data.images;
             $scope.event.tickets = res.data.tickets;
