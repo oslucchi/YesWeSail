@@ -64,42 +64,66 @@ angular
     .state('main', {
       url: "/",
       templateUrl: 'views/main.html',
-      controller:'MainCtrl'
+      controller:'MainCtrl',
+      data: {
+                accessLevel: 0
+            }
     })
     .state('howitworks', {
       url: "/howitworks",
       templateUrl: 'views/comefunziona.html',
-      controller:  'ComefunzionaCtrl'
+      controller:  'ComefunzionaCtrl',
+      data: {
+                accessLevel: 0
+            }
     })
     .state('events', {
       url: "/events?location&categoryId",
       templateUrl: 'views/events.html',
-      controller:  'EventsCtrl'
+      controller:  'EventsCtrl',
+      data: {
+                accessLevel: 0
+            }
     })
     .state('event', {
       url: "/events/:eventId",
       templateUrl:  'views/eventid.html',
-      controller: 'EventidCtrl'
+      controller: 'EventidCtrl',
+      data: {
+                accessLevel: 0
+            }
     })
     .state('editEvent', {
       url: "/edit-event/:eventId",
       templateUrl:  'views/create.eventid.html',
-      controller: 'EditEventCtrl'
+      controller: 'EditEventCtrl',
+      data: {
+                accessLevel: 3
+            }
     })
       .state('admin', {
       url: "/admin",
       templateUrl:  'views/admin.html',
-      controller: 'AdminCtrl'
+      controller: 'AdminCtrl',
+      data: {
+                accessLevel: 3
+            }
     }) 
       .state('admin.events', {
       url: "/events",
       templateUrl:  'views/admin.events.html',
-      controller: 'AdminCtrl'
+      controller: 'AdminCtrl',
+      data: {
+                accessLevel: 3
+            }
     })
       .state('admin.mail', {
       url: "/mail",
       templateUrl:  'views/admin.events.html',
-      controller: 'AdminCtrl'
+      controller: 'AdminCtrl',
+      data: {
+                accessLevel: 3
+            }
     });
     
     
@@ -115,11 +139,42 @@ angular
 
 
     })
-    .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs) {
+    .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs, $state) {
         $http.defaults.headers.common['Language'] = 'IT';
 //        angular.element('.ui.usermenu.dropdown').dropdown();
 
+      
 
 
-
-    });
+    }).factory('AuthResolver', function ($q, $rootScope, $state) {
+  return {
+    resolve: function () {
+      var deferred = $q.defer();
+      var unwatch = $rootScope.$watch('currentUser', function (currentUser) {
+        if (angular.isDefined(currentUser)) {
+          if (currentUser) {
+            deferred.resolve(currentUser);
+          } else {
+            deferred.reject();
+            $state.go('main');
+          }
+          unwatch();
+        }
+      });
+      return deferred.promise;
+    }
+  };
+})
+.directive('ngReallyClick', [function() {
+    return {
+        restrict: 'A',
+        link: function(scope, element, attrs) {
+            element.bind('click', function() {
+                var message = attrs.ngReallyMessage;
+                if (message && confirm(message)) {
+                    scope.$apply(attrs.ngReallyClick);
+                }
+            });
+        }
+    }
+}]);

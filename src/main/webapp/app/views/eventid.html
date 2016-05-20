@@ -1,3 +1,4 @@
+<!--
 <div ng-if='currentUser' class="ui attached blue inverted stackable menu">
     <a class="green item"><i class="checkmark icon"></i>Approve</a>
     <a class="red item"><i class="remove icon"></i>Remove</a>
@@ -5,6 +6,7 @@
     <a class="grey item"><i class="copy icon"></i>Clone</a>
     <a class="grey item"><i class="edit icon"></i>Edit</a>
 </div>
+-->
 <div ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
 
 
@@ -96,9 +98,10 @@
             </div>
             <div class="four wide column">
                 <div class="ui book sticky">
+                    <tickets global-tickets="event.tickets"></tickets>
+                    
 
-
-
+<!--
                     <table class="ui compact celled definition table">
                         <thead class="full-width">
                             <tr>
@@ -139,6 +142,7 @@
                             </tr>
                         </tfoot>
                     </table>
+-->
 
                     
                     

@@ -1,4 +1,3 @@
-
 <div class="admin-events-container">
  
 <table class="ui compact sortable selectable celled  table">
@@ -20,7 +19,7 @@
   </thead>
     
   <tbody>
-    <tr ng-class="{'error': event.status=='C', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
+    <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
         <td class="collapsing">
          <div class="ui fitted center aligned checkbox">
           <input type="checkbox" ng-model="selectedEvents"> <label></label>
@@ -29,8 +28,8 @@
       <td class="collapsing">
         <div class="ui center aligned">
               <i ng-click="activate(event)" class="large green checkmark link icon"></i>
-              <i ng-click="remove(event)" class="large red remove link icon"></i>
-              <i ng-click="deactivate(event)" class="large yellow ban link icon"></i>
+              <i ng-really-message="Are you sure?" ng-really-click="remove(event)" class="large red trash outline link icon"></i>
+              <i ng-click="deactivate(event)" class="large red ban link icon"></i>
               <i ng-click="clone(event)" class="large grey copy link icon"></i>
               <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i>
         </div>
@@ -41,7 +40,7 @@
             <div ng-switch="event.status">
               <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
               <div ng-switch-when="I"><i class="large red remove icon"></i></div>
-              <div ng-switch-when="P"><i class="large yellow ban icon"></i></div>
+              <div ng-switch-when="P"><i class="large yellow wait icon"></i></div>
               <div ng-switch-default>
                
               </div>
@@ -69,15 +68,12 @@
   </tbody>
   <tfoot class="full-width">
     <tr>
-      <th><div class="ui small  disabled button">
+      <th><div class="ui small disabled button">
           Approve All
         </div></th>
       <th colspan="9">
-        <div ng-click="popupCreateEventDialog()" class="ui right floated small primary labeled icon button">
-          <i class="user icon"></i> Add Event
-        </div>
-        
-        
+        <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
+        <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add Event</button>
       </th>
     </tr>
   </tfoot>

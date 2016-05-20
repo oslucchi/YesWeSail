@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventidCtrl', function ($scope, $http, URLs, $stateParams) {
+    .controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -25,7 +25,7 @@ angular.module('yeswesailApp')
             eventId: $stateParams.eventId
         }).then(function (res) {
             $scope.event = res.data.event;
-            $scope.event.title=res.data.event.description;
+            $scope.event.title=res.data.event.title;
             $scope.shipOwner = res.data.shipOwner;
             $scope.event.images = res.data.images;
             $scope.event.tickets = res.data.tickets;
@@ -37,7 +37,7 @@ angular.module('yeswesailApp')
             
         }, function (err) {});
 
-
+    
         $scope.testTickets = [[{
                 "available": 4
                 , "booked": 0
