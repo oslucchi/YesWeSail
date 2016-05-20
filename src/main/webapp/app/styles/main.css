@@ -265,6 +265,18 @@ ul[rn-carousel], .image-slide {
     margin-left: 84px;
 }
 
+.add-to-cart{
+    cursor: pointer;
+}
+
+.add-to-cart:hover{
+    background-color: antiquewhite !important;
+}
+
+.tickets-container{
+    background-color: white;
+}
+
 /*menu customization*/
 .green.item{
     background-color: #21ba45 !important;

@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log) {
+    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService) {
 //        $rootScope.$on("$locationChangeStart", function(event, next, current) { 
 //            if(!AuthService.isAuthenticated()){
 //                 event.preventDefault()
@@ -18,7 +18,18 @@ angular.module('yeswesailApp')
         angular.element('.ui.dropdown').dropdown().dropdown({
             action: 'nothing'
         });
-    
+        $scope.cartQty=null;
+        
+        $scope.$watch( function () { return CartService.cartQty; }, function (data) {
+            $scope.cartQty = data
+        });
+        if($cookieStore.get('bookedTickets')){
+         
+            CartService.bookedTickets=$cookieStore.get('bookedTickets');
+            CartService.cartQty=CartService.bookedTickets.length;;
+            $scope.cartQty=CartService.bookedTickets.length;
+
+        }
         $scope.currentUser = null;
         $scope.setCurrentUser=function(user){
             $scope.currentUser=user;
