@@ -12,6 +12,7 @@ public class Events extends DBInterface
 {	
 	private static final long serialVersionUID = 2658938461796360575L;
 	private static final Logger log = Logger.getLogger(DBInterface.class);
+	private static final ApplicationProperties prop = ApplicationProperties.getInstance();
 	
 	protected int idEvents;
 	protected int eventType;
@@ -101,17 +102,31 @@ public class Events extends DBInterface
 				 	 "        b.languageId = " + languageId + " AND " +
 					 "		  b.anchorZone = 0 " + " AND " +
 					 "        a.status = 'A' " +
-				 	 "ORDER BY dateStart " +
-				 	 "LIMIT " + ApplicationProperties.getInstance().getMaxNumHotOffers();
+				 	 "ORDER BY dateStart ";
+		
 		log.trace("trying to populate collection with sql '" + sql + "'");
 		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		log.trace("Done. There are " + events.size() + " elemets");
-		if (events.size() == 0)
-			return null;
 		log.trace("Get tickets for the event");
 		getTicketMaxAndMin(events);
-		log.trace("Returning to caller");
-		return(events.toArray(new Events[events.size()]));
+		
+		ArrayList<Events> retList = new ArrayList<Events>();
+		for(Events e : events)
+		{
+			if (e.minPrice != 0)
+			{
+				retList.add(e);
+			}
+			if (retList.size() == prop.getMaxNumHotOffers())
+			{
+				break;
+			}
+		}
+		log.trace("Returning to caller. List size = " + retList.size());
+		if (retList.size() == 0)
+			return null;
+		
+		return(retList.toArray(new Events[retList.size()]));
 	}
 
 	public static Events[] findHot(String token) throws Exception

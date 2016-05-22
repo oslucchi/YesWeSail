@@ -29,7 +29,8 @@ public class Authorizer implements ContainerRequestFilter
 			authorizedList = prop.getNoAythorizationRequired().split(",");
 		}
 		String path = request.getUriInfo().getPath();
-		if (path.startsWith("/auth/confirmUser"))
+		if (path.startsWith("/auth/confirmUser") ||
+			path.startsWith("/users/basic/"))
 			return;
 		
 		if (request.getHeaderString("Edit-Mode") == null)

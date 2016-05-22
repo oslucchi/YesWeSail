@@ -19,6 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
@@ -82,7 +83,56 @@ public class Profile {
 		
 		return errMsg;
 	}
-	
+
+	@GET
+	@Path("/basic/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response basicPublicProfile(@PathParam("userId") int userId, 
+									   @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+		Users u = null;
+		Users uWiped = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			u = new Users(conn, userId);
+			uWiped = new Users();
+			uWiped.setName(u.getName());
+			uWiped.setSurname(u.getSurname());
+			uWiped.setRoleId(u.getRoleId());
+			uWiped.setImageURL(u.getImageURL());
+		}
+		catch (Exception e) 
+		{
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(uWiped);
+		} 
+		catch (IOException e) {
+			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
 	@POST
 	@Path("/basic")
 	@Produces(MediaType.APPLICATION_JSON)

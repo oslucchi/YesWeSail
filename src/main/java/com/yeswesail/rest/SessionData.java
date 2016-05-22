@@ -5,7 +5,6 @@ import java.util.Map;
 
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
-import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 
