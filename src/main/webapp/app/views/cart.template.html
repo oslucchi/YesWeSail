@@ -1,0 +1,61 @@
+<div class="tickets-container">
+   <div class="ui header">Evento 1</div>
+<table class="ui very basic  celled table">
+  <thead>
+    <tr><th class="center aligned">Ticket</th>
+    <th class="four center aligned wide">Price</th>
+    <th class="four center aligned wide">Quantity</th>
+  </tr></thead>
+  <tbody>
+    <tr ng-repeat="tickets in bookedTickets track by $index">
+        <td>{{tickets[0].description}} </td>
+        <td>{{tickets[0].price}}€</td>
+        <td>
+            {{tickets.length}}
+        
+
+            <i ng-really-message="Are you sure?" ng-really-click="removeFromCart(tickets)" class="large red trash outline link icon"></i>
+        </td>
+
+    </tr>
+    
+  </tbody>
+    
+    
+    
+</table>
+    <div class="ui header">Evento 2</div> 
+<table class="ui very basic  celled table">
+  <thead>
+    <tr><th class="center aligned">Ticket</th>
+    <th class="four center aligned wide">Price</th>
+    <th class="four center aligned wide">Quantity</th>
+  </tr></thead>
+  <tbody>
+    <tr ng-repeat="tickets in bookedTickets track by $index">
+        <td>{{tickets[0].description}} </td>
+        <td>{{tickets[0].price}}€</td>
+        <td>
+        <div class="ui tiny input">
+            <input type="text" ng-model="tickets.length">
+        </div> 
+        
+        <div class="ui mini icon buttons">
+          <button class="ui button"><i class="minus icon"></i></button>
+          <button class="ui button"><i class="plus icon"></i></button>
+            
+        </div>
+            <i ng-really-message="Are you sure?" ng-really-click="removeFromCart(tickets)" class="large red trash outline link icon"></i>
+        </td>
+
+    </tr>
+    
+  </tbody>
+    
+    
+    
+</table>
+    
+<button ng-click="buy()" class="ui button"><i class="money icon"></i>Checkout with card</button>
+<button ng-click="buy()" class="ui button"><i class="paypal icon"></i>Checkout with PayPal</button>
+</div>

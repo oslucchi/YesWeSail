@@ -101,6 +101,13 @@ angular
                 accessLevel: 3
             }
     })
+      .state('cart', {
+      url: "/cart",
+      templateUrl:  'views/cart.html',
+      data: {
+                accessLevel: 3
+            }
+    })
       .state('admin', {
       url: "/admin",
       templateUrl:  'views/admin.html',

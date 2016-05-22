@@ -102,6 +102,16 @@ Starting at {{event.minPrice}}€
             <div ng-if="event.earlyBooking" class="early-booking-stamp">
                         <img src="images/early-booking.png">
                     </div>
+     <div class="event-details">
+                <h2  style="color: white !important;" class="ui medium header">
+                {{event.title}}
+                
+              
+                </h2>
+                
+                <span>  {{event.location}}</span><br>
+                <span>{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</span>
+                </div>
             <ship-owner ship-owner-id="event.shipOwnerId"></ship-owner>
         </div>
 
