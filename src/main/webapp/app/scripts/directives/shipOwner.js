@@ -9,7 +9,7 @@ angular.module('yeswesailApp')
         },
         link: function (scope, element, attrs) {
               
-            $http.get(URLs.ddns + 'rest/users/'+scope.shipOwnerId).then(function(res){
+            $http.get(URLs.ddns + 'rest/users/basic/'+scope.shipOwnerId).then(function(res){
                                     scope.imageURL=res.data.imageURL;                                             
                                                                                  })
         }

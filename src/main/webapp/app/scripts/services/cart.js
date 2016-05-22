@@ -58,7 +58,12 @@ angular.module('yeswesailApp')
         };
 
         cartService.getAllItems = function () {
-            return !!Session.getCurrentUser();
+             return $http
+                .get(URLs.ddns + 'rest/cart')
+                .then(function (res) {
+                 cartService.bookedTickets=res.data;
+                    return res;
+                });
         };
 
         cartService.emptyCart = function () {

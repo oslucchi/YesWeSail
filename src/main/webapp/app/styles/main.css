@@ -78,12 +78,16 @@ body {
     cursor: pointer;
 }
 
-
+.ui.huge.blue.ribbon.label{
+    cursor: pointer;
+}
 .last-minute-stamp>img, .early-booking-stamp>img{
     width: 80px;
     height: auto;
 }
-
+.book{
+    z-index: 9 !important;
+}
 
 .last-minute-stamp, .early-booking-stamp{
      width: 50px;
@@ -91,6 +95,14 @@ body {
     top: 20px;
     right: 50px;
     position: absolute;
+}
+.event-details{
+ 
+    z-index: 9;
+    top: 20px;
+    left; 3px;
+    position: absolute;
+    color: white !important;
 }
 
 
@@ -275,6 +287,8 @@ ul[rn-carousel], .image-slide {
 
 .tickets-container{
     background-color: white;
+    height:100vh;
+    padding: 50px;
 }
 
 /*menu customization*/

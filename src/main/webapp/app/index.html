@@ -48,7 +48,7 @@
                 <a ng-if="!currentUser.isShipOwner"  class="ui item">
                     <button class="ui inverted basic button">Diventa armatore</button>
                 </a>
-                <a class="item">
+                <a ui-sref="cart" ng-if="cartQty" class="item">
                     <i class="cart icon"></i>
                     <div class="floating ui red label">{{cartQty}}</div>
                 </a>
@@ -178,6 +178,7 @@
     <script src="scripts/directives/clickToEdit.js"></script>
     <script src="scripts/directives/shipOwner.js"></script>
     <script src="scripts/directives/tickets.js"></script>
+    <script src="scripts/directives/cart.js"></script>
     <script src="scripts/services/cart.js"></script>
     <!-- endbuild -->
     <script src="scripts/libs/textAngular_custom/textAngular.js"></script>
