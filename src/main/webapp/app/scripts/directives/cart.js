@@ -20,10 +20,23 @@ angular.module('yeswesailApp')
 //          CartService.getAllItems().then(function(res){
 //              scope.bookedTickets=CartService.bookedTickets;
 //          });
-//          
+          scope.paymentProceeded=true;
+          scope.inProgress=false;
+          
+          
         scope.bookedTickets=CartService.bookedTickets;
-        console.log(scope.bookedTickets)
-        scope.buy=CartService.buy;
+        scope.checkout=function(obj){
+            console.log(obj);
+        }
+          
+        scope.requestToken=function(){
+            scope.inProgress=true;
+            CartService.requestToken().then(function(res){
+                scope.paymentProceeded=false;
+                CartService.requestNonceFromBraintree(res.data);
+            });
+        };
+        
       }
     };
   });
