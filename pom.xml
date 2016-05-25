@@ -234,6 +234,7 @@
 		          <configuration>
 		            <executable>grunt</executable>
 		            <arguments>
+		              <argument>build</argument>
 		              <argument>--force</argument>
 		            </arguments>
 			        <workingDirectory>src/main/webapp</workingDirectory>
