@@ -48,10 +48,57 @@ angular.module('yeswesailApp')
                     return null;
                 });
         };
-
-        cartService.buy = function () {
+    
+        cartService.requestToken=function () {
             return $http
-                .post(URLs.ddns + 'rest/tickets/buyTickets', cartService.bookedTickets)
+                .get(URLs.ddns + 'rest/cart/generateToken')
+                .then(function (res) {
+                    return res;
+                });
+        };
+    
+        cartService.requestNonceFromBraintree=function (clientToken) {
+             braintree.setup(clientToken, "custom", {
+                paypal: {
+                        container: 'paypal-container',
+                        singleUse: true, // Required
+                        amount: 5.00, // Required
+                        currency: 'EUR', // Required
+                        locale: 'it_it',
+                        enableShippingAddress: true,
+                        shippingAddressOverride: {
+                          recipientName: 'Scruff McGruff',
+                          streetAddress: '1234 Main St.',
+                          extendedAddress: 'Unit 1',
+                          locality: 'Chicago',
+                          countryCodeAlpha2: 'US',
+                          postalCode: '60652',
+                          region: 'IL',
+                          phone: '123.456.7890',
+                          editable: false
+                        },
+                },
+                onPaymentMethodReceived: function (obj) {
+                 cartService.checkout(obj.nonce).then(function(res){
+                     console.log(res);
+                 });
+                }
+              });
+            
+            braintree.setup(clientToken, "custom", {id: "checkout"});
+            
+            
+          
+            
+            
+            
+        };
+    
+    
+    
+        cartService.checkout = function (nonce) {
+            return $http
+                .get(URLs.ddns + 'rest/cart/checkout?nonce='+nonce)
                 .then(function (res) {
                     return res;
                 });

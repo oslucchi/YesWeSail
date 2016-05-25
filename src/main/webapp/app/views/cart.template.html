@@ -56,6 +56,18 @@
     
 </table>
     
-<button ng-click="buy()" class="ui button"><i class="money icon"></i>Checkout with card</button>
-<button ng-click="buy()" class="ui button"><i class="paypal icon"></i>Checkout with PayPal</button>
+    
+    
+   
+<button ng-if="paymentProceeded" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button"><i class="money icon"></i>Proceed with payment</button>
+    
+    <div id="paypal-container"></div>
+    
+    
+    <form id="checkout" action="http://yeswesail.ddns.net:8080/YesWeSail/rest/cart/checkout" method="get">
+  <input data-braintree-name="number" value="4111111111111111">
+  <input data-braintree-name="expiration_date" value="10/20">
+  <input type="submit" id="submit" value="Pay">
+</form>
+    
 </div>
