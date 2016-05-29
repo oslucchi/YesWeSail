@@ -12,6 +12,7 @@ public class TicketsInCart
 		private String ticketDescription;
 		private int price;
 		private int quantity;
+		private boolean toBuy;
 	
 		public int getIdEventTickets() {
 			return idEventTickets;
@@ -52,7 +53,12 @@ public class TicketsInCart
 		public void setIdTicketLocks(int idTicketLocks) {
 			this.idTicketLocks = idTicketLocks;
 		}
-		
+		public boolean isToBuy() {
+			return toBuy;
+		}
+		public void setToBuy(boolean toBuy) {
+			this.toBuy = toBuy;
+		}
 	}
 	private int idEvents;
 	private Date dateStart;
@@ -114,4 +120,5 @@ public class TicketsInCart
 	public void setTickets(ArrayList<Tickets> tickets) {
 		this.tickets = tickets;
 	}
+
 }

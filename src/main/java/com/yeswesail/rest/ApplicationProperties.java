@@ -24,10 +24,14 @@ public class ApplicationProperties {
 	private String fbApplicationSecret = "";
 	private String redirectWebHost = "";
 	private String defaultLang = "";
-	private String noAythorizationRequired = "";
+	private String noAuthorizationRequired = "";
+	private String noAuthorizationRequiredRoot = "";
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
 	private boolean useCoars = false;
+	private String braintreeMerchantId;
+	private String braintreePublicKey;
+	private String braintreePrivateKey;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -76,8 +80,12 @@ public class ApplicationProperties {
     	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
     	redirectWebHost  = properties.getProperty("redirectWebHost");
     	defaultLang = properties.getProperty("defaultLang");
-    	noAythorizationRequired = properties.getProperty("noAythorizationRequired");
+    	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
+    	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
 		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
+		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
+		braintreePublicKey = properties.getProperty("braintreePublicKey");
+		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
     	
     	try
     	{
@@ -169,11 +177,28 @@ public class ApplicationProperties {
 		return defaultLang;
 	}
 
-	public String getNoAythorizationRequired() {
-		return noAythorizationRequired;
+	public String getNoAuthorizationRequired() {
+		return noAuthorizationRequired;
 	}
 
 	public boolean isUseCoars() {
 		return useCoars;
+	}
+
+	public String getNoAuthorizationRequiredRoot() {
+		return noAuthorizationRequiredRoot;
+	}
+
+	public String getBraintreeMerchantId() {
+		return braintreeMerchantId;
+	}
+
+	public String getBraintreePublicKey() {
+		return braintreePublicKey;
+	}
+
+	public String getBraintreePrivateKey() {
+		return braintreePrivateKey;
 	}		
+	
 }

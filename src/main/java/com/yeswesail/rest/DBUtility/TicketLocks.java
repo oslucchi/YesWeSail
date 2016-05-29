@@ -1,5 +1,6 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 public class TicketLocks extends DBInterface 
@@ -37,10 +38,21 @@ public class TicketLocks extends DBInterface
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
-					 "WHERE eventTicketId = " + id;
+					 "WHERE idTicketLocks = " + id;
 		this.populateObject(conn, sql, this);
 	}
-
+	
+	@SuppressWarnings("unchecked")
+	public static TicketLocks[] findByUserId(DBConnection conn, int userId) throws Exception
+	{
+		ArrayList<TicketLocks> tickets = new ArrayList<>();
+		String sql = "SELECT * " +
+					 "FROM TicketLocks " +
+					 "WHERE userId = " + userId;
+		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		return(tickets.toArray(new TicketLocks[tickets.size()]));
+	}
+	
 	public int getIdTicketLocks() {
 		return idTicketLocks;
 	}
@@ -81,4 +93,9 @@ public class TicketLocks extends DBInterface
 		this.userId = userId;
 	}
 
+	public static void deleteTicketsForUser(DBConnection conn, int idUsers) throws Exception 
+	{
+		String sql = "DELETE FROM TicketLocks WHERE userId = " + idUsers;
+		executeStatement(conn, sql, false);	
+	}
 }

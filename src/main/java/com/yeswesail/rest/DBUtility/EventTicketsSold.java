@@ -1,15 +1,18 @@
 package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class EventTicketsSold extends DBInterface
 {	
 	private static final long serialVersionUID = -643395528484801051L;
 
 	protected int idEventTicketsSold;
-	protected int eventId;
+	protected int eventTicketId;
 	protected int userId;
-	
+	protected String transactionId;
+	protected Date timestamp;
+
 	private void setNames()
 	{
 		tableName = "EventTicketsSold";
@@ -53,12 +56,12 @@ public class EventTicketsSold extends DBInterface
 		this.idEventTicketsSold = idEventTicketsSold;
 	}
 
-	public int getEventId() {
-		return eventId;
+	public int getEventTicketId() {
+		return eventTicketId;
 	}
 
-	public void setEventId(int eventId) {
-		this.eventId = eventId;
+	public void setEventTicketId(int eventTicketId) {
+		this.eventTicketId = eventTicketId;
 	}
 
 	public int getUserId() {
@@ -67,6 +70,22 @@ public class EventTicketsSold extends DBInterface
 
 	public void setUserId(int userId) {
 		this.userId = userId;
+	}
+
+	public String getTransactionId() {
+		return transactionId;
+	}
+
+	public void setTransactionId(String transactionId) {
+		this.transactionId = transactionId;
+	}
+
+	public Date getTimestamp() {
+		return timestamp;
+	}
+
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
 	}
 
 }

@@ -6,6 +6,7 @@ import java.net.MalformedURLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.UUID;
@@ -160,21 +161,33 @@ public class EventsHandler {
 		return(where);
 	}
 
-	private Response handleSearch(EventJson jsonIn, int languageId)
+	private Response handleSearch(EventJson jsonIn, int languageId, boolean activeOnly)
 	{
-		Events[] eventsFiltered = null;
+		Events[] events= null;
 		try 
 		{
-			eventsFiltered = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
+			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
 		catch (Exception e) {
 			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
-
+		ArrayList<Events> eventsFiltered = new ArrayList<>();
+		if (activeOnly)
+		{
+			for(Events ev : events)
+			{
+				if (ev.getMinPrice() != 0)
+					eventsFiltered.add(ev);
+			}
+		}
+		else
+		{
+			eventsFiltered = new ArrayList<Events>(Arrays.asList(events));
+		}
 		// No record found. return an empty object
-		if (eventsFiltered == null)
+		if (eventsFiltered.size() == 0)
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
@@ -196,7 +209,7 @@ public class EventsHandler {
 							  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		return handleSearch(jsonIn, languageId);
+		return handleSearch(jsonIn, languageId, false);
 	}
 
 	@POST
@@ -207,7 +220,7 @@ public class EventsHandler {
 								  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		return handleSearch(jsonIn, languageId);
+		return handleSearch(jsonIn, languageId, true);
 	}
 
 	
@@ -265,9 +278,9 @@ public class EventsHandler {
 			ev.setIdEvents(idEvents);
 			String sql = 
 					"INSERT INTO EventDescription " +
-				    "  SELECT anchorZone, language, description, " + jsonIn.idEvents + " " +
+				    "  SELECT 0, languageId, " + idEvents + ", anchorZone, description" +
 					"  FROM EventDescription " +
-				    "  WHERE idEvents = " + jsonIn.idEvents;
+				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventDescription.executeStatement(conn, sql, true);
 			// handleInsertUpdateDetails(jsonIn, languageId, conn);
 			DBInterface.TransactionCommit(conn);

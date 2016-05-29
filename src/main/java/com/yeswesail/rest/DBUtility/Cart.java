@@ -21,6 +21,7 @@ public class Cart extends DBInterface
 	protected int price;
 	protected int quantity;
 	protected int idTicketLocks;
+	private boolean toBuy;
 	
 	private void setNames()
 	{
@@ -84,6 +85,7 @@ public class Cart extends DBInterface
 			t.setQuantity(1);
 			t.setTicketDescription(cart.ticketDescription);
 			t.setTicketType(cart.ticketType);
+			t.setToBuy(true);
 			retList.get(i).getTickets().add(t);
 		}
 		return (retList.toArray(new TicketsInCart[retList.size()]));
@@ -138,6 +140,7 @@ public class Cart extends DBInterface
 				t.setTicketType(ticket.ticketType);
 				t.setIdTicketLocks(ticket.idTicketLocks);
 				t.setQuantity(1);
+				t.setToBuy(true);
 				retList.get(i).getTickets().add(t);
 			}
 		}		
@@ -206,5 +209,14 @@ public class Cart extends DBInterface
 
 	public void setLocation(String location) {
 		this.location = location;
+	}
+	
+	public boolean getToBuy()
+	{
+		return toBuy;
+	}
+	public void setToBuy(boolean toBuy)
+	{
+		this.toBuy = toBuy;
 	}
 }

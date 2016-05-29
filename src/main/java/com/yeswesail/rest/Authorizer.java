@@ -20,19 +20,30 @@ public class Authorizer implements ContainerRequestFilter
 	private final Logger log = Logger.getLogger(this.getClass());
 	
 	private static String[] authorizedList = null;
+	private static String[] authorizedByRootList = null;
 	
 	@Override
 	public void filter(ContainerRequestContext request) throws IOException 
 	{
+		String path = request.getUriInfo().getPath();
+		
+		if (authorizedByRootList == null)
+		{
+			authorizedByRootList = prop.getNoAuthorizationRequiredRoot().split(",");
+		}
+		for(String authorized : authorizedByRootList)
+		{
+			if (path.startsWith(authorized))
+			{
+				log.trace("Publicly avalable request under authorized root (" + path + "). It is authorized");
+				return;
+			}
+		}
+		
 		if (authorizedList == null)
 		{
-			authorizedList = prop.getNoAythorizationRequired().split(",");
+			authorizedList = prop.getNoAuthorizationRequired().split(",");
 		}
-		String path = request.getUriInfo().getPath();
-		if (path.startsWith("/auth/confirmUser") ||
-			path.startsWith("/users/basic/"))
-			return;
-		
 		if (request.getHeaderString("Edit-Mode") == null)
 		{
 			for(String authorized : authorizedList)
