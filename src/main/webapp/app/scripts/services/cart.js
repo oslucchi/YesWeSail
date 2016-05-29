@@ -39,30 +39,26 @@ angular.module('yeswesailApp')
         cartService.removeFromCart = function (ticket) {
            
 
-            return $http
-                .post(URLs.ddns + 'rest/auth/logout', {
-                    token: $rootScope.globals.currentUser.token
-                })
+            return $http.delete(URLs.ddns + 'rest/cart')
                 .then(function (res) {
-                    Session.destroy();
-                    return null;
+                    return res;
                 });
         };
     
-        cartService.requestToken=function () {
+        cartService.requestToken=function (bookedEvents) {
             return $http
-                .get(URLs.ddns + 'rest/cart/generateToken')
+                .post(URLs.ddns + 'rest/cart/generateToken', bookedEvents)
                 .then(function (res) {
                     return res;
                 });
         };
     
         cartService.requestNonceFromBraintree=function (clientToken) {
-             braintree.setup(clientToken, "custom", {
+             braintree.setup(clientToken, "paypal", {
                 paypal: {
                         container: 'paypal-container',
                         singleUse: true, // Required
-                        amount: 5.00, // Required
+                        amount: 100.00, // Required
                         currency: 'EUR', // Required
                         locale: 'it_it',
                         enableShippingAddress: true,
@@ -85,7 +81,9 @@ angular.module('yeswesailApp')
                 }
               });
             
-            braintree.setup(clientToken, "custom", {id: "checkout"});
+            braintree.setup(clientToken, "custom", {
+                id: "checkout"
+            });
             
             
           
@@ -114,12 +112,13 @@ angular.module('yeswesailApp')
         };
 
         cartService.emptyCart = function () {
-            if(Session.userProfile){
-
-                if(roleId<=Session.userProfile.roleId){
-                    return true;
-                }   
-            }
+            return $http.delete(URLs.ddns + 'rest/cart')
+                .then(function (res) {
+                cartService.cartQty=null;
+                
+                 $cookieStore.remove('bookedTickets');
+                    return res;
+                });
         };
     
         

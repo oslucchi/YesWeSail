@@ -56,7 +56,7 @@ angular
 
 .config(function ($stateProvider, $urlRouterProvider) {
     
-    // For any unmatched url, redirect to /
+  // For any unmatched url, redirect to /
   $urlRouterProvider.otherwise("/");
   //
   // Now set up the states
@@ -104,6 +104,22 @@ angular
       .state('cart', {
       url: "/cart",
       templateUrl:  'views/cart.html',
+      data: {
+                accessLevel: 3
+            }
+    }) 
+      .state('cartSuccess', {
+      url: "/cart/success",
+      templateUrl:  'views/cartsuccess.html',
+      controller: 'CartSuccessCtrl',
+      data: {
+                accessLevel: 3
+            }
+    })
+      .state('cartError', {
+      url: "/cart/error",
+      templateUrl:  'views/carterror.html',
+      controller: 'CartErrorCtrl',
       data: {
                 accessLevel: 3
             }
@@ -184,4 +200,8 @@ angular
             });
         }
     }
+}]).filter('trusted', ['$sce', function ($sce) {
+    return function(url) {
+        return $sce.trustAsResourceUrl(url);
+    };
 }]);

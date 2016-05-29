@@ -1,21 +1,34 @@
-<div class="tickets-container">
-   <div class="ui header">Evento 1</div>
-<table class="ui very basic  celled table">
-  <thead>
-    <tr><th class="center aligned">Ticket</th>
-    <th class="four center aligned wide">Price</th>
-    <th class="four center aligned wide">Quantity</th>
-  </tr></thead>
-  <tbody>
-    <tr ng-repeat="tickets in bookedTickets track by $index">
-        <td>{{tickets[0].description}} </td>
-        <td>{{tickets[0].price}}€</td>
-        <td>
-            {{tickets.length}}
+<div class="tickets-container"> 
+        <div ng-if="bookedEvents==0" class="ui center aligned segment">
+          
+        <h2 class="ui header">There are no tickets in your cart, check these events that might be of interest</h2>
+    </div>
+    
+    
+   <div class="ui segment" ng-repeat="event in bookedEvents">
+     <div class="ui header">{{event.title}}
+        <div class="ui sub header">{{event.location}}</div>
+        <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
+       
+       </div>
+    
+       <table class="ui very basic  celled table">
+      <thead>
+        <tr>
+            <th ng-if="paymentProceeded" class="">Selected</th>
+            <th class="">Ticket</th>
+            <th class="">Price</th>
+      </tr></thead>
+      <tbody>
+    <tr ng-repeat="ticket in event.tickets track by $index">
         
-
-            <i ng-really-message="Are you sure?" ng-really-click="removeFromCart(tickets)" class="large red trash outline link icon"></i>
-        </td>
+        
+        <td ng-if="paymentProceeded" class="collapsing"><div class="ui fitted center aligned checkbox">
+          <input ng-change="recalculateTotal()" type="checkbox" ng-model="ticket.toBuy"> <label></label>
+        </div></td>
+        <td>{{ticket.ticketDescription}} </td>
+        <td>{{ticket.price}}€</td>
+       
 
     </tr>
     
@@ -24,50 +37,86 @@
     
     
 </table>
-    <div class="ui header">Evento 2</div> 
-<table class="ui very basic  celled table">
-  <thead>
-    <tr><th class="center aligned">Ticket</th>
-    <th class="four center aligned wide">Price</th>
-    <th class="four center aligned wide">Quantity</th>
-  </tr></thead>
-  <tbody>
-    <tr ng-repeat="tickets in bookedTickets track by $index">
-        <td>{{tickets[0].description}} </td>
-        <td>{{tickets[0].price}}€</td>
-        <td>
-        <div class="ui tiny input">
-            <input type="text" ng-model="tickets.length">
-        </div> 
-        
-        <div class="ui mini icon buttons">
-          <button class="ui button"><i class="minus icon"></i></button>
-          <button class="ui button"><i class="plus icon"></i></button>
-            
-        </div>
-            <i ng-really-message="Are you sure?" ng-really-click="removeFromCart(tickets)" class="large red trash outline link icon"></i>
-        </td>
-
-    </tr>
     
-  </tbody>
-    
-    
-    
-</table>
+    </div>
+   
+    <div ng-if="total>0"  class="ui right aligned segment">
+          
+        <h2 class="ui header">Total: {{total}}€</h2>
+    </div>
     
     
     
    
-<button ng-if="paymentProceeded" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button"><i class="money icon"></i>Proceed with payment</button>
+<button ng-if="paymentProceeded && total>0" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button">
+    <i class="money icon"></i>Proceed with payment</button>
+<button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button">
+    <i class="remove icon"></i>Empty Cart</button>
     
-    <div id="paypal-container"></div>
-    
-    
-    <form id="checkout" action="http://yeswesail.ddns.net:8080/YesWeSail/rest/cart/checkout" method="get">
+ <div ng-if="!paymentProceeded" class="ui center aligned segment">
+  <div id="paypal-container"></div>
+  <div class="ui horizontal divider">
+    Or
+  </div>
+     
+     <form id="checkout" class="ui form"  action="{{checkoutUrl | trusted}}" method="get">
+  
+   <div class="fields">
+    <div class="seven wide field">
+      <label>Card Number</label>
+      <input type="text" value="4111111111111111" data-braintree-name="number" maxlength="16" placeholder="Card #">
+    </div>
+<!--
+    <div class="three wide field">
+      <label>CVC</label>
+      <input type="text" maxlength="3" placeholder="CVC">
+    </div>
+-->
+    <div class="six wide field">
+      <label>Expiration</label>
+      <div class="two fields">
+        <div class="field">
+          <select class="ui fluid search dropdown" data-braintree-name="expiration_month" >
+            <option value="">Month</option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option selected="selected" value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+        </div>
+        <div class="field">
+          <input type="text" data-braintree-name="expiration_year" value="2020" maxlength="4" placeholder="Year">
+        </div>
+      </div>
+    </div>
+  </div>
+     <input type="submit" class="ui blue button" id="submit" value="Pay">
+     </form>
+     
+     
+     
+     
+<!--
+     
+    <form  action="{{checkoutUrl | trusted}}" method="get">
   <input data-braintree-name="number" value="4111111111111111">
   <input data-braintree-name="expiration_date" value="10/20">
   <input type="submit" id="submit" value="Pay">
 </form>
+-->
+</div>
+    
+    
+    
+    
+  
     
 </div>

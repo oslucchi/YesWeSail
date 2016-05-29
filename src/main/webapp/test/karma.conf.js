@@ -55,6 +55,7 @@ module.exports = function(config) {
       'bower_components/ngAutocomplete/src/ngAutocomplete.js',
       'bower_components/AngularJS-Toaster/toaster.js',
       'bower_components/angular-toastr/dist/angular-toastr.tpls.js',
+      'bower_components/braintree-web/dist/braintree.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

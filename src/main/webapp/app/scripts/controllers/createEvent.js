@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('CreateEventCtrl', function ($scope, ngDialog, $window, $http, URLs, MAPS, AuthService) {
+    .controller('CreateEventCtrl', function ($scope, ngDialog, $window, $http, URLs, MAPS, AuthService, Session) {
         $scope.tempEvent = {
           title: "",
           eventType: "",
@@ -29,7 +29,14 @@ angular.module('yeswesailApp')
         };
     $scope.isAuthorized=AuthService.isAuthorized;
         $scope.create = function (temporaryEvent) {
-            temporaryEvent.shipOwnerId=$scope.suggestedOwner.originalObject.idUsers;
+            
+            if(!!!$scope.suggestedOwner){
+                temporaryEvent.shipOwnerId=Session.getCurrentUser().idUsers;
+                
+            }else{
+                temporaryEvent.shipOwnerId=$scope.suggestedOwner.originalObject.idUsers;
+                
+            }
             $http.post(URLs.ddns + 'rest/events/create', temporaryEvent).then(function (res) {
                 $window.location.href = '/#/edit-event/'+res.data.idEvents;
                 //$window.location.reload();
