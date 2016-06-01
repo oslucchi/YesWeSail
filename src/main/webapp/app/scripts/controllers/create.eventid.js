@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams) {
+    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -44,8 +44,13 @@ angular.module('yeswesailApp')
         
 $scope.getEvent();
     
+        $scope.deleteImage=function(image){
+               
+            $http.delete(URLs.ddns+'rest/events/'+$scope.event.idEvents+'/'+image.substring(image.lastIndexOf("ev"))).then(function(res){
+                $scope.images.splice($scope.images.indexOf(image), 1);
+            }, function(err){})
+        };
         
-    
         $scope.saveEvent=function(){
             
             $scope.tempEvent={
@@ -76,7 +81,36 @@ $scope.getEvent();
         }
      
                 
+           
       
+         $scope.uploadFiles = function (files) {
+        $scope.files = files;
+        if (files && files.length) {
+            Upload.upload({
+                url: URLs.ddns+'rest/events/'+$scope.event.idEvents+'/upload',
+                data: {
+                    files: files
+                }
+            }).then(function (response) {
+                $timeout(function () {
+                    $scope.images=response.data.images;
+                    $scope.progress=null;
+                });
+            }, function (response) {
+                if (response.status > 0) {
+                    $scope.errorMsg = response.status + ': ' + response.data;
+                }
+            }, function (evt) {
+                $scope.progress = 
+                    Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                  $('#file-upload-progress').progress({
+                      percent: $scope.progress
+                    });
+            });
+        }
+    };
+        
+        
         
         $scope.searchLocation=function(){
             $scope.map.control.refresh({latitude: $scope.mapDetails.geometry.location.lat(), longitude: $scope.mapDetails.geometry.location.lng()});

@@ -2,7 +2,7 @@
 
     <div class="ui container">
         <div class="main_search_content">
-            <h1 class="ui header">LA VELA PER TUTTI</h1>
+            <h1 class="ui header">{{"main.title" | translate}}</h1>
             <h2 class="ui header"> Scegli e personalizza la tua esperienza a prezzi mai visti prima.</h2>
 
 
@@ -39,7 +39,7 @@
    
             
 
-<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in hotEvents track by $index">
+<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-class="{'layered-paper':event.aggregateKey}" ng-repeat="event in hotEvents track by $index">
             
             <div class="result card">
                 

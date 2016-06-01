@@ -81,7 +81,7 @@ Starting at {{event.minPrice}}€
             
             
 
-<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-repeat="event in events">
+<div ui-sref="event({eventId: event.idEvents})" ng-class="{'layered-paper':!!event.aggregateKey, 'non-layered-paper': !!!event.aggregateKey}" class="column result-cards" ng-repeat="event in events">
             
             <div class="result card">
                 
