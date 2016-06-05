@@ -46,7 +46,6 @@ public class CartHandler {
 	static private BraintreeGateway gateway = null;
 	
 	@GET
-	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getCart(@HeaderParam("Authorization") String token)
@@ -80,7 +79,6 @@ public class CartHandler {
 	}
 
 	@DELETE
-	@Path("/")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response emptyCart(@HeaderParam("Authorization") String token)
@@ -116,6 +114,16 @@ public class CartHandler {
 		
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+	private void getBTGateway()
+	{
+		if (gateway == null)
+		{
+			gateway = new BraintreeGateway(Environment.SANDBOX, 
+										   prop.getBraintreeMerchantId(), 
+										   prop.getBraintreePublicKey(), 
+										   prop.getBraintreePrivateKey());
+		}
+	}
 
 	@POST
 	@Path("generateToken")
@@ -124,14 +132,7 @@ public class CartHandler {
 	public Response generateToken(CartJson[] ticketList, @HeaderParam("Language") String language)
 	{
 		int languageId = Utils.setLanguageId(language);
-		if (gateway == null)
-		{
-			gateway = new BraintreeGateway(Environment.SANDBOX, 
-										   prop.getBraintreeMerchantId(), 
-										   prop.getBraintreePublicKey(), 
-										   prop.getBraintreePrivateKey());
-		}
-
+		getBTGateway();
 		DBConnection conn = null;
 		try
 		{
@@ -187,7 +188,7 @@ public class CartHandler {
 			languageId = SessionData.getInstance().getLanguage(token);
 		else
 			languageId = SessionData.getInstance().getLanguage(userId);
-			
+		getBTGateway();
 		DBConnection conn = null;
 		TicketLocks[] tickets = null;
 		int amount = 0;
@@ -261,7 +262,7 @@ public class CartHandler {
 			DBInterface.TransactionRollback(conn);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" +
-							e.getMessage())
+							e.getMessage() + ")")
 					.build();
 		}
 		finally

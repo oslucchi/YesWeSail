@@ -1,12 +1,10 @@
 package com.yeswesail.rest;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -19,18 +17,12 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
 
 public class UploadFiles {
 	final Logger log = Logger.getLogger(this.getClass());
 	
-	private class ArchivedFile {
-		byte[] data;
-		String extension;
-	}
-	
 	public void uploadMultipartFiles(HttpServletRequest request, String contextPath, 
-									 String idReference, String uuid) throws Exception
+									 int eventId, int startFrom, String uuid) throws Exception
 	{
 		final FileItemFactory factory = new DiskFileItemFactory();
 		final ServletFileUpload fileUpload = new ServletFileUpload(factory);
@@ -43,9 +35,7 @@ public class UploadFiles {
 			final List<FileItem> items = fileUpload.parseRequest(request);
 			log.trace(items.size() + " elements in the request");
 
-			ArrayList<ArchivedFile> files = new ArrayList<ArchivedFile>();
-			JSONObject jsonIn = null;
-			int imageRef = 0;
+			int imageRef = startFrom;
 			if (items != null)
 			{
 				// Create the folder to host files under the temp directory
@@ -56,31 +46,11 @@ public class UploadFiles {
 				while (iter.hasNext())
 				{
 					final FileItem item = (FileItem) iter.next();
-					final String fieldName = item.getFieldName(); 
-					final String fieldValue = item.getString();
-					if (item.isFormField())
-					{
-						final String jsonStr = fieldName + " : " + fieldValue;
-						log.trace("it's a form field. Name '" + fieldName + "'" +
-								" value: '" + fieldValue + "'");
-						jsonIn = new JSONObject(jsonStr);
-					}
-					else
-					{
-						ArchivedFile af = new ArchivedFile();
-						af.extension = item.getName().substring(item.getName().lastIndexOf("."));
-						af.data = new byte[(int) item.getSize()];
-						item.getInputStream().read(af.data);
-						files.add(af);
-					}
-				}
-				for (ArchivedFile item : files)
-				{
-					final String itemName = jsonIn.getString(idReference) + "_" + imageRef++ + item.extension;
-					final FileOutputStream savedFile = new FileOutputStream(path + File.separator + itemName);
-					log.trace("Saving the file: '" + itemName + "'");
-					savedFile.write(item.data);
-					savedFile.close();
+					
+					String extension = item.getName().substring(item.getName().lastIndexOf("."));
+					final String itemName = eventId + "_" + imageRef++ + extension;
+					log.trace("Moving the file: '" + itemName + "'");		    		
+			    	item.write(new File(path + File.separator + itemName));
 				}
 			}
 		}

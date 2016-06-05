@@ -89,7 +89,6 @@ public class EventsHandler {
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
-		
 		// No record found. return an empty object
 		if (hot == null)
 		{
@@ -97,17 +96,48 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		if (jh.jasonize(hot, language) != Response.Status.OK)
+		ArrayList<ArrayList<Events>> hotList = organizeEvents(hot);
+		
+		if (jh.jasonize(hotList, language) != Response.Status.OK)
 		{
 			log.error("Error '" + jh.json + "' jsonizing the hot event object");
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(jh.json).build();
 		}
-	
-		log.trace("Returning an array of ");
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+
+	private ArrayList<ArrayList<Events>> organizeEvents(ArrayList<Events> events) 
+	{
+		return organizeEvents(events.toArray(new Events[events.size()]));
+	}
 	
+	private ArrayList<ArrayList<Events>> organizeEvents(Events[] events) 
+	{
+		ArrayList<ArrayList<Events>> hotList = new ArrayList<>();
+		int i;
+		for(Events e : events)
+		{
+			for(i = 0; i < hotList.size(); i++)
+			{
+				if ((hotList.get(i) != null) && (e.getAggregateKey() != null) && 
+					(hotList.get(i).get(0).getAggregateKey() != null) &&
+					(hotList.get(i).get(0).getAggregateKey().compareTo(e.getAggregateKey()) == 0))
+				{
+					hotList.get(i).add(e);
+					break;
+				}
+			}
+			if ((hotList.size() < prop.getMaxNumHotOffers()) && (i == hotList.size()))
+			{
+				ArrayList<Events> item = new ArrayList<>();
+				item.add(e);
+				hotList.add(item);
+			}
+		}
+		return hotList;
+	}
+
 	private String buildWhereCondition(EventJson jsonIn)
 	{
 		String where = " WHERE ";
@@ -173,6 +203,7 @@ public class EventsHandler {
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
+		
 		ArrayList<Events> eventsFiltered = new ArrayList<>();
 		if (activeOnly)
 		{
@@ -191,13 +222,25 @@ public class EventsHandler {
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
-		
-		if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
+
+		if (activeOnly)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(jh.json).build();
+			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
+			if (jh.jasonize(eventsList, languageId) != Response.Status.OK)
+			{
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(jh.json).build();
+			}
 		}
-	
+		else
+		{
+			if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
+			{
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(jh.json).build();
+			}
+
+		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
@@ -222,36 +265,6 @@ public class EventsHandler {
 		int languageId = Utils.setLanguageId(language);
 		return handleSearch(jsonIn, languageId, true);
 	}
-
-	
-	@PUT
-	@Path("/activate")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response eventActivate(EventJson jsonIn, @HeaderParam("Language") String language)
-	{
-		int languageId = Utils.setLanguageId(language);
-
-		Events ev = null;
-		DBConnection conn = null;
-		try 
-		{
-			conn = DBInterface.connect();
-			ev = new Events(conn, jsonIn.idEvents);
-			ev.setStatus(jsonIn.status);
-		}
-		catch (Exception e) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
-		}	
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		return Response.status(Response.Status.OK).entity("{}").build();
-	}
-
 	
 	@POST
 	@Path("/clone")
@@ -268,10 +281,18 @@ public class EventsHandler {
 			conn = DBInterface.TransactionStart();
 			ev = new Events(conn, jsonIn.idEvents);
 			
-			if ((jsonIn.aggregateKey != null) && (jsonIn.aggregateKey.compareTo(ev.getAggregateKey()) != 0))
+			if ((jsonIn.aggregateKey != null) && (jsonIn.aggregateKey.toLowerCase().compareTo("true") == 0))
 			{
-				ev.setAggregateKey(jsonIn.aggregateKey);
-				ev.update(conn, "idEvents");
+				if (ev.getAggregateKey() != null)
+				{
+					jsonIn.aggregateKey = ev.getAggregateKey();
+				}
+				else
+				{
+					jsonIn.aggregateKey = UUID.randomUUID().toString();
+					ev.setAggregateKey(jsonIn.aggregateKey);
+					ev.update(conn, "idEvents");
+				}
 			}
 			ev = fillEvent(jsonIn, ev, languageId);
 			int idEvents = ev.insertAndReturnId(conn, "idEvents", ev);
@@ -282,7 +303,15 @@ public class EventsHandler {
 					"  FROM EventDescription " +
 				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventDescription.executeStatement(conn, sql, true);
-			// handleInsertUpdateDetails(jsonIn, languageId, conn);
+
+			sql = 
+					"INSERT INTO EventTickets " +
+				    "  SELECT 0, " + idEvents + ", ticketType, available, " +
+				    "         booked, price, cabinRef, bookedTo " + 
+					"  FROM EventEventTickets " +
+				    "  WHERE eventId = " + jsonIn.idEvents;
+			EventTickets.executeStatement(conn, sql, true);
+			
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) {
@@ -304,6 +333,21 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
+	private ArrayList<String> getEventImages(int eventId, String path)
+	{
+		File directory = new File(path);
+        File[] fList = directory.listFiles();
+        ArrayList<String> imageURLs = new ArrayList<>();
+        for (File file : fList)
+        {
+            if (!file.isFile() || (!file.getName().startsWith("ev_" + eventId + "_")))
+            	continue;
+            
+            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+        }
+        return(imageURLs);
+	}
+	
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -414,17 +458,7 @@ public class EventsHandler {
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		File directory = new File(contextPath);
-        File[] fList = directory.listFiles();
-        ArrayList<String> imageURLs = new ArrayList<>();
-        for (File file : fList)
-        {
-            if (!file.isFile() || (!file.getName().startsWith("ev_" + event.getIdEvents() + "_")))
-            	continue;
-            
-            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
-        }
-		jsonResponse.put("images", imageURLs);
+		jsonResponse.put("images", getEventImages(event.getIdEvents(), contextPath));
 
 		try
 		{
@@ -495,9 +529,16 @@ public class EventsHandler {
 		event.setLocation(jsonIn.location);
 		event.setShipId(jsonIn.shipId);
 		event.setShipOwnerId(jsonIn.shipOwnerId);
-		event.setStatus("P");
-		event.setEarlyBooking(false);
-		event.setLastMinute(false);
+		if (jsonIn.status == null)
+		{
+			event.setStatus("P");
+		}
+		else
+		{
+			event.setStatus(jsonIn.status);
+		}
+		event.setEarlyBooking(jsonIn.earlyBooking);
+		event.setLastMinute(jsonIn.lastMinute);
 		if (jsonIn.imageURL == null)
 		{
 			event.setImageURL(LanguageResources.getResource(languageId, "events.placeholder.url"));
@@ -573,7 +614,7 @@ public class EventsHandler {
 	}
 
 	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, DBConnection conn) throws Exception // 0 Insert - 1 Update
-	{
+	{		
 		EventDescriptionJson[] eventDetails = new EventDescriptionJson[4];
 		eventDetails[0] = jsonIn.description; 
 		eventDetails[1] = jsonIn.logistics; 
@@ -618,9 +659,17 @@ public class EventsHandler {
 			event = handleInsertUpdate(jsonIn, conn, 
 									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonIn.eventId = event.getIdEvents();
-			handleInsertUpdateDetails(jsonIn, languageId, conn);
+			
+			if ((jsonIn.description != null) || (jsonIn.logistics != null) ||
+				(jsonIn.includes != null) || (jsonIn.excludes != null))
+			{
+				handleInsertUpdateDetails(jsonIn, languageId, conn);
+			}
+
 			if (jsonIn.tickets != null)
+			{
 				handleInsertTicket(jsonIn.tickets, conn);
+			}
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -761,7 +810,9 @@ public class EventsHandler {
 		int languageId = Utils.setLanguageId(language);
 
 		DBConnection conn = null;
-		try
+		try//					savedFile.write(item.data);
+//		savedFile.close();
+
 		{
 			conn = DBInterface.TransactionStart();
 			handleInsertTicket(jsonIn, conn);
@@ -848,14 +899,35 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity("").build();
 	}	
 
-	@POST
-    @Path("/uploadImages")
+	@DELETE
+    @Path("/{eventId}/{imageName}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadImages(@Context HttpServletRequest request, @HeaderParam("Language") String language)
+    public Response deleteImage(@PathParam("imageName") String imageName)
+	{
+		String eventsPath = null;
+		try {
+			eventsPath = context.getResource("/images/events").getPath();
+		}
+		catch (MalformedURLException e) 
+		{
+			log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
+		}
+		File toRemove = new File(eventsPath + File.separator + imageName);
+		toRemove.delete();
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
+	@POST
+    @Path("/{eventId}/upload")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response upload(@Context HttpServletRequest request, @HeaderParam("Language") String language, 
+    					@PathParam("eventId") int eventId)
     {
 		int languageId = Utils.setLanguageId(language);
 		boolean errorMoving = false;
+		String destPath = null;
 		try 
 		{
 			contextPath = context.getResource("/").getPath();
@@ -868,18 +940,38 @@ public class EventsHandler {
 		
 		if (ServletFileUpload.isMultipartContent(request))
 		{
+			try {
+				destPath = context.getResource("/images/events").getPath();
+			}
+			catch (MalformedURLException e) 
+			{
+				log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
+			}
 			String token = UUID.randomUUID().toString();
 			UploadFiles up = new UploadFiles();
+			ArrayList<String> images = getEventImages(eventId, destPath);
+			int lastIndex = -1;
+			int pos;
+			int a = 0;
+			for(String fName : images)
+			{
+				pos = fName.lastIndexOf("_") + 1;
+				fName = fName.substring(pos);
+				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
+				if (lastIndex < a)
+					lastIndex = a;
+			}
+			lastIndex++;
 			try 
 			{
-				up.uploadMultipartFiles(request, contextPath, "eventId", token);
+				up.uploadMultipartFiles(request, contextPath, eventId, lastIndex, token);
 				errorMoving = up.moveFiles(contextPath, token, "ev_");
 			}
 			catch (Exception e) 
 			{
 				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + 
-								" (" + e.getMessage() + ")")
+						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
+								errorMoving + " (" + e.getMessage() + ")")
 						.build();
 			}
 		}
@@ -888,8 +980,11 @@ public class EventsHandler {
 			return Response.status(Response.Status.BAD_REQUEST)
 					.entity(LanguageResources.getResource(languageId, "generic.uploadFileNoMultipart")).build();
 		}
-        return Response.status(Response.Status.OK)
-        		.entity((errorMoving ? LanguageResources.getResource(languageId, "events.imageUploadError "): "{}"))
-        		.build();
+
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("images", getEventImages(eventId, destPath));
+		Genson genson = new Genson();
+		String entity = genson.serialize(jsonResponse);
+		return Response.status(Response.Status.OK).entity(entity).build();
     }
 }
