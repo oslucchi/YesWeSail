@@ -1,0 +1,111 @@
+
+<form class="ui form">
+
+    </form>
+
+
+
+ <script>
+  $(document)
+    .ready(function() {
+      $('.ui.form')
+        .form({
+          fields: {
+            email: {
+              identifier  : 'email',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your e-mail'
+                },
+                {
+                  type   : 'email',
+                  prompt : 'Please enter a valid e-mail'
+                }
+              ]
+            },
+            password: {
+              identifier  : 'password',
+              rules: [
+                {
+                  type   : 'empty',
+                  prompt : 'Please enter your password'
+                },
+                {
+                  type   : 'length[6]',
+                  prompt : 'Your password must be at least 6 characters'
+                }
+              ]
+            }
+          }
+        })
+      ;
+    })
+  ;
+  </script>
+
+<div class="login_container">
+    <div class="ui container">
+<div class="ui middle aligned center aligned grid">
+  <div class="column">
+    <h2 class="ui white image header">
+      <img src="images/cropped-cropped-YWS-60x70.png" class="image">
+      <div class="content">
+        {{"admin.events.cloneEventHeader" | translate}}
+      </div>
+    </h2>
+    <form class="ui large form">
+      <div class="ui stacked segment">
+         
+        <div class="field">
+            <div class="ui input">
+            <input type="text" ng-disabled="tempCloneEvent.aggregateKey" name="title" ng-model="tempCloneEvent.title" placeholder="Title...">
+</div>
+
+            </div> 
+          
+          <div class="field">
+            <datepicker date-format="dd MMM yyyy">
+            
+                        <input type="text" name="dateFrom" ng-model="tempCloneEvent.dateStart" placeholder="From...">
+            
+            </datepicker>
+            </div> 
+          <div class="field">
+             <datepicker date-format="dd MMM yyyy">
+               
+                    
+                            <input type="text" name="dateTo" class="dateTo" ng-model="tempCloneEvent.dateEnd" placeholder="To...">
+                        
+                
+                 </datepicker>
+            </div>
+        <div class="field">
+         <div class="ui left aligned checkbox">
+          <input type="checkbox" ng-model="tempCloneEvent.aggregateKey"> <label></label>
+            <label>Aggregated</label>
+            </div>
+        </div>
+        
+      </div>
+<button ng-click="clone(tempCloneEvent)" class="ui blue button">Clone</button>
+<button ng-click="closeModals()" class="ui button">Cancel</button>
+
+    </form>
+
+  </div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
