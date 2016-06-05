@@ -1,3 +1,10 @@
+
+<form class="ui form">
+
+    </form>
+
+
+
  <script>
   $(document)
     .ready(function() {
@@ -44,40 +51,61 @@
     <h2 class="ui white image header">
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
-        Esegui l'accesso al tuo account
+        {{"admin.events.cloneEventHeader" | translate}}
       </div>
     </h2>
-    <form ng-submit=login(credentials) class="ui large form">
+    <form class="ui large form">
       <div class="ui stacked segment">
-          <a href="https://www.facebook.com/dialog/oauth?client_id=484756285065008&redirect_uri=http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
-           <div class="ui horizontal divider"></div>
-             <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>
-         <div class="ui horizontal divider">
-            Oppure
-          </div>
+         
         <div class="field">
-          <div class="ui left icon input">
-            <i class="user icon"></i>
-            <input type="text" name="email" ng-model="credentials.username" placeholder="E-mail address">
-          </div>
-        </div>
-        <div class="field">
-          <div class="ui left icon input">
-            <i class="lock icon"></i>
-            <input type="password" name="password" ng-model="credentials.password" placeholder="Password">
-          </div>
-        </div>
-        <input type="submit" class="ui fluid large blue button" value="Accedi">
-      </div>
+            <div class="ui input">
+            <input type="text" ng-disabled="tempCloneEvent.aggregateKey" name="title" ng-model="tempCloneEvent.title" placeholder="Title...">
+</div>
 
-      <div class="ui error message"></div>
+            </div> 
+          
+          <div class="field">
+            <datepicker date-format="dd MMM yyyy">
+            
+                        <input type="text" name="dateFrom" ng-model="tempCloneEvent.dateStart" placeholder="From...">
+            
+            </datepicker>
+            </div> 
+          <div class="field">
+             <datepicker date-format="dd MMM yyyy">
+               
+                    
+                            <input type="text" name="dateTo" class="dateTo" ng-model="tempCloneEvent.dateEnd" placeholder="To...">
+                        
+                
+                 </datepicker>
+            </div>
+        <div class="field">
+         <div class="ui left aligned checkbox">
+          <input type="checkbox" ng-model="tempCloneEvent.aggregateKey"> <label></label>
+            <label>Aggregated</label>
+            </div>
+        </div>
+        
+      </div>
+<button ng-click="clone(tempCloneEvent)" class="ui blue button">Clone</button>
+<button ng-click="closeModals()" class="ui button">Cancel</button>
 
     </form>
 
-    <div class="ui message">
-      Non hai un account? <a href="#/register">Registrati</a>
-    </div>
   </div>
 </div>
 </div>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+

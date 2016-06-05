@@ -10,7 +10,7 @@
     "angular-sanitize": "^1.4.0",
     "angular-touch": "^1.4.0",
     "semantic": "semantic-ui#~2.1.8",
-    "angularjs-datepicker": "~0.2.16",
+    "angularjs-datepicker": "^2.1.4",
     "ng-dialog": "^0.6.0",
     "angular-carousel": "^1.0.1",
     "angular-deferred-bootstrap": "^0.1.9",
@@ -24,7 +24,16 @@
     "ngAutocomplete": "^1.0.0",
     "AngularJS-Toaster": "angularjs-toaster#^2.0.0",
     "angular-toastr": "^1.7.0",
-    "braintree-web": "^2.24.1"
+    "braintree-web": "^2.24.1",
+    "ng-file-upload-shim": "^12.0.4",
+    "ng-file-upload": "^12.0.4",
+    "angular-translate": "^2.11.0",
+    "angular-translate-loader-static-files": "^2.11.0",
+    "angular-translate-storage-local": "^2.11.0",
+    "angular-translate-handler-log": "^2.11.0",
+    "angular-dynamic-locale": "^0.1.32",
+    "angular-i18n": "^1.5.6",
+    "angular-gridster": "^0.13.9"
   },
   "devDependencies": {
     "angular-mocks": "^1.4.0"

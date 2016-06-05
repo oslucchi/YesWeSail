@@ -1,0 +1,5 @@
+
+<div class="ui header">{{"global.availableDatesHeader" | translate}}</div>
+<div class="ui link list">
+  <a ng-click="closeModals()" ui-sref="event({eventId: event.idEvents})" ng-repeat="event in aggregatedEvents" class="item">{{'global.from'|translate}}: {{event.dateStart | date:'dd MMM'}} {{'global.to'|translate}}:{{event.dateEnd | date:'dd MMM'}}  {{'global.from'|translate}}: {{event.minPrice}}€</a>
+</div>

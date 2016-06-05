@@ -1,0 +1,9 @@
+{
+     "main.title": "La vela per tutti",
+    "directives.language-select.Language": "Language",
+    "global.from": "Da",
+    "global.to": "A",
+    "global.availableDatesHeader": "Date disponibili per l'evento selezionato",
+    "global.otherDates": "Date multiple",
+    "admin.events.success.update": "Evento {{eventId}} aggiornato"
+}

@@ -61,6 +61,7 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         },
         files: [
+            '<%= yeoman.app %>/resources/{,*/}*.json',
           '<%= yeoman.app %>/{,*/}*.html',
           '.tmp/styles/{,*/}*.css',
           '<%= yeoman.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
@@ -390,9 +391,17 @@ module.exports = function (grunt) {
             '*.{ico,png,txt}',
             '*.html',
             'images/{,*/}*.{webp}',
-            'styles/fonts/{,*/}*.*'
+            'styles/fonts/{,*/}*.*',
+              'resources/{,*/}*.*'
           ]
-        }, {
+        },
+        {
+            expand: true,
+            cwd: 'bower_components/angular-i18n/',
+            src: '*.js',
+            dest: '<%= yeoman.dist %>/bower_components/angular-i18n'
+        },
+        {
           expand: true,
           cwd: '.tmp/images',
           dest: '<%= yeoman.dist %>/images',

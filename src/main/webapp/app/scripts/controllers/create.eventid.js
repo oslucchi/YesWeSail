@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams) {
+    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -26,6 +26,8 @@ angular.module('yeswesailApp')
         }, {headers: {'Edit-Mode': 'true', 'Language': $scope.selectedLanguage}}).then(function (res) {
             
             $scope.event=res.data.event;
+            $scope.event.dateStart=$filter('date')(res.data.event.dateStart, 'yyyy-MM-dd');
+            $scope.event.dateEnd=$filter('date')(res.data.event.dateEnd, 'yyyy-MM-dd');
             $scope.shipOwner = res.data.shipOwner;
             $scope.images = res.data.images;
             $scope.tickets = res.data.tickets;
@@ -44,8 +46,13 @@ angular.module('yeswesailApp')
         
 $scope.getEvent();
     
+        $scope.deleteImage=function(image){
+               
+            $http.delete(URLs.ddns+'rest/events/'+$scope.event.idEvents+'/'+image.substring(image.lastIndexOf("ev"))).then(function(res){
+                $scope.images.splice($scope.images.indexOf(image), 1);
+            }, function(err){})
+        };
         
-    
         $scope.saveEvent=function(){
             
             $scope.tempEvent={
@@ -68,7 +75,7 @@ $scope.getEvent();
             
             
             $http.put(URLs.ddns+'rest/events/'+$scope.event.idEvents, $scope.tempEvent, {headers: {'Language': $scope.selectedLanguage}}).then(function(res){
-                console.log(res);
+                toastr.success($translate.instant('edit.events.success.save'));
             }, function(err){})
             
             
@@ -76,7 +83,36 @@ $scope.getEvent();
         }
      
                 
+           
       
+         $scope.uploadFiles = function (files) {
+        $scope.files = files;
+        if (files && files.length) {
+            Upload.upload({
+                url: URLs.ddns+'rest/events/'+$scope.event.idEvents+'/upload',
+                data: {
+                    files: files
+                }
+            }).then(function (response) {
+                $timeout(function () {
+                    $scope.images=response.data.images;
+                    $scope.progress=null;
+                });
+            }, function (response) {
+                if (response.status > 0) {
+                    $scope.errorMsg = response.status + ': ' + response.data;
+                }
+            }, function (evt) {
+                $scope.progress = 
+                    Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                  $('#file-upload-progress').progress({
+                      percent: $scope.progress
+                    });
+            });
+        }
+    };
+        
+        
         
         $scope.searchLocation=function(){
             $scope.map.control.refresh({latitude: $scope.mapDetails.geometry.location.lat(), longitude: $scope.mapDetails.geometry.location.lng()});

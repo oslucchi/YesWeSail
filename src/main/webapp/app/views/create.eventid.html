@@ -65,7 +65,23 @@
                                         <div click-to-edit="event.location"></div>
                                     </div>
                                     <div class="extra">
-                                        {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}
+                                        <div class="ui input">
+                                <datepicker date-format="dd MMM yyyy">
+            
+                                             <input type="text" name="dateFrom" ng-model="event.dateStart" placeholder="From...">
+
+                                 </datepicker>
+                                            </div>
+                                        
+                                        <div class="ui input">
+                                <datepicker date-format="dd MMM yyyy">
+            
+                                             <input type="text" name="dateFrom" ng-model="event.dateEnd" placeholder="To...">
+
+                                 </datepicker>
+                                            <div class="ui input">
+                                        
+                                      
                                     </div>
                                     <div class="description">
 
@@ -132,10 +148,24 @@
         <div class="row">
             <div class="twelve wide column">
                 
-
+                <div class="ui container">
+    <button class="ui blue button" ngf-select="uploadFiles($files)" multiple 
+            accept="image/*">Select Files</button>
+   <br>
+                    
+    <div ng-if="progress" class="ui blue large progress"  data-percent="{{progress}}" id="file-upload-progress">
+      <div class="bar">
+        <div class="progress"></div>
+      </div>
+      <div class="label">Uploading Files</div>
+    </div>                
+   <br>
+    
+    </div>
+        
                 <ul rn-carousel-auto-slide rn-carousel class="image">
                     <li ng-repeat="image in images">
-                        <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide" ></div>
+                        <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide" ><button ng-click="deleteImage(image)" class="ui icon button"> <i class="big link trash outline icon"></i></button></div>
                       
                         
                     </li>
@@ -199,8 +229,14 @@
 
 
     </div>
+    
+    
+    
 
-<div class="ui container">
+
+    
+    
+    <div class="ui container">
     <div class="ui menu">
   <div class="ui category search item">
       <div class="ui action labeled input">

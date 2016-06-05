@@ -30,7 +30,7 @@
               <i ng-click="activate(event)" class="large green checkmark link icon"></i>
               <i ng-really-message="Are you sure?" ng-really-click="remove(event)" class="large red trash outline link icon"></i>
               <i ng-click="deactivate(event)" class="large red ban link icon"></i>
-              <i ng-click="clone(event)" class="large grey copy link icon"></i>
+              <i ng-click="showClonePopup(event)" class="large grey copy link icon"></i>
               <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i>
         </div>
           
@@ -49,12 +49,12 @@
       </td>
         <td class="collapsing">
         <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="event.earlyBooking" ng-checked="event.earlyBooking"> <label></label>
+          <input type="checkbox" ng-model="event.earlyBooking" ng-change="updateEarlyBooking(event, event.earlyBooking)" ng-checked="event.earlyBooking"> <label></label>
         </div>
       </td>
         <td class="collapsing">
         <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="event.lastMinute" ng-checked="event.lastMinute"> <label></label>
+          <input type="checkbox" ng-model="event.lastMinute" ng-change="updateLastMinute(event, event.lastMinute)" ng-checked="event.lastMinute"> <label></label>
         </div>
       </td>
       <td class="collapsing">{{event.idEvents}}</td>
