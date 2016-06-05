@@ -1,0 +1,69 @@
+<div class="admin-events-container">
+ 
+<table class="ui compact sortable selectable celled table">
+  <thead>
+    <tr>
+      <th>Select</th>
+      <th  class="ui fitted center aligned">Actions</th>
+      <th>Status</th>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Surname</th>
+      <th>Role</th>
+      <th>Email</th>
+      <th>Phone</th>
+    </tr>
+  </thead>
+    
+  <tbody>
+    <tr ng-class="{'error': user.status=='I', 'positive': user.status=='A', 'warning': user.status=='P'}" ng-repeat="user in users">
+        <td class="collapsing">
+         <div class="ui fitted center aligned checkbox">
+          <input type="checkbox" ng-model="selectedusers"> <label></label>
+        </div>
+      </td>
+      <td class="collapsing">
+        <div class="ui center aligned">
+              <i ng-click="activate(user)" class="large green checkmark link icon"></i>
+              <i ng-click="deactivate(user)" class="large red ban link icon"></i>
+              <i ui-sref="edituser({userId: user.idusers})" class="large grey edit link icon"></i>
+        </div>
+          
+      </td>
+        <td class="collapsing">
+        <div class="ui center aligned">
+            <div ng-switch="user.status">
+              <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
+              <div ng-switch-when="D"><i class="large red remove icon"></i></div>
+              <div ng-switch-when="P"><i class="large yellow wait icon"></i></div>
+              <div ng-switch-default>
+               
+              </div>
+            </div>
+        </div>
+      </td>
+      <td class="collapsing">{{user.idUsers}}</td>
+      <td class="collapsing">{{user.name}}</td>
+      <td class="collapsing">{{user.surname}}</td>
+      <td class="collapsing">{{user.roleId}}</td>
+      <td class="collapsing">{{user.email}}</td>
+      <td class="collapsing">{{user.phone}}</td>
+      
+       
+    </tr>
+   
+  </tbody>
+  <tfoot class="full-width">
+    <tr>
+      <th><div class="ui small disabled button">
+          Approve All
+        </div></th>
+      <th colspan="9">
+        <button ng-click="getusers()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
+        <button ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add user</button>
+      </th>
+    </tr>
+  </tfoot>
+</table>
+
+</div>
