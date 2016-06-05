@@ -27,7 +27,7 @@ import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
 
-@Path("/pending")
+@Path("/requests")
 public class HandlePendingActions {
 	@Context
 	private ServletContext context;
@@ -44,6 +44,13 @@ public class HandlePendingActions {
 								@HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
 
 		PendingActions[] actions = null;
 		DBConnection conn = null;

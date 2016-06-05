@@ -55,7 +55,7 @@ public class SessionData {
 	
 	public int getLanguage(String token)
 	{
-		if (sessionData.get(token) != null)
+		if (sessionData.get(token) == null)
 			return 1;
 		return(((Integer) sessionData.get(token)[LANGUAGE]).intValue());
 	}

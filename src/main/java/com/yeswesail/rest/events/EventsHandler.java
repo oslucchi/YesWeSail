@@ -43,6 +43,7 @@ import com.yeswesail.rest.DBUtility.EventDescription;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
+import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
@@ -252,6 +253,13 @@ public class EventsHandler {
 							  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
 		return handleSearch(jsonIn, languageId, false);
 	}
 

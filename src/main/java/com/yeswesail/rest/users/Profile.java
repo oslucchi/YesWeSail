@@ -2,7 +2,6 @@ package com.yeswesail.rest.users;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -18,7 +17,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
-import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
@@ -199,7 +197,7 @@ public class Profile {
 			json = mapper.writeValueAsString(uList.toArray());
 		} 
 		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -214,14 +212,27 @@ public class Profile {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response userProfileById(@PathParam("userId") int userId, @HeaderParam("Authorization") String token)
 	{
-		int languageId = SessionData.getInstance().getLanguage(token);
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(token);
+		if (sd.getBasicProfile(token).getIdUsers() != userId)
+		{
+			log.error("User " + sd.getBasicProfile(token).getIdUsers() + 
+					  " requesting whole profile for " + userId + " without permissions. Unauthorized");
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized") )
+					.build();
+		}
+		
 		Users u = null;
+		AddressInfo[] ai = new AddressInfo[2];
 		DBConnection conn = null;
 		try 
 		{
 			conn = DBInterface.connect();
 			u = new Users(conn, userId);
 			u.setPassword("******");
+			ai = AddressInfo.findUserId(u.getIdUsers());
+			u.setAddressInfo(ai);
 		}
 		catch (Exception e) 
 		{
@@ -251,59 +262,8 @@ public class Profile {
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	@GET
-	@Path("/whole")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response wholeProfile(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
-	{
-		SessionData sd = SessionData.getInstance();
-		int languageId = Utils.setLanguageId(language);
-
-		AddressInfo[] ai = new AddressInfo[2];
-		DBConnection conn = null;
-
-		String errMsg = null;
-		try 
-		{
-			conn = DBInterface.connect();
-			u = new Users(conn, sd.getBasicProfile(token).getIdUsers());
-			ai = AddressInfo.findUserId(u.getIdUsers());
-		}
-		catch (Exception e) {
-			log.error("Error retrieving AddressInfo for user " + u.getIdUsers() + " (" + e.getMessage() + ")");
-			errMsg = LanguageResources.getResource(
-						languageId, "users.addressInfoException") + " (" +
-						e.getMessage() + ")";
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		
-		u.setPassword("");
-		u.setAddressInfo(ai);
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		
-		try 
-		{
-			json = mapper.writeValueAsString(u);
-		} 
-		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
-	}
-
 	@SuppressWarnings("unchecked")
 	@GET
-	@Path("search/all")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response searchAll(@HeaderParam("Authorization") String token)
@@ -323,6 +283,11 @@ public class Profile {
 		{
 			conn = DBInterface.connect();
 			usersList = (ArrayList<Users>) Users.populateCollection("SELECT * FROM Users", Users.class);
+			for(int i = 0; i < usersList.size(); i++)
+			{
+				AddressInfo[] ai = AddressInfo.findUserId(usersList.get(i).getIdUsers());
+				usersList.get(i).setAddressInfo(ai);
+			}
 		}
 		catch (Exception e) 
 		{
@@ -365,6 +330,9 @@ public class Profile {
 			u.setSurname(jsonIn.surname);
 			u.setPhone1(jsonIn.phone1);
 			u.setPhone2(jsonIn.phone2);
+			u.setStatus(jsonIn.status);
+			u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
+			u.setRoleId(jsonIn.roleId);
 			if (jsonIn.addressInfo != null)
 			{
 				AddressInfo ai = new AddressInfo();

@@ -89,7 +89,6 @@ public class ReviewsHandler {
 		{
 			where = "";
 		}
-		where += " ORDER BY dateStart ASC";
 		return(where);
 	}
 	
@@ -137,6 +136,55 @@ public class ReviewsHandler {
 		}
 	
 		log.trace("Returning an array of ");
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+
+	@GET
+	@Path("/{idReviews}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response retrieveAll(@HeaderParam("Language") String language,
+								@HeaderParam("Authorization") String token,
+								@PathParam("idReviews") int idReviews)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		Reviews review = null;
+		DBConnection conn = null;
+		try 
+		{
+			log.trace("Retrieving review");
+			conn = DBInterface.connect();
+			review = new Reviews(conn, idReviews);
+			log.trace("Retrieval completed");
+		}
+		catch (Exception e) 
+		{
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		
+		if (jh.jasonize(review, language) != Response.Status.OK)
+		{
+			log.error("Error '" + jh.json + "' jsonizing the hot event object");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(jh.json).build();
+		}
+	
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
