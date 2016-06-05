@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventsCtrl', function ($scope, URLs, $http, $stateParams, MAPS) {
+    .controller('EventsCtrl', function ($scope, URLs, $http, $stateParams, MAPS, ngDialog, $state) {
         var body = {};
         $scope.selectedCategory = $stateParams.categoryId;
         $scope.selectedLocation = $stateParams.location;
@@ -54,4 +54,31 @@ angular.module('yeswesailApp')
 
 
         };
+    
+       
+      $scope.showAvailableDatesForEvents=function(events){
+          $scope.aggregatedEvents=events;
+            ngDialog.open({
+                template: 'views/aggregatedEvents.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'EventsCtrl',
+                scope: $scope
+            });
+        };
+    $scope.closeModals=function(){
+        ngDialog.closeAll();
+    };
+    
+    $scope.processEventClick=function(events){
+        
+        if(events.length>1){
+            $scope.showAvailableDatesForEvents(events);    
+        }else if(events.length<2){
+            
+            $state.go('event',{eventId: events[0].idEvents});
+        }
+        
+        
+    }
+    
     });

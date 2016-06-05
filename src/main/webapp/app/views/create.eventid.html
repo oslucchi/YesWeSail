@@ -65,7 +65,23 @@
                                         <div click-to-edit="event.location"></div>
                                     </div>
                                     <div class="extra">
-                                        {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}
+                                        <div class="ui input">
+                                <datepicker date-format="dd MMM yyyy">
+            
+                                             <input type="text" name="dateFrom" ng-model="event.dateStart" placeholder="From...">
+
+                                 </datepicker>
+                                            </div>
+                                        
+                                        <div class="ui input">
+                                <datepicker date-format="dd MMM yyyy">
+            
+                                             <input type="text" name="dateFrom" ng-model="event.dateEnd" placeholder="To...">
+
+                                 </datepicker>
+                                            <div class="ui input">
+                                        
+                                      
                                     </div>
                                     <div class="description">
 

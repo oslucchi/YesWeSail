@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout) {
+    .controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -26,6 +26,8 @@ angular.module('yeswesailApp')
         }, {headers: {'Edit-Mode': 'true', 'Language': $scope.selectedLanguage}}).then(function (res) {
             
             $scope.event=res.data.event;
+            $scope.event.dateStart=$filter('date')(res.data.event.dateStart, 'yyyy-MM-dd');
+            $scope.event.dateEnd=$filter('date')(res.data.event.dateEnd, 'yyyy-MM-dd');
             $scope.shipOwner = res.data.shipOwner;
             $scope.images = res.data.images;
             $scope.tickets = res.data.tickets;
@@ -73,7 +75,7 @@ $scope.getEvent();
             
             
             $http.put(URLs.ddns+'rest/events/'+$scope.event.idEvents, $scope.tempEvent, {headers: {'Language': $scope.selectedLanguage}}).then(function(res){
-                console.log(res);
+                toastr.success($translate.instant('edit.events.success.save'));
             }, function(err){})
             
             

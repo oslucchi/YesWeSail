@@ -47,7 +47,7 @@
         Unisciti a noi per navigare
       </div>
     </h2>
-    <form class="ui large form">
+    <form ng-submit=register(credentials) class="ui large form">
       <div class="ui stacked segment">
           
           
@@ -83,7 +83,7 @@
             <input type="password" ng-model="credentials.password" name="password" placeholder="Password">
           </div>
         </div>
-        <div ng-click="register(credentials)" class="ui fluid large blue button">Registrati</div>
+        <input type="submit" class="ui fluid large blue button" value="Registrati">
       </div>
 
       <div class="ui error message"></div>

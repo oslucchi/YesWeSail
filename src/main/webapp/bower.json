@@ -10,7 +10,7 @@
     "angular-sanitize": "^1.4.0",
     "angular-touch": "^1.4.0",
     "semantic": "semantic-ui#~2.1.8",
-    "angularjs-datepicker": "~0.2.16",
+    "angularjs-datepicker": "^2.1.4",
     "ng-dialog": "^0.6.0",
     "angular-carousel": "^1.0.1",
     "angular-deferred-bootstrap": "^0.1.9",

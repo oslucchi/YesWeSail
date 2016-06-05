@@ -1,4 +1,11 @@
 {
     "main.title": "The Vela for everyone",
-    "directives.language-select.Language": "Language"
+    "directives.language-select.Language": "Language",
+    "global.from": "From",
+    "global.to": "To",
+    "global.availableDatesHeader": "Available dates for the selected event",
+    "global.otherDates": "Multiple dates",
+    "admin.events.success.update": "Event {{eventId}} updated successfully",
+    "admin.events.cloneEventHeader": "Clone event",
+    "edit.events.success.save": "Event saved"
 }

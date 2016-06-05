@@ -36,15 +36,16 @@
 
         <h1>Le migliori proposte</h1>
             <div class="ui stackable four column grid">
-   
-            
-
-<div ui-sref="event({eventId: event.idEvents})" class="column result-cards" ng-class="{'layered-paper':event.aggregateKey}" ng-repeat="event in hotEvents track by $index">
-            
-            <div class="result card">
                 
+                
+   
+        
+              <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
+                    <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
+            <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
+            <div class="result card" >
                 <div class="contents">
-                    <img ng-src="{{event.imageURL}}">
+                    <img ng-src="{{singleEvent.imageURL}}">
                     
                 </div>
                 
@@ -52,28 +53,39 @@
                 
             </div>
             <div class="ui huge blue ribbon label">
-                       da {{event.minPrice}}€
+                       {{'global.from'|translate}} {{singleEvent.minPrice}}€
+                        <p ng-if="multipleEvents.length>1" class="mini-dates">{{"global.otherDates" | translate}}</p>
+                        
                 </div>
-            <div ng-if="event.lastMinute" class="last-minute-stamp">
+            <div ng-if="singleEvent.lastMinute" class="last-minute-stamp">
                         <img src="images/last-minute.png">
                     </div>
-            <div ng-if="event.earlyBooking" class="early-booking-stamp">
+            <div ng-if="singleEvent.earlyBooking" class="early-booking-stamp">
                         <img src="images/early-booking.png">
                     </div>
             <div class="event-details">
                 <h2  style="color: white !important;" class="ui medium header">
-                {{event.title}}
+                {{singleEvent.title}}
                 
               
                 </h2>
                 
-                <span>  {{event.location}}</span><br>
-                <span>{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</span>
+                <span>  {{singleEvent.location}}</span><br>
+                <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
                 </div>
           
             
-            <ship-owner></ship-owner>
+            <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
         </div>
+        </div>
+                    
+                    
+                    
+                 
+   
+                </span>
+                
+
 
 
     </div>
@@ -112,11 +124,14 @@
 
         <h1>Esplora</h1>
         <div class="ui horizontal segments">
-            <div ng-repeat="proposal in proposals" style="background-image: url({{proposal.imgUrl}}); background-size: cover;" class="ui segment">
+            <span ng-repeat="proposal in proposals">
+               <div ng-repeat="singleProposal in proposal" style="background-image: url({{singleProposal.imgUrl}}); background-size: cover;" class="ui segment">
                 <div class="proposal_card">
-                    {{proposal.title}} {{proposal.price}}€ {{proposal.description}} {{proposal.start}}-{{proposal.end}}
+                    {{singleProposal.title}} {{singleProposal.price}}€ {{singleProposal.description}} {{singleProposal.start}}-{{singleProposal.end}}
                 </div>
             </div>
+            </span>
+         
         </div>
 
 
