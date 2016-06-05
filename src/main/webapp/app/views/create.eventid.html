@@ -66,242 +66,249 @@
                                     </div>
                                     <div class="extra">
                                         <div class="ui input">
-                                <datepicker date-format="dd MMM yyyy">
-            
-                                             <input type="text" name="dateFrom" ng-model="event.dateStart" placeholder="From...">
+                                            <datepicker date-format="yyyy-MM-dd">
 
-                                 </datepicker>
-                                            </div>
-                                        
+                                                <input type="text" name="dateFrom" ng-model="event.dateStart" placeholder="From...">
+
+                                            </datepicker>
+                                        </div>
+
                                         <div class="ui input">
-                                <datepicker date-format="dd MMM yyyy">
-            
-                                             <input type="text" name="dateFrom" ng-model="event.dateEnd" placeholder="To...">
+                                            <datepicker date-format="yyyy-MM-dd">
 
-                                 </datepicker>
+                                                <input type="text" name="dateFrom" ng-model="event.dateEnd" placeholder="To...">
+
+                                            </datepicker>
                                             <div class="ui input">
-                                        
-                                      
+
+
+                                            </div>
+                                            <div class="description">
+
+                                            </div>
+
+
+                                        </div>
                                     </div>
-                                    <div class="description">
-
-                                    </div>
-
-
                                 </div>
                             </div>
+
+
+
+
+
+
                         </div>
-                    </div>
 
-
-
-
-
-
-                </div>
-
-
-
-            </div>
-            <div class="four wide column">
-                <div class="ui book sticky">
-
-                    <div class="ui segment">
-                        <p class="ui header">Editor Options</p>
-                        <div class="ui selection dropdown">
-                          <input type="hidden" name="language">
-                          <i class="dropdown icon"></i>
-                          <div class="default text">Language</div>
-                          <div class="menu">
-                            <div class="item" ng-click="setLanguage('IT')" data-value="1">IT</div>
-                            <div class="item" ng-click="setLanguage('EN')" data-value="0">EN</div>
-                          </div>
-                        </div>
-                        <button ng-click="saveEvent()" class="ui blue icon button">
-                            Save
-                        </button>
-                        <button class="ui teal icon button">
-                            Cancel
-                        </button>
 
 
                     </div>
+                    <div class="four wide column">
+                        <div class="ui book sticky">
+
+                            <div class="ui segment">
+                                <p class="ui header">Editor Options</p>
+                                <div class="ui selection dropdown">
+                                    <input type="hidden" name="language">
+                                    <i class="dropdown icon"></i>
+                                    <div class="default text">Language</div>
+                                    <div class="menu">
+                                        <div class="item" ng-click="setLanguage('IT')" data-value="1">IT</div>
+                                        <div class="item" ng-click="setLanguage('EN')" data-value="0">EN</div>
+                                    </div>
+                                </div>
+                                <button ng-click="saveEvent()" class="ui blue icon button">
+                                    Save
+                                </button>
+                                <button class="ui teal icon button">
+                                    Cancel
+                                </button>
+
+
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+</div>
+</div>
+                <div class="ui divider"></div>
+                <div class="row">
+
+                    <div class="twelve wide column">
+                        <div class="ui header">Description</div>
+
+
+                        <div text-angular ng-model="description.description"></div>
+
+                    </div>
+
+                </div>
+                <div class="ui divider"></div>
+                <div class="row">
+                    <div class="twelve wide column">
+
+                        <div class="ui container">
+                            <button class="ui blue button" ngf-select="uploadFiles($files)" multiple accept="image/*">Select Files</button>
+                            <br>
+
+                            <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
+                                <div class="bar">
+                                    <div class="progress"></div>
+                                </div>
+                                <div class="label">Uploading Files</div>
+                            </div>
+                            <br>
+
+                        </div>
+
+                        <ul rn-carousel-auto-slide rn-carousel class="image">
+                            <li ng-repeat="image in images">
+                                <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide">
+                                    <button ng-click="deleteImage(image)" class="ui icon button"> <i class="big link trash outline icon"></i></button>
+                                </div>
+
+
+                            </li>
+                        </ul>
+
+
+                    </div>
                 </div>
 
+                <div class="ui divider"></div>
 
-            </div>
-        </div>
-        
-        <div class="ui divider"></div>
-        <div class="row">
-
-            <div class="twelve wide column">
-                <div class="ui header">Description</div>
-                
-                
-              <div text-angular ng-model="description.description"></div>
-                
-            </div>
-
-        </div>
-        <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
-                
-                <div class="ui container">
-    <button class="ui blue button" ngf-select="uploadFiles($files)" multiple 
-            accept="image/*">Select Files</button>
-   <br>
-                    
-    <div ng-if="progress" class="ui blue large progress"  data-percent="{{progress}}" id="file-upload-progress">
-      <div class="bar">
-        <div class="progress"></div>
-      </div>
-      <div class="label">Uploading Files</div>
-    </div>                
-   <br>
-    
-    </div>
-        
-                <ul rn-carousel-auto-slide rn-carousel class="image">
-                    <li ng-repeat="image in images">
-                        <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide" ><button ng-click="deleteImage(image)" class="ui icon button"> <i class="big link trash outline icon"></i></button></div>
-                      
-                        
-                    </li>
-                </ul>
-
-
-            </div>
-        </div>
-
-        <div class="ui divider"></div>
-
-        <div class="row">
-            <div class="twelve wide column">
-                <h2 class="ui left aligned header">
+                <div class="row">
+                    <div class="twelve wide column">
+                        <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Logistics
                 </h2>
-                <div text-angular ng-model="logistics.description"></div>
-            </div>
+                        <div text-angular ng-model="logistics.description"></div>
+                    </div>
 
-        </div>
-        <div class="ui divider"></div>
+                </div>
+                <div class="ui divider"></div>
 
-        <div class="row">
-            <div class="twelve wide column">
-                <h2 class="ui left aligned header">
+                <div class="row">
+                    <div class="twelve wide column">
+                        <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Includes
                 </h2>
-                <div text-angular ng-model="includes.description"></div>
-            </div>
+                        <div text-angular ng-model="includes.description"></div>
+                    </div>
 
-        </div>
-        <div class="row">
-            <div class="twelve wide column">
-                <h2 class="ui left aligned header">
+                </div>
+                <div class="row">
+                    <div class="twelve wide column">
+                        <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Excludes
                 </h2>
-                <div text-angular ng-model="excludes.description"></div>
-            </div>
+                        <div text-angular ng-model="excludes.description"></div>
+                    </div>
 
-        </div>
+                </div>
 
-        <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
-                <h2 class="ui left aligned header">
+                <div class="ui divider"></div>
+                <div class="row">
+                    <div class="twelve wide column">
+                        <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
                         The Boat
                 </h2>
 
-                <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+                        <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+
+                    </div>
+
+                </div>
+
+
+
+
 
             </div>
 
+
+
+
+
+
+
+            <div class="ui container">
+                <div class="ui menu">
+                    <div class="ui category search item">
+                        <div class="ui action labeled input">
+                            <div class="ui label">
+                                Boarding place
+                            </div>
+                            <input ng-autocomplete ng-model="autocomplete" options="options" details="mapDetails" type="text" placeholder="Search...">
+                            <button ng-click="searchLocation()" class="ui button">Search</button>
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+                <div class="ui segment">
+                    <div class="angular-google-map-container">
+                        <ui-gmap-google-map refresh="refresh" options='map.options' center='map.center' zoom='map.zoom' control='map.control'></ui-gmap-google-map>
+                    </div>
+                </div>
+
+
+
+
+            </div>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
         </div>
 
-
-
-
-
-    </div>
-    
-    
-    
-
-
-    
-    
-    <div class="ui container">
-    <div class="ui menu">
-  <div class="ui category search item">
-      <div class="ui action labeled input">
-          <div class="ui label">
-            Boarding place
-          </div>
-          <input ng-autocomplete ng-model="autocomplete" options="options" details="mapDetails" type="text" placeholder="Search...">
-           <button ng-click="searchLocation()" class="ui button">Search</button>
-        </div>
-      
-      
-  
-    
-  </div>
-</div>
-<div class="ui segment">
-   <div class="angular-google-map-container">
-            <ui-gmap-google-map refresh="refresh" options='map.options' center='map.center' zoom='map.zoom' control='map.control'></ui-gmap-google-map>
-        </div>
-</div>
-    
-    
-    
  
 </div>
-    <br><br><br><br><br>
-</div>
+<div class="ui inverted vertical footer segment">
+    <div class="ui center aligned container">
+        <div class="ui stackable inverted divided grid">
+            <div class="three wide column">
+                <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered image">
+            </div>
+            <div class="three wide column">
+                <h4 class="ui inverted header">Società</h4>
+                <div class="ui inverted link list">
+                    <a href="#" class="item">Chi siamo</a>
+                    <a href="#" class="item">Come funziona</a>
+                    <a href="#" class="item">Contatti</a>
 
-
-   <div class="ui inverted vertical footer segment">
-        <div class="ui center aligned container">
-            <div class="ui stackable inverted divided grid">
-                <div class="three wide column">
-                    <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered image">
-                </div>
-                <div class="three wide column">
-                    <h4 class="ui inverted header">Società</h4>
-                    <div class="ui inverted link list">
-                        <a href="#" class="item">Chi siamo</a>
-                        <a href="#" class="item">Come funziona</a>
-                        <a href="#" class="item">Contatti</a>
-
-                    </div>
-                </div>
-                <div class="three wide column">
-                    <h4 class="ui inverted header">Note legali</h4>
-                    <div class="ui inverted link list">
-                        <a href="#" class="item">Termini e condizioni</a>
-                        <a href="#" class="item">Noleggio occasionale</a>
-                        <a href="#" class="item">Privacy Utente-Cliente</a>
-                        <a href="#" class="item">Privacy YesWeSail Utente - Organizzatore</a>
-                    </div>
-                </div>
-                <div class="seven wide column">
-                    <h4 class="ui inverted header">Social</h4>
-                    <p>TODO - Insert social Icons</p>
                 </div>
             </div>
-            <div class="ui inverted section divider"></div>
-            <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered mini image">
-            <div class="ui horizontal inverted small divided link list">
-                <a class="item" href="#">Site Map</a>
-                <a class="item" href="#">Contact Us</a>
-                <a class="item" href="#">Terms and Conditions</a>
-                <a class="item" href="#">Privacy Policy</a>
+            <div class="three wide column">
+                <h4 class="ui inverted header">Note legali</h4>
+                <div class="ui inverted link list">
+                    <a href="#" class="item">Termini e condizioni</a>
+                    <a href="#" class="item">Noleggio occasionale</a>
+                    <a href="#" class="item">Privacy Utente-Cliente</a>
+                    <a href="#" class="item">Privacy YesWeSail Utente - Organizzatore</a>
+                </div>
+            </div>
+            <div class="seven wide column">
+                <h4 class="ui inverted header">Social</h4>
+                <p>TODO - Insert social Icons</p>
             </div>
         </div>
+        <div class="ui inverted section divider"></div>
+        <img src="http://www.yeswesail.com/wp-content/uploads/2016/03/cropped-cropped-YWS-60x70.png" class="ui centered mini image">
+        <div class="ui horizontal inverted small divided link list">
+            <a class="item" href="#">Site Map</a>
+            <a class="item" href="#">Contact Us</a>
+            <a class="item" href="#">Terms and Conditions</a>
+            <a class="item" href="#">Privacy Policy</a>
+        </div>
     </div>
+</div>

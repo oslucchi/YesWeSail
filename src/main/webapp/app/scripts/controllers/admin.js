@@ -9,16 +9,15 @@
  */
 angular.module('yeswesailApp')
   .controller('AdminCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate) {
-            
-    
-    
-    $scope.getEvents=function(){
-        $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function(res){
-            $scope.events=res.data;
+       
+   
+    $scope.getUsers=function(){
+        $http.get(URLs.ddns + 'rest/users', {}).then(function(res){
+            $scope.users=res.data;
         });
     };
     
-    $scope.getEvents();
+    $scope.getUsers();
     
     $scope.activate=function(event){
         event.status='A';

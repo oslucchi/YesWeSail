@@ -154,6 +154,14 @@ angular
                 accessLevel: 0
             }
     })
+    .state('userId', {
+      url: "/users/{userId}",
+      templateUrl: 'views/userId.html',
+      controller:  'UseridCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
     .state('events', {
       url: "/events?location&categoryId",
       templateUrl: 'views/events.html',
@@ -212,15 +220,23 @@ angular
       .state('admin.events', {
       url: "/events",
       templateUrl:  'views/admin.events.html',
+      controller: 'AdmineventsCtrl',
+      data: {
+                accessLevel: 3
+            }
+    }) 
+      .state('admin.users', {
+      url: "/users",
+      templateUrl:  'views/admin.users.html',
       controller: 'AdminCtrl',
       data: {
                 accessLevel: 3
             }
     })
-      .state('admin.mail', {
-      url: "/mail",
-      templateUrl:  'views/admin.events.html',
-      controller: 'AdminCtrl',
+      .state('admin.requests', {
+      url: "/requests",
+      templateUrl:  'views/admin.requests.html',
+      controller: 'AdminrequestsCtrl',
       data: {
                 accessLevel: 3
             }
