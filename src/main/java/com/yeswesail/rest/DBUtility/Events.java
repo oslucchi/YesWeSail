@@ -101,7 +101,8 @@ public class Events extends DBInterface
 				 	 "     ON a.idEvents = b.eventId AND " +
 				 	 "        b.languageId = " + languageId + " AND " +
 					 "		  b.anchorZone = 0 " + " AND " +
-					 "        a.status = 'A' " +
+					 "        a.status = 'A' AND " +
+					 "        a.dateStart > NOW() " +
 				 	 "ORDER BY dateStart ";
 		
 		log.trace("trying to populate collection with sql '" + sql + "'");

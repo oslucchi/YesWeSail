@@ -8,7 +8,7 @@ public class AddressInfo extends DBInterface
 
 	protected int idAddressInfo;
 	protected int userId;
-	protected char type;
+	protected String type;
 	protected String companyName;
 	protected String taxCode;
 	protected String address1;
@@ -67,11 +67,11 @@ public class AddressInfo extends DBInterface
 		this.userId = userId;
 	}
 
-	public char getType() {
+	public String getType() {
 		return type;
 	}
 
-	public void setType(char type) {
+	public void setType(String type) {
 		this.type = type;
 	}
 

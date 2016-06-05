@@ -32,6 +32,7 @@ public class Users extends DBInterface
 	protected String status;
 	protected String imageURL;
 	protected Date birthday;
+	private AddressInfo[] addressInfo;
 	
 	private void setNames()
 	{
@@ -266,5 +267,12 @@ public class Users extends DBInterface
 			log.warn("Exception " + e.getMessage() + " convertind " + birthday + " to a date");
 		}
 	}
-	
+
+	public AddressInfo[] getAddressInfo() {
+		return addressInfo;
+	}
+
+	public void setAddressInfo(AddressInfo[] addressInfo) {
+		this.addressInfo = addressInfo;
+	}	
 }

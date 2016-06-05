@@ -22,4 +22,5 @@ public class UsersJson {
 	public String status;
 	public String imageURL;
 	public String birthday;
+	public AddressInfoJson[] addressInfo;
 }
