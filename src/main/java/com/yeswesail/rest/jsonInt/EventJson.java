@@ -23,6 +23,7 @@ public class EventJson {
 	public String aggregateKey;
 	public boolean earlyBooking;
 	public boolean lastMinute;
+	public boolean hotEvent;
 	public UsersJson participants;
 	public TicketJson[] tickets;
 	public boolean activeOnly;

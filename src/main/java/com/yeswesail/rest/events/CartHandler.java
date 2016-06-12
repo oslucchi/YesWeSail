@@ -177,18 +177,28 @@ public class CartHandler {
 	
 	
 	@GET
-	@Path("checkout/{userId}")
+	@Path("checkout/{method}/{userId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response checkout(@QueryParam("payment_method_nonce") String nonce, @PathParam("userId") int userId,
-			@HeaderParam("Authorization") String token)
+	public Response checkout(@QueryParam("payment_method_nonce") String nonce,
+							 @PathParam("userId") int userId,
+							 @PathParam("method") String method,
+							 @HeaderParam("Authorization") String token)
 	{
 		int languageId;
-		if (token != null)
-			languageId = SessionData.getInstance().getLanguage(token);
+		SessionData sd = SessionData.getInstance();
+		if(token != null)
+		{
+			languageId = sd.getLanguage(token);
+			userId = sd.getBasicProfile(token).getIdUsers();
+		}
 		else
-			languageId = SessionData.getInstance().getLanguage(userId);
+		{
+			languageId = sd.getLanguage(userId);
+		}
+		
 		getBTGateway();
+		
 		DBConnection conn = null;
 		TicketLocks[] tickets = null;
 		int amount = 0;
@@ -226,22 +236,46 @@ public class CartHandler {
 				}
 				
 				DBInterface.TransactionCommit(conn);
-				URI location = new URI(prop.getWebHost() + "/#/cart/success?transactionId=" + transaction.getId());
-				return Response.seeOther(location).build();
+				if (method.toUpperCase().compareTo("PP") == 0)
+				{
+					Utils.addToJsonContainer("transactionId", transaction.getId(), true);
+					return Response
+							.status(Response.Status.OK)
+							.entity(Utils.jsonize())
+							.build();
+				}
+				else if (method.toUpperCase().compareTo("CC") == 0)
+				{
+					URI location = new URI(prop.getWebHost() + "/#/cart/success?transactionId=" + transaction.getId());
+					return Response.seeOther(location).build();
+				}
 	        }
 	        else if (result.getTransaction() != null) 
 	        {
+				DBInterface.TransactionRollback(conn);
 	            Transaction transaction = result.getTransaction();
 	            String errorMsg = "Transaction rejected. Status: " + transaction.getStatus() + 
 	            				  " Code: " + transaction.getProcessorResponseCode() + 
 	            				  " Text: " + transaction.getProcessorResponseText(); 
 	            log.warn(errorMsg);
-	            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + transaction.getProcessorResponseCode();
-				URI location = new URI(url);
-				return Response.seeOther(location).build();
+				if (method.toUpperCase().compareTo("PP") == 0)
+				{
+					Utils.addToJsonContainer("responseCode", transaction.getProcessorResponseCode(), true);
+					return Response
+							.status(Response.Status.FORBIDDEN)
+							.entity(Utils.jsonize())
+							.build();
+				}
+				else if (method.toUpperCase().compareTo("CC") == 0)
+				{
+		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + transaction.getProcessorResponseCode();
+					URI location = new URI(url);
+					return Response.seeOther(location).build();
+				}
 	        }
 	        else 
 	        {
+				DBInterface.TransactionRollback(conn);
 	        	String multipleErrors = "Multiple errors occurred during transaction:<br>";
 	            for (ValidationError error : result.getErrors().getAllDeepValidationErrors())
 	            {
@@ -251,10 +285,21 @@ public class CartHandler {
 	            	multipleErrors += "\n";
 	            }
 	            log.warn(multipleErrors);
-	            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
+				if (method.toUpperCase().compareTo("PP") == 0)
+				{
+					Utils.addToJsonContainer("responseCode", result.getMessage(), true);
+					return Response
+							.status(Response.Status.FORBIDDEN)
+							.entity(Utils.jsonize())
+							.build();
+				}
+				else if (method.toUpperCase().compareTo("CC") == 0)
+				{
+		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
 	            			 result.getErrors().getAllDeepValidationErrors().get(0).getCode();
-				URI location = new URI(url);
-				return Response.seeOther(location).build();
+					URI location = new URI(url);
+					return Response.seeOther(location).build();
+				}
 	        }
 		}
 		catch(Exception e)
@@ -267,8 +312,21 @@ public class CartHandler {
 		}
 		finally
 		{
+			if ((method.toUpperCase().compareTo("CC") != 0) &&
+			    (method.toUpperCase().compareTo("PP") != 0))
+			{
+				Utils.addToJsonContainer("responseCode", "Bad method request", true);
+				return Response
+						.status(Response.Status.BAD_REQUEST)
+						.entity(Utils.jsonize())
+						.build();
+			}
 			DBInterface.disconnect(conn);
 		}
+		return Response
+				.status(Response.Status.INTERNAL_SERVER_ERROR)
+				.entity("")
+				.build();
 
 
 //		TransactionOptionsPayPalRequest request = new TransactionRequest()

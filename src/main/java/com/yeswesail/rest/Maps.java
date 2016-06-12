@@ -43,15 +43,12 @@ public class Maps {
 	ArrayList<Object> eventTicketDescription = null;;
 	ArrayList<Events> events = null;;
 
-	@SuppressWarnings("unchecked")
 	private ArrayList<Object> getCategories(int languageId) throws Exception
 	{
 		if (categories == null)
 		{
 			CategoriesLanguages c = new CategoriesLanguages();
-			categories =
-					(ArrayList<Object>) c.populateCollectionOnCondition(
-								"WHERE languageId = " + languageId, CategoriesLanguages.class);
+			categories = (ArrayList<Object>) c.getAll(languageId);
 		}
 		for(Object e : categories)
 		{

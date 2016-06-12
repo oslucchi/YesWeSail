@@ -204,6 +204,12 @@ public class EventsHandler {
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
+		if (events == null)
+		{
+			return Response.status(Response.Status.NO_CONTENT)
+					.entity("{}")
+					.build();
+		}
 		
 		ArrayList<Events> eventsFiltered = new ArrayList<>();
 		if (activeOnly)
@@ -547,6 +553,7 @@ public class EventsHandler {
 		}
 		event.setEarlyBooking(jsonIn.earlyBooking);
 		event.setLastMinute(jsonIn.lastMinute);
+		event.setHotEvent(jsonIn.hotEvent);
 		if (jsonIn.imageURL == null)
 		{
 			event.setImageURL(LanguageResources.getResource(languageId, "events.placeholder.url"));

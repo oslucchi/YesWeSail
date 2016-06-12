@@ -72,17 +72,17 @@ public class ReviewsHandler {
 		}
 		if (jsonIn.status != null)
 		{
-			where += and + " status = '" + jsonIn.status + "'";
+			where += and + " a.status = '" + jsonIn.status + "'";
 			and = " AND ";
 		}
 		if (jsonIn.created != null)
 		{
-			where += and + " created < '" + jsonIn.created + "'";
+			where += and + " a.created < '" + jsonIn.created + "'";
 			and = " AND ";
 		}
 		if (jsonIn.updated != null)
 		{
-			where += and + " updated < '" + jsonIn.updated + "'";
+			where += and + " a.updated < '" + jsonIn.updated + "'";
 			and = " AND ";
 		}
 		if (where.trim().compareTo("WHERE") == 0)
@@ -107,6 +107,13 @@ public class ReviewsHandler {
 		jsonIn.reviewerId = reviewerId;
 		jsonIn.reviewForId = reviewForId;
 
+		SessionData sd = SessionData.getInstance();
+		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) ||
+			(idReviews != 0) || (reviewerId != 0) || (reviewForId != 0))
+		{
+			jsonIn.status = "A";
+		}
+		
 		Reviews[] reviews = null;
 		DBConnection conn = null;
 		try 
@@ -119,8 +126,9 @@ public class ReviewsHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -152,8 +160,9 @@ public class ReviewsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.entity(Utils.jsonize())
 					.build();
 		}
 
@@ -163,14 +172,15 @@ public class ReviewsHandler {
 		{
 			log.trace("Retrieving review");
 			conn = DBInterface.connect();
-			review = new Reviews(conn, idReviews);
+			review = new Reviews(conn, idReviews, false);
 			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -197,12 +207,13 @@ public class ReviewsHandler {
 		int languageId = Utils.setLanguageId(language);
 
 		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
-		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
-		}
+//		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+//		{
+//			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(Utils.jsonize())
+//					.build();
+//		}
 
 		Reviews review = null;
 		DBConnection conn = null;
@@ -211,6 +222,7 @@ public class ReviewsHandler {
 			log.trace("Review added");
 			conn = DBInterface.TransactionStart();
 			review = new Reviews();
+			review.setReview(jsonIn.review);
 			review.setReviewerId(sd.getBasicProfile(token).getIdUsers());
 			review.setReviewForId(jsonIn.reviewForId);
 			review.setRating(jsonIn.rating);
@@ -225,6 +237,7 @@ public class ReviewsHandler {
 			pa.setLink("/rest/reviews/?idReviews=" + id);
 			pa.setCreated(review.getCreated());
 			pa.setUpdated(pa.getCreated());
+			pa.setStatus("P");
 			pa.insert(conn, "idPendingActions", pa);
 
 			DBInterface.TransactionCommit(conn);
@@ -234,8 +247,9 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on insert");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -257,8 +271,9 @@ public class ReviewsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.entity(Utils.jsonize())
 					.build();
 		}
 		
@@ -268,7 +283,7 @@ public class ReviewsHandler {
 		{
 			log.trace("Retrieving review to update. Id " + idReviews);
 			conn = DBInterface.TransactionStart();
-			review = new Reviews(conn, idReviews);
+			review = new Reviews(conn, idReviews, false);
 			review.setStatus("A");
 			review.update(conn, "idReviews");
 			DBInterface.TransactionCommit(conn);
@@ -278,8 +293,9 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -301,8 +317,9 @@ public class ReviewsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.entity(Utils.jsonize())
 					.build();
 		}
 		
@@ -312,7 +329,7 @@ public class ReviewsHandler {
 		{
 			log.trace("Retrieving review to update. Id " + idReviews);
 			conn = DBInterface.TransactionStart();
-			review = new Reviews(conn, idReviews);
+			review = new Reviews(conn, idReviews, false);
 			review.delete(conn, idReviews);
 			DBInterface.TransactionCommit(conn);
 			log.trace("Review deleted");
@@ -321,8 +338,9 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally

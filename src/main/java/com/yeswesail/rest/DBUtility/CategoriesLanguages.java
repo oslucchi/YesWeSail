@@ -1,5 +1,7 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.util.ArrayList;
+
 public class CategoriesLanguages extends DBInterface
 {
 	private static final long serialVersionUID = -2207431265593111520L;
@@ -7,6 +9,7 @@ public class CategoriesLanguages extends DBInterface
 	protected int categoryId;
 	protected int languageId;
 	protected String description;
+	protected String url;
 	
 	private void setNames()
 	{
@@ -19,6 +22,16 @@ public class CategoriesLanguages extends DBInterface
 		setNames();
 	}
 
+	@SuppressWarnings("unchecked")
+	public ArrayList<Object> getAll(int languageId) throws Exception
+	{
+		String sql = "SELECT a.*, b.url " +
+					 "FROM CategoriesLanguages a INNER JOIN Categories b ON " +
+					 "     a.categoryId = b.idCategories AND " +
+					 "     a.languageId = " + languageId;
+		return (ArrayList<Object>) populateCollection(sql, CategoriesLanguages.class);
+	}
+	
 	public int getCategoryId() {
 		return categoryId;
 	}
@@ -43,5 +56,11 @@ public class CategoriesLanguages extends DBInterface
 		this.description = description;
 	}
 
+	public String getUrl() {
+		return url;
+	}
 
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }

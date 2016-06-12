@@ -10,6 +10,9 @@ public class Reviews extends DBInterface
 	protected int idReviews;
 	protected String review;
 	protected int reviewerId;
+	protected String reviewerName;
+	protected String reviewerSurname;
+	protected String reviewerURL;
 	protected int reviewForId;
 	protected Date created;
 	protected Date updated;
@@ -27,19 +30,25 @@ public class Reviews extends DBInterface
 		setNames();
 	}
 
-	public Reviews(DBConnection conn, int id) throws Exception
+	public Reviews(DBConnection conn, int id, boolean activeOnly) throws Exception
 	{
 		setNames();
-		String sql = "SELECT * " +
-					 "FROM " + tableName + " " +
+		String sql = "SELECT a.*, b.name AS reviewerName, b.surname AS reviewerSurname, " +
+				 	 "b.imageURL AS reviewerURL " +
+					 "FROM Reviews AS a INNER JOIN Users AS b ON " +
+					 "     b.idUsers = a.reviewerId " +
+					 (activeOnly ? " AND a.status = 'A' " : "") +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
 	}
 
 	public static Reviews[] search(DBConnection conn, String sqlWhere) throws Exception
 	{
-		sqlWhere = "SELECT * " +
-				   "FROM Reviews " + sqlWhere;
+		sqlWhere =	"SELECT a.*, b.name AS reviewerName, b.surname AS reviewerSurname, " +
+				 	"b.imageURL AS reviewerURL " +
+					"FROM Reviews AS a INNER JOIN Users AS b ON " +
+					"     b.idUsers = a.reviewerId " +
+					sqlWhere;
 		@SuppressWarnings("unchecked")
 		ArrayList<Reviews> reviews = (ArrayList<Reviews>) Reviews.populateCollection(sqlWhere, Reviews.class);
 		return(reviews.toArray(new Reviews[reviews.size()]));
@@ -107,5 +116,17 @@ public class Reviews extends DBInterface
 
 	public void setRating(int rating) {
 		this.rating = rating;
+	}
+
+	public String getReviewerName() {
+		return reviewerName;
+	}
+
+	public String getReviewerSurname() {
+		return reviewerSurname;
+	}
+
+	public String getReviewerURL() {
+		return reviewerURL;
 	}
 }

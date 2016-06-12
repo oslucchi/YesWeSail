@@ -6,6 +6,7 @@ public class Categories extends DBInterface
 
 	protected int idCategories;
 	protected String description;
+	protected String url;
 	
 	private void setNames()
 	{
@@ -43,4 +44,11 @@ public class Categories extends DBInterface
 		this.description = description;
 	}
 
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 }

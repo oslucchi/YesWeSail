@@ -57,13 +57,13 @@ public class Profile {
 			{
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
-					errMsg = LanguageResources.getResource(
-								languageId, "auth.loginTokenNotExist");
+					Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "auth.loginTokenNotExist"), true);
+					errMsg = Utils.jsonize();
 				}
 				else
 				{
-					errMsg = LanguageResources.getResource(languageId, "generic.execError") + " (" +
-							 e.getMessage() + ")";
+					Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+					errMsg = Utils.jsonize();
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
 			}
@@ -71,7 +71,6 @@ public class Profile {
 			{
 				DBInterface.disconnect(conn);
 			}
-
 			try 
 			{
 				SessionData.getInstance().addUser(jsonIn.token, languageId);
@@ -79,62 +78,14 @@ public class Profile {
 			}
 			catch(Exception e)
 			{
-				errMsg = LanguageResources.getResource(languageId, "generic.execError") + " (" +
-						 e.getMessage() + ")";
+				Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+				errMsg = Utils.jsonize();
 			}
 		}
 		
 		return errMsg;
 	}
 
-	@GET
-	@Path("/basic/{userId}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response basicPublicProfile(@PathParam("userId") int userId, 
-									   @HeaderParam("Language") String language)
-	{
-		int languageId = Utils.setLanguageId(language);
-		Users u = null;
-		Users uWiped = null;
-		DBConnection conn = null;
-		try 
-		{
-			conn = DBInterface.connect();
-			u = new Users(conn, userId);
-			uWiped = new Users();
-			uWiped.setName(u.getName());
-			uWiped.setSurname(u.getSurname());
-			uWiped.setRoleId(u.getRoleId());
-			uWiped.setImageURL(u.getImageURL());
-		}
-		catch (Exception e) 
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		
-		try 
-		{
-			json = mapper.writeValueAsString(uWiped);
-		} 
-		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
-	}
 
 	@POST
 	@Path("/basic")
@@ -161,13 +112,77 @@ public class Profile {
 		} 
 		catch (IOException e) {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(
-							languageId, "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+					.entity(Utils.jsonize())
+					.build();
 		}
 
 		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	private Response fillBasicProfile(int userId, int languageId, boolean requestorAuthenticated)
+	{
+		Users u = null;
+		Users uWiped = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			u = new Users(conn, userId);
+			uWiped = new Users();
+			uWiped.setName(u.getName());
+			uWiped.setSurname(u.getSurname());
+			uWiped.setRoleId(u.getRoleId());
+			uWiped.setImageURL(u.getImageURL());
+			uWiped.setLanguagesSpoken(u.getLanguagesSpoken());
+			if (requestorAuthenticated)
+			{
+				uWiped.setFacebook(u.getFacebook());
+				uWiped.setEmail(u.getEmail());
+				uWiped.setGoogle(u.getGoogle());
+				uWiped.setTwitter(u.getTwitter());
+			}
+		}
+		catch (Exception e) 
+		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(Utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(uWiped);
+		} 
+		catch (IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(Utils.jsonize())
+					.build();
+		}
+
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+	
+	@GET
+	@Path("/basic/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response basicPublicProfile(@PathParam("userId") int userId, 
+									   @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+		return fillBasicProfile(userId, languageId, false);
 	}
 
 	@GET
@@ -184,8 +199,9 @@ public class Profile {
 		}
 		catch (Exception e) 
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		
@@ -198,31 +214,17 @@ public class Profile {
 		} 
 		catch (IOException e) {
 			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
-	@GET
-	@Path("/{userId}")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response userProfileById(@PathParam("userId") int userId, @HeaderParam("Authorization") String token)
+	private Response fillWholeProfile(int userId, int languageId)
 	{
-		SessionData sd = SessionData.getInstance();
-		int languageId = sd.getLanguage(token);
-		if (sd.getBasicProfile(token).getIdUsers() != userId)
-		{
-			log.error("User " + sd.getBasicProfile(token).getIdUsers() + 
-					  " requesting whole profile for " + userId + " without permissions. Unauthorized");
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized") )
-					.build();
-		}
-		
 		Users u = null;
 		AddressInfo[] ai = new AddressInfo[2];
 		DBConnection conn = null;
@@ -236,8 +238,9 @@ public class Profile {
 		}
 		catch (Exception e) 
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -254,12 +257,31 @@ public class Profile {
 		} 
 		catch (IOException e) {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 
 		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	@GET
+	@Path("/{userId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response userProfileById(@PathParam("userId") int userId, @HeaderParam("Authorization") String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(token);
+		if (sd.getBasicProfile(token).getIdUsers() != userId)
+		{
+			return fillBasicProfile(userId, languageId, true);
+		}
+		else		
+		{
+			return fillWholeProfile(userId, languageId);
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -272,8 +294,9 @@ public class Profile {
 		int languageId = sd.getLanguage(token);
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.entity(Utils.jsonize())
 					.build();
 		}
 		
@@ -291,8 +314,9 @@ public class Profile {
 		}
 		catch (Exception e) 
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -355,8 +379,9 @@ public class Profile {
 		}
 		catch (Exception e) 
 		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.entity(Utils.jsonize())
 					.build();
 		}
 		finally
@@ -365,4 +390,48 @@ public class Profile {
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+	
+	@POST
+	@Path("create/dummy")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response createOnTheFly(UsersJson jsonIn, @HeaderParam("Authorization") String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(token);
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(Utils.jsonize())
+					.build();
+		}
+		
+		DBConnection conn = null;
+		Users u = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			u = new Users(conn, jsonIn.idUsers);
+			u.setEmail(jsonIn.email);
+			u.setName(jsonIn.name);
+			u.setSurname(jsonIn.surname);
+			u.setStatus("A");
+			u.setRoleId(Roles.DUMMY);
+			u.insert(conn, "idUsers", u);
+		}
+		catch(Exception e)
+		{
+			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(Utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+	
 }

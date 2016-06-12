@@ -98,6 +98,7 @@ DROP TABLE IF EXISTS `Categories`;
 CREATE TABLE `Categories` (
   `idCategories` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(45) NOT NULL,
+  `url` varchar(256) NOT NULL,
   PRIMARY KEY (`idCategories`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -108,7 +109,7 @@ CREATE TABLE `Categories` (
 
 LOCK TABLES `Categories` WRITE;
 /*!40000 ALTER TABLE `Categories` DISABLE KEYS */;
-INSERT INTO `Categories` VALUES (1,'Relax'),(2,'Pesca'),(3,'Sport');
+INSERT INTO `Categories` VALUES (1,'Relax','images/application/categoryRelax.png'),(2,'Pesca','images/application/categoryFishing.png'),(3,'Sport','images/application/categorySport.png');
 /*!40000 ALTER TABLE `Categories` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -158,7 +159,7 @@ CREATE TABLE `EventDescription` (
   KEY `fk_EventDescription_Event_idx` (`eventId`),
   CONSTRAINT `fk_EventDescriptaion_Languges` FOREIGN KEY (`languageId`) REFERENCES `Languages` (`idLanguages`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventDescription_Event` FOREIGN KEY (`eventId`) REFERENCES `Events` (`idEvents`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=120 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=126 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -167,7 +168,7 @@ CREATE TABLE `EventDescription` (
 
 LOCK TABLES `EventDescription` WRITE;
 /*!40000 ALTER TABLE `EventDescription` DISABLE KEYS */;
-INSERT INTO `EventDescription` VALUES (1,1,2,0,'25 Aprile, dolce far nulla'),(2,1,1,0,'Questa è la descrizione dell\'evento 1'),(3,1,3,0,'Ponte del 25 aprile tra il Golfo dei Poeti e il Tigullio'),(4,1,4,0,'Pesca al bolentino'),(5,1,5,0,'A zonzo per il Mar Ionio'),(6,1,5,1,'<H2>Crociera a zonzo per il Mar Ionio</H2><p>Scopri cosa significa essere un turista del mare, viaggiare verso nuovi porti e nuove destinazioni, godere di panorami mozzafiato, incontrare popoli e culture diverse, rilassarsi, condividere del tempo insieme, mettersi in discussione e a confronto!<br>Perché nel Mar Ionio? Prima di tutto perché è affascinante, limpido, di un blu cobalto, salatissimo, ricco di fauna e flora marina…ti sorprenderà e ne sarai sedotto. Inoltre è ricco di storia…un po’ tutti ci hanno navigato: Magna Grecia, Bizantini, Romani, Longobardi, Serenissimi, Turchi, Egiziani e fin dall’antichità è stato crocevia di intrecci commerciali da e per l’oriente. E’ uno spettacolo e te ne innamorerai!<br><br>A bordo del Moana60 vivrai un’esperienza genuina al naturale, sperimentando l’antico viaggiar andando per mare, apprenderai le poche, fondamentali regole del mare, assaporando l’emozione di approdare in memorabili città e luoghi, carichi di storia e tradizioni.<br><br>Nicola, il tuo skipper, sarà a disposizione per illustrare, chiarire, approfondire e confrontarsi (non si finisce mai di imparare) con l’equipaggio più curioso…. Dal semplice nodo parlato (i parabordi), alle diverse tecniche e usi del sestante (strumento prezioso al pari di una stella) utilizzato ancor oggi per la determinazione del punto nave. Betelgeuse, Bellatrix, Orione, Cassiopea e la Polare diventeranno astri e costellazioni fedeli che vi accompagneranno non solo in mare, ma anche durante un’escursione notturna in alta montagna o durante una cena romantica con la vostra amata/o a lume di candela. Potremmo ammirare albe, tramonti e costellazioni che credevamo scomparse dai cieli, con un ritmo sottile e leggero della vita che scorre al meglio.<br><br>Navigheremo verso tranquille e verdi baie dove pranzeremo tra bagni di sole e di mare.'),(7,1,5,2,'Il sabato imbarco a Sami, Cefalonia e sistemazione a bordo. In alternativa… possibilità d’imbarco il giovedì al porto di S. Nikolas, Zante e sbarco il giovedì successivo.<br>Ogni mattina, dopo una buona colazione ed un tuffo per risvegliarci, si mollano gli ormeggi e si parte verso una nuova destinazione.<br>L’itinerario prevede: Fiskardo (Cefalonia), Khioni (Itaca), una notte in baia a sud di Itaca, Agios Nikolaos (Zante), escursione alla famosissima Spiaggia del Relitto a Zante, Sami (Cefalonia). Il sabato sbarco a Sami, Cefalonia.<br>Tra una destinazione e l’altra, tanta vela, divertimento e relax con soste in baie per tuffi in acque cristalline.'),(8,1,5,3,'<ul><li>Aperitivo di benvenuto</li><li>Tasse portuali</li><li>Carburante</li></ul>'),(9,1,5,4,'<ul><li>Cambusa</li><li>Trasferimenti da e verso il porto di imbarco</li></ul>'),(10,1,2,1,'<H2>Una vacanza di tutto relax!</H2>La nostra vacanza a bordo di Miolì, l’abbiamo pensata per il puro relax.<br>\nDedicarsi tre giorni in barca a vela alla scoperta delle bellezze del mare dell’Isola d’Elba è un buon modo per inaugurare l’arrivo della primavera! Scivoleremo fino all’isola ad ammirare le sue coste caratterizzate da borghi di pescatori, paesini arroccati, antichi castelli, verdi vallate, incantevoli golfi e splendide spiagge di sabbia e ghiaia dove, la notte, daremo fondo all’ancora per la cena con del buon vino e buona musica.<br>Se le condizioni meteo lo permettono potremo dirigerci verso Capraia che brulla e selvaggia sorge su terreno tufico, originata dal bordo dell’antico vulcano sprofondato nel mare.<br>A terra sarà  possibile visitare il piccolo borgo e l’ormai abbandonato penitenziario incorniciato dal giallo delle ginestre e il blu del mare. Oppure potremo dirigerci a sud verso Pianosa e l’Isola di Montecristo, perla del nostro arcipelago per i miti e le leggende che la raccontano, i panorami mozzafiato e il suo parco naturale.'),(11,1,2,2,'Imbarco e sbarco da Marina di Cala de’ Medici (LI), partenza il 22 aprile, ritorno il 25 aprile.<br>L’imbarcazione ospita fino a un massimo di 8 persone. /La vacanza è confermata con un MINIMO DI 4 PARTECIPANTI.<br>E’ possibile prenotare l’intera barca (contatta l’armatore)<br>Barca e programma possono subire variazioni, senza preavviso, in base alle condizioni meteo-climatiche per garantire la sicurezza a bordo<br>Verifica l’itinerario della vacanza con il tuo skipper prima di prenotare le escursioni a terra.'),(12,1,2,3,'<ul><li>imbarcazione Bénéteau First 45f5 con 4 cabine e 2 bagni</li><li>skipper (anche istruttore di vela, potrà insegnarvi i rudimenti dell’andar per mare)</li><li>pernottamento in cuccetta singola o doppia matrimoniale</li><li>gasolio</li><li>assicurazione</li><li>attrezzatura da pesca e tender (gommone)</li></ul>'),(13,1,2,4,'<ul><li>la cambusa (i pasti) che sarà acquistata e preparata con il contributo di tutto l’equipaggio. In base alle richieste è possibile pranzare o cenare a bordo oppure attraccare e scegliere di apprezzare la cucina locale al ristorante.</li><li>la sosta nei porti differenti a quello di imbarco che sarà a carico dell’equipaggio.</li><li>Le spese extra, che ammontano a circa 15 euro a persona al giorno.</li></ul>'),(29,2,5,1,'<p>This is a description</p>'),(30,2,5,2,'this is the event logisitic'),(31,2,5,3,'<p>This is patrick</p>'),(32,2,5,4,''),(33,2,2,1,'<p>Hello</p>'),(34,2,2,2,'<p>I am</p>'),(35,2,2,3,'<p>in english</p>'),(36,2,2,4,''),(119,2,1,0,'This is the description for the event 1');
+INSERT INTO `EventDescription` VALUES (1,1,2,0,'25 Aprile, dolce far nulla'),(2,1,1,0,'Questa è la descrizione dell\'evento 1'),(3,1,3,0,'Ponte del 25 aprile tra il Golfo dei Poeti e il Tigullio'),(4,1,4,0,'Pesca al bolentino'),(5,1,5,0,'A zonzo per il Mar Ionio'),(6,1,5,1,'<H2>Crociera a zonzo per il Mar Ionio</H2><p>Scopri cosa significa essere un turista del mare, viaggiare verso nuovi porti e nuove destinazioni, godere di panorami mozzafiato, incontrare popoli e culture diverse, rilassarsi, condividere del tempo insieme, mettersi in discussione e a confronto!<br>Perché nel Mar Ionio? Prima di tutto perché è affascinante, limpido, di un blu cobalto, salatissimo, ricco di fauna e flora marina…ti sorprenderà e ne sarai sedotto. Inoltre è ricco di storia…un po’ tutti ci hanno navigato: Magna Grecia, Bizantini, Romani, Longobardi, Serenissimi, Turchi, Egiziani e fin dall’antichità è stato crocevia di intrecci commerciali da e per l’oriente. E’ uno spettacolo e te ne innamorerai!<br><br>A bordo del Moana60 vivrai un’esperienza genuina al naturale, sperimentando l’antico viaggiar andando per mare, apprenderai le poche, fondamentali regole del mare, assaporando l’emozione di approdare in memorabili città e luoghi, carichi di storia e tradizioni.<br><br>Nicola, il tuo skipper, sarà a disposizione per illustrare, chiarire, approfondire e confrontarsi (non si finisce mai di imparare) con l’equipaggio più curioso…. Dal semplice nodo parlato (i parabordi), alle diverse tecniche e usi del sestante (strumento prezioso al pari di una stella) utilizzato ancor oggi per la determinazione del punto nave. Betelgeuse, Bellatrix, Orione, Cassiopea e la Polare diventeranno astri e costellazioni fedeli che vi accompagneranno non solo in mare, ma anche durante un’escursione notturna in alta montagna o durante una cena romantica con la vostra amata/o a lume di candela. Potremmo ammirare albe, tramonti e costellazioni che credevamo scomparse dai cieli, con un ritmo sottile e leggero della vita che scorre al meglio.<br><br>Navigheremo verso tranquille e verdi baie dove pranzeremo tra bagni di sole e di mare.'),(7,1,5,2,'Il sabato imbarco a Sami, Cefalonia e sistemazione a bordo. In alternativa… possibilità d’imbarco il giovedì al porto di S. Nikolas, Zante e sbarco il giovedì successivo.<br>Ogni mattina, dopo una buona colazione ed un tuffo per risvegliarci, si mollano gli ormeggi e si parte verso una nuova destinazione.<br>L’itinerario prevede: Fiskardo (Cefalonia), Khioni (Itaca), una notte in baia a sud di Itaca, Agios Nikolaos (Zante), escursione alla famosissima Spiaggia del Relitto a Zante, Sami (Cefalonia). Il sabato sbarco a Sami, Cefalonia.<br>Tra una destinazione e l’altra, tanta vela, divertimento e relax con soste in baie per tuffi in acque cristalline.'),(8,1,5,3,'<ul><li>Aperitivo di benvenuto</li><li>Tasse portuali</li><li>Carburante</li></ul>'),(9,1,5,4,'<ul><li>Cambusa</li><li>Trasferimenti da e verso il porto di imbarco</li></ul>'),(10,1,2,1,'<H2>Una vacanza di tutto relax!</H2>La nostra vacanza a bordo di Miolì, l’abbiamo pensata per il puro relax.<br>\nDedicarsi tre giorni in barca a vela alla scoperta delle bellezze del mare dell’Isola d’Elba è un buon modo per inaugurare l’arrivo della primavera! Scivoleremo fino all’isola ad ammirare le sue coste caratterizzate da borghi di pescatori, paesini arroccati, antichi castelli, verdi vallate, incantevoli golfi e splendide spiagge di sabbia e ghiaia dove, la notte, daremo fondo all’ancora per la cena con del buon vino e buona musica.<br>Se le condizioni meteo lo permettono potremo dirigerci verso Capraia che brulla e selvaggia sorge su terreno tufico, originata dal bordo dell’antico vulcano sprofondato nel mare.<br>A terra sarà  possibile visitare il piccolo borgo e l’ormai abbandonato penitenziario incorniciato dal giallo delle ginestre e il blu del mare. Oppure potremo dirigerci a sud verso Pianosa e l’Isola di Montecristo, perla del nostro arcipelago per i miti e le leggende che la raccontano, i panorami mozzafiato e il suo parco naturale.'),(11,1,2,2,'Imbarco e sbarco da Marina di Cala de’ Medici (LI), partenza il 22 aprile, ritorno il 25 aprile.<br>L’imbarcazione ospita fino a un massimo di 8 persone. /La vacanza è confermata con un MINIMO DI 4 PARTECIPANTI.<br>E’ possibile prenotare l’intera barca (contatta l’armatore)<br>Barca e programma possono subire variazioni, senza preavviso, in base alle condizioni meteo-climatiche per garantire la sicurezza a bordo<br>Verifica l’itinerario della vacanza con il tuo skipper prima di prenotare le escursioni a terra.'),(12,1,2,3,'<ul><li>imbarcazione Bénéteau First 45f5 con 4 cabine e 2 bagni</li><li>skipper (anche istruttore di vela, potrà insegnarvi i rudimenti dell’andar per mare)</li><li>pernottamento in cuccetta singola o doppia matrimoniale</li><li>gasolio</li><li>assicurazione</li><li>attrezzatura da pesca e tender (gommone)</li></ul>'),(13,1,2,4,'<ul><li>la cambusa (i pasti) che sarà acquistata e preparata con il contributo di tutto l’equipaggio. In base alle richieste è possibile pranzare o cenare a bordo oppure attraccare e scegliere di apprezzare la cucina locale al ristorante.</li><li>la sosta nei porti differenti a quello di imbarco che sarà a carico dell’equipaggio.</li><li>Le spese extra, che ammontano a circa 15 euro a persona al giorno.</li></ul>'),(29,2,5,1,'<p>This is a description</p>'),(30,2,5,2,'this is the event logisitic'),(31,2,5,3,'<p>This is patrick</p>'),(32,2,5,4,''),(33,2,2,1,'<p>Hello</p>'),(34,2,2,2,'<p>I am</p>'),(35,2,2,3,'<p>in english</p>'),(36,2,2,4,''),(119,2,1,0,'This is the description for the event 1'),(125,1,7,0,'evento di prova');
 /*!40000 ALTER TABLE `EventDescription` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -199,7 +200,7 @@ CREATE TABLE `EventTickets` (
 
 LOCK TABLES `EventTickets` WRITE;
 /*!40000 ALTER TABLE `EventTickets` DISABLE KEYS */;
-INSERT INTO `EventTickets` VALUES (1,1,1,1,0,80,0,NULL),(2,1,1,1,0,50,0,NULL),(3,2,2,2,0,120,0,NULL),(4,2,1,4,0,70,0,NULL),(5,1,1,1,0,70,0,NULL),(6,3,1,1,0,63,0,NULL),(7,3,2,2,0,80,0,NULL),(8,4,1,2,0,73,0,NULL),(9,4,2,1,0,90,0,NULL),(10,5,1,4,4,400,0,NULL),(11,5,2,1,1,450,1,NULL),(12,5,2,1,1,480,1,NULL),(14,5,2,1,0,520,0,NULL),(15,5,2,1,0,520,0,NULL),(16,5,3,1,0,600,0,NULL),(17,5,3,1,0,600,0,NULL);
+INSERT INTO `EventTickets` VALUES (1,1,1,1,0,80,0,NULL),(2,1,1,1,0,50,0,NULL),(3,2,2,2,1,120,0,NULL),(4,2,1,4,0,70,0,NULL),(5,1,1,1,0,70,0,NULL),(6,3,1,1,1,63,0,NULL),(7,3,2,2,1,80,0,NULL),(8,4,1,2,0,73,0,NULL),(9,4,2,1,0,90,0,NULL),(10,5,1,4,4,400,0,NULL),(11,5,2,1,1,450,1,NULL),(12,5,2,1,1,480,1,NULL),(14,5,2,1,0,520,0,NULL),(15,5,2,1,0,520,0,NULL),(16,5,3,1,1,600,0,NULL),(17,5,3,1,0,600,0,NULL);
 /*!40000 ALTER TABLE `EventTickets` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -251,7 +252,7 @@ CREATE TABLE `EventTicketsSold` (
   KEY `fk_EventTicketsSold_Users_idx` (`userId`),
   CONSTRAINT `fk_EventTicketsSold_EventsTickets` FOREIGN KEY (`eventTicketId`) REFERENCES `EventTickets` (`idEventTickets`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_EventTicketsSold_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=69 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -260,7 +261,7 @@ CREATE TABLE `EventTicketsSold` (
 
 LOCK TABLES `EventTicketsSold` WRITE;
 /*!40000 ALTER TABLE `EventTicketsSold` DISABLE KEYS */;
-INSERT INTO `EventTicketsSold` VALUES (1,4,91,'jn5tz3','2016-05-29 13:08:05'),(2,4,91,'jn5tz3','2016-05-29 13:08:09'),(3,3,91,'jn5tz3','2016-05-29 13:08:11'),(4,4,91,'jn5tz3','2016-05-29 13:08:13'),(5,3,91,'jn5tz3','2016-05-29 13:08:15'),(6,4,91,'jn5tz3','2016-05-29 13:08:17'),(7,10,91,'jn5tz3','2016-05-29 13:08:19'),(8,11,91,'jn5tz3','2016-05-29 13:08:21'),(9,10,91,'jn5tz3','2016-05-29 13:08:22'),(10,8,91,'jn5tz3','2016-05-29 13:08:24'),(11,11,91,'kd65sx','2016-05-29 14:00:44'),(12,12,91,'kd65sx','2016-05-29 14:00:44'),(13,10,91,'kd65sx','2016-05-29 14:00:44'),(14,14,91,'8wfscc','2016-05-29 14:25:38'),(15,10,91,'8wfscc','2016-05-29 14:25:38'),(16,10,91,'8wfscc','2016-05-29 14:25:38'),(17,10,91,'8wfscc','2016-05-29 14:25:38'),(18,2,91,'9bttws','2016-05-29 14:26:11'),(19,15,91,'g957cc','2016-05-29 14:33:01'),(20,10,91,'78v2sc','2016-05-29 14:36:26'),(21,10,91,'78v2sc','2016-05-29 14:36:26'),(22,10,91,'78v2sc','2016-05-29 14:36:26'),(23,11,91,'78v2sc','2016-05-29 14:36:26'),(24,10,91,'hznknc','2016-05-29 14:43:06'),(25,12,91,'hznknc','2016-05-29 14:43:06');
+INSERT INTO `EventTicketsSold` VALUES (1,4,91,'jn5tz3','2016-05-29 13:08:05'),(2,4,91,'jn5tz3','2016-05-29 13:08:09'),(3,3,91,'jn5tz3','2016-05-29 13:08:11'),(4,4,91,'jn5tz3','2016-05-29 13:08:13'),(5,3,91,'jn5tz3','2016-05-29 13:08:15'),(6,4,91,'jn5tz3','2016-05-29 13:08:17'),(7,10,91,'jn5tz3','2016-05-29 13:08:19'),(8,11,91,'jn5tz3','2016-05-29 13:08:21'),(9,10,91,'jn5tz3','2016-05-29 13:08:22'),(10,8,91,'jn5tz3','2016-05-29 13:08:24'),(11,11,91,'kd65sx','2016-05-29 14:00:44'),(12,12,91,'kd65sx','2016-05-29 14:00:44'),(13,10,91,'kd65sx','2016-05-29 14:00:44'),(14,14,91,'8wfscc','2016-05-29 14:25:38'),(15,10,91,'8wfscc','2016-05-29 14:25:38'),(16,10,91,'8wfscc','2016-05-29 14:25:38'),(17,10,91,'8wfscc','2016-05-29 14:25:38'),(18,2,91,'9bttws','2016-05-29 14:26:11'),(19,15,91,'g957cc','2016-05-29 14:33:01'),(20,10,91,'78v2sc','2016-05-29 14:36:26'),(21,10,91,'78v2sc','2016-05-29 14:36:26'),(22,10,91,'78v2sc','2016-05-29 14:36:26'),(23,11,91,'78v2sc','2016-05-29 14:36:26'),(24,10,91,'hznknc','2016-05-29 14:43:06'),(25,12,91,'hznknc','2016-05-29 14:43:06'),(26,3,74,'54bkv3sh','2016-06-08 16:59:27');
 /*!40000 ALTER TABLE `EventTicketsSold` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -312,6 +313,7 @@ CREATE TABLE `Events` (
   `status` char(1) NOT NULL,
   `earlyBooking` tinyint(4) DEFAULT NULL,
   `lastMinute` tinyint(4) DEFAULT NULL,
+  `hotEvent` tinyint(4) DEFAULT NULL,
   `eventRef` varchar(15) DEFAULT NULL,
   `aggregateKey` varchar(64) DEFAULT NULL,
   `createdBy` int(11) NOT NULL,
@@ -327,7 +329,7 @@ CREATE TABLE `Events` (
   CONSTRAINT `fk_Events_Eventtype` FOREIGN KEY (`eventType`) REFERENCES `EventTypes` (`idEventTypes`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Users` FOREIGN KEY (`shipOwnerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Events_Users_create` FOREIGN KEY (`createdBy`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=75 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -336,7 +338,7 @@ CREATE TABLE `Events` (
 
 LOCK TABLES `Events` WRITE;
 /*!40000 ALTER TABLE `Events` DISABLE KEYS */;
-INSERT INTO `Events` VALUES (1,1,'2016-06-16 00:00:00','2016-06-25 00:00:00','Toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A',0,0,NULL,'1',1,'2016-05-14 23:12:11'),(2,1,'2016-07-25 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'A',1,0,NULL,'e3a79514-f7a4-475d-8174-1fe68e6ea7a7',1,'2016-05-14 23:12:11'),(3,1,'2016-07-25 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,NULL,'A',1,1,NULL,'1',1,'2016-05-14 23:12:11'),(4,1,'2016-07-25 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,NULL,'A',0,0,NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-07-25 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A',1,0,'','1',1,'2016-05-14 23:12:11');
+INSERT INTO `Events` VALUES (1,1,'2016-06-16 00:00:00','2016-06-25 00:00:00','Toscana',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'P',0,0,1,NULL,'1',1,'2016-05-14 23:12:11'),(2,1,'2016-07-25 00:00:00','2016-12-17 00:00:00','LIGURIA',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_2_0.jpg',74,2,NULL,'A',1,0,1,NULL,'e3a79514-f7a4-475d-8174-1fe68e6ea7a7',1,'2016-05-14 23:12:11'),(3,1,'2016-07-25 00:00:00','2016-12-15 00:00:00','Maremma',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_3_0.jpg',74,2,NULL,'A',1,0,1,NULL,'1',1,'2016-05-14 23:12:11'),(4,1,'2016-07-25 00:00:00','2016-12-15 00:00:00','Elba',2,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_4_0.jpg',74,2,NULL,'A',1,1,1,NULL,NULL,1,'2016-05-14 23:12:11'),(5,1,'2016-07-25 00:00:00','2016-12-23 00:00:00','Mar Ionio',1,'http://yeswesail.ddns.net:8080/YesWeSail/images/events/ev_1_0.jpg',74,2,NULL,'A',1,0,1,'','1',1,'2016-05-14 23:12:11'),(7,1,'1970-01-01 00:00:00','1970-01-01 00:00:00','TBD',1,'http://www.placehold.it/1920x600?text=Trova un\'immagine con orientamento orizzontale accattivante da mettere qui!',95,1,NULL,'P',1,0,0,NULL,NULL,91,'2016-06-08 19:35:44');
 /*!40000 ALTER TABLE `Events` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -444,7 +446,7 @@ CREATE TABLE `PendingActions` (
   PRIMARY KEY (`idPendingActions`),
   KEY `fk_PendingActions_Users_idx` (`userId`),
   CONSTRAINT `fk_PendingActions_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -453,7 +455,7 @@ CREATE TABLE `PendingActions` (
 
 LOCK TABLES `PendingActions` WRITE;
 /*!40000 ALTER TABLE `PendingActions` DISABLE KEYS */;
-INSERT INTO `PendingActions` VALUES (1,'review',74,'/rest/reviews/1','2016-01-04 23:00:00','P','0000-00-00 00:00:00');
+INSERT INTO `PendingActions` VALUES (1,'review',74,'/rest/reviews/1','2016-01-04 23:00:00','A','0000-00-00 00:00:00'),(2,'review',74,'/rest/reviews/2','2016-01-11 23:00:00','A','0000-00-00 00:00:00'),(3,'review',74,'/rest/reviews/3','2016-06-11 22:00:00','A','0000-00-00 00:00:00'),(4,'review',91,'/rest/reviews/?idReviews=6','2016-06-12 12:15:48','P','2016-06-12 12:15:48'),(5,'review',91,'/rest/reviews/?idReviews=7','2016-06-12 12:16:21','P','2016-06-12 12:16:21'),(6,'review',91,'/rest/reviews/?idReviews=8','2016-06-12 12:35:36','P','2016-06-12 12:35:36');
 /*!40000 ALTER TABLE `PendingActions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -473,7 +475,7 @@ CREATE TABLE `RegistrationConfirm` (
   PRIMARY KEY (`idRegistrationConfirm`),
   KEY `fk_RegistrationConfirm_Users_idx` (`userId`),
   CONSTRAINT `fk_RegistrationConfirm_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -506,7 +508,7 @@ CREATE TABLE `Reviews` (
   KEY `fk_Reviews_Users_idx1` (`reviewForId`),
   CONSTRAINT `fk_Reviews_Users_1` FOREIGN KEY (`reviewerId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_Reviews_Users_2` FOREIGN KEY (`reviewForId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -515,7 +517,7 @@ CREATE TABLE `Reviews` (
 
 LOCK TABLES `Reviews` WRITE;
 /*!40000 ALTER TABLE `Reviews` DISABLE KEYS */;
-INSERT INTO `Reviews` VALUES (1,'Stefan e\' una faccia di culo',74,91,'2016-06-04 22:00:00','2016-06-04 22:00:00',4,'P');
+INSERT INTO `Reviews` VALUES (1,'Stefan e\' una faccia di culo',74,91,'2016-06-04 22:00:00','2016-06-04 22:00:00',4,'A'),(2,'Viaggare con Stefan e\' stato fantastico, soprattutto di notte',94,91,'2016-06-04 22:00:00','2016-06-04 22:00:00',5,'A'),(3,'Soporifero come un Tavor',95,91,'2016-06-04 22:00:00','2016-06-04 22:00:00',3,'A'),(6,'erwherh',91,91,'2016-06-12 12:15:48','2016-06-12 12:15:48',2,'P'),(7,'xcvzsxbvc',91,91,'2016-06-12 12:16:21','2016-06-12 12:16:21',5,'P'),(8,'blablablbalablalabsouidhgnsod',91,91,'2016-06-12 12:35:36','2016-06-12 12:35:36',4,'P');
 /*!40000 ALTER TABLE `Reviews` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -530,7 +532,7 @@ CREATE TABLE `Roles` (
   `idRoles` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(20) NOT NULL,
   PRIMARY KEY (`idRoles`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -539,7 +541,7 @@ CREATE TABLE `Roles` (
 
 LOCK TABLES `Roles` WRITE;
 /*!40000 ALTER TABLE `Roles` DISABLE KEYS */;
-INSERT INTO `Roles` VALUES (1,'Viaggiatore'),(2,'Armatore'),(3,'Amministratore');
+INSERT INTO `Roles` VALUES (1,'Temporaneo'),(2,'Armatore'),(3,'Viaggiatore'),(6,'Armatore'),(9,'Amministratore');
 /*!40000 ALTER TABLE `Roles` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -567,7 +569,7 @@ CREATE TABLE `RolesLanguages` (
 
 LOCK TABLES `RolesLanguages` WRITE;
 /*!40000 ALTER TABLE `RolesLanguages` DISABLE KEYS */;
-INSERT INTO `RolesLanguages` VALUES (1,1,'Viaggiatore'),(1,2,'Traveller'),(2,1,'Armatore'),(2,2,'Ship Owner'),(3,1,'Amministratore'),(3,2,'Admin');
+INSERT INTO `RolesLanguages` VALUES (1,1,'Temporaneo'),(1,2,'Temporary'),(3,1,'Viagiatore'),(3,2,'Traveller'),(6,1,'Armatore'),(6,2,'Ship Owner'),(9,1,'Amministratore'),(9,2,'Admin');
 /*!40000 ALTER TABLE `RolesLanguages` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -590,7 +592,7 @@ CREATE TABLE `TicketLocks` (
   KEY `fk_TicketLocks_Users_idx` (`userId`),
   CONSTRAINT `fk_TicketLocks_EventTicket` FOREIGN KEY (`eventTicketId`) REFERENCES `EventTickets` (`idEventTickets`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   CONSTRAINT `fk_TicketLocks_Users` FOREIGN KEY (`userId`) REFERENCES `Users` (`idUsers`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -599,6 +601,7 @@ CREATE TABLE `TicketLocks` (
 
 LOCK TABLES `TicketLocks` WRITE;
 /*!40000 ALTER TABLE `TicketLocks` DISABLE KEYS */;
+INSERT INTO `TicketLocks` VALUES (6,16,'2016-06-08 19:40:50',91,NULL,'P'),(7,7,'2016-06-12 10:19:45',91,NULL,'P'),(8,6,'2016-06-12 10:19:47',91,NULL,'P');
 /*!40000 ALTER TABLE `TicketLocks` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -634,7 +637,7 @@ CREATE TABLE `Users` (
   UNIQUE KEY `idx_Users_Email` (`email`),
   KEY `fk_Role_idx` (`roleId`),
   CONSTRAINT `fk_Users_Role` FOREIGN KEY (`roleId`) REFERENCES `Roles` (`idRoles`) ON UPDATE NO ACTION
-) ENGINE=InnoDB AUTO_INCREMENT=107 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=97 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -643,7 +646,7 @@ CREATE TABLE `Users` (
 
 LOCK TABLES `Users` WRITE;
 /*!40000 ALTER TABLE `Users` DISABLE KEYS */;
-INSERT INTO `Users` VALUES (1,'Fake','Fake',1,'cantaccess@nodomain.com','','','','',0,'','','','','','','D','','0000-00-00',0),(74,'Osvaldo','Lucchini',2,'osvaldo.lucchini@gmail.com','12345678',NULL,NULL,NULL,50,'10208802349917933',NULL,NULL,'F',NULL,NULL,'A','https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-1/c0.41.153.153/1897878_10203059351146553_1428969181_n.jpg?oh=631c448bf10972dd6feddc9b68d55f6a&oe=579B2AAB','1964-12-24',0),(91,'Stefan','Amarie',3,'amarie.stefan@gmail.com','test1234',NULL,NULL,NULL,0,'10209676010000980',NULL,NULL,'F',NULL,NULL,'A','https://scontent.xx.fbcdn.net/hprofile-xpa1/v/t1.0-1/c0.6.50.50/p50x50/14587_10200353390621322_1989525648_n.jpg?oh=70c7ed4ecbf677c2ee2db3645e6f7928&oe=579F9B81','1991-12-25',1),(94,'Stefan','Amarie',1,'s.amarie@itsoftware.it','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P',NULL,NULL,'A',NULL,NULL,0),(95,'Jacopo','Gazzola',2,'flutejb@gmail.com',NULL,NULL,NULL,NULL,0,'10154319055151159',NULL,NULL,'F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xla1/v/t1.0-1/p50x50/12963374_10154271812561159_4618465219709942847_n.jpg?oh=35c25aa08fea0da67c048870112b2a01&oe=57B3588A',NULL,0),(96,'utente','nuovo',1,'nosvaldo.lucchini@gmail.com','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P',NULL,NULL,'A',NULL,NULL,0);
+INSERT INTO `Users` VALUES (1,'Fake','Fake',1,'cantaccess@nodomain.com','','','','',0,'','','','','','','D','','0000-00-00',0),(74,'Osvaldo','Lucchini',6,'osvaldo.lucchini@gmail.com','12345678',NULL,NULL,NULL,50,'10208802349917933',NULL,NULL,'F','it,gb,fr',NULL,'A','https://scontent-mxp1-1.xx.fbcdn.net/v/t1.0-1/c0.41.153.153/1897878_10203059351146553_1428969181_n.jpg?oh=631c448bf10972dd6feddc9b68d55f6a&oe=579B2AAB','1964-12-24',0),(91,'Stefan','Amarie',9,'amarie.stefan@gmail.com','test1234',NULL,NULL,NULL,0,'10209676010000980',NULL,NULL,'F','it,gb,ro',NULL,'A','https://scontent.xx.fbcdn.net/hprofile-xpa1/v/t1.0-1/c0.6.50.50/p50x50/14587_10200353390621322_1989525648_n.jpg?oh=70c7ed4ecbf677c2ee2db3645e6f7928&oe=579F9B81','1991-12-25',1),(94,'Stefan','Amarie',3,'s.amarie@itsoftware.it','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P',NULL,NULL,'A',NULL,NULL,0),(95,'Jacopo','Gazzola',6,'flutejb@gmail.com',NULL,NULL,NULL,NULL,0,'10154319055151159',NULL,NULL,'F',NULL,NULL,'D','https://scontent.xx.fbcdn.net/hprofile-xla1/v/t1.0-1/p50x50/12963374_10154271812561159_4618465219709942847_n.jpg?oh=35c25aa08fea0da67c048870112b2a01&oe=57B3588A',NULL,0),(96,'utente','nuovo',3,'nosvaldo.lucchini@gmail.com','test1234',NULL,NULL,NULL,0,NULL,NULL,NULL,'P',NULL,NULL,'A',NULL,NULL,0);
 /*!40000 ALTER TABLE `Users` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -672,7 +675,7 @@ CREATE TABLE `UsersAuth` (
 
 LOCK TABLES `UsersAuth` WRITE;
 /*!40000 ALTER TABLE `UsersAuth` DISABLE KEYS */;
-INSERT INTO `UsersAuth` VALUES (36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539'),(60,74,'2016-05-15 22:19:00','2016-06-05 15:06:31','51f93591-b501-47f5-9107-af8937fd172c'),(67,91,'2016-06-05 17:33:27','2016-06-05 17:33:27','808bc21f-be0c-4eb9-b7de-4d885454c30f');
+INSERT INTO `UsersAuth` VALUES (36,94,'2016-04-24 15:39:35','2016-04-24 16:00:13','14f61b2a-b74d-49b9-9c70-d709aff88411'),(37,95,'2016-04-25 22:51:48','2016-04-25 22:51:48','c4d5a5a6-c562-45ab-bf59-68a10cf47539'),(67,91,'2016-06-05 17:33:27','2016-06-12 14:00:04','ea46420e-72ad-4a6b-b8f7-7512436fd1ac');
 /*!40000 ALTER TABLE `UsersAuth` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -685,4 +688,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2016-06-05 18:13:31
+-- Dump completed on 2016-06-12 15:48:43

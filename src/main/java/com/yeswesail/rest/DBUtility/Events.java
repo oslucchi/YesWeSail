@@ -30,6 +30,7 @@ public class Events extends DBInterface
 	protected String status;
 	protected boolean earlyBooking;
 	protected boolean lastMinute;
+	protected boolean hotEvent;
 	protected String eventRef;
 	protected String aggregateKey;
 	protected int createdBy;
@@ -102,7 +103,8 @@ public class Events extends DBInterface
 				 	 "        b.languageId = " + languageId + " AND " +
 					 "		  b.anchorZone = 0 " + " AND " +
 					 "        a.status = 'A' AND " +
-					 "        a.dateStart > NOW() " +
+					 "        a.dateStart > NOW() AND " +
+					 "        a.hotEvent = 1 " +
 				 	 "ORDER BY dateStart ";
 		
 		log.trace("trying to populate collection with sql '" + sql + "'");
@@ -118,7 +120,7 @@ public class Events extends DBInterface
 			{
 				retList.add(e);
 			}
-			if (retList.size() == prop.getMaxNumHotOffers())
+			if ((prop.getMaxNumHotOffers() != 0) && (retList.size() == prop.getMaxNumHotOffers()))
 			{
 				break;
 			}
@@ -315,6 +317,14 @@ public class Events extends DBInterface
 
 	public void setLastMinute(boolean lastMinute) {
 		this.lastMinute = lastMinute;
+	}
+
+	public boolean isHotEvent() {
+		return hotEvent;
+	}
+
+	public void setHotEvent(boolean hotEvent) {
+		this.hotEvent = hotEvent;
 	}
 
 	public String getEventRef() {
