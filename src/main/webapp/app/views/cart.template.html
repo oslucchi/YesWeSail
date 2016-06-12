@@ -1,59 +1,11 @@
 <div class="tickets-container"> 
-        <div ng-if="bookedEvents==0" class="ui center aligned segment">
-          
-        <h2 class="ui header">There are no tickets in your cart, check these events that might be of interest</h2>
-    </div>
-    
-    
-   <div class="ui segment" ng-repeat="event in bookedEvents">
-     <div class="ui header">{{event.title}}
-        <div class="ui sub header">{{event.location}}</div>
-        <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
        
-       </div>
-    
-       <table class="ui very basic  celled table">
-      <thead>
-        <tr>
-            <th ng-if="paymentProceeded" class="">Selected</th>
-            <th class="">Ticket</th>
-            <th class="">Price</th>
-      </tr></thead>
-      <tbody>
-    <tr ng-repeat="ticket in event.tickets track by $index">
-        
-        
-        <td ng-if="paymentProceeded" class="collapsing"><div class="ui fitted center aligned checkbox">
-          <input ng-change="recalculateTotal()" type="checkbox" ng-model="ticket.toBuy"> <label></label>
-        </div></td>
-        <td>{{ticket.ticketDescription}} </td>
-        <td>{{ticket.price}}€</td>
-       
-
-    </tr>
-    
-  </tbody>
-    
-    
-    
-</table>
-    
-    </div>
-   
-    <div ng-if="total>0"  class="ui right aligned segment">
-          
-        <h2 class="ui header">Total: {{total}}€</h2>
-    </div>
-    
-    
-    
-   
 <button ng-if="paymentProceeded && total>0" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button">
     <i class="money icon"></i>Proceed with payment</button>
 <button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button">
     <i class="remove icon"></i>Empty Cart</button>
     
- <div ng-if="!paymentProceeded" class="ui center aligned segment">
+ <div ng-if="!paymentProceeded" ng-class="{'loading': status.paying}" class="ui center aligned segment">
   <div id="paypal-container"></div>
   <div class="ui horizontal divider">
     Or
@@ -104,15 +56,58 @@
      
      
      
-<!--
-     
-    <form  action="{{checkoutUrl | trusted}}" method="get">
-  <input data-braintree-name="number" value="4111111111111111">
-  <input data-braintree-name="expiration_date" value="10/20">
-  <input type="submit" id="submit" value="Pay">
-</form>
--->
+
 </div>
+     <div ng-if="total>0"  class="ui right aligned segment">
+          
+        <h2 class="ui header">Total: {{total}}€</h2>
+    </div>
+        <div ng-if="bookedEvents==0" class="ui center aligned segment">
+          
+        <h2 class="ui header">There are no tickets in your cart, check these events that might be of interest</h2>
+    </div>
+    
+    
+   <div class="ui segment" ng-repeat="event in bookedEvents">
+     <div class="ui header">{{event.title}}
+        <div class="ui sub header">{{event.location}}</div>
+        <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
+       
+       </div>
+    
+       <table class="ui very basic  celled table">
+      <thead>
+        <tr>
+            <th ng-if="paymentProceeded" class="">Selected</th>
+            <th class="">Ticket</th>
+            <th class="">Price</th>
+      </tr></thead>
+      <tbody>
+    <tr ng-repeat="ticket in event.tickets track by $index">
+        
+        
+        <td ng-if="paymentProceeded" class="collapsing"><div class="ui fitted center aligned checkbox">
+          <input ng-change="recalculateTotal()" type="checkbox" ng-model="ticket.toBuy"> <label></label>
+        </div></td>
+        <td>{{ticket.ticketDescription}} </td>
+        <td>{{ticket.price}}€</td>
+       
+
+    </tr>
+    
+  </tbody>
+    
+    
+    
+</table>
+    
+    </div>
+   
+   
+    
+    
+    
+
     
     
     

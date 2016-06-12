@@ -36,6 +36,8 @@ angular.module('yeswesailApp')
         }
     
         body.activeOnly=true;
+    
+    var getEvents=function(){
         $http.post(URLs.ddns + 'rest/events/search/actives', body).then(function (res) {
             $scope.events = res.data;
             if (res.data[0] == null) {
@@ -44,7 +46,23 @@ angular.module('yeswesailApp')
 //                }).dimmer('show');
             }
         }, function (err) {});
-
+    };
+        getEvents();
+    $scope.search=function(){
+        if($scope.selectedLocation){
+            body.location=$scope.selectedLocation;
+        }else{
+            body.location=null;
+        }
+        if($scope.selectedCategory){
+            body.categoryId=$scope.selectedCategory.categoryId;
+        }else{
+            body.categoryId=null;
+        }
+        
+        getEvents();
+        
+    };
 
         $scope.initializeSelect = function () {
 

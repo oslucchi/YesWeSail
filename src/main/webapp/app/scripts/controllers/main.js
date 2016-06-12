@@ -14,11 +14,21 @@ angular.module('yeswesailApp')
         $scope.LOCATIONS=[];
         
         MAPS.getMap('LOCATIONS').then(function(res){
-                     $scope.LOCATIONS = res;   
+                    if(!!res.status){
+                        $scope.LOCATIONS=[];
+                    }else{
+                        $scope.LOCATIONS = res;
+                    }
+                        
         }   
         );
         MAPS.getMap('CATEGORIES').then(function(res){
-                     $scope.CATEGORIES = res;   
+             if(!!res.status){
+                        $scope.CATEGORIES = [];   
+                    }else{
+                        $scope.CATEGORIES = res;   
+                    }
+                     
         }   
         );
     

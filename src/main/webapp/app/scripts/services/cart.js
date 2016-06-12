@@ -8,12 +8,14 @@
  * Service in the yeswesailApp.
  */
 angular.module('yeswesailApp')
-  .service('CartService', function ($http, URLs, toastr, $cookieStore) {
+  .service('CartService', function ($http, URLs, toastr, $cookieStore, $window, Session) {
     var cartService = {};
         cartService.cartQty=null;
         cartService.bookedTickets=[];
-       
-        
+        cartService.totalAmount=0;
+        cartService.status={
+                        paying:false
+                    };
             
         cartService.addToCart = function(tickets, cabinType){
              var ticketArray=[];
@@ -58,23 +60,12 @@ angular.module('yeswesailApp')
                 paypal: {
                         container: 'paypal-container',
                         singleUse: true, // Required
-                        amount: 100.00, // Required
-                        currency: 'EUR', // Required
-                        locale: 'it_it',
-                        enableShippingAddress: true,
-                        shippingAddressOverride: {
-                          recipientName: 'Scruff McGruff',
-                          streetAddress: '1234 Main St.',
-                          extendedAddress: 'Unit 1',
-                          locality: 'Chicago',
-                          countryCodeAlpha2: 'US',
-                          postalCode: '60652',
-                          region: 'IL',
-                          phone: '123.456.7890',
-                          editable: false
-                        },
+                        amount: cartService.totalAmount, // Required
+                        currency: 'EUR' // Required
+                       
                 },
                 onPaymentMethodReceived: function (obj) {
+                    cartService.status.paying=true;
                  cartService.checkout(obj.nonce).then(function(res){
                      console.log(res);
                  });
@@ -86,19 +77,19 @@ angular.module('yeswesailApp')
             });
             
             
-          
-            
-            
-            
+ 
         };
     
     
     
         cartService.checkout = function (nonce) {
             return $http
-                .get(URLs.ddns + 'rest/cart/checkout?nonce='+nonce)
+                .get(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce='+nonce)
                 .then(function (res) {
+                    $window.location.href = '/#/cart/success?transactionId='+res.data.transactionId;    
                     return res;
+                }, function(err){
+                    $window.location.href = '/#/cart/error?responseCode='+err.data.responseCode;    
                 });
         };
 

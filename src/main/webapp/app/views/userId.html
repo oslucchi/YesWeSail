@@ -1,1 +1,75 @@
-{{user}}
+<div class="ui stackable two column grid">
+    <div class="three wide column">
+
+        <div class="ui segment">
+            <h2 class="ui icon header">
+          <img class="ui small circular image" ng-src="{{user.imageURL}}">
+          <div class="content">
+            {{user.name}} {{user.surname}}
+              <div class="ui divider"></div>
+            <div ng-if="user.isShipOwner" class="sub header">Armatore</div>
+            
+              
+          </div>
+                
+        </h2>
+            <div class="ui icon buttons">
+                <a href="https://www.facebook.com/{{user.facebook}}" class="ui blue button"><i class="facebook icon"></i></a>
+                <a href="https://www.twitter.com/{{user.twitter}}" class="ui blue button"><i class="twitter icon"></i></a>
+                <a href="https://www.google.com/{{user.google}}" class="ui red button"><i class="google icon"></i></a>
+                <a href="mailTo:{{user.email}}" class="ui button"><i class="mail icon"></i></a>
+            </div>
+            <div class="ui divider"></div>
+            <!--            ng-if="!!user.languagesSpoken"-->
+            <span>
+            <h3>Languages</h3>
+            </span>
+            <i ng-repeat="language in user.languagesSpoken.split(',')" class="{{language}} flag"></i>
+        </div>
+
+
+
+    </div>
+    <div class="thirteen wide column">
+        <div class="ui segment">
+            <div class="ui comments" >
+                <h3 class="ui dividing header">Reviews</h3>
+                <span ng-if="!!!reviews">There are no reviews yet!</span>
+                <div class="comment" ng-repeat="review in reviews">
+                    
+                    <a class="avatar">
+                        <img ng-if="!!review.reviewerURL" ng-src="{{review.reviewerURL}}">
+                        <img ng-if="!!!review.reviewerURL" src="/images/default-icon.png">
+                    </a>
+                    <div class="content">
+                        <a href="/#/users/{{review.reviewerId}}" class="author">{{review.reviewerName}} {{review.reviewerSurname}}</a>
+                        <div class="metadata">
+                            <span class="date">{{review.created | date: 'EEEE, MMMM d, y h:mm:ss a'}}</span>
+                        </div>
+                           
+                        <div class="text">
+                            <div class="ui comment star rating" data-rating="{{review.rating}}"></div> - 
+                            {{review.review}}
+                            
+                        </div>
+                    </div>
+                </div>
+            
+            
+                <form class="ui reply form">
+                    
+                    <div class="field">
+                        <textarea ng-model="tempReview.review"></textarea>
+                    </div>
+                    <div class="field">
+                       <div class="ui new star rating" data-rating="3"></div>
+                    </div>
+                    <div class="ui blue labeled icon button" ng-click="addReview(tempReview)">
+                        <i class="icon edit"></i> Add Review
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+</div>

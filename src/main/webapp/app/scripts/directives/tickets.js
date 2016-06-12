@@ -18,16 +18,19 @@ angular.module('yeswesailApp')
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
           
-
+          var totalAmount=0;
           scope.calculatePrice=function(tickets){
               if(tickets[0].ticketType==1){
                   return null;
               }else if(tickets.length>1){
-                  return tickets[0].price+tickets[1].price;
+                  totalAmount=tickets[0].price+tickets[1].price
+                  return totalAmount;
               }
+          CartService.totalAmount=totalAmount;
           };
           
           scope.addToCart=function(tickets, cabinType){
+              
               CartService.addToCart(tickets, cabinType).then(function(res){
                   scope.globalTickets=res.data;
               });

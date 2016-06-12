@@ -6,8 +6,9 @@
       <th>Select</th>
       <th  class="ui fitted center aligned">Actions</th>
       <th>Status</th>
-      <th>Early booking</th>
-      <th>Last minute</th>
+      <th>Hot Event</th>
+      <th>Early Booking</th>
+      <th>Last Minute</th>
       <th>ID</th>
       <th>Title</th>
       <th>Created By</th>
@@ -45,6 +46,11 @@
                
               </div>
             </div>
+        </div>
+      </td>
+        <td class="collapsing">
+        <div class="ui fitted center aligned checkbox">
+          <input type="checkbox" ng-model="event.hotEvent" ng-change="updateEarlyBooking(event, event.hotEvent)" ng-checked="event.hotEvent"> <label></label>
         </div>
       </td>
         <td class="collapsing">
