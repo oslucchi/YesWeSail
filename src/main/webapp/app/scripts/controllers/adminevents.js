@@ -68,6 +68,15 @@ angular.module('yeswesailApp')
             toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
         });
     };
+    $scope.updateHotEvent=function(event, state){
+        event.hotEvent=state;
+        $http.put(URLs.ddns + 'rest/events/'+event.idEvents, event).then(function(res){
+            toastr.success($translate.instant('admin.events.success.update', {eventId: event.idEvents}));
+        }, function(err){
+            event.earlyBooking=!state;
+            toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
+        });
+    };
     
     $scope.updateLastMinute=function(event, state){
         event.lastMinute=state;
