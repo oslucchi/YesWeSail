@@ -133,6 +133,7 @@ ship-owner{
     padding: 10px;
     overflow: auto;
     z-index:1;
+    cursor: pointer;
 }
 
 
