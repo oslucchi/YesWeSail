@@ -67,12 +67,11 @@ angular.module('yeswesailApp')
         }
 
 
-    
-
-        $scope.credentials = {
-            username: ''
-            , password: ''
-        }
+        
+                $scope.credentials = {
+                    username: ''
+                    , password: ''
+                }
 
         $scope.isAuthorized = AuthService.isAuthorized;
         $scope.isAuthenticated = AuthService.isAuthenticated;

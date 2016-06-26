@@ -99,7 +99,28 @@ angular.module('yeswesailApp')
                 , controller: 'AdminCtrl',
                 scope: $scope
             });
+    }; 
+    $scope.showAddPassengerPopup=function(eventId){
+        $scope.eventId=eventId;
+            ngDialog.open({
+                template: 'views/admin.events.addpassenger.html',
+                className: 'ngdialog-theme-default',
+                controller: 'AddPassengerCtrl',
+                scope: $scope
+            });
+    }; 
+    
+    $scope.showRemovePassengerPopup=function(eventId){
+        $scope.eventId=eventId;
+            ngDialog.open({
+                template: 'views/admin.events.removepassenger.html',
+                className: 'ngdialog-theme-default',
+                controller: 'RemovePassengerCtrl',
+                scope: $scope
+            });
     };
+    
+   
     
     $scope.closeModals=function(){
         ngDialog.closeAll();

@@ -33,6 +33,8 @@
               <i ng-click="deactivate(event)" class="large red ban link icon"></i>
               <i ng-click="showClonePopup(event)" class="large grey copy link icon"></i>
               <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i>
+              <i ng-click="showAddPassengerPopup(event.idEvents)" class="large grey add user link icon"></i>
+              <i ng-click="showRemovePassengerPopup(event.idEvents)" class="large grey remove user link icon"></i>
         </div>
           
       </td>

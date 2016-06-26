@@ -118,7 +118,10 @@ angular
       },
       getLocalesDisplayNames: function () {
         return _LOCALES_DISPLAY_NAMES;
-      }
+      },
+        setLocale: function(locale){
+            setLocale(locale);
+        }
     };
 })
 
@@ -255,14 +258,15 @@ angular
 
 
     })
-    .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs, $state) {
-        $http.defaults.headers.common['Language'] = 'IT';
-//        angular.element('.ui.usermenu.dropdown').dropdown();
-
-      
-
-
-    }).factory('AuthResolver', function ($q, $rootScope, $state) {
+    .run(function($http) {
+    
+     $http.defaults.headers.common['Language'] = 'IT';
+ 
+})
+    
+    
+    
+    .factory('AuthResolver', function ($q, $rootScope, $state) {
   return {
     resolve: function () {
       var deferred = $q.defer();

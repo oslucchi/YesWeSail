@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService) {
+    .controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService, $anchorScroll, $location) {
         angular.element('.ui.anchor-menu')
             .sticky({
                 context: '#event-container',
@@ -29,14 +29,34 @@ angular.module('yeswesailApp')
             $scope.shipOwner = res.data.shipOwner;
             $scope.event.images = res.data.images;
             $scope.event.tickets = res.data.tickets;
-            $scope.event.description=res.data.description.description;
+            if(!!res.data.description){
+                $scope.event.description=res.data.description.description;
+            }
             $scope.event.participants=res.data.participants;
             $scope.event.logistics= res.data.logistics;
             $scope.event.includes= res.data.includes;
             $scope.event.excludes= res.data.excludes;
+            $scope.event.route=res.data.route;
+            
+              $scope.map = {
+            center: {
+                latitude: $scope.event.route[0].lat,
+                longitude: $scope.event.route[0].lng
+            }
+            , zoom: 12
+            , options: {
+                scrollwheel: false
+            }
+            
+        };
+            
+            
             
         }, function (err) {});
 
+        
+    
+    
     
         $scope.testTickets = [[{
                 "available": 4
@@ -73,19 +93,21 @@ angular.module('yeswesailApp')
   ];
 
 
-        $scope.map = {
-            center: {
-                latitude: 45
-                , longitude: -73
-            }
-            , zoom: 8
-            , options: {
-                scrollwheel: false
-            }
-            
-        };
+      
     
     $scope.bookTicket=function(){
         
     };
+    
+    
+     $scope.goToSection = function(id) {
+      // set the location.hash to the id of
+      // the element you wish to scroll to.
+      $location.hash(id);
+
+      // call $anchorScroll()
+      $anchorScroll();
+    };
+    
+    
     });
