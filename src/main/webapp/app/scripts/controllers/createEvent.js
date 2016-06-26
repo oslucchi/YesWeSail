@@ -52,7 +52,10 @@ angular.module('yeswesailApp')
         }   
         );
     
-        $http.get(URLs.ddns + 'rest/users/suggestion/2').then(function(res){
+    
+        
+    
+        $http.get(URLs.ddns + 'rest/users/suggestion/6').then(function(res){
             $scope.shipOwners=res.data;
         }, function(err){
             
