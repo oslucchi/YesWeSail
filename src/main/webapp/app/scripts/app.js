@@ -137,6 +137,7 @@ angular
     
     
   // For any unmatched url, redirect to /
+  
   $urlRouterProvider.otherwise("/");
   //
   // Now set up the states
@@ -243,11 +244,18 @@ angular
       data: {
                 accessLevel: 3
             }
+    })
+      .state('sailorRegistration', {
+      url: "/sailor-registration",
+      templateUrl:  'views/sailor-registration.html',
+      controller: 'SailorRegistrationCtrl',
+      data: {
+                accessLevel: 3
+            }
     });
     
     
-    
-    
+ 
     
     
     
