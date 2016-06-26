@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -22,9 +26,12 @@ import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
+import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
+import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
+import com.yeswesail.rest.jsonInt.EventTicketsJson;
 import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/tickets")
@@ -194,4 +201,130 @@ public class TicketsHandler {
 		
 		return Response.status(Response.Status.OK).entity("").build();
 	}
+
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response eventTickets(@HeaderParam("Language") String language,
+							   @QueryParam("eventId") int eventId)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		DBConnection conn = null;
+
+		EventTickets[] tickets = null;
+		try
+		{
+			tickets = EventTickets.findByEventId(eventId, languageId);
+		}
+		catch(Exception e)
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError"))
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils.addToJsonContainer("tickets", tickets, true);
+		return Response.status(Response.Status.OK)
+				.entity(Utils.jsonize())
+				.build();
+	}
+
+	@GET
+	@Path("/{eventId}/ticketsSold")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response ticketsSold(@HeaderParam("Language") String language, 
+								@HeaderParam("Authorization") String token,
+							    @PathParam("eventId") int eventId)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		DBConnection conn = null;
+
+		EventTicketsSold[] tickets = null;
+		try
+		{
+			conn = DBInterface.connect();
+			tickets = EventTicketsSold.getTicketSold(eventId, languageId);
+			EventTicketsJson[] participants = new EventTicketsJson[tickets.length];
+			int idx = 0;
+			for(EventTicketsSold item : tickets)
+			{
+				participants[idx] = new EventTicketsJson();
+				participants[idx].description = item.getDescription();
+				participants[idx].idEventTicketsSold = item.getIdEventTicketsSold();
+				participants[idx].price = item.getPrice();
+				participants[idx].user = new Users(conn, item.getUserId());
+				participants[idx++].user.setPassword("******");
+			}
+			Utils.addToJsonContainer("tickets", participants, true);
+		}
+		catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError"))
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK)
+				.entity(Utils.jsonize())
+				.build();
+	}
+	
+	@DELETE
+	@Path("/{idEventTicketsSold}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response removePassenger(@PathParam("idEventTicketsSold") int idEventTicketsSold, 
+									@HeaderParam("Language") String language, 
+									@HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		DBConnection conn = null;
+		EventTicketsSold ets = null;
+		try 
+		{
+			conn = DBInterface.TransactionStart();
+			ets = new EventTicketsSold(conn, idEventTicketsSold);
+			EventTickets et = new EventTickets(conn, ets.getEventTicketId());
+			et.releaseATicket();
+			et.update(conn, "idEventTickets");
+			ets.delete(conn, idEventTicketsSold);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		return Response.status(Response.Status.OK)
+				.entity("{}").build();
+	}
+	
 }

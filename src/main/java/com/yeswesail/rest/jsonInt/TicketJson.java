@@ -12,4 +12,8 @@ public class TicketJson {
 	public String bookedTo;
 	public boolean toBuy;
 	protected String description;
+	public int usersId;
+	public String userName;
+	public String userSurname;
+	public String userEmail;
 }

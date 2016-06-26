@@ -63,6 +63,11 @@ public class EventDescription extends DBInterface
 		conn.executeQuery("DELETE FROM EventDescription " + whereClause);
 	}
 	
+	public void deleteOnWhere(DBConnection conn, String whereClause) throws Exception
+	{
+		conn.executeQuery("DELETE FROM EventDescription " + whereClause);
+	}
+	
 
 	public int getIdEventDescription() {
 		return idEventDescription;

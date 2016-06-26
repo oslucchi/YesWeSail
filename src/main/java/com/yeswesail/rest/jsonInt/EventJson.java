@@ -27,4 +27,5 @@ public class EventJson {
 	public UsersJson participants;
 	public TicketJson[] tickets;
 	public boolean activeOnly;
+	public EventRouteJson[] route;
 }
