@@ -118,7 +118,10 @@ angular
       },
       getLocalesDisplayNames: function () {
         return _LOCALES_DISPLAY_NAMES;
-      }
+      },
+        setLocale: function(locale){
+            setLocale(locale);
+        }
     };
 })
 
@@ -134,6 +137,7 @@ angular
     
     
   // For any unmatched url, redirect to /
+  
   $urlRouterProvider.otherwise("/");
   //
   // Now set up the states
@@ -240,11 +244,18 @@ angular
       data: {
                 accessLevel: 3
             }
+    })
+      .state('sailorRegistration', {
+      url: "/sailor-registration",
+      templateUrl:  'views/sailor-registration.html',
+      controller: 'SailorRegistrationCtrl',
+      data: {
+                accessLevel: 3
+            }
     });
     
     
-    
-    
+ 
     
     
     
@@ -255,14 +266,15 @@ angular
 
 
     })
-    .run(function ($rootScope, $cookieStore, $http, $location, Session, URLs, $state) {
-        $http.defaults.headers.common['Language'] = 'IT';
-//        angular.element('.ui.usermenu.dropdown').dropdown();
-
-      
-
-
-    }).factory('AuthResolver', function ($q, $rootScope, $state) {
+    .run(function($http) {
+    
+     $http.defaults.headers.common['Language'] = 'IT';
+ 
+})
+    
+    
+    
+    .factory('AuthResolver', function ($q, $rootScope, $state) {
   return {
     resolve: function () {
       var deferred = $q.defer();

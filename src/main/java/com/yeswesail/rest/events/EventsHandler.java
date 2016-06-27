@@ -40,6 +40,7 @@ import com.yeswesail.rest.DBUtility.Boats;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventDescription;
+import com.yeswesail.rest.DBUtility.EventRoute;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
@@ -47,6 +48,7 @@ import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
+import com.yeswesail.rest.jsonInt.EventRouteJson;
 import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/events")
@@ -486,6 +488,15 @@ public class EventsHandler {
 
 		try
 		{
+			EventRoute[] r = EventRoute.getRoute(conn, event.getIdEvents());
+			jsonResponse.put("route", r);
+		}
+		catch (Exception e) {
+			jsonResponse.put("route", "{}");
+		}
+
+		try
+		{
 			Boats b = new Boats(conn, event.getShipId());
 			jsonResponse.put("boat", b);
 		}
@@ -629,16 +640,17 @@ public class EventsHandler {
 	}
 
 	private void handleInsertUpdateDetails(EventJson jsonIn, int languageId, DBConnection conn) throws Exception // 0 Insert - 1 Update
-	{		
+	{
 		EventDescriptionJson[] eventDetails = new EventDescriptionJson[4];
 		eventDetails[0] = jsonIn.description; 
 		eventDetails[1] = jsonIn.logistics; 
 		eventDetails[2] = jsonIn.includes; 
 		eventDetails[3] = jsonIn.excludes; 
 
+		EventDescription ed =  new EventDescription();
 		try
 		{
-			EventDescription.deleteOnWhere("WHERE eventId = " + jsonIn.eventId + " AND " +
+			ed.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId + " AND " +
 										   "      languageId = " + languageId);
 		}
 		catch(Exception e)
@@ -646,7 +658,6 @@ public class EventsHandler {
 			;
 		}
 
-		EventDescription ed =  new EventDescription();
 		int zone = 1;
 		for(EventDescriptionJson item : eventDetails)
 		{
@@ -661,6 +672,34 @@ public class EventsHandler {
 				ed.insert(conn, "idEventDescription", ed);
 			}
 		}
+	}
+
+	private void handleInsertUpdateRoute(EventJson jsonIn, int languageId, DBConnection conn) throws Exception // 0 Insert - 1 Update
+	{
+		EventRoute er =  new EventRoute();
+		try
+		{
+			er.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId);
+		}
+		catch(Exception e)
+		{
+			;
+		}
+
+		int seq = 0;
+		for(EventRouteJson item : jsonIn.route)
+		{
+			if (item == null)
+				continue;
+			er.setIdEventRoute(0);
+			er.setDescription(item.description);
+			er.setEventId(jsonIn.idEvents);
+			er.setLat(item.lat);
+			er.setLng(item.lng);
+			er.setSeq(seq++);
+			er.insert(conn, "idEventRoute", er);
+		}
+
 	}
 
 	private Response eventHandler(EventJson jsonIn, String language, String token)
@@ -679,6 +718,10 @@ public class EventsHandler {
 				(jsonIn.includes != null) || (jsonIn.excludes != null))
 			{
 				handleInsertUpdateDetails(jsonIn, languageId, conn);
+			}
+			if (jsonIn.route.length != 0)
+			{
+				handleInsertUpdateRoute(jsonIn, languageId, conn);
 			}
 
 			if (jsonIn.tickets != null)
@@ -712,6 +755,7 @@ public class EventsHandler {
 		{
 			conn = DBInterface.TransactionStart();
 			handleInsertUpdateDetails(jsonIn, languageId, conn);
+			handleInsertUpdateRoute(jsonIn, languageId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -758,6 +802,76 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity("").build();
 	}
 
+	@POST
+	@Path("/passengers")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addPassenger(TicketJson jsonIn, @HeaderParam("Language") String language, 
+							   @HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		DBConnection conn = null;
+		EventTickets et = null;
+		EventTicketsSold ets = null;
+		try 
+		{
+			conn = DBInterface.TransactionStart();
+			et = new EventTickets(conn, jsonIn.idEventTickets);
+			et.bookATicket();
+			et.update(conn, "idEventTickets");
+			if (jsonIn.usersId == 0)
+			{
+				Users u = new Users();
+				u.setName(jsonIn.userName);
+				u.setSurname(jsonIn.userSurname);
+				u.setEmail(jsonIn.userEmail);
+				u.setRoleId(Roles.DUMMY);
+				u.setConnectedVia("X");
+				u.setStatus("A");
+				u.setIsShipOwner(false);
+				try
+				{
+					jsonIn.usersId = u.insertAndReturnId(conn, "idUsers", u);
+					// TODO 
+					// Send a mail upon completion to the users
+					// it should be a change password link with some statement on "Check your vacations details"
+				}
+				catch(Exception e)
+				{
+					if (e.getMessage().toLowerCase().startsWith("duplicate entry"))
+					{
+						u.findByEmail(conn, jsonIn.userEmail);
+						jsonIn.usersId = u.getIdUsers();
+					}
+				}
+			}
+			ets = new EventTicketsSold();
+			ets.setEventTicketId(jsonIn.idEventTickets);
+			ets.setTimestamp(new Date());
+			ets.setUserId(jsonIn.usersId);
+			ets.setTransactionId("Direct Shipowner Sell");
+			ets.insert(conn, "idEventTicketsSold", ets);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		return Response.status(Response.Status.OK)
+				.entity("{}").build();
+	}
+		
 	@POST
 	@Path("/create")
 	@Produces(MediaType.APPLICATION_JSON)

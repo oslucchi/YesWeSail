@@ -25,8 +25,16 @@
                     </div>
                 </div>
                 <div class="seven wide column">
-                    <h4 class="ui inverted header">Social</h4>
-                    <p>TODO - Insert social Icons</p>
+                    <h4 class="ui inverted header">Lingua</h4>
+                   <div class="ui selection language dropdown">
+                      <input type="hidden" name="gender">
+                      <i class="dropdown icon"></i>
+                      <div class="default text">Choose</div>
+                      <div class="menu">
+                        <div ng-click="changeLanguage('IT')" class="item" data-value="1">Italiano</div>
+                        <div ng-click="changeLanguage('EN')" class="item" data-value="0">Inglese</div>
+                      </div>
+                    </div>
                 </div>
             </div>
             <div class="ui inverted section divider"></div>

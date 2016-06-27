@@ -1,8 +1,12 @@
 package com.yeswesail.rest.users;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -11,9 +15,11 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 
@@ -21,6 +27,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
@@ -31,7 +38,11 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
-public class Profile {
+public class UsersHandler {
+	@Context
+	private ServletContext context;
+	String contextPath = null;
+
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Users u = null;
@@ -431,6 +442,106 @@ public class Profile {
 		{
 			DBInterface.disconnect(conn);
 		}
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+	
+	private ArrayList<String> getShipownerDocs(int userId, String path)
+	{
+		File directory = new File(path);
+        File[] fList = directory.listFiles();
+        ArrayList<String> imageURLs = new ArrayList<>();
+        for (File file : fList)
+        {
+            if (!file.isFile() || (!file.getName().startsWith("us_" + userId + "_")))
+            	continue;
+            
+            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+        }
+        return(imageURLs);
+	}
+
+	@POST
+	@Path("/shipowners")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response shipownerUpgradeRequest(// ShipownerRequestJson jsonIn, 
+											@Context HttpServletRequest request,
+											@HeaderParam("Authorization") String token,
+											@HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+		String destPath = null;
+		try 
+		{
+			contextPath = context.getResource("/").getPath();
+		}
+		catch (MalformedURLException e) 
+		{
+			contextPath = null;
+			log.warn("Exception " + e.getMessage() + " retrieving context path");	
+		}
+
+		DBConnection conn = null;
+		Users u = null;
+//		try 
+//		{
+//			conn = DBInterface.TransactionStart();
+//			u = new Users(conn, jsonIn.usersId);
+//			u.setNavigationLicense(jsonIn.navigationLicense);
+//			u.setSailingLicense(jsonIn.sailingLicense);
+//			u.update(conn, "idUsers");
+//		}
+//		catch(Exception e)
+//		{
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
+//							" (" + e.getMessage() + ")")
+//					.build();
+//		}
+		
+		if (ServletFileUpload.isMultipartContent(request))
+		{
+			boolean errorMoving = false;
+			try {
+				destPath = context.getResource("/images/shipownerDocs").getPath();
+			}
+			catch (MalformedURLException e) 
+			{
+				log.warn("Exception " + e.getMessage() + " retrieving images/shipownerDocs path");	
+			}
+			UploadFiles up = new UploadFiles();
+			ArrayList<String> images = getShipownerDocs(1, destPath); // jsonIn.usersId
+			int lastIndex = -1;
+			int pos;
+			int a = 0;
+			for(String fName : images)
+			{
+				pos = fName.lastIndexOf("_") + 1;
+				fName = fName.substring(pos);
+				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
+				if (lastIndex < a)
+					lastIndex = a;
+			}
+			lastIndex++;
+			try 
+			{
+				up.uploadMultipartFiles(request, contextPath, 1, lastIndex, token); // jsonIn.usersId
+				errorMoving = up.moveFiles(contextPath, token, "us_");
+			}
+			catch (Exception e) 
+			{
+				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
+								errorMoving + " (" + e.getMessage() + ")")
+						.build();
+			}
+		}
+		else
+		{
+			return Response.status(Response.Status.BAD_REQUEST)
+					.entity(LanguageResources.getResource(languageId, "generic.uploadFileNoMultipart")).build();
+		}
+
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 	

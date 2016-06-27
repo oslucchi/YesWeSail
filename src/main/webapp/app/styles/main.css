@@ -61,7 +61,7 @@ body {
 
 .main_search{
     color: white;
-    height: 750px;
+    height: 200px;
     width: 100%;
     
 }
@@ -80,7 +80,6 @@ body {
 }
 
 .main_search_content > div{
-   margin-top: 140px !important;
     width: 1100px;
     margin-left: 0px !important;
 }
@@ -419,7 +418,9 @@ ul[rn-carousel], .image-slide {
         top: 10px;
     left: 46px;
 }
-
+tr{
+    cursor: pointer;
+}
 .admin-events-container{
     height: calc(100vh - 60.2px);
     background-color: white;
@@ -478,3 +479,5 @@ ul[rn-carousel], .image-slide {
 .yellow.item:hover{
     background-color: #DDA500 !important;
 }
+
+

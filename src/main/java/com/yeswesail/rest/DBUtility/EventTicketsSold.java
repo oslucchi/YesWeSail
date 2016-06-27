@@ -12,11 +12,13 @@ public class EventTicketsSold extends DBInterface
 	protected int userId;
 	protected String transactionId;
 	protected Date timestamp;
+	protected String description;
+	protected int price;
 
 	private void setNames()
 	{
 		tableName = "EventTicketsSold";
-		idColName = "idEventsTicketsSold";
+		idColName = "idEventTicketsSold";
 	}
 
 	public EventTicketsSold() throws Exception
@@ -35,7 +37,6 @@ public class EventTicketsSold extends DBInterface
 
 	public static Users[] findParticipants(int eventId, int languageId) throws Exception
 	{
-
 		String sql = "SELECT DISTINCT c.name, c.surname, c.idUsers, c.imageURL " +
 					 "FROM Users c INNER JOIN ( " +
 					 "      EventTicketsSold a INNER JOIN EventTickets b ON " +
@@ -46,6 +47,21 @@ public class EventTicketsSold extends DBInterface
 		@SuppressWarnings("unchecked")
 		ArrayList<Users> tickets = (ArrayList<Users>) Users.populateCollection(sql, Users.class);
 		return(tickets.toArray(new Users[tickets.size()]));
+	}
+	
+	public static EventTicketsSold[] getTicketSold(int eventId, int languageId) throws Exception
+	{
+		String sql = "SELECT *, c.description, b.price " +
+					 "FROM EventTicketsDescription c INNER JOIN ( " +
+					 "      EventTicketsSold a INNER JOIN EventTickets b ON " +
+					 "         a.eventTicketId = b.idEventTickets AND " +
+					 "         b.eventId = " + eventId + " " +
+					 "      ) ON " +
+					 "	 c.ticketType = b.ticketType";
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTicketsSold> tickets = 
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
 	public int getIdEventTicketsSold() {
@@ -88,4 +104,19 @@ public class EventTicketsSold extends DBInterface
 		this.timestamp = timestamp;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
 }

@@ -32,7 +32,10 @@ public class Users extends DBInterface
 	protected String status;
 	protected String imageURL;
 	protected Date birthday;
+	protected String sailingLicense;
+	protected String navigationLicense;
 	private AddressInfo[] addressInfo;
+
 	
 	private void setNames()
 	{
@@ -274,5 +277,21 @@ public class Users extends DBInterface
 
 	public void setAddressInfo(AddressInfo[] addressInfo) {
 		this.addressInfo = addressInfo;
+	}
+
+	public String getSailingLicense() {
+		return sailingLicense;
+	}
+
+	public void setSailingLicense(String sailingLicense) {
+		this.sailingLicense = sailingLicense;
+	}
+
+	public String getNavigationLicense() {
+		return navigationLicense;
+	}
+
+	public void setNavigationLicense(String navigationLicense) {
+		this.navigationLicense = navigationLicense;
 	}	
 }
