@@ -1,10 +1,14 @@
 package com.yeswesail.rest;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,9 +21,11 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.media.multipart.BodyPart;
 
 public class UploadFiles {
-	final Logger log = Logger.getLogger(this.getClass());
+	final static Logger log = Logger.getLogger(UploadFiles.class);
+	final static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
 	public void uploadMultipartFiles(HttpServletRequest request, String contextPath, 
 									 int eventId, int startFrom, String uuid) throws Exception
@@ -67,7 +73,7 @@ public class UploadFiles {
 		}
 	}
 	
-	public boolean moveFiles(String contextPath, String uuid, String prefix)
+	public static boolean moveFiles(String contextPath, String uuid, String prefix)
 	{
 		boolean errorMoving = false;
 		File srcDir = new File(contextPath + File.separator + "temp" + File.separator + uuid);
@@ -93,5 +99,104 @@ public class UploadFiles {
 			}
 		}
 		return errorMoving;
+	}
+	
+	public static boolean newMoveFiles(String fromPath, String toPath, String prefix, boolean overwrite)
+	{
+		boolean errorMoving = false;
+    	if (overwrite)
+    	{
+    		// Remove all file with the given prefix from the destination directory
+    		File toDir = new File(toPath);
+    		if(toDir.isDirectory()) 
+    		{
+    		    File[] dirContent = toDir.listFiles();
+			    for(int i = 0; i < dirContent.length; i++) 
+			    {
+			    	if (dirContent[i].isFile() && dirContent[i].getName().startsWith(prefix))
+			    		dirContent[i].delete();
+			    }
+    		}
+    	}
+    	
+		File srcDir = new File(fromPath);
+		if(srcDir.isDirectory()) 
+		{
+		    File[] dirContent = srcDir.listFiles();
+		    try 
+		    {
+			    for(int i = 0; i < dirContent.length; i++) 
+			    {
+			    	Files.move(Paths.get(dirContent[i].getPath()), 
+			    			   Paths.get(toPath + File.separator + dirContent[i].getName()), 
+			    			   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+//			    	if (!dirContent[i].renameTo(new File(toPath)))
+//					{
+//						log.warn("Error moving file '" + dirContent[i].getName() + "' to '" + toPath);
+//						errorMoving = true;
+//					}
+			    }
+				FileUtils.deleteDirectory(srcDir);
+			}
+		    catch (IOException e) 
+		    {
+		    	log.warn("Exception '" + e.getMessage() + "' removing the src directory '" + fromPath + "'");
+			}
+		}
+		return errorMoving;
+	}
+
+	public static ArrayList<String> getExistingFilesPath(String prefix, String path)
+	{
+		File directory = new File(path);
+        File[] fList = directory.listFiles();
+        ArrayList<String> imageURLs = new ArrayList<>();
+        for (File file : fList)
+        {
+            if (!file.isFile() || (!file.getName().startsWith(prefix)))
+            	continue;
+            
+            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+        }
+        return(imageURLs);
+	}
+
+	public static boolean uploadFiles(BodyPart part, String destPath, 
+							   String prefix, String token, int index)
+	{
+		byte[] buf = part.getEntityAs(byte[].class);
+		String tempDir = destPath + File.separator + token + File.separator;
+		try 
+		{
+			Files.createDirectories(Paths.get(tempDir));
+		}
+		catch (IOException e1) 
+		{
+			return(false);
+		}
+		
+		OutputStream out;
+		try {
+			String extension = part.getContentDisposition().getFileName()
+									.substring(part.getContentDisposition().getFileName().lastIndexOf("."));
+//			out = new FileOutputStream(new File(tempDir + ));
+			out = new FileOutputStream(new File(tempDir + prefix + index + extension));
+			out.write(buf);
+			out.flush();
+			out.close();
+		} 
+		catch (FileNotFoundException e) 
+		{
+			log.error("Exception FileNotFoundException on '" +
+					  part.getContentDisposition().getFileName() + "'");
+			return(false);
+		} 
+		catch (IOException e) {
+			log.error("Exception IOException on '" +
+					  part.getContentDisposition().getFileName() + "'");
+			return(false);
+		}
+
+		return(true);
 	}
 }

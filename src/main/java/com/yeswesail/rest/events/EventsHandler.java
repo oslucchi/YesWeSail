@@ -1094,7 +1094,7 @@ public class EventsHandler {
 			try 
 			{
 				up.uploadMultipartFiles(request, contextPath, eventId, lastIndex, token);
-				errorMoving = up.moveFiles(contextPath, token, "ev_");
+				errorMoving = UploadFiles.moveFiles(contextPath, token, "ev_");
 			}
 			catch (Exception e) 
 			{

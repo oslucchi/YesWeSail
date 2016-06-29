@@ -2,7 +2,14 @@ package com.yeswesail.rest;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 
@@ -42,4 +49,51 @@ public class Utils {
 		return genson.serialize(jsonResponse);
 	}
 
+	private static Field[] getAllFields(Class<?> cType)
+	{
+		List<Field> fields = new ArrayList<Field>();
+        for (Class<?> c = cType; c != null; c = c.getSuperclass()) 
+        {
+        	fields.addAll(Arrays.asList(c.getDeclaredFields()));
+        }
+        Field[] fieldArr = new Field[fields.size()];
+        return fields.toArray(fieldArr);
+	}
+
+	public static Object populateObjectFromJSON(String jsonIn, Object objInst)
+	{
+		JSONObject jsonObj = new JSONObject(jsonIn);
+		Field[] clFields = getAllFields(objInst.getClass());
+		for(Field field : clFields)
+		{
+			try
+			{
+				switch(field.getType().getName())
+				{
+				case "int":
+				case "long":
+					field.set(objInst, Integer.parseInt(jsonObj.getString(field.getName())));
+					break;
+	
+				case "java.lang.String":
+					field.set(objInst, jsonObj.getString(field.getName()));
+					break;
+				}
+			}			
+			catch(JSONException e)
+			{
+				e.printStackTrace();;
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return objInst;
+	}
 }

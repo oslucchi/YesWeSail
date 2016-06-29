@@ -2,11 +2,12 @@ package com.yeswesail.rest.users;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -19,9 +20,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
@@ -35,6 +39,7 @@ import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
+import com.yeswesail.rest.jsonInt.ShipownerRequestJson;
 import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
@@ -403,7 +408,7 @@ public class UsersHandler {
 	}
 	
 	@POST
-	@Path("create/dummy")
+	@Path("/create/dummy")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response createOnTheFly(UsersJson jsonIn, @HeaderParam("Authorization") String token)
@@ -445,104 +450,102 @@ public class UsersHandler {
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 	
-	private ArrayList<String> getShipownerDocs(int userId, String path)
+	@POST
+	@Path("/shipowners-OK")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadFileWithData(
+			@FormDataParam("files[0]") InputStream inputStream,
+			@FormDataParam("files[0]") FormDataContentDisposition uploadedInputStream,
+			@FormDataParam("sailorInfo") String sailorInfo
+			)
 	{
-		File directory = new File(path);
-        File[] fList = directory.listFiles();
-        ArrayList<String> imageURLs = new ArrayList<>();
-        for (File file : fList)
-        {
-            if (!file.isFile() || (!file.getName().startsWith("us_" + userId + "_")))
-            	continue;
-            
-            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
-        }
-        return(imageURLs);
+		System.out.println(uploadedInputStream.getFileName());
+		System.out.println(sailorInfo);
+		return Response.status(Response.Status.OK).entity("{}").build();
+
 	}
 
 	@POST
-	@Path("/shipowners")
-	@Produces(MediaType.APPLICATION_JSON)
+	@Path("/shipowners-2")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	public Response shipownerUpgradeRequest(// ShipownerRequestJson jsonIn, 
-											@Context HttpServletRequest request,
-											@HeaderParam("Authorization") String token,
-											@HeaderParam("Language") String language)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadFileWithData2(
+			@FormDataParam("files") InputStream inputStream,
+			@FormDataParam("files") FormDataContentDisposition uploadedInputStream,
+			@FormDataParam("sailorInfo") String sailorInfo
+			)
 	{
-		int languageId = Utils.setLanguageId(language);
+		System.out.println(uploadedInputStream.getFileName());
+		System.out.println(sailorInfo);
+		return Response.status(Response.Status.OK).entity("{}").build();
+
+	}
+	
+
+	@POST
+	@Path("/shipowners")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadFileWithData3(FormDataMultiPart form,
+										@HeaderParam("Authorization") String token,
+										@HeaderParam("Language") String language)
+
+	{
+		List<BodyPart> parts = form.getBodyParts();
+		// Getting sailorInfo JSON object
+		ShipownerRequestJson sh = new ShipownerRequestJson();
+		for(BodyPart part : parts)
+		{
+			if(part.getMediaType().getType().compareTo("text") == 0)
+			{
+				Utils.populateObjectFromJSON(part.getEntityAs(String.class), sh);
+				break;
+			}
+		}
+		System.out.println(sh.usersId + " - " + sh.navigationLicense + " - " + sh.sailingLicense);
+
+		// getting destination path from context
 		String destPath = null;
 		try 
 		{
-			contextPath = context.getResource("/").getPath();
+			destPath = context.getResource("/images/shipowner").getPath();
 		}
 		catch (MalformedURLException e) 
 		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
+			log.warn("Exception " + e.getMessage() + " retrieving context path");
+			// TODO return error
 		}
 
-		DBConnection conn = null;
-		Users u = null;
-//		try 
-//		{
-//			conn = DBInterface.TransactionStart();
-//			u = new Users(conn, jsonIn.usersId);
-//			u.setNavigationLicense(jsonIn.navigationLicense);
-//			u.setSailingLicense(jsonIn.sailingLicense);
-//			u.update(conn, "idUsers");
-//		}
-//		catch(Exception e)
-//		{
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
-//							" (" + e.getMessage() + ")")
-//					.build();
-//		}
+		String prefix = "sh_" + sh.usersId + "_licenses_";
+		int lastIndex = -1;
+		// Checking if any existing file to preserve and marking the starting sequence number for 
+		// this file set to upload
+		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, destPath);
+		int pos;
+		int a = 0;
+		for(String fName : images)
+		{
+			pos = fName.lastIndexOf("_") + 1;
+			fName = fName.substring(pos);
+			a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
+			if (lastIndex < a)
+				lastIndex = a;
+		}
+		lastIndex++;
+		// lastIndex = 0;
 		
-		if (ServletFileUpload.isMultipartContent(request))
+		// uploading the files into temp dir
+		for(BodyPart part : parts)
 		{
-			boolean errorMoving = false;
-			try {
-				destPath = context.getResource("/images/shipownerDocs").getPath();
-			}
-			catch (MalformedURLException e) 
+			if(part.getMediaType().getType().compareTo("image") == 0)
 			{
-				log.warn("Exception " + e.getMessage() + " retrieving images/shipownerDocs path");	
-			}
-			UploadFiles up = new UploadFiles();
-			ArrayList<String> images = getShipownerDocs(1, destPath); // jsonIn.usersId
-			int lastIndex = -1;
-			int pos;
-			int a = 0;
-			for(String fName : images)
-			{
-				pos = fName.lastIndexOf("_") + 1;
-				fName = fName.substring(pos);
-				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
-				if (lastIndex < a)
-					lastIndex = a;
-			}
-			lastIndex++;
-			try 
-			{
-				up.uploadMultipartFiles(request, contextPath, 1, lastIndex, token); // jsonIn.usersId
-				errorMoving = up.moveFiles(contextPath, token, "us_");
-			}
-			catch (Exception e) 
-			{
-				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
-								errorMoving + " (" + e.getMessage() + ")")
-						.build();
+				UploadFiles.uploadFiles(part, destPath, prefix, token, lastIndex++);
 			}
 		}
-		else
-		{
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(LanguageResources.getResource(languageId, "generic.uploadFileNoMultipart")).build();
-		}
-
+		
+		// moving to the final destination
+		UploadFiles.newMoveFiles(destPath + File.separator + token, destPath, prefix, false);
 		return Response.status(Response.Status.OK).entity("{}").build();
-	}
-	
+	}	
 }
