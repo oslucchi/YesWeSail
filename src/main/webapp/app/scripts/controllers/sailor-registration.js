@@ -34,15 +34,15 @@ angular.module('yeswesailApp')
             Upload.upload({
                 url: URLs.ddns + 'rest/users/shipowners',
                 data: {
-                    sailorInfo: {
-                        usersId: sailorInfo.usersId,
+                    sailorInfo: JSON.stringify({
+                        usersId: String(sailorInfo.usersId),
                         sailingLicense: sailorInfo.sailingLicense,
                         navigationLicense: sailorInfo.navigationLicense
-                    },
+                    }),
                     files: files
                 }
             }).then(function (response) {
-                toastr.succes('Registration sent!');
+                toastr.success('Registration sent!');
             }, function (response) {
 
             }, function (evt) {
