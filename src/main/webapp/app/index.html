@@ -55,7 +55,7 @@
 
             <div class="right menu">
                 <a ng-if="!currentUser.isShipOwner"  class="ui item">
-                    <button class="ui inverted basic button">Diventa armatore</button>
+                    <button ui-sref="sailorRegistration" class="ui inverted basic button">Diventa armatore</button>
                 </a>
                 <a ui-sref="cart" ng-if="cartQty" class="item">
                     <i class="cart icon"></i>
