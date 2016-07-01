@@ -26,6 +26,9 @@
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
+	<listener>
+	    <listener-class>com.yeswesail.rest.YesWeSail</listener-class>
+	</listener>
 
   <servlet>
     <servlet-name>YesWeSail</servlet-name>

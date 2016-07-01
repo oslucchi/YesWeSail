@@ -1,9 +1,6 @@
 package com.yeswesail.rest.users;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,9 +20,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.media.multipart.BodyPart;
-import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
@@ -449,39 +444,6 @@ public class UsersHandler {
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
-	
-	@POST
-	@Path("/shipowners-OK")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response uploadFileWithData(
-			@FormDataParam("files[0]") InputStream inputStream,
-			@FormDataParam("files[0]") FormDataContentDisposition uploadedInputStream,
-			@FormDataParam("sailorInfo") String sailorInfo
-			)
-	{
-		System.out.println(uploadedInputStream.getFileName());
-		System.out.println(sailorInfo);
-		return Response.status(Response.Status.OK).entity("{}").build();
-
-	}
-
-	@POST
-	@Path("/shipowners-2")
-	@Consumes(MediaType.MULTIPART_FORM_DATA)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response uploadFileWithData2(
-			@FormDataParam("files") InputStream inputStream,
-			@FormDataParam("files") FormDataContentDisposition uploadedInputStream,
-			@FormDataParam("sailorInfo") String sailorInfo
-			)
-	{
-		System.out.println(uploadedInputStream.getFileName());
-		System.out.println(sailorInfo);
-		return Response.status(Response.Status.OK).entity("{}").build();
-
-	}
-	
 
 	@POST
 	@Path("/shipowners")
@@ -492,7 +454,9 @@ public class UsersHandler {
 										@HeaderParam("Language") String language)
 
 	{
+		int languageId = Utils.setLanguageId(language);
 		List<BodyPart> parts = form.getBodyParts();
+		
 		// Getting sailorInfo JSON object
 		ShipownerRequestJson sh = new ShipownerRequestJson();
 		for(BodyPart part : parts)
@@ -505,47 +469,17 @@ public class UsersHandler {
 		}
 		System.out.println(sh.usersId + " - " + sh.navigationLicense + " - " + sh.sailingLicense);
 
-		// getting destination path from context
-		String destPath = null;
-		try 
-		{
-			destPath = context.getResource("/images/shipowner").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
-			// TODO return error
-		}
-
 		String prefix = "sh_" + sh.usersId + "_licenses_";
-		int lastIndex = -1;
-		// Checking if any existing file to preserve and marking the starting sequence number for 
-		// this file set to upload
-		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, destPath);
-		int pos;
-		int a = 0;
-		for(String fName : images)
-		{
-			pos = fName.lastIndexOf("_") + 1;
-			fName = fName.substring(pos);
-			a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
-			if (lastIndex < a)
-				lastIndex = a;
-		}
-		lastIndex++;
-		// lastIndex = 0;
+		String[] acceptableTypes = {
+				"application/pdf",
+				"image/png",
+				"image/jpeg",
+				"image/jpg"
+		};
 		
-		// uploading the files into temp dir
-		for(BodyPart part : parts)
-		{
-			if(part.getMediaType().getType().compareTo("image") == 0)
-			{
-				UploadFiles.uploadFiles(part, destPath, prefix, token, lastIndex++);
-			}
-		}
-		
-		// moving to the final destination
-		UploadFiles.newMoveFiles(destPath + File.separator + token, destPath, prefix, false);
-		return Response.status(Response.Status.OK).entity("{}").build();
+		return UploadFiles.uploadFromRestRequest(
+								parts, context, token, "/images/shipowner", 
+								prefix, acceptableTypes, languageId, false);
+
 	}	
 }

@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import javax.servlet.ServletContext;
+
 import org.apache.log4j.Logger;
 
 public class ApplicationProperties {
@@ -32,6 +34,7 @@ public class ApplicationProperties {
 	private String braintreeMerchantId;
 	private String braintreePublicKey;
 	private String braintreePrivateKey;
+	private ServletContext context;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -199,6 +202,13 @@ public class ApplicationProperties {
 
 	public String getBraintreePrivateKey() {
 		return braintreePrivateKey;
+	}
+
+	public ServletContext getContext() {
+		return context;
 	}		
-	
+
+	public void setContext(ServletContext context) {
+		this.context = context;
+	}
 }

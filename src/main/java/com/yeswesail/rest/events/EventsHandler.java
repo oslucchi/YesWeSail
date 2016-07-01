@@ -9,10 +9,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.HeaderParam;
@@ -24,9 +24,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.StatusType;
 
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.media.multipart.BodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
@@ -349,21 +353,6 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
-	private ArrayList<String> getEventImages(int eventId, String path)
-	{
-		File directory = new File(path);
-        File[] fList = directory.listFiles();
-        ArrayList<String> imageURLs = new ArrayList<>();
-        for (File file : fList)
-        {
-            if (!file.isFile() || (!file.getName().startsWith("ev_" + eventId + "_")))
-            	continue;
-            
-            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
-        }
-        return(imageURLs);
-	}
-	
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -474,7 +463,8 @@ public class EventsHandler {
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		jsonResponse.put("images", getEventImages(event.getIdEvents(), contextPath));
+		jsonResponse.put("images", 
+						 UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_",contextPath));
 
 		try
 		{
@@ -1051,69 +1041,54 @@ public class EventsHandler {
     @Path("/{eventId}/upload")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response upload(@Context HttpServletRequest request, @HeaderParam("Language") String language, 
-    					@PathParam("eventId") int eventId)
+    public Response upload(FormDataMultiPart form,
+						   @HeaderParam("Authorization") String token,
+						   @HeaderParam("Language") String language,
+						   @PathParam("eventId") int eventId)
     {
 		int languageId = Utils.setLanguageId(language);
-		boolean errorMoving = false;
-		String destPath = null;
-		try 
-		{
-			contextPath = context.getResource("/").getPath();
+		List<BodyPart> parts = form.getBodyParts();
+		
+		String[] acceptableTypes = {
+				"image/png",
+				"image/jpeg",
+				"image/jpg"
+		};
+
+		String prefix = "ev_" + eventId + "_";
+
+		Response response = UploadFiles.uploadFromRestRequest(
+								parts, context, token, "/images/events", 
+								prefix, acceptableTypes, languageId, false);
+		
+		try {
+			contextPath = context.getResource("/images/events").getPath();
 		}
 		catch (MalformedURLException e) 
 		{
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
+		Utils.addToJsonContainer("images", 
+								 UploadFiles.getExistingFilesPath(prefix, contextPath), true);
 		
-		if (ServletFileUpload.isMultipartContent(request))
+		StatusType status = Response.Status.OK;
+		if (response.getStatusInfo() != Response.Status.OK)
 		{
-			try {
-				destPath = context.getResource("/images/events").getPath();
-			}
-			catch (MalformedURLException e) 
-			{
-				log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
-			}
-			String token = UUID.randomUUID().toString();
-			UploadFiles up = new UploadFiles();
-			ArrayList<String> images = getEventImages(eventId, destPath);
-			int lastIndex = -1;
-			int pos;
-			int a = 0;
-			for(String fName : images)
-			{
-				pos = fName.lastIndexOf("_") + 1;
-				fName = fName.substring(pos);
-				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
-				if (lastIndex < a)
-					lastIndex = a;
-			}
-			lastIndex++;
-			try 
-			{
-				up.uploadMultipartFiles(request, contextPath, eventId, lastIndex, token);
-				errorMoving = UploadFiles.moveFiles(contextPath, token, "ev_");
-			}
-			catch (Exception e) 
-			{
-				return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-						.entity(LanguageResources.getResource(languageId, "events.imageUploadError") + " " + 
-								errorMoving + " (" + e.getMessage() + ")")
-						.build();
-			}
-		}
-		else
-		{
-			return Response.status(Response.Status.BAD_REQUEST)
-					.entity(LanguageResources.getResource(languageId, "generic.uploadFileNoMultipart")).build();
-		}
+			status = Response.Status.PARTIAL_CONTENT;
+			JSONObject jo = new JSONObject((String)response.getEntity());			
 
-		HashMap<String, Object> jsonResponse = new HashMap<>();
-		jsonResponse.put("images", getEventImages(eventId, destPath));
-		Genson genson = new Genson();
-		String entity = genson.serialize(jsonResponse);
-		return Response.status(Response.Status.OK).entity(entity).build();
+			Utils.addToJsonContainer("rejectionMessage", jo.get("rejectionMessage"), false);
+			
+			JSONArray rejected = (JSONArray)jo.get("rejectedList");
+			String[] s = new String[rejected.length()];
+			for(int i = 0; i < rejected.length(); i++)
+			{
+				s[i] = rejected.getString(i);
+			}
+			Utils.addToJsonContainer("rejectedList", s, false);
+		}
+		String jsonResponse = Utils.jsonize();
+		return Response.status(status).entity(jsonResponse).build();
     }
 }
