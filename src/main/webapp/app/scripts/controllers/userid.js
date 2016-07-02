@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('UseridCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout) {
+    .controller('UseridCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload) {
 
         $scope.user = {};
         $scope.reviews = {};
@@ -20,7 +20,8 @@ angular.module('yeswesailApp')
         var updateRate = function (value) {
             $scope.tempReview.rating = value;
         }
-        $('.new.rating').rating({
+
+        $('.rating').rating({
             maxRating: 5,
             onRate: function (value) {
                 updateRate(value);
@@ -31,7 +32,9 @@ angular.module('yeswesailApp')
 
         var getUser = function () {
             $http.get(URLs.ddns + 'rest/users/' + $stateParams.userId).then(function (res) {
-                $scope.user = res.data;
+                $scope.user = res.data.user;
+                $scope.getBoats();
+
             }, function (err) {});
 
         };
@@ -41,8 +44,7 @@ angular.module('yeswesailApp')
                 $scope.reviews = res.data;
                 $timeout(function () {
                     $('.comment.rating').rating({
-                        maxRating: 5,
-                       readOnly: true
+                        readOnly: true
                     }).rating('disable');
                 }, 100);
 
@@ -58,7 +60,85 @@ angular.module('yeswesailApp')
 
         };
 
+
+        $scope.getBoats = function () {
+            $http.get(URLs.ddns + 'rest/users/shipowners/' + $scope.user.idUsers + '/boats').then(function (res) {
+                $scope.boats = res.data.boats;
+            });
+        };
+
+
         getUser();
         getUserReviews();
+
+        $scope.tempBoat = {
+            info: {
+                bunks: 0,
+                cabinsNoBathroom: 0,
+                cabinsWithBathroom: 0,
+                engineType: null,
+                idBoats: 0,
+                insurance: null,
+                length: 0,
+                model: '',
+                name: '',
+                ownerId: 0,
+                plate: '',
+                RTFLicense: null,
+                securityCertification: null,
+                sharedBathrooms: 0,
+                year: 1970
+            },
+            files: {
+                docs: [],
+                bluePrints: [],
+                other: []
+
+            }
+        };
+
+        $scope.addDocs = function (files) {
+            $scope.tempBoat.files.docs = files;
+        };
+        $scope.addBluePrints = function (files) {
+            $scope.tempBoat.files.bluePrints = files;
+        };
+        $scope.addOtherImages = function (files) {
+            $scope.tempBoat.files.other = files;
+        };
+
+        $scope.sendBoat = function (boat) {
+          
+
+            Upload.upload({
+                url: URLs.ddns + 'rest/users/shipowners/' + $scope.user.idUsers + '/boats',
+                data: {
+                    boatInfo: JSON.stringify(boat.info),
+                    files: boat.files
+                }
+            }).then(function (response) {
+                toastr.success('Uploaded Boat');
+            }, function (response) {
+
+            }, function (evt) {
+                $scope.progress =
+                    Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                $('#file-upload-progress').progress({
+                    percent: $scope.progress
+                });
+
+            });
+
+        };
+
+        $scope.showAddBoatDialog = function () {
+            ngDialog.open({
+                template: 'views/userId.boats.addBoat.html',
+                className: 'ngdialog-theme-default',
+                controller: 'UseridCtrl',
+                scope: $scope
+            });
+
+        };
 
     });

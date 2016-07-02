@@ -3,37 +3,20 @@
 <table class="ui compact sortable selectable celled  table">
   <thead>
     <tr>
-      <th>Select</th>
-      <th  class="ui fitted center aligned">Actions</th>
       <th>Status</th>
       <th>ID</th>
       <th>Type</th>
       <th>Issued By</th>
-      <th>Link</th>
       <th>Created</th>
       <th>Updated</th>
     </tr>
   </thead>
     
   <tbody>
-    <tr ng-class="{'error': request.status=='I', 'positive': request.status=='A', 'warning': request.status=='P'}" ng-repeat="request in requests">
+    <tr ng-click="openRequestApprovalDialog(request.link, request.actionType, request.idPendingActions)" ng-class="{'error': request.status=='I', 'positive': request.status=='A', 'warning': request.status=='P'}" ng-repeat="request in requests">
+        
+     
         <td class="collapsing">
-         <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="selectedrequests"> <label></label>
-        </div>
-      </td>
-      <td class="collapsing">
-        <div class="ui center aligned">
-              <i ng-click="activate(request)" class="large green checkmark link icon"></i>
-              <i ng-really-message="Are you sure?" ng-really-click="remove(request)" class="large red trash outline link icon"></i>
-              <i ng-click="deactivate(request)" class="large red ban link icon"></i>
-              <i ng-click="showClonePopup(request)" class="large grey copy link icon"></i>
-              <i ui-sref="editrequest({requestId: request.idrequests})" class="large grey edit link icon"></i>
-        </div>
-          
-      </td>
-        <td class="collapsing">
-        <div class="ui center aligned">
             <div ng-switch="request.status">
               <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
               <div ng-switch-when="R"><i class="large red remove icon"></i></div>
@@ -42,14 +25,12 @@
                
               </div>
             </div>
-        </div>
       </td>
       <td class="collapsing">{{request.idPendingActions}}</td>
       <td class="collapsing">{{request.actionType}}</td>
       <td class="collapsing">{{request.userId}}</td>
-      <td class="collapsing">{{request.link}}</td>
-      <td class="collapsing">{{request.created}}</td>
-      <td class="collapsing">{{request.updated}}</td>
+      <td class="collapsing">{{request.created | date}}</td>
+      <td class="collapsing">{{request.updated | date}}</td>
        
     </tr>
    
@@ -60,7 +41,7 @@
           Approve All
         </div></th>
       <th colspan="9">
-        <button ng-click="getrequests()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
+        <button ng-click="getRequests()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
         <button ng-click="popupCreaterequestDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add request</button>
       </th>
     </tr>

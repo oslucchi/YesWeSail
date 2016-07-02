@@ -14,6 +14,7 @@ angular.module('yeswesailApp')
     $scope.getUsers=function(){
         $http.get(URLs.ddns + 'rest/users', {}).then(function(res){
             $scope.users=res.data;
+              
         });
     };
     

@@ -166,6 +166,22 @@ angular
                 accessLevel: 0
             }
     })
+    .state('userId.profile', {
+      url: "/profile",
+      templateUrl: 'views/userId.profile.html',
+      controller:  'UseridCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
+    .state('userId.boats', {
+      url: "/boats",
+      templateUrl: 'views/userId.boats.html',
+      controller:  'UseridCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
     .state('events', {
       url: "/events?location&categoryId",
       templateUrl: 'views/events.html',
