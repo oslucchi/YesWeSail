@@ -6,6 +6,7 @@
         <wb-resource deploy-path="/" source-path="/WebContent" tag="defaultRootSource"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp/dist"/>
         <wb-resource deploy-path="/bower_components" source-path="/src/main/webapp/bower_components"/>
+        <wb-resource deploy-path="/images" source-path="/images"/>
         <property name="context-root" value="YesWeSail"/>
         <property name="java-output-path" value="/YesWeSail/target/classes"/>
     </wb-module>
