@@ -199,6 +199,7 @@ public class CartHandler {
 		
 		getBTGateway();
 		
+		Utils jsonizer = new Utils();
 		DBConnection conn = null;
 		TicketLocks[] tickets = null;
 		int amount = 0;
@@ -238,10 +239,10 @@ public class CartHandler {
 				DBInterface.TransactionCommit(conn);
 				if (method.toUpperCase().compareTo("PP") == 0)
 				{
-					Utils.addToJsonContainer("transactionId", transaction.getId(), true);
+					jsonizer.addToJsonContainer("transactionId", transaction.getId(), true);
 					return Response
 							.status(Response.Status.OK)
-							.entity(Utils.jsonize())
+							.entity(jsonizer.jsonize())
 							.build();
 				}
 				else if (method.toUpperCase().compareTo("CC") == 0)
@@ -260,10 +261,10 @@ public class CartHandler {
 	            log.warn(errorMsg);
 				if (method.toUpperCase().compareTo("PP") == 0)
 				{
-					Utils.addToJsonContainer("responseCode", transaction.getProcessorResponseCode(), true);
+					jsonizer.addToJsonContainer("responseCode", transaction.getProcessorResponseCode(), true);
 					return Response
 							.status(Response.Status.FORBIDDEN)
-							.entity(Utils.jsonize())
+							.entity(jsonizer.jsonize())
 							.build();
 				}
 				else if (method.toUpperCase().compareTo("CC") == 0)
@@ -287,10 +288,10 @@ public class CartHandler {
 	            log.warn(multipleErrors);
 				if (method.toUpperCase().compareTo("PP") == 0)
 				{
-					Utils.addToJsonContainer("responseCode", result.getMessage(), true);
+					jsonizer.addToJsonContainer("responseCode", result.getMessage(), true);
 					return Response
 							.status(Response.Status.FORBIDDEN)
-							.entity(Utils.jsonize())
+							.entity(jsonizer.jsonize())
 							.build();
 				}
 				else if (method.toUpperCase().compareTo("CC") == 0)
@@ -315,10 +316,10 @@ public class CartHandler {
 			if ((method.toUpperCase().compareTo("CC") != 0) &&
 			    (method.toUpperCase().compareTo("PP") != 0))
 			{
-				Utils.addToJsonContainer("responseCode", "Bad method request", true);
+				jsonizer.addToJsonContainer("responseCode", "Bad method request", true);
 				return Response
 						.status(Response.Status.BAD_REQUEST)
-						.entity(Utils.jsonize())
+						.entity(jsonizer.jsonize())
 						.build();
 			}
 			DBInterface.disconnect(conn);

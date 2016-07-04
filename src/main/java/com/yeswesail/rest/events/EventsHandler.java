@@ -92,9 +92,10 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		// No record found. return an empty object
 		if (hot == null)
@@ -206,9 +207,10 @@ public class EventsHandler {
 			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
 		catch (Exception e) {
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		if (events == null)
 		{
@@ -268,9 +270,10 @@ public class EventsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 		return handleSearch(jsonIn, languageId, false);
 	}
@@ -336,9 +339,10 @@ public class EventsHandler {
 		}
 		catch (Exception e) {
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}	
 		finally
 		{
@@ -380,9 +384,10 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();
@@ -410,9 +415,10 @@ public class EventsHandler {
 		catch(Exception e)
 		{
 			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 
 		Users[] participants = null;
@@ -424,9 +430,10 @@ public class EventsHandler {
 		catch(Exception e)
 		{
 			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		
 		try {
@@ -723,15 +730,17 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 
 		if (jh.jasonize(event, language) != Response.Status.OK)
 		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jh.json).build();
 		}
 
 		return Response.status(Response.Status.OK).entity(jh.json).build();
@@ -751,11 +760,12 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
 	@DELETE
@@ -781,15 +791,16 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
 	@POST
@@ -803,9 +814,10 @@ public class EventsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 
 		DBConnection conn = null;
@@ -854,9 +866,10 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();
@@ -939,15 +952,16 @@ public class EventsHandler {
 		}
 		catch (Exception e) 
 		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{
 			DBInterface.TransactionRollback(conn);
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 
 	}	
 	
@@ -978,15 +992,16 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}	
 
 	
@@ -1007,15 +1022,16 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//					Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}	
 
 	@DELETE
@@ -1069,7 +1085,9 @@ public class EventsHandler {
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		Utils.addToJsonContainer("images", 
+		Utils jsonizer = new Utils();
+
+		jsonizer.addToJsonContainer("images", 
 								 UploadFiles.getExistingFilesPath(prefix, contextPath), true);
 		
 		StatusType status = Response.Status.OK;
@@ -1078,7 +1096,7 @@ public class EventsHandler {
 			status = Response.Status.PARTIAL_CONTENT;
 			JSONObject jo = new JSONObject((String)response.getEntity());			
 
-			Utils.addToJsonContainer("rejectionMessage", jo.get("rejectionMessage"), false);
+			jsonizer.addToJsonContainer("rejectionMessage", jo.get("rejectionMessage"), false);
 			
 			JSONArray rejected = (JSONArray)jo.get("rejectedList");
 			String[] s = new String[rejected.length()];
@@ -1086,9 +1104,9 @@ public class EventsHandler {
 			{
 				s[i] = rejected.getString(i);
 			}
-			Utils.addToJsonContainer("rejectedList", s, false);
+			jsonizer.addToJsonContainer("rejectedList", s, false);
 		}
-		String jsonResponse = Utils.jsonize();
+		String jsonResponse = jsonizer.jsonize();
 		return Response.status(status).entity(jsonResponse).build();
     }
 }

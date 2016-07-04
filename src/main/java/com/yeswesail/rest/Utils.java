@@ -8,6 +8,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,7 +18,7 @@ import com.owlike.genson.Genson;
 
 public class Utils {
 	static ApplicationProperties prop = ApplicationProperties.getInstance();
-	static HashMap<String, Object>jsonResponse = new HashMap<>();
+	HashMap<String, Object>jsonResponse = new HashMap<>();
 	
 	public static String printStackTrace(Exception e)
 	{
@@ -34,7 +37,7 @@ public class Utils {
 		return Constants.getLanguageCode(language);
 	}
 		
-	public static void addToJsonContainer(String key, Object object, boolean clear)
+	public void addToJsonContainer(String key, Object object, boolean clear)
 	{
 		if (clear)
 		{
@@ -43,7 +46,7 @@ public class Utils {
 		jsonResponse.put(key, object);
 	}
 
-	public static String jsonize()
+	public String jsonize()
 	{
 		Genson genson = new Genson();
 		return genson.serialize(jsonResponse);
@@ -95,5 +98,21 @@ public class Utils {
 			}
 		}
 		return objInst;
+	}
+	
+	public static Response jsonizeResponse(Status status, Exception e, int languageId, String errResource )
+	{
+		HashMap<String, Object>jsonResponse = new HashMap<>();
+		Genson genson = new Genson();
+		jsonResponse.clear();
+		jsonResponse.put("error", 
+						 LanguageResources.getResource(languageId, errResource) + 
+						 	(e == null ? "" : " (" + e.getMessage() + ")"));
+		return Response.status(status).entity(genson.serialize(jsonResponse)).build();
+	}
+
+	public static Response jsonizeResponse(Status status, Exception e, String language, String errResource )
+	{
+		return(jsonizeResponse(status, e, setLanguageId(language), errResource));
 	}
 }

@@ -53,10 +53,11 @@ public class TicketsHandler {
 		}
 		catch (Exception e)
 		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(
-								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-								e.getMessage() + ")").build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(
+//								Constants.getLanguageCode(language), "generic.execError") + " (" + 
+//								e.getMessage() + ")").build();
 		}
 		
 		// No record found. return an empty object
@@ -121,9 +122,10 @@ public class TicketsHandler {
 				if (et.getAvailable() - et.getBooked() <= 0)
 				{
 					DBInterface.TransactionRollback(conn);
-					return Response.status(Response.Status.NOT_ACCEPTABLE)
-							.entity(LanguageResources.getResource(languageId, "ticket.fareNotAvailable"))
-							.build();
+					return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
+//					return Response.status(Response.Status.NOT_ACCEPTABLE)
+//							.entity(LanguageResources.getResource(languageId, "ticket.fareNotAvailable"))
+//							.build();
 				}
 				et.bookATicket();
 				et.update(conn, "idEventTickets");
@@ -151,8 +153,9 @@ public class TicketsHandler {
 				errMsg = LanguageResources.getResource(
 							Constants.getLanguageCode(language), "generic.execError"); 
 			}
-			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(errMsg + " (" + e.getMessage() + ")").build();
+			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "ticket.fareNotAvailable");
+//			return Response.status(Response.Status.NOT_ACCEPTABLE)
+//					.entity(errMsg + " (" + e.getMessage() + ")").build();
 		}
 		finally
 		{
@@ -190,9 +193,10 @@ public class TicketsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
+//					.build();
 		}
 		finally
 		{
@@ -220,17 +224,20 @@ public class TicketsHandler {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
+//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		Utils.addToJsonContainer("tickets", tickets, true);
+		Utils jsonizer = new Utils();
+
+		jsonizer.addToJsonContainer("tickets", tickets, true);
 		return Response.status(Response.Status.OK)
-				.entity(Utils.jsonize())
+				.entity(jsonizer.jsonize())
 				.build();
 	}
 
@@ -246,13 +253,15 @@ public class TicketsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 
 		DBConnection conn = null;
 
+		Utils jsonizer = new Utils();
 		EventTicketsSold[] tickets = null;
 		try
 		{
@@ -269,21 +278,22 @@ public class TicketsHandler {
 				participants[idx].user = new Users(conn, item.getUserId());
 				participants[idx++].user.setPassword("******");
 			}
-			Utils.addToJsonContainer("tickets", participants, true);
+			jsonizer.addToJsonContainer("tickets", participants, true);
 		}
 		catch(Exception e)
 		{
 			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
+//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK)
-				.entity(Utils.jsonize())
+				.entity(jsonizer.jsonize())
 				.build();
 	}
 	
@@ -299,9 +309,10 @@ public class TicketsHandler {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 
 		DBConnection conn = null;
@@ -319,9 +330,10 @@ public class TicketsHandler {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();

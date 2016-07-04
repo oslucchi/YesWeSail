@@ -47,9 +47,10 @@ public class HandlePendingActions {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 
 		PendingActions[] actions = null;
@@ -64,9 +65,10 @@ public class HandlePendingActions {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{
@@ -95,9 +97,10 @@ public class HandlePendingActions {
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+//					.build();
 		}
 		
 		PendingActions action = null;
@@ -116,9 +119,10 @@ public class HandlePendingActions {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+//					.build();
 		}
 		finally
 		{

@@ -125,11 +125,14 @@ public class ReviewsHandler {
 		}
 		catch (Exception e) 
 		{
+//			Utils jsonizer = new Utils();
+
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "auth.confirmTokenInvalid");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		finally
 		{
@@ -156,14 +159,16 @@ public class ReviewsHandler {
 								@PathParam("idReviews") int idReviews)
 	{
 		int languageId = Utils.setLanguageId(language);
+//		Utils jsonizer = new Utils();
 
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 
 		Reviews review = null;
@@ -178,10 +183,11 @@ public class ReviewsHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		finally
 		{
@@ -207,13 +213,7 @@ public class ReviewsHandler {
 		int languageId = Utils.setLanguageId(language);
 
 		SessionData sd = SessionData.getInstance();
-//		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
-//		{
-//			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(Utils.jsonize())
-//					.build();
-//		}
+//		Utils jsonizer = new Utils();
 
 		Reviews review = null;
 		DBConnection conn = null;
@@ -247,10 +247,11 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on insert");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		finally
 		{
@@ -267,14 +268,16 @@ public class ReviewsHandler {
 							  @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		
+		Utils jsonizer = new Utils();
+
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		
 		Reviews review = null;
@@ -293,10 +296,11 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		finally
 		{
@@ -313,14 +317,16 @@ public class ReviewsHandler {
 						   @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		
+		Utils jsonizer = new Utils();
+
 		SessionData sd = SessionData.getInstance();
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+//			return Response.status(Response.Status.UNAUTHORIZED)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		
 		Reviews review = null;
@@ -338,10 +344,11 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//					.entity(jsonizer.jsonize())
+//					.build();
 		}
 		finally
 		{
