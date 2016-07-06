@@ -15,7 +15,6 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
-import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
@@ -43,10 +42,7 @@ public class LoginConfirm {
 		} 
 		catch (Exception e1) {
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
-										 prop.getDefaultLang(), "generic.unauthorized");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(ResponseEntityCreator.formatEntity(
-//								prop.getDefaultLang(), "generic.execError")).build();
+										 prop.getDefaultLang(), "generic.execError");
 		};
 		if (email == null)
 		{
@@ -61,8 +57,6 @@ public class LoginConfirm {
 				DBInterface.disconnect(conn);
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
 						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
-//				return Response.status(Response.Status.UNAUTHORIZED)
-//						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
 		else
@@ -72,8 +66,6 @@ public class LoginConfirm {
 				DBInterface.disconnect(conn);
 				return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
 						 prop.getDefaultLang(), "auth.invalidEmail");
-//				return Response.status(Response.Status.BAD_REQUEST)
-//						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
 			try 
 			{
@@ -90,8 +82,6 @@ public class LoginConfirm {
 			{
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
 						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
-//				return Response.status(Response.Status.UNAUTHORIZED)
-//						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
 			
@@ -118,6 +108,6 @@ public class LoginConfirm {
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 }

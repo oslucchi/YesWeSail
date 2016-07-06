@@ -18,9 +18,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
-import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
-import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
@@ -54,10 +52,6 @@ public class TicketsHandler {
 		catch (Exception e)
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(
-//								Constants.getLanguageCode(language), "generic.execError") + " (" + 
-//								e.getMessage() + ")").build();
 		}
 		
 		// No record found. return an empty object
@@ -108,7 +102,6 @@ public class TicketsHandler {
 	{
 		int languageId = Utils.setLanguageId(language);
 
-		String errMsg = null;
 		EventTickets et = null;
 		DBConnection conn = null;
 		Users u = SessionData.getInstance().getBasicProfile(token);
@@ -123,9 +116,6 @@ public class TicketsHandler {
 				{
 					DBInterface.TransactionRollback(conn);
 					return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
-//					return Response.status(Response.Status.NOT_ACCEPTABLE)
-//							.entity(LanguageResources.getResource(languageId, "ticket.fareNotAvailable"))
-//							.build();
 				}
 				et.bookATicket();
 				et.update(conn, "idEventTickets");
@@ -145,17 +135,12 @@ public class TicketsHandler {
 			DBInterface.TransactionRollback(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
-				errMsg = LanguageResources.getResource(
-							Constants.getLanguageCode(language), "ticket.fareNotAvailable"); 
+				return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "ticket.fareNotAvailable");
 			}
 			else
 			{
-				errMsg = LanguageResources.getResource(
-							Constants.getLanguageCode(language), "generic.execError"); 
+				return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.execError");
 			}
-			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "ticket.fareNotAvailable");
-//			return Response.status(Response.Status.NOT_ACCEPTABLE)
-//					.entity(errMsg + " (" + e.getMessage() + ")").build();
 		}
 		finally
 		{
@@ -194,9 +179,6 @@ public class TicketsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-//					.build();
 		}
 		finally
 		{
@@ -225,9 +207,6 @@ public class TicketsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-//					.build();
 		}
 		finally
 		{
@@ -254,9 +233,6 @@ public class TicketsHandler {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 
 		DBConnection conn = null;
@@ -276,7 +252,7 @@ public class TicketsHandler {
 				participants[idx].idEventTicketsSold = item.getIdEventTicketsSold();
 				participants[idx].price = item.getPrice();
 				participants[idx].user = new Users(conn, item.getUserId());
-				participants[idx++].user.setPassword("******");
+				idx++;
 			}
 			jsonizer.addToJsonContainer("tickets", participants, true);
 		}
@@ -284,9 +260,6 @@ public class TicketsHandler {
 		{
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-//					.build();
 		}
 		finally
 		{
@@ -310,9 +283,6 @@ public class TicketsHandler {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 
 		DBConnection conn = null;
@@ -331,9 +301,6 @@ public class TicketsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();

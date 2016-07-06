@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
-import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
@@ -48,9 +47,6 @@ public class HandlePendingActions {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 
 		PendingActions[] actions = null;
@@ -66,9 +62,6 @@ public class HandlePendingActions {
 		{
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{
@@ -98,9 +91,6 @@ public class HandlePendingActions {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 		
 		PendingActions action = null;
@@ -120,9 +110,6 @@ public class HandlePendingActions {
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{

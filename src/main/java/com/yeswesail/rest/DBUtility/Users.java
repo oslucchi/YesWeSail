@@ -59,6 +59,7 @@ public class Users extends DBInterface
 
 	public Users(DBConnection conn, String email) throws Exception
 	{
+		setNames();
 		findByEmail(conn, email);
 	}
 
@@ -128,6 +129,10 @@ public class Users extends DBInterface
 	}
 
 	public String getPassword() {
+		return "*******";
+	}
+
+	public String getArchivedPassword() {
 		return password;
 	}
 

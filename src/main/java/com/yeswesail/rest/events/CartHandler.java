@@ -25,7 +25,6 @@ import com.braintreegateway.TransactionRequest;
 import com.braintreegateway.ValidationError;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
-import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.Cart;
@@ -60,9 +59,7 @@ public class CartHandler {
 		}
 		catch(Exception e)
 		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
 		{
@@ -103,9 +100,7 @@ public class CartHandler {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
 		{
@@ -156,9 +151,7 @@ public class CartHandler {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
 		{
@@ -306,10 +299,7 @@ public class CartHandler {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" +
-							e.getMessage() + ")")
-					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
 		{
@@ -324,19 +314,7 @@ public class CartHandler {
 			}
 			DBInterface.disconnect(conn);
 		}
-		return Response
-				.status(Response.Status.INTERNAL_SERVER_ERROR)
-				.entity("")
-				.build();
-
-
-//		TransactionOptionsPayPalRequest request = new TransactionRequest()
-//			    .amount(new BigDecimal("100.00"))
-//			    .paymentMethodNonce(nonce)
-//			    .orderId("132456")
-//			    .options().paypal()
-//			    		.customField("PayPal custom field")
-//			            .description("Description for PayPal email receipt");
+		return Response.status(Response.Status.OK).entity("").build();
 	}
 	
 }

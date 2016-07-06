@@ -1,6 +1,5 @@
 package com.yeswesail.rest.users;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,15 +15,14 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
-import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
@@ -49,11 +47,9 @@ public class UsersHandler {
 	UsersAuth ua = null;
 	JsonHandler jh = new JsonHandler();
 
-	private String getUserData(UsersJson jsonIn, int languageId)
+	private Response getUserData(UsersJson jsonIn, int languageId)
 	{
-		String errMsg = null;
 		u = SessionData.getInstance().getBasicProfile(jsonIn.token);
-		Utils jsonizer = new Utils();
 
 		if (u == null)
 		{
@@ -67,22 +63,21 @@ public class UsersHandler {
 			}
 			catch (Exception e) 
 			{
+				log.error("Exception " + e.getMessage() + " while getting user from UsersAuth");
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
-					jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "auth.loginTokenNotExist"), true);
-					errMsg = jsonizer.jsonize();
+					return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "auth.loginTokenNotExist");
 				}
 				else
 				{
-					jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-					errMsg = jsonizer.jsonize();
+					return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 				}
-				log.error("Error getting user from UsersAuth: " + errMsg);
 			}
 			finally
 			{
 				DBInterface.disconnect(conn);
 			}
+			
 			try 
 			{
 				SessionData.getInstance().addUser(jsonIn.token, languageId);
@@ -90,12 +85,11 @@ public class UsersHandler {
 			}
 			catch(Exception e)
 			{
-				jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-				errMsg = jsonizer.jsonize();
+				return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 			}
 		}
 		
-		return errMsg;
+		return null;
 	}
 
 
@@ -108,31 +102,12 @@ public class UsersHandler {
 		UsersJson jsonIn = new UsersJson();
 		jsonIn.token = token;
 		int languageId = SessionData.getInstance().getLanguage(token);
-		String errMsg = getUserData(jsonIn, languageId);
-		if (errMsg != null)
+		Response response = getUserData(jsonIn, languageId);
+		if (response != null)
 		{
-			log.error("Error " + errMsg + " retrieving userData");
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errMsg).build();
+			return response;
 		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		Utils jsonizer = new Utils();
-		String json = "";
-		
-		try {
-			u.setPassword("******");
-			json = mapper.writeValueAsString(u);
-		} 
-		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
-			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(jsonizer.jsonize())
-//					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Utils.jsonizeSingleObject(u, languageId);
 	}
 
 	private Response fillBasicProfile(int userId, int languageId, boolean requestorAuthenticated)
@@ -140,7 +115,6 @@ public class UsersHandler {
 		Users u = null;
 		Users uWiped = null;
 		DBConnection conn = null;
-		Utils jsonizer = new Utils();
 
 		try 
 		{
@@ -163,33 +137,13 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		
-		try 
-		{
-			json = mapper.writeValueAsString(uWiped);
-		} 
-		catch (IOException e) {
-			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Utils.jsonizeSingleObject(uWiped, languageId);
 	}
 	
 	@GET
@@ -210,7 +164,6 @@ public class UsersHandler {
 	public Response usersSuggestion(@PathParam("roleId") int roleId, @HeaderParam("Authorization") String token)
 	{
 		int languageId = SessionData.getInstance().getLanguage(token);
-		Utils jsonizer = new Utils();
 		ArrayList<Users> uList = null;
 		try 
 		{
@@ -219,75 +172,32 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
-		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		
-		try 
-		{
-			json = mapper.writeValueAsString(uList.toArray());
-		} 
-		catch (IOException e) {
-			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Utils.jsonizeSingleObject(uList.toArray(), languageId);
 	}
 
 	private Response fillWholeProfile(int userId, int languageId)
 	{
 		Users u = null;
 		AddressInfo[] ai = new AddressInfo[2];
-		Utils jsonizer = new Utils();
 		DBConnection conn = null;
 		try 
 		{
 			conn = DBInterface.connect();
 			u = new Users(conn, userId);
-			u.setPassword("******");
 			ai = AddressInfo.findUserId(u.getIdUsers());
 			u.setAddressInfo(ai);
 		}
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
 		
-		ObjectMapper mapper = new ObjectMapper();
-		String json = "";
-		
-		try 
-		{
-			json = mapper.writeValueAsString(u);
-		} 
-		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
-		}
-
-		return Response.status(Response.Status.OK).entity(json).build();
+		return Utils.jsonizeSingleObject(u, languageId);
 	}
 
 	@GET
@@ -315,15 +225,10 @@ public class UsersHandler {
 	public Response searchAll(@HeaderParam("Authorization") String token)
 	{
 		SessionData sd = SessionData.getInstance();
-		Utils jsonizer = new Utils();
 		int languageId = sd.getLanguage(token);
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		
 		ArrayList<Users> usersList = null;
@@ -341,22 +246,12 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		if (jh.jasonize(usersList, languageId) != Response.Status.OK)
-		{
-			log.error("Error '" + jh.json + "' jsonizing the usersLis object");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+		return Utils.jsonizeSingleObject(usersList, languageId);
 	}
 
 	@PUT
@@ -368,7 +263,6 @@ public class UsersHandler {
 		int languageId = sd.getLanguage(token);
 		DBConnection conn = null;
 		Users u = null;
-		Utils jsonizer = new Utils();
 		try 
 		{
 			conn = DBInterface.TransactionStart();
@@ -408,10 +302,6 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		finally
 		{
@@ -427,14 +317,10 @@ public class UsersHandler {
 	public Response createOnTheFly(UsersJson jsonIn, @HeaderParam("Authorization") String token)
 	{
 		SessionData sd = SessionData.getInstance();
-		Utils jsonizer = new Utils();
 		int languageId = sd.getLanguage(token);
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(jsonizer.jsonize())
-					.build();
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 		
 		DBConnection conn = null;
@@ -453,10 +339,6 @@ public class UsersHandler {
 		catch(Exception e)
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			jsonizer.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jsonizer.jsonize())
-//					.build();
 		}
 		finally
 		{

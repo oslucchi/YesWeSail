@@ -1,5 +1,6 @@
 package com.yeswesail.rest;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -11,12 +12,16 @@ import java.util.List;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 
 public class Utils {
+	final static Logger log = Logger.getLogger(Utils.class);
+	
 	static ApplicationProperties prop = ApplicationProperties.getInstance();
 	HashMap<String, Object>jsonResponse = new HashMap<>();
 	
@@ -114,5 +119,26 @@ public class Utils {
 	public static Response jsonizeResponse(Status status, Exception e, String language, String errResource )
 	{
 		return(jsonizeResponse(status, e, setLanguageId(language), errResource));
+	}
+
+	public static Response jsonizeSingleObject(Object o, int languageId)
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(o);
+		} 
+		catch (IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+			return jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		return Response.status(Status.OK).entity(json).build();
+	}
+
+	public static Response jsonizeSingleObject(Object o, String language)
+	{
+		return jsonizeSingleObject(o, setLanguageId(language));
 	}
 }

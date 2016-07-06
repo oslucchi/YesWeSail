@@ -92,10 +92,7 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		// No record found. return an empty object
 		if (hot == null)
@@ -207,10 +204,7 @@ public class EventsHandler {
 			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
 		catch (Exception e) {
-			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
 		if (events == null)
 		{
@@ -271,9 +265,6 @@ public class EventsHandler {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 		return handleSearch(jsonIn, languageId, false);
 	}
@@ -340,9 +331,6 @@ public class EventsHandler {
 		catch (Exception e) {
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}	
 		finally
 		{
@@ -385,9 +373,6 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();
@@ -416,9 +401,6 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 
 		Users[] participants = null;
@@ -431,9 +413,6 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		
 		try {
@@ -476,7 +455,6 @@ public class EventsHandler {
 		try
 		{
 			Users u = new Users(conn, event.getShipOwnerId());
-			u.setPassword("*******");
 			jsonResponse.put("shipOwner", u);
 		}
 		catch (Exception e) {
@@ -731,16 +709,12 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 
 		if (jh.jasonize(event, language) != Response.Status.OK)
 		{
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(jh.json).build();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(jh.json).build();
 		}
 
 		return Response.status(Response.Status.OK).entity(jh.json).build();
@@ -761,9 +735,6 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.SERVICE_UNAVAILABLE)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
@@ -792,9 +763,6 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{
@@ -815,9 +783,6 @@ public class EventsHandler {
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-//			return Response.status(Response.Status.UNAUTHORIZED)
-//					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-//					.build();
 		}
 
 		DBConnection conn = null;
@@ -867,9 +832,6 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();
@@ -953,9 +915,6 @@ public class EventsHandler {
 		catch (Exception e) 
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{
@@ -993,9 +952,6 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{
@@ -1023,9 +979,6 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-//					Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
-//					.build();
 		}
 		finally
 		{
