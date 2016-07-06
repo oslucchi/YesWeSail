@@ -392,10 +392,10 @@ body.ngdialog-open { overflow: initial !important; }
 }
 
 .cover-img{
-    width: 100vw;
+/*    width: 100vw;*/
     height: 400px;
    
-    padding-top: 290px;
+/*    padding-top: 290px;*/
 }
 
 ul[rn-carousel], .image-slide {
