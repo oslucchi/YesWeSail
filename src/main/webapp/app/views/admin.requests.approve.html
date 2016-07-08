@@ -1,0 +1,80 @@
+<div class="login_container">
+    <div class="ui container">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+
+
+
+
+
+
+
+
+
+
+                <form class="ui large form">
+                    <div class="ui stacked segment">
+                        <span ng-switch="requestType">
+        <span ng-switch-when="review">
+            
+            
+            <div class="ui comments">
+              <div class="comment">
+                <a class="avatar">
+                  <img ng-src="{{reqDetails.reviewerURL}}">
+                </a>
+                <div class="content">
+                  <a class="author">{{reqDetails.review.reviewerName}}     {{reqDetails.review.reviewerSurname}} reviewed {{reqDetails.review.targetName}} {{reqDetails.review.targetSurname}}</a>
+                  <div class="metadata">
+                    <div class="date">{{reqDetails.review.created | date}}</div>
+                    <div class="rating">
+                      <i class="star icon"></i>
+                      {{reqDetails.review.rating}} Stars
+                     </div>
+                  </div>
+                  <div class="text">
+                  {{reqDetails.review.review}}
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            
+            
+          </span>
+
+                        <span ng-switch-when="statusUpgrade">
+          <div class="ui comments">
+              <div class="comment">
+                <a class="avatar">
+                  <img ng-src="{{reqDetails.user.imageURL}}">
+                </a>
+                <div class="content">
+                  <a class="author">{{reqDetails.user.name}} {{reqDetails.user.surname}} requested to become a Shipowner </a>
+                  <div class="metadata">
+                    
+                  </div>
+                    
+                    <div class="ui link list">
+                          <a href="{{doc}}"  target="_blank" ng-repeat="doc in reqDetails.docs" class="item">{{doc.split('/').pop()}}</a>
+                        </div>
+                    
+                    
+                </div>
+              </div>
+            </div>
+          </span>
+
+                        </span>
+
+                    </div>
+                    <button ng-click="update(reqLink, 'approve', actionId)" class="ui green button">Approve</button>
+                    <button ng-click="update(reqLink, 'reject', actionId)" class="ui red button">Reject</button>
+                    <button ng-click="closeModals()" class="ui button">Cancel</button>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>

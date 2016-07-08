@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog) {
+    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $window) {
         $scope.credentials = {
             username: '',
             password: '',

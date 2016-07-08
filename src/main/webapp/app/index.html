@@ -78,25 +78,22 @@
                     <div class="ui usermenu dropdown">
                         <div class="text">
                             <img ng-if="currentUser.imageURL" class="ui avatar image" ng-src="{{currentUser.imageURL}}">
-                            <img ng-if="!currentUser.imageURL" class="ui avatar image" ng-src="images/default-icon.png">
+                            <img ng-if="!currentUser.imageURL" class="ui avatar image" ng-src="images/default-icon.jpg">
                             <span ng-if="currentUser.name">{{currentUser.name}}</span>
                             <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span>
 
                         </div>
                         <i class="dropdown icon"></i>
                         <div class="menu">
-                            <div class="item">
-                                I tuoi viaggi
+                            <div ui-sref="userId.events({userId:currentUser.idUsers})" class="item">
+                                I miei viaggi
                             </div>
-                            <div ng-click="popupCreateEventDialog()" class="item">
+                            <div ng-if="currentUser.isShipOwner" ng-click="popupCreateEventDialog()" class="item">
                                 Crea Evento
                             </div>
 
                             <div class="item">
-                                Modifica Profilo
-                            </div>
-                            <div class="item">
-                                Impostazioni Account
+                                Il mio profilo
                             </div>
                             <div ng-click="logout()" class="item">
                                 Esci
@@ -233,6 +230,9 @@
     <script src="scripts/libs/textAngular_custom/textAngular.js"></script>
     <script src="scripts/libs/textAngular_custom/textAngular-sanitize.js"></script>
     <script src="scripts/libs/textAngular_custom/textAngularSetup.js"></script>
+    <script src="scripts/controllers/userid.profile.js"></script>
+    <script src="scripts/controllers/userid.boats.js"></script>
+    <script src="scripts/controllers/userid.documents.js"></script>
     <!-- endbuild -->
 </body>
 

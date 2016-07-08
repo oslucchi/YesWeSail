@@ -9,7 +9,7 @@
  */
 angular.module('yeswesailApp')
     .service('Session', function ($cookieStore, $http, $rootScope) {
-        this.create = function (token, userProfile) {
+    this.create = function (token, userProfile) {
             this.token = token;
             this.userProfile = userProfile;
             
@@ -26,6 +26,15 @@ angular.module('yeswesailApp')
         this.getCurrentUser= function(){
             return this.userProfile;
         };
+        
+        this.isAdmin=function(roleId){
+            if(roleId==9){
+              return true;  
+            }else{
+            return false;
+        };
+        };
+    
         this.destroy = function () {
             this.token = null;
             this.userProfile = null;

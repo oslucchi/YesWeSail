@@ -180,5 +180,7 @@ $scope.getEvent();
             $scope.getEvent();
         };
     
-        angular.element('.ui.selection.dropdown').dropdown();
+        angular.element('.ui.language.dropdown').dropdown({
+            action: 'activate'
+        });
     });

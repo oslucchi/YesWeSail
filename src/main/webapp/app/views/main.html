@@ -3,8 +3,8 @@
     <div class="main_search_content">
         <div class="ui container">
 
-            <h1 class="ui header">{{"main.title" | translate}}</h1>
-            <h2 class="ui header"> Scegli e personalizza la tua esperienza a prezzi mai visti prima.</h2>
+            <h1 class="ui center aligned header main-title">{{"main.title" | translate}}</h1>
+            <h2 class="ui center aligned header main-subtitle"> Scegli e personalizza la tua esperienza a prezzi mai visti prima.</h2>
 
 
             <div class="ui fluid three item menu">
@@ -37,7 +37,7 @@
 
 
             <h1>Le migliori proposte</h1>
-            <div class="ui stackable three column grid">
+            <div class="ui stackable four column grid">
 
 
 
@@ -96,25 +96,6 @@
 
 
 
-<!--
-        
-        <div class="ui four stackable cards">
-            
-  <div ng-style="{'background-image':'url({{proposal.imageURL}})'}" style="background-repeat:no-repeat; background-size: cover; color: white !important; height: 300px;"  ng-repeat="proposal in hotEvents" class="card">
-      <div class="content">
-    <a href="/#/events/{{proposal.idEvents}}" style="color: white !important;" class="header">{{proposal.description}}</a>
-    <div style="color: white !important;" class="meta">{{proposal.dateStart | date:'dd MMM'}} - {{proposal.dateEnd | date:'dd MMM'}}</div>
-    <div style="color: white !important;" class="meta">{{proposal.minPrice}}€<span ng-if="proposal.minPrice != proposal.maxPrice"> - {{proposal.maxPrice}}€</span></div>
-    <div style="color: white !important;" class="meta">{{getCategory(proposal.categoryId)}}</div>
-    <div style="color: white !important;" class="description">
-    {{proposal.location}}
-    </div>
-  </div>
-
-
-  </div>
-</div>
--->
 
 
 
@@ -126,53 +107,13 @@
 
 
 <h1>Esplora</h1>
-<div class="ui stackable four column grid">
+<div class="ui stackable three column grid">
 
-    <div class="ui fluid medium bordered rounded images" ng-repeat="category in CATEGORIES track by $index">
+    <div class="ui fluid column bordered rounded images" ng-repeat="category in CATEGORIES track by $index">
         <a href="/#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
             <img ng-src="{{category.url}}">
         </a>
     </div>
-
-    <!--
-
-    <span ng-repeat="category in CATEGORIES track by $index" class="column result-cards">
-                  
-                  
-                  <a href="/#/events?categoryId={{category.categoryId}}" ng-if="!!category.url"  >
-           
-            <div class="result card" >
-                <div class="contents">
-                    <img ng-src="{{category.url}}">
-                  
-                      </div>
-                
-                
-                
-            </div>
-        
-           
-            
-            <div class="event-details">
-                <h2  style="color: white !important;" class="ui center aligned medium header">
-                {{category.description}}
-                </h2>
-                
-                </div>
-          
-            
-           
-        </a>
-                    
-                    
-                    
-                 
-   
-                </span>
--->
-
-
-
 
 </div>
 
@@ -186,14 +127,13 @@
 
     <h1 class="ui center aligned header">Perchè scegliere YesWeSail</h1>
     <div class="ui container">
-        <div class="ui three column grid">
-            <div class="row">
+        <div class="ui three column stackable grid">
                 <div class="column">
-                    <div class="ui medium image">
+                    <div class="ui  image">
                         <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/miglior-prezzo.png">
                     </div>
                     <div class="middle aligned content">
-                        <h2 class="header"> Miglior prezzo garantito</h2>
+                        <h2 class="center aligned header"> Miglior prezzo garantito</h2>
                         <div class="description">
                             Nasce il primo sistema di early booking per risparmiare sulle vacanze in barca.
                         </div>
@@ -202,11 +142,11 @@
                 </div>
                 <div class="column">
                     <div class="item">
-                        <div class="ui medium image">
+                        <div class="ui image">
                             <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/pagamenti-sicuri.png">
                         </div>
                         <div class="middle aligned content">
-                            <h2 class="header">Pagamenti sicuri</h2>
+                            <h2 class="center aligned header">Pagamenti sicuri</h2>
                             <div class="description">
                                 Il pagamento avviene su canali sicuri e criptati e la quota viene versata allo skipper entro 24 ore dalla partenza.
                             </div>
@@ -215,18 +155,17 @@
                     </div>
                 </div>
                 <div class="column">
-                    <div class="ui medium image">
+                    <div class="ui image">
                         <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/servizio-personlizato.png">
                     </div>
                     <div class="middle aligned content">
-                        <h2 class="header">Servizio completamente personalizzabile</h2>
+                        <h2 class="center aligned header">Servizio completamente personalizzabile</h2>
                         <div class="description">
                             Possibilità di personalizzare la vacanza con attività turistiche a terra.
                         </div>
 
                     </div>
                 </div>
-            </div>
             <div class="row centered">
                 <div class="column"><span class="ui large header"><a href="#/howitworks">Scopri come funziona!</a></span></div>
             </div>
