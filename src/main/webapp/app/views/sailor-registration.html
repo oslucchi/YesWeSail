@@ -1,46 +1,45 @@
-<div class="ui container">
-<form class="ui form">
-    <h4 class="ui dividing header">Sailor Registration</h4>
-    <div class="field">
-        <label>Sailing License</label>
+<div class="ui container sailor-registration">
+    <div class="ui info message visible transition" ng-if="pendingRequests>0">
+        <div class="header">
+            Your request has been sent and is pending for approval
+        </div>
+    </div>
+
+    <form ng-if="pendingRequests<1" class="ui form">
+        <h4 class="ui dividing header">Sailor Registration</h4>
+        <div class="field">
+            <label>Sailing License</label>
             <div class="field">
-                <input type="text" name="salingLicense" ng-model="sailor.sailingLicense" placeholder="Number...">
+                <input type="text" ng-required="true" name="salingLicense" ng-model="sailor.sailingLicense" placeholder="Number...">
                 <div class="doc-upload">
-                    <button class="ui blue button" ngf-select="uploadSailingFiles($files)" multiple accept="*/*">Select Files</button>
+                    <button class="ui blue button" ng-required="true" ngf-select="uploadSailingFiles($files)" multiple accept="*/*">Select Files</button>
                     <br>
 
-                    <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
-                        <div class="bar">
-                            <div class="progress"></div>
-                        </div>
-                        <div class="label">Uploading Files</div>
-                    </div>
+                    
                     <br>
                     <div class="document-container">
                         <div class="ui tiny images">
                             <img ngf-src="doc" ng-repeat="doc in sailor.sailingDocs">
                         </div>
                     </div>
+
                 </div>
 
+                <div class="ui warning message transition" ng-class="{'visible': sailingDocsNotLoaded}">
+                    <div class="header">
+                        You must upload at least one Sailing Document!
+                    </div>
+                </div>
             </div>
-    </div>
-    
-    <div class="field">
-        <label>Navigation License</label>
+        </div>
+
+        <div class="field">
+            <label>Navigation License</label>
             <div class="field">
-                <input type="text" ng-model="sailor.navigationLicense" name="navigationLicense" placeholder="Number...">
+                <input type="text" ng-required="true" ng-model="sailor.navigationLicense" name="navigationLicense" placeholder="Number...">
                 <div class="doc-upload">
                     <button class="ui blue button" ngf-select="uploadNavigationFiles($files)" multiple accept="*/*">Select Files</button>
-                    <br>
-
-                    <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
-                        <div class="bar">
-                            <div class="progress"></div>
-                        </div>
-                        <div class="label">Uploading Files</div>
-                    </div>
-                    <br>
+                   
                     <div class="document-container">
                         <div class="ui tiny images">
                             <img ngf-src="doc" ng-repeat="doc in sailor.navigationDocs">
@@ -48,15 +47,25 @@
                     </div>
                 </div>
 
+                <div class="ui warning message transition" ng-class="{'visible': navigationDocsNotLoaded}">
+                    <div class="header">
+                        You must upload at least one Navigation Document!
+                    </div>
+                </div>
             </div>
-    </div> 
-    
-    <div class="field">
-       
-                    <button class="ui blue button" ng-click="sendFiles(sailor)">Send Registration</button>
-              
-    </div>
-    
-  
-</form>
+        </div>
+
+        <div class="field">
+
+            <button class="ui blue button" ng-click="sendFiles(sailor)">Send Registration</button>
+            <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
+                                   <div class="bar">
+                                        <div class="progress"></div>
+                                    </div>
+                                    <div class="label">Sending request</div>
+                                </div>
+        </div>
+
+
+    </form>
 </div>

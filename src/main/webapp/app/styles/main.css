@@ -86,7 +86,7 @@ body {
 
 .result.card{
     width:100%;
-    background-color: aqua;
+    background-color: white;
         padding-bottom: 50.25%;
     cursor: pointer;
 }
@@ -392,10 +392,10 @@ body.ngdialog-open { overflow: initial !important; }
 }
 
 .cover-img{
-    width: 100vw;
+/*    width: 100vw;*/
     height: 400px;
    
-    padding-top: 290px;
+/*    padding-top: 290px;*/
 }
 
 ul[rn-carousel], .image-slide {
@@ -439,6 +439,8 @@ tr{
 
 .admin-content-container{
     margin-left: 84px;
+    height: calc(100vh - 100.2px);
+    overflow-y: scroll;
 }
 
 .add-to-cart{
@@ -480,4 +482,6 @@ tr{
     background-color: #DDA500 !important;
 }
 
-
+.sailor-registration{
+    margin: 20px;
+}
