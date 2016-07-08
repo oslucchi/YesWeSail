@@ -11,7 +11,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
@@ -141,7 +140,6 @@ public class UploadFiles {
 	
 	public static Response uploadFromRestRequest(
 								List<BodyPart> parts, 
-								ServletContext context, 
 								String token,
 								String resource,
 								String prefix,
@@ -153,7 +151,7 @@ public class UploadFiles {
 		String destPath = null;
 		try 
 		{
-			destPath = context.getResource(resource).getPath();
+			destPath = prop.getContext().getResource(resource).getPath();
 		}
 		catch (MalformedURLException e) 
 		{

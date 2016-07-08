@@ -1058,7 +1058,7 @@ public class EventsHandler {
 		String prefix = "ev_" + eventId + "_";
 
 		Response response = UploadFiles.uploadFromRestRequest(
-								parts, context, token, "/images/events", 
+								parts, token, "/images/events", 
 								prefix, acceptableTypes, languageId, false);
 		
 		try {

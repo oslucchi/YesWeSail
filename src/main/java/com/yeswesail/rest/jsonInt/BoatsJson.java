@@ -13,5 +13,7 @@ public class BoatsJson {
 	public int cabinsNoBathroom;
 	public int sharedBathrooms;
 	public int bunks;
-
+	public String insurance;
+	public String securityCertification;
+	public String RTFLicense;
 }

@@ -13,6 +13,9 @@ public class Reviews extends DBInterface
 	protected String reviewerName;
 	protected String reviewerSurname;
 	protected String reviewerURL;
+	protected String targetName;
+	protected String targetSurname;
+	protected String targetURL;
 	protected int reviewForId;
 	protected Date created;
 	protected Date updated;
@@ -33,11 +36,14 @@ public class Reviews extends DBInterface
 	public Reviews(DBConnection conn, int id, boolean activeOnly) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.name AS reviewerName, b.surname AS reviewerSurname, " +
-				 	 "b.imageURL AS reviewerURL " +
-					 "FROM Reviews AS a INNER JOIN Users AS b ON " +
-					 "     b.idUsers = a.reviewerId " +
-					 (activeOnly ? " AND a.status = 'A' " : "") +
+		String sql = "SELECT a.*, " +
+					 "b.name AS reviewerName, b.surname AS reviewerSurname, b.imageURL AS reviewerURL, " +
+					 "c.name AS targetName, c.surname AS targetSurname, c.imageURL AS targetURL " +
+					 "FROM ( Reviews AS a INNER JOIN Users AS b ON " +
+					 "         b.idUsers = a.reviewerId " +
+					 		   (activeOnly ? " AND a.status = 'A' " : "") +
+					 "     ) INNER JOIN Users AS c ON " +
+					 "     c.idUsers = a.reviewForId " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
 	}
@@ -129,4 +135,17 @@ public class Reviews extends DBInterface
 	public String getReviewerURL() {
 		return reviewerURL;
 	}
+
+	public String getTargetName() {
+		return targetName;
+	}
+
+	public String getTargetSurname() {
+		return targetSurname;
+	}
+
+	public String getTargetURL() {
+		return targetURL;
+	}
+	
 }

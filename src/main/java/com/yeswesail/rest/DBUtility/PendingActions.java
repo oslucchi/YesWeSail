@@ -46,6 +46,18 @@ public class PendingActions extends DBInterface
 		return actions.toArray(new PendingActions[actions.size()]);
 	}
 	
+	public static PendingActions[] getPendingOnUser(DBConnection conn, int userId) throws Exception
+	{
+		String sql = "SELECT * " +
+					 "FROM PendingActions " +
+					 "WHERE status != 'C' AND " +
+					 "      userId = " + userId;
+		@SuppressWarnings("unchecked")
+		ArrayList<PendingActions> actions = 
+				(ArrayList<PendingActions>) populateCollection(sql, PendingActions.class);
+		return actions.toArray(new PendingActions[actions.size()]);
+	}
+
 	public int getIdPendingActions() {
 		return idPendingActions;
 	}

@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,7 +17,8 @@ import com.owlike.genson.Genson;
 public class Utils {
 	static ApplicationProperties prop = ApplicationProperties.getInstance();
 	static HashMap<String, Object>jsonResponse = new HashMap<>();
-	
+	final static Logger log = Logger.getLogger(Utils.class);
+
 	public static String printStackTrace(Exception e)
 	{
 		StringWriter sw = new StringWriter();
@@ -80,19 +82,10 @@ public class Utils {
 					break;
 				}
 			}			
-			catch(JSONException e)
+			catch(JSONException | IllegalArgumentException | IllegalAccessException e)
 			{
-				e.printStackTrace();;
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+				log.warn("Exception " + e.getMessage() + " parsing json object");
+			} 
 		}
 		return objInst;
 	}
