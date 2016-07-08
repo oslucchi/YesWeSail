@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -15,9 +14,9 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.log4j.Logger;
@@ -37,6 +36,8 @@ import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.Boats;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
+import com.yeswesail.rest.DBUtility.DocumentTypes;
+import com.yeswesail.rest.DBUtility.Documents;
 import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
@@ -47,10 +48,9 @@ import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
 public class UsersHandler {
-	@Context
-	private ServletContext context;
 	String contextPath = null;
 
+	Utils utils = new Utils();
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	Users u = null;
@@ -76,13 +76,13 @@ public class UsersHandler {
 			{
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
-					Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "auth.loginTokenNotExist"), true);
-					errMsg = Utils.jsonize();
+					utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "auth.loginTokenNotExist"), true);
+					errMsg = utils.jsonize();
 				}
 				else
 				{
-					Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-					errMsg = Utils.jsonize();
+					utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+					errMsg = utils.jsonize();
 				}
 				log.error("Error getting user from UsersAuth: " + errMsg);
 			}
@@ -97,8 +97,8 @@ public class UsersHandler {
 			}
 			catch(Exception e)
 			{
-				Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-				errMsg = Utils.jsonize();
+				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+				errMsg = utils.jsonize();
 			}
 		}
 		
@@ -131,9 +131,9 @@ public class UsersHandler {
 		} 
 		catch (IOException e) {
 			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 
@@ -155,6 +155,10 @@ public class UsersHandler {
 			uWiped.setRoleId(u.getRoleId());
 			uWiped.setImageURL(u.getImageURL());
 			uWiped.setLanguagesSpoken(u.getLanguagesSpoken());
+			uWiped.setIsShipOwner(u.getIsShipOwner());
+			uWiped.setIdUsers(u.getIdUsers());
+			uWiped.setAbout(u.getAbout());
+			uWiped.setExperiences(u.getExperiences());
 			if (requestorAuthenticated)
 			{
 				uWiped.setFacebook(u.getFacebook());
@@ -165,9 +169,9 @@ public class UsersHandler {
 		}
 		catch (Exception e) 
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -184,9 +188,9 @@ public class UsersHandler {
 		} 
 		catch (IOException e) {
 			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 
@@ -218,9 +222,9 @@ public class UsersHandler {
 		}
 		catch (Exception e) 
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		
@@ -233,9 +237,9 @@ public class UsersHandler {
 		} 
 		catch (IOException e) {
 			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 
@@ -246,6 +250,7 @@ public class UsersHandler {
 	{
 		Users u = null;
 		AddressInfo[] ai = new AddressInfo[2];
+		Documents[] docs;
 		DBConnection conn = null;
 		try 
 		{
@@ -254,12 +259,13 @@ public class UsersHandler {
 			u.setPassword("******");
 			ai = AddressInfo.findUserId(u.getIdUsers());
 			u.setAddressInfo(ai);
+			docs = Documents.findAllUsersDoc(languageId, u.getIdUsers());
 		}
 		catch (Exception e) 
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -267,13 +273,17 @@ public class UsersHandler {
 			DBInterface.disconnect(conn);
 		}
 		
-		Utils.addToJsonContainer("user", u, true);
-		if (trustedRequestor)
+		utils.addToJsonContainer("user", u, true);
+		if (trustedRequestor && (docs != null))
 		{
-			Utils.addToJsonContainer("docs", 
-					UploadFiles.getExistingFilesPath("sh_" + u.getIdUsers() + "_licenses_", "/images/shipowner"), false);
+			for(Documents doc : docs)
+			{
+				doc.setImages(
+						UploadFiles.getExistingFilesPath("docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner"));
+			}
+			utils.addToJsonContainer("docs", docs, false);
 		}
-		return Response.status(Response.Status.OK).entity(Utils.jsonize()).build();
+		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 	}
 
 	@GET
@@ -287,11 +297,11 @@ public class UsersHandler {
 		if ((sd.getBasicProfile(token).getIdUsers() != userId) &&
 			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
 		{
-			return fillBasicProfile(userId, languageId, true);
+			return fillBasicProfile(userId, languageId, false);
 		}
 		else		
 		{
-			return fillWholeProfile(userId, languageId, (sd.getBasicProfile(token).getRoleId() == Roles.ADMINISTRATOR));
+			return fillWholeProfile(userId, languageId, true);
 		}
 	}
 
@@ -305,9 +315,9 @@ public class UsersHandler {
 		int languageId = sd.getLanguage(token);
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		
@@ -325,9 +335,9 @@ public class UsersHandler {
 		}
 		catch (Exception e) 
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -342,6 +352,76 @@ public class UsersHandler {
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+	@POST
+    @Path("/{userId}/profilePic")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+    public Response uploadProfilePic(FormDataMultiPart form,
+						   @HeaderParam("Authorization") String token,
+						   @HeaderParam("Language") String language,
+						   @PathParam("userId") int userId)
+    {
+		int languageId = Utils.setLanguageId(language);
+		List<BodyPart> parts = form.getBodyParts();
+		
+		String[] acceptableTypes = {
+				"image/png",
+				"image/jpeg",
+				"image/jpg"
+		};
+
+		String prefix = "us_" + userId + "_";
+
+		Response response = UploadFiles.uploadFromRestRequest(
+								parts, token, "/images/users", 
+								prefix, acceptableTypes, languageId, false);
+		
+		try {
+			contextPath = prop.getContext().getResource("/images/users").getPath();
+		}
+		catch (MalformedURLException e) 
+		{
+			contextPath = null;
+			log.warn("Exception " + e.getMessage() + " retrieving context path");	
+		}
+		Utils jsonizer = new Utils();
+
+		ArrayList<String> imagePath = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		jsonizer.addToJsonContainer("images", imagePath, true);
+		
+		StatusType status = Response.Status.OK;
+		if (response.getStatusInfo() != Response.Status.OK)
+		{
+			status = Response.Status.PARTIAL_CONTENT;
+			JSONObject jo = new JSONObject((String)response.getEntity());			
+
+			jsonizer.addToJsonContainer("rejectionMessage", jo.get("rejectionMessage"), false);
+			
+			JSONArray rejected = (JSONArray)jo.get("rejectedList");
+			String[] s = new String[rejected.length()];
+			for(int i = 0; i < rejected.length(); i++)
+			{
+				s[i] = rejected.getString(i);
+			}
+			jsonizer.addToJsonContainer("rejectedList", s, false);
+		}
+		
+		Users u = null;
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.connect();
+			u = new Users(conn, userId);
+			u.setImageURL(imagePath.get(0));
+			u.update(conn, "idUsers");
+		}
+		catch(Exception e)
+		{
+			log.warn("Exception " + e.getMessage() + " setting user's image URL");
+		}
+		String jsonResponse = jsonizer.jsonize();
+		return Response.status(status).entity(jsonResponse).build();
+    }
 
 	@PUT
 	@Produces(MediaType.APPLICATION_JSON)
@@ -365,8 +445,10 @@ public class UsersHandler {
 			u.setSurname(jsonIn.surname);
 			u.setPhone1(jsonIn.phone1);
 			u.setPhone2(jsonIn.phone2);
-			u.setStatus(jsonIn.status);
-			u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
+			if (sd.getBasicProfile(token).getRoleId() == Roles.ADMINISTRATOR)
+				u.setStatus(jsonIn.status);
+			if (jsonIn.birthday != null)
+				u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
 			u.setRoleId(jsonIn.roleId);
 			if (jsonIn.addressInfo != null)
 			{
@@ -387,17 +469,15 @@ public class UsersHandler {
 					ai.insert(conn, "idAddressInfo", ai);
 				}
 			}
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			DBInterface.TransactionRollback(conn);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
@@ -412,9 +492,9 @@ public class UsersHandler {
 		int languageId = sd.getLanguage(token);
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		
@@ -433,9 +513,9 @@ public class UsersHandler {
 		}
 		catch(Exception e)
 		{
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -445,6 +525,7 @@ public class UsersHandler {
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
+	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/shipowners")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -468,30 +549,67 @@ public class UsersHandler {
 			}
 		}
 		log.trace("Got shipowner info: " + sh.usersId + " - " + sh.navigationLicense + " - " + sh.sailingLicense);
-
-		String prefix = "sh_" + sh.usersId + "_licenses_";
+		
+		DBConnection conn = null;
+		SessionData sd = SessionData.getInstance();
 		String[] acceptableTypes = {
 				"application/pdf",
 				"image/png",
 				"image/jpeg",
 				"image/jpg"
 		};
-		
-		Response response = UploadFiles.uploadFromRestRequest(
-								parts, token, "/images/shipowner", 
-								prefix, acceptableTypes, languageId, false);
-		
-		if ((response.getStatusInfo() != Response.Status.OK) &&
-			(response.getStatusInfo() != Response.Status.NOT_ACCEPTABLE))
-		{
-			return response;
-		}
-		
-		DBConnection conn = null;
-		SessionData sd = SessionData.getInstance();
+
+		ArrayList<String> uploadedList = new ArrayList<>();
+		ArrayList<String> rejectedList = new ArrayList<>();
+		ArrayList<String> rejectionMessage = new ArrayList<>();
 		try 
 		{
-			conn = DBInterface.connect();
+			conn = DBInterface.TransactionStart();
+
+			Documents doc = new Documents();
+			doc.setUserId(sh.usersId);
+			doc.setDocumentTypesId(DocumentTypes.SAILING_LICENSE);
+			doc.setNumber(sh.sailingLicense);
+			int docId = doc.insertAndReturnId(conn, "idDocuments", doc);
+			String prefix = "docs_" + sh.usersId + "_" + docId + "_";
+			Object[] results = null;
+			results = UploadFiles.uploadBodyPart(parts, "filesSailingDocs", token, "/images/shipowner", 
+												 prefix, acceptableTypes, languageId, false);
+			uploadedList = (ArrayList<String>) results[0];
+			rejectedList = (ArrayList<String>) results[1];
+			rejectionMessage = (ArrayList<String>) results[2];
+			if (rejectionMessage.size() != 0)
+			{
+				DBInterface.TransactionRollback(conn);
+				Utils u = new Utils();
+				u.addToJsonContainer("uploadedList", uploadedList, true);
+				u.addToJsonContainer("rejectedList", rejectedList, false);
+				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
+				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
+			}
+			
+			doc.setUserId(sh.usersId);
+			doc.setDocumentTypesId(DocumentTypes.NAVIGATION_CERTIFICATE);
+			doc.setNumber(sh.navigationLicense);
+			docId = doc.insertAndReturnId(conn, "idDocuments", doc);
+			prefix = "docs_" + sh.usersId + "_" + docId + "_";
+			results = UploadFiles.uploadBodyPart(parts, "filesNavigationDocs", token, "/images/shipowner", 
+												 prefix, acceptableTypes, languageId, false);
+
+			uploadedList.addAll((ArrayList<String>) results[0]);
+			rejectedList.addAll((ArrayList<String>) results[1]);
+			rejectionMessage.addAll((ArrayList<String>) results[2]);
+			if (rejectionMessage.size() != 0)
+			{
+				DBInterface.TransactionRollback(conn);
+				Utils u = new Utils();
+				u.addToJsonContainer("uploadedList", uploadedList, true);
+				u.addToJsonContainer("rejectedList", rejectedList, false);
+				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
+				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
+			}
+			String destPath = prop.getContext().getResource("/images/shipowner").getPath();
+			UploadFiles.moveFiles( destPath + "/" + token, destPath, "docs_" + sh.usersId + "_" , true);
 			
 			PendingActions pa = new PendingActions();
 			pa.setActionType("statusUpgrade");
@@ -503,22 +621,24 @@ public class UsersHandler {
 			pa.insert(conn, "idPendingActions", pa);
 
 			log.trace("User's status upgrade request added");
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
+			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on insert");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		return response;
+
+		Utils u = new Utils();
+		u.addToJsonContainer("uploadedList", uploadedList, true);
+		return Response.status(Status.OK).entity(u.jsonize()).build();
 	}	
 	
+	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/shipowners/{id}/boats")
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -587,9 +707,9 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on insert");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -597,78 +717,66 @@ public class UsersHandler {
 			DBInterface.disconnect(conn);
 		}
 
-		ArrayList<String> rejectedFiles = new ArrayList<>();
-		StatusType status = Response.Status.OK;
-		String rejectionMessage = null;
-
-		String prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_img_";
+		String prefix = null;
 		String[] acceptableTypes = {
+				"image/gif",
 				"image/png",
 				"image/jpeg",
 				"image/jpg"
 		};
+		ArrayList<String> uploadedList = new ArrayList<>();
+		ArrayList<String> rejectedList = new ArrayList<>();
+		ArrayList<String> rejectionMessage = new ArrayList<>();
+		Object[] results = null;
+		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_img_";
+		results = UploadFiles.uploadBodyPart(parts, "other", token, "/images/boats", 
+											 prefix, acceptableTypes, languageId, false);
+		uploadedList = (ArrayList<String>) results[0];
+		rejectedList = (ArrayList<String>) results[1];
+		rejectionMessage = (ArrayList<String>) results[2];
 		
-		Response response = UploadFiles.uploadFromRestRequest(
-								parts, token, "/images/boats", 
-								prefix, acceptableTypes, languageId, false);
-
-		if (response.getStatusInfo() != Response.Status.OK)
-		{
-			status = Response.Status.PARTIAL_CONTENT;
-			JSONObject jo = new JSONObject((String)response.getEntity());
-			rejectionMessage = (String) jo.get("rejectionMessage");
-			JSONArray rejected = (JSONArray)jo.get("rejectedList");
-			for(int i = 0; i < rejected.length(); i++)
-			{
-				rejectedFiles.add(rejected.getString(i));
-			}
-		}
-
+		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_bp_";
+		results = UploadFiles.uploadBodyPart(parts, "bluePrints", token, "/images/boats", 
+											 prefix, acceptableTypes, languageId, false);
+		uploadedList.addAll((ArrayList<String>) results[0]);
+		rejectedList.addAll((ArrayList<String>) results[1]);
+		rejectionMessage.addAll((ArrayList<String>) results[2]);
+		
+		acceptableTypes = new String[] {
+				"application/pdf",
+				"image/gif",
+				"image/png",
+				"image/jpeg",
+				"image/jpg"
+		};
+		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_doc_";
+		results = UploadFiles.uploadBodyPart(parts, "docs", token, "/images/boats", 
+				 							 prefix, acceptableTypes, languageId, false);
+		uploadedList.addAll((ArrayList<String>) results[0]);
+		rejectedList.addAll((ArrayList<String>) results[1]);
+		rejectionMessage.addAll((ArrayList<String>) results[2]);
+		
+		String destPath = null;
 		try {
-			contextPath = context.getResource("/images/boats").getPath();
+			destPath = prop.getContext().getResource("/images/boats").getPath();
 		}
 		catch (MalformedURLException e) 
 		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
+			destPath = "";
+			log.warn("Exception " + e.getMessage() + " retrieving context path");
+			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
+		UploadFiles.moveFiles(destPath + "/" + token, destPath, 
+							  "bo_" + shipownerId + "_" + bo.getIdBoats() + "_", true);
 
-		Utils.addToJsonContainer("images", 
-								 UploadFiles.getExistingFilesPath(prefix, contextPath), true);
-		
-		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_doc_";
-		acceptableTypes = new String[] {
-				"application/pdf",
-				"image/png",
-				"image/jpeg",
-				"image/jpg"
-		};
-		
-		response = UploadFiles.uploadFromRestRequest(
-								parts, token, "/images/boats", 
-								prefix, acceptableTypes, languageId, false);
-		Utils.addToJsonContainer("docs", 
-								 UploadFiles.getExistingFilesPath(prefix, contextPath), true);
-		
-		if (response.getStatusInfo() != Response.Status.OK)
+		utils.addToJsonContainer("uploadedList", uploadedList, true);
+		if (rejectionMessage.size() != 0)
 		{
-			status = Response.Status.PARTIAL_CONTENT;
-			JSONObject jo = new JSONObject((String)response.getEntity());
-			rejectionMessage = (String) jo.get("rejectionMessage");
-			JSONArray rejected = (JSONArray)jo.get("rejectedList");
-			for(int i = 0; i < rejected.length(); i++)
-			{
-				rejectedFiles.add(rejected.getString(i));
-			}
+			utils.addToJsonContainer("rejectedList", rejectedList, false);
+			utils.addToJsonContainer("rejectionMessage", rejectionMessage.get(0), false);
+			return Response.status(Status.PARTIAL_CONTENT).entity(utils.jsonize()).build();
 		}
-		if (rejectedFiles.size() != 0)
-		{
-			Utils.addToJsonContainer("rejectionMessage", rejectionMessage, false);
-			Utils.addToJsonContainer("rejectedList", rejectedFiles, false);
-		}
-		String jsonResponse = Utils.jsonize();
-		return Response.status(status).entity(jsonResponse).build();
-
+		return Response.status(Status.OK).entity(utils.jsonize()).build();
 	}
 
 	@GET
@@ -692,9 +800,9 @@ public class UsersHandler {
 		catch (Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on insert");
-			Utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(Utils.jsonize())
+					.entity(utils.jsonize())
 					.build();
 		}
 		finally
@@ -712,9 +820,8 @@ public class UsersHandler {
 							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
 		}
 
-		Utils.addToJsonContainer("boats", boats, true);
-				String jsonResponse = Utils.jsonize();
+		utils.addToJsonContainer("boats", boats, true);
+				String jsonResponse = utils.jsonize();
 		return Response.status(Response.Status.OK).entity(jsonResponse).build();
-
 	}
 }

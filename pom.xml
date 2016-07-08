@@ -150,13 +150,15 @@
 					        <directory>src/main/webapp/dist</directory> 
 					        <targetPath>/</targetPath>
 					      </resource> 
+<!-- 
 					      <resource> 
 					        <directory>src/main/webapp/bower_components</directory> 
 					        <targetPath>/bower_components</targetPath>
 					      </resource> 
+-->
 					      <resource> 
-					        <directory>images/events</directory> 
-					        <targetPath>/images/events</targetPath>
+					        <directory>images</directory> 
+					        <targetPath>/images</targetPath>
 					      </resource> 
 					    </webResources> 
 	

@@ -26,6 +26,7 @@ import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
+import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.AuthJson;
@@ -54,7 +55,7 @@ public class Auth {
 			u.setIsShipOwner(false);
 			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
-			u.setRoleId(1);
+			u.setRoleId(Roles.TRAVELLER);
 			u.setIdUsers(u.insertAndReturnId(conn, "idUsers", u));
 		}
 		catch (Exception e) {

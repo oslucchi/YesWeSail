@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -12,7 +11,6 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -20,6 +18,7 @@ import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
+import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
@@ -32,13 +31,12 @@ import com.yeswesail.rest.DBUtility.Users;
 
 @Path("/requests")
 public class HandlePendingActions {
-	@Context
-	private ServletContext context;
 
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 	JsonHandler jh = new JsonHandler();
+	Utils utils = new Utils();
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -91,7 +89,8 @@ public class HandlePendingActions {
 	{
 		int languageId = Utils.setLanguageId(language);
 		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) &&
+			(sd.getBasicProfile(token).getIdUsers() != userId))
 		{
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
@@ -165,9 +164,8 @@ public class HandlePendingActions {
 		{
 			DBInterface.disconnect(conn);
 		}
-		
-		Utils.addToJsonContainer("review", review, true);
-		String json = Utils.jsonize();
+		utils.addToJsonContainer("review", review, true);
+		String json = utils.jsonize();
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
 
@@ -268,9 +266,9 @@ public class HandlePendingActions {
 			DBInterface.disconnect(conn);
 		}
 		
-		Utils.addToJsonContainer("user", u, true);
-		Utils.addToJsonContainer("docs", docs, false);
-		return Response.status(Response.Status.OK).entity(Utils.jsonize()).build();
+		utils.addToJsonContainer("user", u, true);
+		utils.addToJsonContainer("docs", docs, false);
+		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 	}
 	
 
@@ -307,6 +305,7 @@ public class HandlePendingActions {
 				u.update(conn, "idUsers");
 				u.setIsShipOwner(true);
 				log.trace("changed");
+				u.update(conn, "idUsers");
 			}
 
 			action = new PendingActions(conn, idPendingActions);

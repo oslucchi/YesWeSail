@@ -1,5 +1,6 @@
 package com.yeswesail.rest;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Field;
@@ -8,20 +9,22 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 
+import org.apache.log4j.Logger;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 
 public class Utils {
-	static ApplicationProperties prop = ApplicationProperties.getInstance();
-	static HashMap<String, Object>jsonResponse = new HashMap<>();
 	final static Logger log = Logger.getLogger(Utils.class);
-
+	
+	static ApplicationProperties prop = ApplicationProperties.getInstance();
+	HashMap<String, Object>jsonResponse = new HashMap<>();
+	
 	public static String printStackTrace(Exception e)
 	{
 		StringWriter sw = new StringWriter();
@@ -77,7 +80,8 @@ public class Utils {
 				{
 				case "int":
 				case "long":
-					field.set(objInst, Integer.parseInt(jsonObj.getString(field.getName())));
+//					field.set(objInst, Integer.parseInt(jsonObj.getString(field.getName())));
+					field.set(objInst, jsonObj.getInt(field.getName()));
 					break;
 	
 				case "java.lang.String":
@@ -85,10 +89,19 @@ public class Utils {
 					break;
 				}
 			}			
-			catch(JSONException | IllegalArgumentException | IllegalAccessException e)
+			catch(JSONException e)
 			{
-				log.warn("Exception " + e.getMessage() + " parsing json object");
-			} 
+				e.printStackTrace();;
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		return objInst;
 	}
@@ -107,5 +120,26 @@ public class Utils {
 	public static Response jsonizeResponse(Status status, Exception e, String language, String errResource )
 	{
 		return(jsonizeResponse(status, e, setLanguageId(language), errResource));
+	}
+
+	public static Response jsonizeSingleObject(Object o, int languageId)
+	{
+		ObjectMapper mapper = new ObjectMapper();
+		String json = "";
+		
+		try 
+		{
+			json = mapper.writeValueAsString(o);
+		} 
+		catch (IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+			return jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		return Response.status(Status.OK).entity(json).build();
+	}
+
+	public static Response jsonizeSingleObject(Object o, String language)
+	{
+		return jsonizeSingleObject(o, setLanguageId(language));
 	}
 }

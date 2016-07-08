@@ -89,7 +89,7 @@ public class UploadFiles {
         return(imageURLs);
 	}
 
-	private static boolean uploadFiles(BodyPart part, String destPath, 
+	private static ArrayList<String> uploadFiles(BodyPart part, String destPath, 
 							   String prefix, String token, int index)
 	{
 		byte[] buf = part.getEntityAs(byte[].class);
@@ -100,32 +100,34 @@ public class UploadFiles {
 		}
 		catch (IOException e1) 
 		{
-			return(false);
+			return(null);
 		}
+		
+		ArrayList<String> uploaded = new ArrayList<String>();
 		
 		OutputStream out;
 		try {
 			String extension = part.getContentDisposition().getFileName()
 									.substring(part.getContentDisposition().getFileName().lastIndexOf("."));
 			out = new FileOutputStream(new File(tempDir + prefix + index + extension));
-			System.out.println("Uploading: '" + tempDir + prefix + index + extension + "'");
 			out.write(buf);
 			out.flush();
 			out.close();
+			uploaded.add(prefix + index + extension);
 		} 
 		catch (FileNotFoundException e) 
 		{
 			log.error("Exception FileNotFoundException on '" +
 					  part.getContentDisposition().getFileName() + "'");
-			return(false);
+			return(null);
 		} 
 		catch (IOException e) {
 			log.error("Exception IOException on '" +
 					  part.getContentDisposition().getFileName() + "'");
-			return(false);
+			return(null);
 		}
 
-		return(true);
+		return(uploaded);
 	}
 	
 	private static boolean isAcceptable(String[] acceptableTypes, String requestedType)
@@ -137,28 +139,9 @@ public class UploadFiles {
 		}
 		return false;
 	}
-	
-	public static Response uploadFromRestRequest(
-								List<BodyPart> parts, 
-								String token,
-								String resource,
-								String prefix,
-								String[] acceptableTypes,
-								int languageId,
-								boolean overwrite)
-	{
-		// getting destination path from context
-		String destPath = null;
-		try 
-		{
-			destPath = prop.getContext().getResource(resource).getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
- 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
-		}
 
+	private static int startUploafFromIndex(String destPath, String prefix, boolean overwrite)
+	{
 		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, destPath);
 		int lastIndex = -1;
 		if (!overwrite)
@@ -188,6 +171,92 @@ public class UploadFiles {
 	        }
 		}
 		lastIndex++;
+		return lastIndex;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static Object[] uploadBodyPart(
+			List<BodyPart> parts, 
+			String partName,
+			String token,
+			String resource,
+			String prefix,
+			String[] acceptableTypes,
+			int languageId,
+			boolean overwrite)
+
+	{
+		Object[] results = new Object[3];
+		results[2] = new ArrayList<String>();
+
+		String destPath = null;
+		try 
+		{
+			destPath = prop.getContext().getResource(resource).getPath();
+		}
+		catch (MalformedURLException e) 
+		{
+			log.warn("Exception " + e.getMessage() + " retrieving context path");
+			((ArrayList<String>) results[2]).add(
+					(String) Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, 
+												   languageId, "generic.uploadFileFormatError").getEntity());
+			return results;
+		}
+
+		ArrayList<String> uploaded = new ArrayList<String>();
+		ArrayList<String> rejected  = new ArrayList<String>();
+		ArrayList<String> rejectionMsg  = new ArrayList<String>();
+
+		int lastIndex = startUploafFromIndex(destPath, prefix, overwrite);
+		// uploading the files into temp dir
+		for(BodyPart part : parts)
+		{
+			if ((part.getContentDisposition() == null) ||
+				!part.getContentDisposition().getParameters().get("name").startsWith(partName))
+				continue;
+			
+			if(isAcceptable(acceptableTypes, part.getMediaType().getType() + "/" + part.getMediaType().getSubtype()))
+			{
+				uploaded.addAll(UploadFiles.uploadFiles(part, destPath, prefix, token, lastIndex++));
+			}
+			else if (part.getMediaType().getType().compareTo("text") != 0)
+			{
+				rejected.add(part.getContentDisposition().getFileName());
+				rejectionMsg.add(LanguageResources.getResource(languageId, "generic.uploadFileFormatError"));
+			}		
+		}
+		for(int i = 0; i < uploaded.size(); i++)
+		{
+			uploaded.set(i, prop.getWebHost() + resource + File.pathSeparator + uploaded.get(i));
+		}
+		results[0] = uploaded;
+		results[1] = rejected;
+		results[2] = rejectionMsg;
+		return results;
+	}
+
+	public static Response uploadFromRestRequest(
+								List<BodyPart> parts, 
+								String token,
+								String resource,
+								String prefix,
+								String[] acceptableTypes,
+								int languageId,
+								boolean overwrite)
+	{
+		// getting destination path from context
+		String destPath = null;
+		try 
+		{
+			destPath = prop.getContext().getResource(resource).getPath();
+		}
+		catch (MalformedURLException e) 
+		{
+			log.warn("Exception " + e.getMessage() + " retrieving context path");
+ 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
+		}
+
+		int lastIndex = startUploafFromIndex(destPath, prefix, overwrite);
 
 		ArrayList<String> rejected = new ArrayList<>();
 		// uploading the files into temp dir
@@ -223,37 +292,5 @@ public class UploadFiles {
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
-
 	}
 }
-
-
-
-
-159,163c159,164
-< 			return Response.status(Response.Status.NOT_ACCEPTABLE)
-< 					.entity(LanguageResources.getResource(languageId, 
-< 														  "generic.uploadFileFormatError") +
-< 														  " (" + e.getMessage() + ")")
-< 					.build();
----
-> 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
-> //			return Response.status(Response.Status.NOT_ACCEPTABLE)
-> //					.entity(LanguageResources.getResource(languageId, 
-> //														  "generic.uploadFileFormatError") +
-> //														  " (" + e.getMessage() + ")")
-> //					.build();
-215c216,217
-< 			Utils.addToJsonContainer("rejectionMessage", 
----
-> 			Utils jsonizer = new Utils();
-> 			jsonizer.addToJsonContainer("rejectionMessage", 
-219c221
-< 			Utils.addToJsonContainer("rejectedList", 
----
-> 			jsonizer.addToJsonContainer("rejectedList", 
-222c224
-< 					.entity(Utils.jsonize())
----
-> 					.entity(jsonizer.jsonize())
-

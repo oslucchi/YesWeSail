@@ -694,7 +694,7 @@ public class EventsHandler {
 			{
 				handleInsertUpdateDetails(jsonIn, languageId, conn);
 			}
-			if (jsonIn.route.length != 0)
+			if ((jsonIn.route != null) && (jsonIn.route.length != 0))
 			{
 				handleInsertUpdateRoute(jsonIn, languageId, conn);
 			}
