@@ -156,11 +156,7 @@ public class UploadFiles {
 		catch (MalformedURLException e) 
 		{
 			log.warn("Exception " + e.getMessage() + " retrieving context path");
-			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(LanguageResources.getResource(languageId, 
-														  "generic.uploadFileFormatError") +
-														  " (" + e.getMessage() + ")")
-					.build();
+ 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
 		}
 
 		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, destPath);
@@ -212,14 +208,15 @@ public class UploadFiles {
 
 		if (rejected.size() != 0)
 		{
-			Utils.addToJsonContainer("rejectionMessage", 
+ 			Utils jsonizer = new Utils();
+ 			jsonizer.addToJsonContainer("rejectionMessage", 
 									 LanguageResources.getResource(languageId, 
 											 					   "generic.uploadFileFormatError"),
 									 true);
-			Utils.addToJsonContainer("rejectedList", 
+ 			jsonizer.addToJsonContainer("rejectedList", 
 									  rejected.toArray(new String[rejected.size()]), false);
 			return Response.status(Response.Status.NOT_ACCEPTABLE)
-					.entity(Utils.jsonize())
+ 					.entity(jsonizer.jsonize())
 					.build();
 		}
 		else
@@ -229,3 +226,34 @@ public class UploadFiles {
 
 	}
 }
+
+
+
+
+159,163c159,164
+< 			return Response.status(Response.Status.NOT_ACCEPTABLE)
+< 					.entity(LanguageResources.getResource(languageId, 
+< 														  "generic.uploadFileFormatError") +
+< 														  " (" + e.getMessage() + ")")
+< 					.build();
+---
+> 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
+> //			return Response.status(Response.Status.NOT_ACCEPTABLE)
+> //					.entity(LanguageResources.getResource(languageId, 
+> //														  "generic.uploadFileFormatError") +
+> //														  " (" + e.getMessage() + ")")
+> //					.build();
+215c216,217
+< 			Utils.addToJsonContainer("rejectionMessage", 
+---
+> 			Utils jsonizer = new Utils();
+> 			jsonizer.addToJsonContainer("rejectionMessage", 
+219c221
+< 			Utils.addToJsonContainer("rejectedList", 
+---
+> 			jsonizer.addToJsonContainer("rejectedList", 
+222c224
+< 					.entity(Utils.jsonize())
+---
+> 					.entity(jsonizer.jsonize())
+
