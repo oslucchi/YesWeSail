@@ -21,6 +21,7 @@ import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.ResponseEntityCreator;
 import com.yeswesail.rest.SessionData;
+import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
@@ -38,9 +39,8 @@ public class Auth {
 	private String token = null;
 	private Users u = null;
 	
-	protected String populateUsersTable(AuthJson jsonIn, boolean accessByExternalAuth, String language)
+	protected Response populateUsersTable(AuthJson jsonIn, boolean accessByExternalAuth, String language)
 	{
-		String errorMsg = null;
 		DBConnection conn = null;
 		try 
 		{
@@ -61,55 +61,63 @@ public class Auth {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
 				if (!accessByExternalAuth)
-					errorMsg = ResponseEntityCreator.formatEntity(language, "users.alreadyRegistered");
-				else
-					errorMsg = null;
+					return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.alreadyRegistered");
 			}
 			else
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
+				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return errorMsg;
+		return null;
 	}
 	
-	protected String populateRegistrationConfirmTable(AuthJson jsonIn, String language)
+	protected Response populateRegistrationConfirmTable(AuthJson jsonIn, String language)
 	{
-		String errorMsg = null;
 		DBConnection conn = null;
 		try 
 		{
 			conn = DBInterface.connect();
 			RegistrationConfirm rc = new RegistrationConfirm();
-			rc.setUserId(u.getIdUsers());
+			if (rc.findActiveRecordById(conn, u.getIdUsers()) == null)
+			{
+				token = jsonIn.token;
+				rc.setCreated(new Date());
+				rc.setStatus("A");
+				rc.setUserId(u.getIdUsers());
+				rc.setToken(token);
+				rc.setIdRegistrationConfirm(rc.insertAndReturnId(conn, "idRegistrationConfirm", rc));
+			}
+			else
+			{
+				token = rc.getToken();
+			}
 			rc.setToken(token);
-			rc.setStatus("A");
-			rc.setIdRegistrationConfirm(rc.insertAndReturnId(conn, "idRegistrationConfirm", rc));
+			rc.setPasswordChange(jsonIn.password);
+			rc.update (conn, "idRegistrationConfirm");
 		}
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "users.alreadyRegistered");
+				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.alreadyRegistered");
 			}
 			else
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
+				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return errorMsg;
+		return null;
 	}
 	
-	protected String populateUsersAuthTable(String token, int userId, String language)
+	protected Response populateUsersAuthTable(String token, int userId, String language)
 	{
-		String errorMsg = null;
 		DBConnection conn = null;
 		try 
 		{
@@ -124,46 +132,42 @@ public class Auth {
 		catch (Exception e) {
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "users.tokenAlreadyExistent");
+				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.tokenAlreadyExistent");
 			}
 			else
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
+				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
-		return errorMsg;
+		return null;
 	}
 
-	private String prepareAndSendMail(String bodyProperty, String subjectProperty, 
-									  String language, String confirmLink, AuthJson jsonIn)
+	private Response prepareAndSendMail(String bodyProperty, String subjectProperty, 
+									  String confirmLink, String language, AuthJson jsonIn)
 	{
-		String errorMsg;
-		token = UUID.randomUUID().toString();		
-		errorMsg = populateRegistrationConfirmTable(jsonIn, language);
-		if (errorMsg != null)
-			return errorMsg;
+		int languageId = Utils.setLanguageId(language);
+		
+		Response response = populateRegistrationConfirmTable(jsonIn, language);
+		if (response != null)
+			return response;
 
 		try
 		{
-			String httpLink = prop.getWebHost() + "/rest/auth/confirmUser/" + confirmLink + "/" + token;
-	        String htmlText = ResponseEntityCreator.formatEntity(language, bodyProperty);
-	        // htmlText.replaceAll("CNFMLINK", httpLink);
-	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
-	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        htmlText = htmlText.substring(0, htmlText.indexOf("CNFMLINK")) + httpLink + 
-	        		   htmlText.substring(htmlText.indexOf("CNFMLINK") + 8);
-	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.subject");
+			String httpLink = prop.getWebHost() + "/rest/auth/" + confirmLink + "/" + token;
+	        String htmlText = LanguageResources.getResource(languageId, bodyProperty);
+	        htmlText = htmlText.replaceAll("CNFMLINK", httpLink);
+	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), subjectProperty);
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
 			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{
-			errorMsg = ResponseEntityCreator.formatEntity(language, "mailer.sendError") + " (" + e.getMessage() + ")";
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "mailer.sendError");
 		}
 		return null;
 	}
@@ -174,22 +178,20 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response register(AuthJson jsonIn, @HeaderParam("Language") String language) 
 	{
-		String errorMsg = null; 
 		if (jsonIn.username == null)
 		{
-			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "users.badMail");
 		}
-		errorMsg = populateUsersTable(jsonIn, false, language);
-		if (errorMsg != null)
-			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
+		jsonIn.token = UUID.randomUUID().toString();		
 
-		errorMsg = prepareAndSendMail("mail.body", "mail.subject", "confirmUser", language, jsonIn);
-		if (errorMsg != null)
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+		Response response;
+		if ((response = populateUsersTable(jsonIn, false, language)) != null)
+			return response;
+
+		if ((response = prepareAndSendMail("mail.body", "mail.subject", "confirmUser", language, jsonIn)) != null)
+			return response;
 		
-		return Response.status(Response.Status.OK)
-				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
+		return Utils.jsonizeResponse(Response.Status.OK, null, language, "auth.registerRedirectMsg");
 	}
 
 	
@@ -201,7 +203,6 @@ public class Auth {
 	{ 
 		String username = jsonIn.username; 
 		String password = jsonIn.password; 
-		String errorMsg = "";
 		Users u;
 		String query = null;
 
@@ -218,12 +219,11 @@ public class Auth {
 			u = new Users();
 			log.debug("Select user by email");
 			u.populateObject(conn, query, u);
-			log.debug("Found. Password in database is '" + u.getPassword() + "'");
-			if (u.getPassword().compareTo(password) != 0)
+			log.debug("Found. Password in database is '" + u.getArchivedPassword() + "'");
+			if (u.getArchivedPassword().compareTo(password) != 0)
 			{
 				log.debug("Wrong password, returning UNAUTHORIZED");
-				errorMsg = ResponseEntityCreator.formatEntity(language, "auth.wrongCredentials");
-				return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.wrongCredentials");
 			}
 		}
 		catch (Exception e) {
@@ -231,14 +231,13 @@ public class Auth {
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
 				log.debug("Email not found, returning UNAUTHORIZED");
-				errorMsg = ResponseEntityCreator.formatEntity(language, "auth.mailNotRegistered");
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.mailNotRegistered");
 			}
 			else
 			{
 				log.debug("Generic error " + e.getMessage());
-				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") + " (" + e.getMessage() + ")";
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "generic.execError");
 			}
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
 		}
 
 		// Check if this user already has a token
@@ -272,8 +271,7 @@ public class Auth {
 			}
 			else
 			{
-				errorMsg = ResponseEntityCreator.formatEntity(language, "generic.execError") +  " (" + e.getMessage() + ")";
-				return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
 			}
 		}
 		finally
@@ -311,7 +309,6 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response loginByToken(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
 	{
-		String errorMsg = "";
 		UsersAuth ua = null;
 		SessionData sa = SessionData.getInstance();
 
@@ -326,17 +323,15 @@ public class Auth {
 				{
 					ua.delete(conn, ua.getIdUsersAuth());
 					sa.removeUser(token);
-					errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
 					DBInterface.disconnect(conn);
-					return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+					return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.sessionExpired");
 				}
 			}
 		}
 		catch (Exception e) {
 			sa.removeUser(token);
-			errorMsg = ResponseEntityCreator.formatEntity(language, "auth.sessionExpired");
 			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.sessionExpired");
 		}
 
 		Object[] userProfile = sa.getWholeProfile(token);
@@ -381,13 +376,13 @@ public class Auth {
 	@Path("/chgPasswd")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response changePassword(AuthJson jsonIn, @HeaderParam("Language") String language)
+	public Response changePassword(AuthJson jsonIn, 
+								   @HeaderParam("Language") String language)
 	{
-		String errorMsg = null;
+		jsonIn.token = UUID.randomUUID().toString();		
 		if (jsonIn.username == null)
 		{
-			errorMsg = ResponseEntityCreator.formatEntity(language, "users.badMail");
-			return Response.status(Response.Status.FORBIDDEN).entity(errorMsg).build();
+			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.badMail");
 		}
 		DBConnection conn = null;
 		try 
@@ -397,65 +392,64 @@ public class Auth {
 		}
 		catch (Exception e) 
 		{
-			return Response.status(Response.Status.FORBIDDEN)
-					.entity(ResponseEntityCreator.formatEntity(language, "users.badMail"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "users.badMail");
 		}
 		finally
 		{
 			DBInterface.disconnect(conn);
 		}
 
-		errorMsg = prepareAndSendMail("mail.passwordChange", "mail.passwordChangeSubject", 
-									  "confirmPasswordChange", language, jsonIn);
-		if (errorMsg != null)
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(errorMsg).build();
+		Response response;
+		if ((response = prepareAndSendMail("mail.passwordChange", "mail.passwordChangeSubject", 
+									  "confirmPasswordChange", language, jsonIn)) != null)
+			return response;
 		
 		return Response.status(Response.Status.OK)
 				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
 	}
 
-	@POST
-	@Path("/confirmPasswordChange")
+	@GET
+	@Path("confirmPasswordChange/{token}")
+	@Consumes(MediaType.TEXT_HTML)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response confirmPasswordChange(AuthJson jsonIn, @PathParam("token") String token, @HeaderParam("Language") String language) 
+	public Response confirmPasswordChange(@PathParam("token") String token) 
 	{
-		ApplicationProperties prop = ApplicationProperties.getInstance();
+		String language = prop.getDefaultLang();
 		URI location = null;
-		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + jsonIn.token;
+		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
 
 		RegistrationConfirm rc = null;
 		DBConnection conn = null;
 		try 
 		{
-			conn = DBInterface.connect();
+			conn = DBInterface.TransactionStart();
 			rc = new RegistrationConfirm();
-			rc.findActiveRecordByToken(conn, jsonIn.token);
+			rc.findActiveRecordByToken(conn, token);
 			Users u = new Users(conn, rc.getUserId());
-			u.setPassword(jsonIn.password);
+			u.setPassword(rc.getPasswordChange());
 			u.update(conn, "idUsers");
 		}
 		catch (Exception e) 
 		{
-			DBInterface.disconnect(conn);
-			return Response.status(Response.Status.UNAUTHORIZED)
-				.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
+			DBInterface.TransactionRollback(conn);
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.confirmTokenInvalid");
 		}
 		
 		try 
 		{
-			rc.setStatus("I");
+			rc.setStatus("C");
 			rc.update(conn, "idRegistrationConfirm");
+			DBInterface.TransactionCommit(conn);
 		}
 		catch(Exception e)
 		{
+			DBInterface.TransactionRollback(conn);
 			log.error("Exception updating the registration confirm record. (" + e.getMessage() + ")");
 		}
 		
 		try 
 		{
 			location = new URI(uri);
-			DBInterface.disconnect(conn);
 			return Response.seeOther(location).build();
 		}
 		catch (URISyntaxException e) 
@@ -465,7 +459,6 @@ public class Auth {
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
-		DBInterface.disconnect(conn);
 		return Response.status(Response.Status.OK)
 				.entity("").build();
 	}
@@ -478,11 +471,11 @@ public class Auth {
 	{
 		log.debug("Authenticating via facebook on code '" + code + "'");
         FacebookHandler fbh = new FacebookHandler();
-        String errorMsg = null;
-        if ((errorMsg = fbh.getFacebookAccessToken(code)) != null)
+        Response response = null;
+        if ((response = fbh.getFacebookAccessToken(code)) != null)
         {
-    		log.warn("Got the error '" + errorMsg + "' returning UNAUTHORIZED");
-			return Response.status(Response.Status.UNAUTHORIZED).entity(errorMsg).build();
+    		log.warn("Can't get the FB token. returning UNAUTHORIZED");
+			return response;
         }
 		log.debug("Authenticated. Redirect to '" + fbh.getLocation().getPath() + "'");
 		return Response.seeOther(fbh.getLocation()).build();
@@ -504,8 +497,7 @@ public class Auth {
 			ua.delete(conn, ua.getIdUsersAuth());
 		}
 		catch (Exception e) {
-			return Response.status(Response.Status.NOT_FOUND).
-					entity(ResponseEntityCreator.formatEntity(language, "auth.tokenNotFound")).build();
+			return Utils.jsonizeResponse(Response.Status.NOT_FOUND, e, language, "auth.tokenNotFound");
 		}
 		finally
 		{
@@ -514,6 +506,7 @@ public class Auth {
 		
 		SessionData.getInstance().removeUser(token);
 		return Response.status(Response.Status.OK)
+				.entity("{}")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
 				.build();
 	}

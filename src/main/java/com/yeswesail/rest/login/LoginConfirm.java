@@ -15,7 +15,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
-import com.yeswesail.rest.ResponseEntityCreator;
+import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
@@ -41,9 +41,8 @@ public class LoginConfirm {
 			conn = DBInterface.connect();
 		} 
 		catch (Exception e1) {
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(ResponseEntityCreator.formatEntity(
-								prop.getDefaultLang(), "generic.execError")).build();
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
+										 prop.getDefaultLang(), "generic.execError");
 		};
 		if (email == null)
 		{
@@ -56,8 +55,8 @@ public class LoginConfirm {
 			catch (Exception e) 
 			{
 				DBInterface.disconnect(conn);
-				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
+						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
 			}
 		}
 		else
@@ -65,8 +64,8 @@ public class LoginConfirm {
 			if (email.compareTo("") == 0)
 			{
 				DBInterface.disconnect(conn);
-				return Response.status(Response.Status.BAD_REQUEST)
-						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
+				return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
+						 prop.getDefaultLang(), "auth.invalidEmail");
 			}
 			try 
 			{
@@ -81,8 +80,8 @@ public class LoginConfirm {
 			}
 			catch(Exception e)
 			{
-				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
+						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
 			}
 		}
 			
@@ -109,6 +108,6 @@ public class LoginConfirm {
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
-		return Response.status(Response.Status.OK).build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 }

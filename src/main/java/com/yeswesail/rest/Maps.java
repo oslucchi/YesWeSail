@@ -128,7 +128,6 @@ public class Maps {
 	@SuppressWarnings("unchecked")
 	public Response getMaps(MapsJson jsonIn, @HeaderParam("Language") String language)
 	{
-		String json = null;
 		ArrayList<Object>[] mapArray = new ArrayList[5];
 		int languageId = Constants.getLanguageCode(language);
 		try {
@@ -172,11 +171,7 @@ public class Maps {
 		} 
 		catch (Exception e) {
 			log.error("Error jasonizing the map " + jsonIn.mapName + " (" + e.getMessage() + ")");
-			json = LanguageResources.getResource(
-					Constants.getLanguageCode(language), "generic.execError") + " (" + 
-					e.getMessage() + ")";
-			return Response.status(Response.Status.OK)
-					.entity(json).build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, languageId, "generic.execError");
 		}
 		// No record found. return an empty object
 		

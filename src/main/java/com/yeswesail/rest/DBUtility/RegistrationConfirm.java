@@ -11,6 +11,7 @@ public class RegistrationConfirm extends DBInterface
 	protected String token;
 	protected int userId;
 	protected String status;
+	protected String passwordChange;
 
 	private void setNames()
 	{
@@ -59,6 +60,27 @@ public class RegistrationConfirm extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 	
+	public RegistrationConfirm findActiveRecordById(DBConnection conn, int id) throws Exception
+	{
+		String sql = "SELECT * " +
+				 "FROM " + tableName + " " +
+				 "WHERE userId = " + id + " AND " +
+				 "      status = 'A'";
+		try
+		{
+			this.populateObject(conn, sql, this);
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") == 0)
+			{
+				return null;
+			}
+			throw e;
+		}
+		return this;
+	}
+	
 	public int getIdRegistrationConfirm() {
 		return idRegistrationConfirm;
 	}
@@ -98,4 +120,13 @@ public class RegistrationConfirm extends DBInterface
 	public void setStatus(String status) {
 		this.status = status;
 	}
+
+	public String getPasswordChange() {
+		return passwordChange;
+	}
+
+	public void setPasswordChange(String passwordChange) {
+		this.passwordChange = passwordChange;
+	}
+
 }
