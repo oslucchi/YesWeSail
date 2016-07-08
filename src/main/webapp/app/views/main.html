@@ -1,7 +1,8 @@
 <div class="main_search">
 
-    <div class="ui container">
-        <div class="main_search_content">
+    <div class="main_search_content">
+        <div class="ui container">
+
             <h1 class="ui header">{{"main.title" | translate}}</h1>
             <h2 class="ui header"> Scegli e personalizza la tua esperienza a prezzi mai visti prima.</h2>
 
@@ -24,23 +25,24 @@
 
 
         </div>
-
     </div>
+
 </div>
 
 
+<div class="ui container">
 
-<div class="featured_content_container">
-    <div class="featured_content">
-
-
-        <h1>Le migliori proposte</h1>
-        <div class="ui stackable four column grid">
+    <div class="featured_content_container">
+        <div class="featured_content">
 
 
+            <h1>Le migliori proposte</h1>
+            <div class="ui stackable three column grid">
 
 
-            <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
+
+
+                <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
                     <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
             <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
             <div class="result card" >
@@ -71,20 +73,20 @@
                 </h2>
                 
                 <span>  {{singleEvent.location}}</span>
-            <br>
-            <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
+                <br>
+                <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
+            </div>
+
+
+            <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
         </div>
-
-
-        <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
     </div>
-</div>
 
 
 
 
 
-</span>
+    </span>
 
 
 
@@ -124,10 +126,15 @@
 
 
 <h1>Esplora</h1>
-<div class="ui stackable three column grid">
+<div class="ui stackable four column grid">
 
+    <div class="ui fluid medium bordered rounded images" ng-repeat="category in CATEGORIES track by $index">
+        <a href="/#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
+            <img ng-src="{{category.url}}">
+        </a>
+    </div>
 
-
+    <!--
 
     <span ng-repeat="category in CATEGORIES track by $index" class="column result-cards">
                   
@@ -162,6 +169,7 @@
                  
    
                 </span>
+-->
 
 
 
@@ -169,6 +177,7 @@
 </div>
 
 
+</div>
 </div>
 </div>
 
@@ -236,7 +245,7 @@
 
 
 
-<!--
+    <!--
     <div class="ui inverted vertical footer segment">
         <div class="ui center aligned container">
             <div class="ui stackable inverted divided grid">

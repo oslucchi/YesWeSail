@@ -1,31 +1,32 @@
-<div class="search_content">
+<div class="ui container">
+    <div class="search_content">
 
-    <div class="ui three  column grid">
+        <div class="ui three  column grid">
 
-        <div class="three wide column">
-            <select ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
-                <option value="">Location</option>
-            </select>
+            <div class="three wide column">
+                <select ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
+                    <option value="">Location</option>
+                </select>
+            </div>
+            <div class="three wide column">
+                <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                    <option value="">Category</option>
+                </select>
+            </div>
+
+
+            <div class="two wide column"> <a ng-click="search()" class="ui blue button">Cerca</a></div>
+
         </div>
-        <div class="three wide column">
-            <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
-                <option value="">Category</option>
-            </select>
-        </div>
-
-
-        <div class="two wide column"> <a ng-click="search()" class="ui blue button">Cerca</a></div>
-
     </div>
-</div>
 
 
 
 
 
-<div class="ui segment results">
+    <div class="ui segment results">
 
-    <!--
+        <!--
                         <div class="ui four stackable cards">
             <div ng-repeat="event in events" class="ui card">
               <div class="content">
@@ -51,8 +52,8 @@ Starting at {{event.minPrice}}€
 -->
 
 
-    <div class="ui stackable four column grid">
-<!--
+        <div class="ui stackable three column grid">
+            <!--
         <div class="column result-cards">
             
             <div class="result card">
@@ -78,10 +79,10 @@ Starting at {{event.minPrice}}€
             <ship-owner></ship-owner>
         </div>
 -->
-            
-            
 
-<!--
+
+
+            <!--
 <div ui-sref="event({eventId: event.idEvents})" ng-class="{'layered-paper':!!event.aggregateKey, 'non-layered-paper': !!!event.aggregateKey}" class="column result-cards" ng-repeat="event in events">
             
             <div class="result card">
@@ -116,8 +117,8 @@ Starting at {{event.minPrice}}€
             <ship-owner ship-owner-id="event.shipOwnerId"></ship-owner>
         </div>
 -->
-        
-        <span ng-repeat="multipleEvents in events track by $index" class="column result-cards">
+
+            <span ng-repeat="multipleEvents in events track by $index" class="column result-cards">
         <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
             <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
             
@@ -148,26 +149,28 @@ Starting at {{event.minPrice}}€
               
                 </h2>
                 
-                <span>  {{singleEvent.location}}</span><br>
-                <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
-                </div>
-            <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
+                <span>  {{singleEvent.location}}</span>
+            <br>
+            <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
         </div>
-
-
-            </div>
-        </span>
+        <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
     </div>
 
-    <div class="ui inverted dimmer">
-        <div class="content">
-            <div class="center">
-                <h4 class="ui icon header">
+
+</div>
+</span>
+</div>
+
+<div class="ui inverted dimmer">
+    <div class="content">
+        <div class="center">
+            <h4 class="ui icon header">
           <i class="warning big sign icon"></i>
           No results!
         </h4>
-            </div>
         </div>
     </div>
 </div>
+</div>
 
+</div>
