@@ -34,6 +34,25 @@
         <a class="item">
             <i class="mail icon"></i> Optionals
         </a>
+        <div class="right menu">
+        
+          <div class="ui language dropdown item">
+    Event Language
+    <i class="dropdown icon"></i>
+                                    <div class="menu">
+                                        <div class="item" ng-click="setLanguage('IT')" data-value="IT">IT</div>
+                                        <div class="item" ng-click="setLanguage('EN')" data-value="EN">EN</div>
+                                    </div>
+  </div>
+        <a ng-click="saveEvent()" class="item">    
+            Save
+<!--
+            <button  class="ui blue icon button">
+                Save
+            </button>
+-->
+        </a>
+            </div>
 
     </div>
 </div>
@@ -41,11 +60,11 @@
 
 
 <div id="event-container">
-    <div class="ui two column stackable container grid">
+    <div class="ui column stackable container grid">
         <div class="row header-container">
-            <div class="twelve wide column">
+            <div class=" column">
                 <div class="ui grid">
-                    <div class="twelve wide column">
+                    <div class=" column">
 
 
                         <div class="ui items">
@@ -103,40 +122,14 @@
 
 
                     </div>
-                    <div class="four wide column">
-                        <div class="ui book sticky">
-
-                            <div class="ui segment">
-                                <p class="ui header">Editor Options</p>
-                                <div class="ui selection dropdown">
-                                    <input type="hidden" name="language">
-                                    <i class="dropdown icon"></i>
-                                    <div class="default text">Language</div>
-                                    <div class="menu">
-                                        <div class="item" ng-click="setLanguage('IT')" data-value="1">IT</div>
-                                        <div class="item" ng-click="setLanguage('EN')" data-value="0">EN</div>
-                                    </div>
-                                </div>
-                                <button ng-click="saveEvent()" class="ui blue icon button">
-                                    Save
-                                </button>
-                                <button class="ui teal icon button">
-                                    Cancel
-                                </button>
-
-
-                            </div>
-                        </div>
-
-
-                    </div>
+                   
                 </div>
 </div>
 </div>
                 <div class="ui divider"></div>
                 <div class="row">
 
-                    <div class="twelve wide column">
+                    <div class=" column">
                         <div class="ui header">Description</div>
 
 
@@ -147,7 +140,7 @@
                 </div>
                 <div class="ui divider"></div>
                 <div class="row">
-                    <div class="twelve wide column">
+                    <div class=" column">
 
                         <div class="ui container">
                             <button class="ui blue button" ngf-select="uploadFiles($files)" multiple accept="image/*">Select Files</button>
@@ -180,7 +173,7 @@
                 <div class="ui divider"></div>
 
                 <div class="row">
-                    <div class="twelve wide column">
+                    <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Logistics
@@ -192,7 +185,7 @@
                 <div class="ui divider"></div>
 
                 <div class="row">
-                    <div class="twelve wide column">
+                    <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Includes
@@ -202,7 +195,7 @@
 
                 </div>
                 <div class="row">
-                    <div class="twelve wide column">
+                    <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   Excludes
@@ -214,13 +207,38 @@
 
                 <div class="ui divider"></div>
                 <div class="row">
-                    <div class="twelve wide column">
+                    <div class=" column">
                         <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
                         The Boat
                 </h2>
-
-                        <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+                    <div class="boats-container">
+                        <div class="boats-container-boat-list">
+                            <div class="ui large horizontal divided list">
+                          <div class="item">
+                            <img class="ui avatar image" src="/images/avatar/small/helen.jpg">
+                            <div class="content">
+                              <div class="header">Helen</div>
+                            </div>
+                          </div>
+                          <div class="item">
+                            <img class="ui avatar image" src="/images/avatar/small/christian.jpg">
+                            <div class="content">
+                              <div class="header">Christian</div>
+                            </div>
+                          </div>
+                          <div class="item">
+                            <img class="ui avatar image" src="/images/avatar/small/daniel.jpg">
+                            <div class="content">
+                              <div class="header">Daniel</div>
+                            </div>
+                          </div>
+                            </div>
+                        </div>
+                        <div class="boats-container-selected-boat">
+                            <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+                        </div>
+                    </div>
 
                     </div>
 

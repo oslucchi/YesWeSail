@@ -54,8 +54,8 @@ angular.module('yeswesailApp')
             }
 
             if ($scope.sailingDocsNotLoaded == false && $scope.navigationDocsNotLoaded == false) {
-                var files = sailorInfo.navigationDocs.concat(sailorInfo.sailingDocs);
-
+               
+                
                 Upload.upload({
                     url: URLs.ddns + 'rest/users/shipowners',
                     data: {
@@ -64,7 +64,8 @@ angular.module('yeswesailApp')
                             sailingLicense: sailorInfo.sailingLicense,
                             navigationLicense: sailorInfo.navigationLicense
                         }),
-                        files: files
+                        filesSailingDocs: sailorInfo.sailingDocs,
+                        filesNavigationDocs: sailorInfo.navigationDocs
                     }
                 }).then(function (response) {
                     toastr.success('Registration sent!');

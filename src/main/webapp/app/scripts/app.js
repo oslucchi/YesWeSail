@@ -169,7 +169,7 @@ angular
     .state('userId.profile', {
       url: "/profile",
       templateUrl: 'views/userId.profile.html',
-      controller:  'UseridCtrl',
+      controller:  'UseridProfileCtrl',
       data: {
                 accessLevel: 0
             }
@@ -177,6 +177,30 @@ angular
     .state('userId.boats', {
       url: "/boats",
       templateUrl: 'views/userId.boats.html',
+      controller:  'UseridBoatsCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
+    .state('userId.documents', {
+      url: "/documents",
+      templateUrl: 'views/userId.documents.html',
+      controller:  'UseridDocumentsCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
+    .state('userId.info', {
+      url: "/personal-info",
+      templateUrl: 'views/userId.info.html',
+      controller:  'UseridCtrl',
+      data: {
+                accessLevel: 0
+            }
+    })
+    .state('userId.events', {
+      url: "/events",
+      templateUrl: 'views/userId.events.html',
       controller:  'UseridCtrl',
       data: {
                 accessLevel: 0

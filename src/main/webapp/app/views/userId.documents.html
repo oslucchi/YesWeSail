@@ -1,0 +1,27 @@
+<div class="ui vertical  segment" ng-repeat="doc in docs">
+<div class="ui items">
+  <div class="item">
+    <div class="image">
+        <div class="ui mini images">
+          <a href="{{image}}" target="_blank"  ng-repeat="image in doc.images"><img ng-src="{{image}}"></a>
+        </div>
+    </div>
+    <div class="content">
+      <a class="header">{{doc.name}}</a>
+      <div class="meta">
+        <span>Number: {{doc.number}}</span>
+      </div>
+      <div class="description">
+        <p></p>
+      </div>
+      <div class="extra">
+        Emissione: {{doc.releaseDate | date}}
+      </div>
+      <div class="extra">
+        Scadenza: {{doc.expiryDate | date}}
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>

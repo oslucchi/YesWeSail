@@ -1,16 +1,26 @@
+<div class="ui container">
 <div class="ui stackable two column grid">
     <div class="three wide column">
 
         <div class="ui segment">
-            <h2 class="ui icon header">
-          <img class="ui small circular image" ng-src="{{user.imageURL}}">
+            <h2   class="ui icon header">
+          <span ngf-select="" ngf-drop="" ng-model="files" ng-disabled="!isOwner" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
+                <img class="ui small image" ng-if="!!user.imageURL" ng-src="{{user.imageURL}}">
+                <img class="ui small image" ng-if="!!!user.imageURL" ng-src="images/default-icon.jpg">
+                <div class="change-image-message">Click to change your image</div>      
+            </span>
           <div class="content">
             {{user.name}} {{user.surname}}
               <div class="ui divider"></div>
-            <div ng-if="user.isShipOwner" class="sub header">Armatore</div>
+            <div ng-if="user.isShipOwner" class="sub header"><div class="ui large blue label">Armatore</div></div>
           </div>
                 
         </h2>
+            <div ng-if="isOwner || isAdmin" class="ui divider"></div>
+              <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">
+            <span ng-if="!editMode">Edit Profile</span><span ng-if="editMode">Save Profile</span> 
+        </button>
+            <div class="ui divider"></div>
             <div class="ui icon buttons">
                 <a href="https://www.facebook.com/{{user.facebook}}" class="ui blue button"><i class="facebook icon"></i></a>
                 <a href="https://www.twitter.com/{{user.twitter}}" class="ui blue button"><i class="twitter icon"></i></a>
@@ -19,10 +29,10 @@
             </div>
             <div class="ui divider"></div>
             <!--            ng-if="!!user.languagesSpoken"-->
-            <span>
+            <span ng-if="user.languagesSpoken">
             <h3>Languages</h3>
-            </span>
             <i ng-repeat="language in user.languagesSpoken.split(',')" class="{{language}} flag"></i>
+            </span>
         </div>
 
 
@@ -30,25 +40,24 @@
     </div>
     <div class="thirteen wide column">
         
-<div class="ui anchor-menu sticky attached stackable menu">
+<div ng-if="isAdmin || isOwner || user.isShipOwner" class="ui anchor-menu sticky attached stackable menu">
     <div class="ui container">
-        <a class="item" ng-click="goToSection('gallery')">
+        <a class="item" ui-sref="userId.profile">
             <i class="home icon"></i> Profile
         </a>
-        <a class="item"  ng-click="goToSection('partecipants')">
+        <a ng-if="isAdmin || user.isShipOwner" class="item" ui-sref="userId.boats">
             <i class="grid layout icon"></i> Boats
         </a>
-        <a class="item"  ng-click="goToSection('logistics')">
+        <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.documents">
             <i class="mail icon"></i> Documents
         </a>
-        <a class="item"  ng-click="goToSection('location')">
+        <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.info">
             <i class="mail icon"></i> Personal Info
         </a>
-        <a class="item"  ng-click="goToSection('package')">
-            <i class="mail icon"></i> Events
+        <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.events">
+            <i class="mail icon"></i> My Events
         </a>
-
-    </div>
+            </div>
 </div>
         <div class="ui segment">
             <div ui-view></div>
@@ -58,4 +67,5 @@
             
         </div>
     </div>
+</div>
 </div>

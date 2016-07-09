@@ -1,0 +1,187 @@
+<div class="ui container">
+
+    <div class="ui segment">
+        <form class="ui form">
+
+
+
+
+
+            <h4 class="ui dividing header">General Info</h4>
+            <div class="field">
+                <div class="six fields">
+
+                    <div class="field">
+                        <label>Name</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.name" placeholder="Number...">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Model</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.model" placeholder="Number...">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Year</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.year" placeholder="Number...">
+                        </div>
+                    </div>
+
+
+                    <div class="field">
+                        <label>Plate</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.plate" placeholder="Number...">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Engine</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.engineType" placeholder="Number...">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Length</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.length" placeholder="Number...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="ui dividing header">Documents</h4>
+            <div class="field">
+                <div class="three fields">
+                    <div class="field">
+                        <label>Insurance</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.insurance" placeholder="Number...">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Sec. Certification</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.securityCertification" placeholder="Number...">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>RTF License</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.RTFLicense" placeholder="Number...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <div class="doc-upload">
+                    <button class="ui blue button" ngf-select="addDocs($files)" multiple accept="*/*">Select Documents</button>
+
+                    <div class="document-container">
+                            <p ng-repeat="doc in tempBoat.files.docs">{{doc}}</p>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <h4 class="ui dividing header">Housing</h4>
+            <div class="field">
+                <div class="three fields">
+                    <div class="field">
+                        <label>Bunks</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.bunks" placeholder="Number...">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Cabins w/ bath</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.cabinsWithBathroom" placeholder="Number...">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Cabins w/out bath</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.cabinsNoBathroom" placeholder="Number...">
+                        </div>
+                    </div>
+
+                </div>
+                <div class="three fields">
+                    <div class="field">
+                        <label>Shared bath</label>
+                        <div class="field">
+                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.sharedBathrooms" placeholder="Number...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <h4 class="ui dividing header">Images</h4>
+            <div class="field">
+
+                <label>Blue Prints</label>
+                <div class="field">
+                    <div class="doc-upload">
+                        <button class="ui blue button" ngf-select="addBluePrints($files)" multiple accept="*/*">Select Files</button>
+
+                        <div class="document-container">
+                            <div class="ui tiny images">
+                                <img ngf-src="doc" ng-repeat="doc in tempBoat.files.bluePrints">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="field">
+
+                <label>Other</label>
+                <div class="field">
+                    <div class="doc-upload">
+                        <button class="ui blue button" ngf-select="addOtherImages($files)" multiple accept="*/*">Select Files</button>
+
+                        <div class="document-container">
+                            <div class="ui tiny images">
+                                <img ngf-src="doc" ng-repeat="doc in tempBoat.files.other">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="ui divider"></div>
+            <div class="field">
+
+                <button class="ui blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">Upload Boat</button>
+                <button class="ui button" ng-if="boatUploadedPartially" ng-click="closeModals()">Close</button>
+                    <div ng-class="{'visible': !!error.rejectedList}" class="ui warning message">
+                      <div class="header">
+                        {{error.rejectionMessage}}
+                      </div>
+                        {{error.rejectedList}}
+                    </div>
+                <div ng-if="progress" ng-class="{'error': !!error.rejectedList}" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
+                    <div class="bar">
+                        <div class="progress"></div>
+                    </div>
+                    
+                </div>
+            </div>
+
+
+        </form>
+    </div>
+</div>
