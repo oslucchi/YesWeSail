@@ -40,24 +40,24 @@ angular.module('yeswesailApp')
 //        $scope.differentBillingAddress=!state;
 //    }
 //
-//        var getUser = function () {
-//            $http.get(URLs.ddns + 'rest/users/' + $stateParams.userId).then(function (res) {
-//                if(!!res.data.docs){
-//                    $scope.user = res.data.user;
-//                    $scope.docs = res.data.docs;
-//                }else{
-//                    $scope.user=res.data;
-//                }
-//                
-//               
-//               
-//
-//            }, function (err) {});
-//
-//        };
-////        getUser();
-//    $('.ui.checkbox').checkbox();
-//    
+        var getUser = function () {
+            $http.get(URLs.ddns + 'rest/users/' + $stateParams.userId).then(function (res) {
+                if(!!res.data.docs){
+                    $scope.user = res.data.user;
+                    $scope.docs = res.data.docs;
+                }else{
+                    $scope.user=res.data;
+                }
+                
+               
+               
+
+            }, function (err) {});
+
+        };
+        getUser();
+    $('.ui.checkbox').checkbox();
+    
     $scope.uploadProfilePic=function(pic){
              Upload.upload({
                 url: URLs.ddns + 'rest/users/' + $scope.currentUser.idUsers + '/profilePic',
