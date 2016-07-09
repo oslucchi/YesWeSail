@@ -25,6 +25,7 @@ import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
+import com.yeswesail.rest.DBUtility.PasswordHandler;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
@@ -45,10 +46,9 @@ public class Auth {
 		DBConnection conn = null;
 		try 
 		{
-			conn = DBInterface.connect();
+			conn = DBInterface.TransactionStart();
 			u = new Users();
 			u.setEmail(jsonIn.username);
-			u.setPassword(jsonIn.password);
 			u.setName(jsonIn.firstName);
 			u.setSurname(jsonIn.lastName);
 			u.setStatus("D");
@@ -57,8 +57,13 @@ public class Auth {
 			u.setConnectedVia("P");
 			u.setRoleId(Roles.TRAVELLER);
 			u.setIdUsers(u.insertAndReturnId(conn, "idUsers", u));
+			PasswordHandler pw = new PasswordHandler();
+			pw.userPassword(conn, u.getIdUsers());
+			pw.updatePassword(conn, false);
+			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) {
+			DBInterface.TransactionRollback(conn);
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
 				if (!accessByExternalAuth)
@@ -68,10 +73,6 @@ public class Auth {
 			{
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
 		}
 		return null;
 	}
@@ -220,8 +221,12 @@ public class Auth {
 			u = new Users();
 			log.debug("Select user by email");
 			u.populateObject(conn, query, u);
-			log.debug("Found. Password in database is '" + u.getArchivedPassword() + "'");
-			if (u.getArchivedPassword().compareTo(password) != 0)
+
+			PasswordHandler pw = new PasswordHandler();
+			pw.userPassword(conn, u.getIdUsers());
+			
+			log.debug("Found. Password in database is '" + pw.getPassword() + "'");
+			if ((pw.getPassword() == null) || (pw.getPassword().compareTo(password) != 0))
 			{
 				log.debug("Wrong password, returning UNAUTHORIZED");
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.wrongCredentials");
@@ -427,7 +432,9 @@ public class Auth {
 			rc = new RegistrationConfirm();
 			rc.findActiveRecordByToken(conn, token);
 			Users u = new Users(conn, rc.getUserId());
-			u.setPassword(rc.getPasswordChange());
+			PasswordHandler pw = new PasswordHandler();
+			pw.setPassword(rc.getPasswordChange());
+			pw.updatePassword(conn, true);
 			u.update(conn, "idUsers");
 		}
 		catch (Exception e) 

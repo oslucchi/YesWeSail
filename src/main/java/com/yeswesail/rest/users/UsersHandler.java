@@ -42,6 +42,7 @@ import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
+import com.yeswesail.rest.jsonInt.AddressInfoJson;
 import com.yeswesail.rest.jsonInt.BoatsJson;
 import com.yeswesail.rest.jsonInt.ShipownerRequestJson;
 import com.yeswesail.rest.jsonInt.UsersJson;
@@ -126,7 +127,7 @@ public class UsersHandler {
 		String json = "";
 		
 		try {
-			u.setPassword("******");
+			// u.setPassword("******");
 			json = mapper.writeValueAsString(u);
 		} 
 		catch (IOException e) {
@@ -249,16 +250,25 @@ public class UsersHandler {
 	private Response fillWholeProfile(int userId, int languageId, boolean trustedRequestor)
 	{
 		Users u = null;
-		AddressInfo[] ai = new AddressInfo[2];
+		AddressInfo[] ai = null;
 		Documents[] docs;
 		DBConnection conn = null;
 		try 
 		{
 			conn = DBInterface.connect();
 			u = new Users(conn, userId);
-			u.setPassword("******");
+			// u.setPassword("******");
 			ai = AddressInfo.findUserId(u.getIdUsers());
-			u.setAddressInfo(ai);
+			if (ai.length == 0)
+			{
+				ai = new AddressInfo[2];
+				ai[0] = new AddressInfo();
+				ai[0].setType("D");
+				ai[1] = new AddressInfo();
+				ai[1].setType("I");
+			}
+			u.setPersonalInfo(ai[0]);
+			u.setBillingInfo(ai[1]);
 			docs = Documents.findAllUsersDoc(languageId, u.getIdUsers());
 		}
 		catch (Exception e) 
@@ -330,7 +340,8 @@ public class UsersHandler {
 			for(int i = 0; i < usersList.size(); i++)
 			{
 				AddressInfo[] ai = AddressInfo.findUserId(usersList.get(i).getIdUsers());
-				usersList.get(i).setAddressInfo(ai);
+				usersList.get(i).setPersonalInfo(ai[0]);
+				usersList.get(i).setBillingInfo(ai[1]);
 			}
 		}
 		catch (Exception e) 
@@ -365,6 +376,7 @@ public class UsersHandler {
 		List<BodyPart> parts = form.getBodyParts();
 		
 		String[] acceptableTypes = {
+				"image/gif",
 				"image/png",
 				"image/jpeg",
 				"image/jpg"
@@ -374,7 +386,7 @@ public class UsersHandler {
 
 		Response response = UploadFiles.uploadFromRestRequest(
 								parts, token, "/images/users", 
-								prefix, acceptableTypes, languageId, false);
+								prefix, acceptableTypes, languageId, true);
 		
 		try {
 			contextPath = prop.getContext().getResource("/images/users").getPath();
@@ -430,6 +442,22 @@ public class UsersHandler {
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
+		boolean retVal = true;
+		if ((jsonIn.billingInfo != null) && (jsonIn.billingInfo.taxCode != null))
+		{
+			retVal = TaxcodeChecker.checkTaxcode(jsonIn.billingInfo.country, 
+												 jsonIn.billingInfo.taxCode, TaxcodeChecker.COMPANY);
+		}
+		else if ((jsonIn.personalInfo != null) && (jsonIn.personalInfo.taxCode != null))
+		{
+			retVal = TaxcodeChecker.checkTaxcode(jsonIn.personalInfo.country, 
+												 jsonIn.personalInfo.taxCode, TaxcodeChecker.PERSONAL);
+		}
+		if (retVal == false)
+		{
+			return Utils.jsonizeResponse(Status.BAD_REQUEST, null, languageId, "users.taxcodeIncorrect");
+		}
+		
 		DBConnection conn = null;
 		Users u = null;
 		try 
@@ -450,24 +478,25 @@ public class UsersHandler {
 			if (jsonIn.birthday != null)
 				u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
 			u.setRoleId(jsonIn.roleId);
-			if (jsonIn.addressInfo != null)
+			AddressInfoJson[] aiJson = new AddressInfoJson[2];
+			aiJson[0] = jsonIn.personalInfo;
+			aiJson[1] = jsonIn.billingInfo;
+			AddressInfo ai = new AddressInfo();
+			String sql = "DELETE FROM AddressInfo WHERE userId = " + jsonIn.idUsers;
+			AddressInfo.executeStatement(conn, sql, false);
+			for(int i = 0; i < 2; i++)
 			{
-				AddressInfo ai = new AddressInfo();
-				String sql = "DELETE FROM AddressInfo WHERE userId = " + jsonIn.idUsers;
-				AddressInfo.executeStatement(conn, sql, false);
-				for(int i = 0; i < jsonIn.addressInfo.length; i++)
-				{
-					ai.setAddress1(jsonIn.addressInfo[i].address1);
-					ai.setAddress2(jsonIn.addressInfo[i].address2);
-					ai.setCompanyName(jsonIn.addressInfo[i].companyName);
-					ai.setCity(jsonIn.addressInfo[i].city);
-					ai.setCountry(jsonIn.addressInfo[i].country);
-					ai.setProvince(jsonIn.addressInfo[i].province);
-					ai.setTaxCode(jsonIn.addressInfo[i].taxCode);
-					ai.setType(jsonIn.addressInfo[i].type);
-					ai.setUserId(jsonIn.idUsers);
-					ai.insert(conn, "idAddressInfo", ai);
-				}
+				ai.setAddress1(aiJson[i].address1);
+				ai.setAddress2(aiJson[i].address2);
+				ai.setCompanyName(aiJson[i].companyName);
+				ai.setCity(aiJson[i].city);
+				ai.setCountry(aiJson[i].country);
+				ai.setProvince(aiJson[i].province);
+				ai.setZip(aiJson[i].zip);
+				ai.setTaxCode(aiJson[i].taxCode);
+				ai.setType(aiJson[i].type);
+				ai.setUserId(jsonIn.idUsers);
+				ai.insert(conn, "idAddressInfo", ai);
 			}
 			DBInterface.TransactionCommit(conn);
 		}

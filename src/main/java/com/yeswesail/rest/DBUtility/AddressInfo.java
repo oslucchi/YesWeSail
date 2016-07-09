@@ -42,7 +42,8 @@ public class AddressInfo extends DBInterface
 	{
 		String sql = "SELECT * " +
 				 "FROM AddressInfo " +
-				 "WHERE  userId = " + userId;
+				 "WHERE  userId = " + userId + " " +
+				 "ORDER BY type";
 		@SuppressWarnings("unchecked")
 		ArrayList<AddressInfo> adList = 
 				(ArrayList<AddressInfo>) DBInterface.populateCollection(sql, AddressInfo.class);

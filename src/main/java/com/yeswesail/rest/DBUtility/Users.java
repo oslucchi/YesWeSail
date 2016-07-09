@@ -17,7 +17,7 @@ public class Users extends DBInterface
 	protected String surname;
 	protected int roleId;
 	protected String email;
-	protected String password;
+	// protected String password;
 	protected String phone1;
 	protected String phone2;
 	protected String interests;
@@ -35,7 +35,8 @@ public class Users extends DBInterface
 	protected String about;
 	protected String sailingLicense;
 	protected String navigationLicense;
-	private AddressInfo[] addressInfo;
+	private AddressInfo personalInfo;
+	private AddressInfo billingInfo;
 
 	
 	private void setNames()
@@ -129,18 +130,18 @@ public class Users extends DBInterface
 		this.email = email;
 	}
 
-	public String getPassword() {
-		return "*******";
-	}
-
-	public String getArchivedPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
+//	public String getPassword() {
+//		return "*******";
+//	}
+//
+//	public String getArchivedPassword() {
+//		return password;
+//	}
+//
+//	public void setPassword(String password) {
+//		this.password = password;
+//	}
+//
 	public String getPhone1() {
 		return phone1;
 	}
@@ -277,14 +278,6 @@ public class Users extends DBInterface
 		}
 	}
 
-	public AddressInfo[] getAddressInfo() {
-		return addressInfo;
-	}
-
-	public void setAddressInfo(AddressInfo[] addressInfo) {
-		this.addressInfo = addressInfo;
-	}
-
 	public String getSailingLicense() {
 		return sailingLicense;
 	}
@@ -308,4 +301,21 @@ public class Users extends DBInterface
 	public void setAbout(String about) {
 		this.about = about;
 	}
+
+	public AddressInfo getBillingInfo() {
+		return billingInfo;
+	}
+
+	public void setBillingInfo(AddressInfo billingInfo) {
+		this.billingInfo = billingInfo;
+	}
+
+	public AddressInfo getPersonalInfo() {
+		return personalInfo;
+	}
+
+	public void setPersonalInfo(AddressInfo personalInfo) {
+		this.personalInfo = personalInfo;
+	}
+	
 }
