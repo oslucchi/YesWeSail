@@ -4,7 +4,7 @@
 
         <div class="ui segment">
             <h2   class="ui icon header">
-          <span ngf-select="" ngf-drop="" ng-model="files" ng-disabled="!isOwner" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
+          <span ngf-select="uploadProfilePic($files)" ngf-drop="" ng-model="files" ng-disabled="!isOwner" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
                 <img class="ui small image" ng-if="!!user.imageURL" ng-src="{{user.imageURL}}">
                 <img class="ui small image" ng-if="!!!user.imageURL" ng-src="images/default-icon.jpg">
                 <div class="change-image-message">Click to change your image</div>      
@@ -17,10 +17,12 @@
                 
         </h2>
             <div ng-if="isOwner || isAdmin" class="ui divider"></div>
+<!--
               <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">
             <span ng-if="!editMode">Edit Profile</span><span ng-if="editMode">Save Profile</span> 
         </button>
-            <div class="ui divider"></div>
+-->
+<!--            <div class="ui divider"></div>-->
             <div class="ui icon buttons">
                 <a href="https://www.facebook.com/{{user.facebook}}" class="ui blue button"><i class="facebook icon"></i></a>
                 <a href="https://www.twitter.com/{{user.twitter}}" class="ui blue button"><i class="twitter icon"></i></a>

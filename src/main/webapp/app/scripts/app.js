@@ -28,7 +28,8 @@ angular
     'ngFileUpload',
     'pascalprecht.translate',
  'tmh.dynamicLocale',
-    'gridster'
+    'gridster',
+    'datePicker'
   ])
     .constant('AUTH_EVENTS', {
         loginSuccess: 'auth-login-success',
@@ -193,7 +194,7 @@ angular
     .state('userId.info', {
       url: "/personal-info",
       templateUrl: 'views/userId.info.html',
-      controller:  'UseridCtrl',
+      controller:  'UseridInfoCtrl',
       data: {
                 accessLevel: 0
             }
@@ -295,16 +296,6 @@ angular
     });
     
     
- 
-    
-    
-    
-    
-    
-       
-           
-
-
     })
     .run(function($http) {
     
@@ -333,6 +324,23 @@ angular
     }
   };
 })
+
+.directive('dropdown', function ($timeout) {
+    return {
+        restrict: "C",
+        link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dropdown().dropdown('setting', {
+                    onChange: function (value) {
+                        scope.$parent[attr.ngModel] = value;
+                        scope.$parent.$apply();
+                    }
+                });
+            }, 0);
+        }
+    };
+})
+
 .directive('ngReallyClick', [function() {
     return {
         restrict: 'A',
