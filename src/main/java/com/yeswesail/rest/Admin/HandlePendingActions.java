@@ -250,7 +250,7 @@ public class HandlePendingActions {
 			log.trace("Retrieving pending actions");
 			conn = DBInterface.connect();
 			u = new Users(conn, id);
-			u.setPassword("******");
+//			u.setPassword("******");
 			docs = UploadFiles.getExistingFilesPath("sh_" + u.getIdUsers() + "_licenses_", "/images/shipowner");
 			log.trace("Retrieval completed");
 		}
