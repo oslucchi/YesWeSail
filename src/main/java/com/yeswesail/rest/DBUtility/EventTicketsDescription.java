@@ -2,7 +2,7 @@ package com.yeswesail.rest.DBUtility;
 
 
 public class EventTicketsDescription extends DBInterface
-{	
+{
 	private static final long serialVersionUID = -643395528484801051L;
 
 	protected int idEventTicketsDescription;
@@ -22,12 +22,13 @@ public class EventTicketsDescription extends DBInterface
 		setNames();
 	}
 
-	public EventTicketsDescription(DBConnection conn, int id) throws Exception
+	public EventTicketsDescription(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
-					 "WHERE " + idColName + " = " + id;
+					 "WHERE " + idColName + " = " + id + " AND " +
+					 "      languageId = " + languageId;
 		this.populateObject(conn, sql, this);
 	}
 

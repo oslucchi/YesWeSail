@@ -1,8 +1,10 @@
 package com.yeswesail.rest.events;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 
+import javax.mail.MessagingException;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -18,14 +20,20 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
+import com.yeswesail.rest.LanguageResources;
+import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
+import com.yeswesail.rest.DBUtility.EventDescription;
 import com.yeswesail.rest.DBUtility.EventTickets;
+import com.yeswesail.rest.DBUtility.EventTicketsDescription;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
+import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
@@ -117,6 +125,26 @@ public class TicketsHandler {
 					DBInterface.TransactionRollback(conn);
 					return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
 				}
+
+				if (et.getTicketType() == EventTickets.ALL_BOAT) 
+				{
+					if (Utils.anyTicketAlreadySold(t.eventId))
+					{
+						DBInterface.TransactionRollback(conn);
+						return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
+					}
+					EventTickets[] tickets = EventTickets.findByEventId(t.eventId, languageId);
+					for (EventTickets item : tickets)
+					{
+						if (item.getTicketType() == EventTickets.ALL_BOAT)
+							continue;
+						while(item.getBooked() != item.getAvailable())
+						{
+							item.bookATicket();
+						}
+						item.update(conn, "idEventTickets");
+					}
+				}
 				et.bookATicket();
 				et.update(conn, "idEventTickets");
 				TicketLocks tl = new TicketLocks();
@@ -154,12 +182,28 @@ public class TicketsHandler {
 	@Path("/buyTickets")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response buyTickets(TicketJson[][] jsonIn, @HeaderParam("Language") String language)
+	public Response buyTickets(TicketJson[][] jsonIn, 
+							  @HeaderParam("Language") String language, 
+							  @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-
+		if (Utils.userSelfOrAdmin(token, jsonIn[0][0].usersId, languageId))
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
+		if (!Utils.userHasValidEmail(token))
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "users.profileEmailInvalid");
+		}
+		if (!Utils.userHasValidTaxcode(token))
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "users.taxcodeInvalid");
+		}
+		
+		String listForApproval = "";
+		String sep = "";
+		String ticketsList = "<ul>";
 		DBConnection conn = null;
-
 		try 
 		{
 			conn = DBInterface.TransactionStart();
@@ -171,8 +215,23 @@ public class TicketsHandler {
 					tl = new TicketLocks(conn, t.idEventTickets);
 					tl.setStatus("S");
 					tl.update(conn, "idTicketLocks");
+					EventDescription ed = new EventDescription();
+					ed.findEventTitleyId(conn, t.eventId, languageId);
+					EventTickets et = new EventTickets(conn, t.idEventTickets);
+					EventTicketsDescription etd = new EventTicketsDescription(conn, et.getTicketType(), languageId);
+					ticketsList += "<li>" + ed.getDescription() + " - " + etd.getDescription() + "</li>";
+					listForApproval += sep + t.idEventTickets;
+					sep = ",";
 				}
 			}
+			ticketsList += "</ul>";
+			PendingActions pa = new PendingActions();
+			pa.setActionType(PendingActions.TICKETS_BUY);
+			pa.setCreated(new Date());
+			pa.setLink("rest/tickets/confirm?tickets=" + listForApproval);
+			pa.setStatus("P");
+			pa.setUserId(jsonIn[0][0].usersId);
+			pa.insert(conn, "idPendingActions", pa);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -185,6 +244,70 @@ public class TicketsHandler {
 			DBInterface.disconnect(conn);
 		}
 		
+		try
+		{
+	        String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnBuy");
+	        htmlText = htmlText.replaceAll("TICKETLIST", ticketsList);
+	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnBuySubject");
+			URL url = getClass().getResource("/images/mailLogo.png");
+			String imagePath = url.getPath();
+			Mailer.sendMail(jsonIn[0][0].userName, subject, htmlText, imagePath);
+		}
+		catch(MessagingException e)
+		{
+			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+		}
+		return Response.status(Response.Status.OK).entity("").build();
+	}
+
+	@POST
+	@Path("confirm")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response confirmTickets(@HeaderParam("Language") String language,
+							     @QueryParam("tickets") String ticketsList,
+							     @QueryParam("userId") int userId)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		String[] tickets = ticketsList.split(",");
+		String ticketsHTML = "<ul>";
+		DBConnection conn = null;
+
+		try
+		{
+			conn = DBInterface.connect();
+			for(String eventTicketId : tickets)
+			{
+				EventTickets et = new EventTickets(conn, Integer.parseInt(eventTicketId));
+				EventDescription ed = new EventDescription();
+				ed.findEventTitleyId(conn, et.getEventId(), languageId);
+				EventTicketsDescription etd = new EventTicketsDescription(conn, et.getTicketType(), languageId);
+				ticketsHTML += "<li>" + ed.getDescription() + " - " + etd.getDescription() + "</li>";
+			}
+		}
+		catch(Exception e)
+		{
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		
+		try
+		{
+	        String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirmSubject");
+	        htmlText = htmlText.replaceAll("TICKETLIST", ticketsHTML);
+	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirm");
+			URL url = getClass().getResource("/images/mailLogo.png");
+			String imagePath = url.getPath();			
+			Mailer.sendMail(SessionData.getInstance().getBasicProfile(userId).getEmail(), subject, htmlText, imagePath);
+		}
+		catch(MessagingException e)
+		{
+			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+		}
 		return Response.status(Response.Status.OK).entity("").build();
 	}
 
@@ -201,11 +324,11 @@ public class TicketsHandler {
 		EventTickets[] tickets = null;
 		try
 		{
+			conn = DBInterface.connect();
 			tickets = EventTickets.findByEventId(eventId, languageId);
 		}
 		catch(Exception e)
 		{
-			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally

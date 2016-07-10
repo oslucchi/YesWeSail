@@ -17,6 +17,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
@@ -107,8 +108,11 @@ public class ReviewsHandler {
 		jsonIn.reviewForId = reviewForId;
 
 		SessionData sd = SessionData.getInstance();
-		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) ||
-			(idReviews != 0) || (reviewerId != 0) || (reviewForId != 0))
+		if ((idReviews == 0) && (reviewerId == 0) && (reviewForId == 0))
+		{
+			return Utils.jsonizeResponse(Status.FORBIDDEN, null, languageId, "generic.unauthorized");
+		}
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
 			jsonIn.status = "A";
 		}

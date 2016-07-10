@@ -18,6 +18,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
+import com.yeswesail.rest.DBUtility.AddressInfo;
+import com.yeswesail.rest.DBUtility.EventTicketsSold;
+import com.yeswesail.rest.DBUtility.Roles;
+import com.yeswesail.rest.DBUtility.TicketLocks;
 
 public class Utils {
 	final static Logger log = Logger.getLogger(Utils.class);
@@ -141,5 +145,70 @@ public class Utils {
 	public static Response jsonizeSingleObject(Object o, String language)
 	{
 		return jsonizeSingleObject(o, setLanguageId(language));
+	}
+	
+	public static boolean userSelfOrAdmin(String token, int idUsers, int languageId)
+	{
+		SessionData sd = SessionData.getInstance();
+		if ((sd.getBasicProfile(token).getIdUsers() != idUsers) && 
+			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean userIsAdmin(String token, int languageId)
+	{
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return false;
+		}
+		return true;
+	}
+	
+	public static boolean userHasValidEmail(String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getEmail() == null) 
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean userHasValidTaxcode(String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		Object[] profile;
+		if ((profile = sd.getWholeProfile(token)) == null) 
+		{
+			return false;
+		}
+		AddressInfo[] ai = ((AddressInfo[]) profile[SessionData.WHOLE_PROFILE]);
+		if ((ai[0].getTaxCode() == null) && (ai[1].getTaxCode() == null))
+		{
+			return false;
+		}
+		return true;
+	}
+
+	public static boolean anyTicketAlreadySold(int eventId)
+	{
+		try
+		{
+			TicketLocks[] tl = TicketLocks.findByEventId(eventId);
+			EventTicketsSold[] ets = EventTicketsSold.findByEventId(eventId);
+			if ((tl.length == 0) && (ets.length == 0))
+			{
+				return false;
+			}
+		}
+		catch(Exception e)
+		{
+			log.warn("Unable to check if tickets for this event have been sold already. not adding the all boat ticket");
+		}
+		return true;
 	}
 }

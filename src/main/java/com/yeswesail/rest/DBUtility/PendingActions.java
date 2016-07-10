@@ -5,6 +5,10 @@ import java.util.Date;
 
 public class PendingActions extends DBInterface 
 {
+	final public static String STATUS_UPGRADE = "statusUpgrade";
+	final public static String REVIEW = "review";
+	final public static String TICKETS_BUY = "ticketsBuy";
+	
 	private static final long serialVersionUID = 5253990869677923299L;
 
 	protected int idPendingActions;

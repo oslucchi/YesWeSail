@@ -64,6 +64,18 @@ public class EventTicketsSold extends DBInterface
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
+	public static EventTicketsSold[] findByEventId(int eventId) throws Exception
+	{
+		String sql = "SELECT a.* " +
+					 "FROM EventTicketsSold a INNER JOIN EventTickets b ON " +
+					 "         a.eventTicketId = b.idEventTickets " +
+					 "WHERE b.eventId = " + eventId;
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTicketsSold> tickets = 
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
+	}
+
 	public int getIdEventTicketsSold() {
 		return idEventTicketsSold;
 	}

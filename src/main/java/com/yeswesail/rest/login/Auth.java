@@ -379,7 +379,7 @@ public class Auth {
 	}
     
 	@POST
-	@Path("/chgPasswd")
+	@Path("/changePassword")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response changePassword(AuthJson jsonIn, 
@@ -391,10 +391,18 @@ public class Auth {
 			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.badMail");
 		}
 		DBConnection conn = null;
+		RegistrationConfirm rc;
 		try 
 		{
 			conn = DBInterface.connect();
 			u = new Users(conn, jsonIn.username);
+			rc = new RegistrationConfirm();
+			rc.setCreated(new Date());
+			rc.setPasswordChange(jsonIn.password);
+			rc.setStatus("A");
+			rc.setToken(jsonIn.token);
+			rc.setUserId(u.getIdUsers());
+			rc.insert(conn, "idRegistrationCOnfirm", rc);
 		}
 		catch (Exception e) 
 		{
@@ -431,11 +439,26 @@ public class Auth {
 			conn = DBInterface.TransactionStart();
 			rc = new RegistrationConfirm();
 			rc.findActiveRecordByToken(conn, token);
-			Users u = new Users(conn, rc.getUserId());
 			PasswordHandler pw = new PasswordHandler();
 			pw.setPassword(rc.getPasswordChange());
+			pw.setIdUsers(rc.getUserId());
 			pw.updatePassword(conn, true);
-			u.update(conn, "idUsers");
+			UsersAuth ua = UsersAuth.findUserId(rc.getUserId());
+			if (ua == null)
+			{
+				ua = new UsersAuth();
+				ua.setCreated(new Date());
+				ua.setLastRefreshed(ua.getCreated());
+				ua.setUserId(rc.getUserId());
+				ua.setToken(token);
+				ua.insert(conn, "idUsersAuth", ua);
+			}
+			else
+			{
+				SessionData.getInstance().removeUser(ua.getToken());
+				ua.setToken(token);
+				ua.update(conn, "idUsersAuth");
+			}
 		}
 		catch (Exception e) 
 		{

@@ -426,6 +426,8 @@ public class UsersHandler {
 			u = new Users(conn, userId);
 			u.setImageURL(imagePath.get(0));
 			u.update(conn, "idUsers");
+			SessionData sd = SessionData.getInstance();
+			sd.getBasicProfile(u.getIdUsers()).setImageURL(imagePath.get(0));
 		}
 		catch(Exception e)
 		{

@@ -24,6 +24,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
 import org.apache.log4j.Logger;
@@ -666,7 +667,6 @@ public class EventsHandler {
 		{
 			if (item == null)
 				continue;
-			er.setIdEventRoute(0);
 			er.setDescription(item.description);
 			er.setEventId(jsonIn.idEvents);
 			er.setLat(item.lat);
@@ -687,18 +687,18 @@ public class EventsHandler {
 			conn = DBInterface.TransactionStart();
 			event = handleInsertUpdate(jsonIn, conn, 
 									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
-			jsonIn.eventId = event.getIdEvents();
+			jsonIn.idEvents = jsonIn.eventId = event.getIdEvents();
 			
-			if ((jsonIn.description != null) || (jsonIn.logistics != null) ||
-				(jsonIn.includes != null) || (jsonIn.excludes != null))
-			{
-				handleInsertUpdateDetails(jsonIn, languageId, conn);
-			}
 			if ((jsonIn.route != null) && (jsonIn.route.length != 0))
 			{
 				handleInsertUpdateRoute(jsonIn, languageId, conn);
 			}
 
+			if ((jsonIn.description != null) || (jsonIn.logistics != null) ||
+				(jsonIn.includes != null) || (jsonIn.excludes != null))
+			{
+				handleInsertUpdateDetails(jsonIn, languageId, conn);
+			}
 			if (jsonIn.tickets != null)
 			{
 				handleInsertTicket(jsonIn.tickets, conn);
@@ -844,6 +844,11 @@ public class EventsHandler {
 	public Response eventCreate(EventJson jsonIn, 
 								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
+		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userSelfOrAdmin(token, jsonIn.shipOwnerId, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		return eventHandler(jsonIn, language, token); // Create event
 	}
 	
