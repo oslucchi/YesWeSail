@@ -47,28 +47,29 @@ angular.module('yeswesailApp')
                 latitude: $scope.newLocation.latitude,
                 longitude: $scope.newLocation.longitude
             },
-            zoom: 12,
+            zoom: 5,
             options: {
                 scrollwheel: false
             },
             control: {},
                  events: {
-            click: function (map, eventName, originalEventArgs) {
-                var e = originalEventArgs[0];
-                var lat = e.latLng.lat(),lon = e.latLng.lng();
-                var marker = {
-                    id: $scope.markers.length,
-                    coords: {
-                        latitude: lat,
-                        longitude: lon
-                    }
-                };
-                $scope.markers.push(marker);
-                $scope.$apply();
-            }
+//            click: function (map, eventName, originalEventArgs) {
+//                var e = originalEventArgs[0];
+//                var lat = e.latLng.lat(),lon = e.latLng.lng();
+//                var marker = {
+//                    id: $scope.markers.length,
+//                    coords: {
+//                        latitude: lat,
+//                        longitude: lon
+//                    }
+//                };
+//                $scope.markers.push(marker);
+//                $scope.$apply();
+//            }
         }
             
         };
+      
             angular.forEach(res.data.route, function(value, key){
                 $scope.markers.push({
                     coords:{

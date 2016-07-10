@@ -26,6 +26,10 @@ angular.module('yeswesailApp')
         this.getCurrentUser= function(){
             return this.userProfile;
         };
+    
+        this.setNewProfilePic=function(pic){
+            this.userProfile.imageURL=pic;
+        }
         
         this.isAdmin=function(roleId){
             if(roleId==9){

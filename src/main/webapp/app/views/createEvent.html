@@ -63,7 +63,7 @@
             </select>
    
         </div>
-        <div ng-show="isAuthorized(3)" class="field">
+        <div ng-show="isAuthorized(9)" class="field">
             <angucomplete-alt field-required="true" id="ex1" placeholder="Ship Owner..." pause="100" selected-object="suggestedOwner" local-data="shipOwners" search-fields="name,surname" image-field="imageURL"
                                 title-field="name,surname",
                                 description-field="name"
@@ -72,7 +72,7 @@
 
         </div>
         <button type="submit" class="ui large primary button" ng-click="create(tempEvent)">Create</button>
-        <div class="ui large button" ng-click="ngDialog.closeAll()">Cancel</div>
+        <div class="ui large button" ng-click="closeModals()">Cancel</div>
       </div>
 
       <div class="ui error message"></div>

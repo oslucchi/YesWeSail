@@ -25,6 +25,10 @@ angular.module('yeswesailApp')
           excludes: null,
           notes: null,
           imageUrl: null,
+            route: [{
+                lat: 42.47,
+                lng: 12.36
+            }],
           labels: []
         };
     $scope.isAuthorized=AuthService.isAuthorized;
@@ -61,7 +65,9 @@ angular.module('yeswesailApp')
             
         });
 
-    
+    $scope.closeModals=function(){
+      ngDialog.closeAll();  
+    };
     
    $scope.initializeSelect = function () {
 

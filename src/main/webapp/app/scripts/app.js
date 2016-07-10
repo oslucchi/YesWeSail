@@ -293,6 +293,14 @@ angular
       data: {
                 accessLevel: 3
             }
+    })
+      .state('resetPassword', {
+      url: "/reset-password",
+      templateUrl:  'views/reset-password.html',
+      controller: 'PasswordResetCtrl',
+      data: {
+                accessLevel: 3
+            }
     });
     
     
@@ -331,11 +339,12 @@ angular
         link: function (scope, elm, attr) {
             $timeout(function () {
                 $(elm).dropdown().dropdown('setting', {
+                    action: attr.action || 'activate',
                     onChange: function (value) {
                         scope.$parent[attr.ngModel] = value;
                         scope.$parent.$apply();
                     }
-                });
+                }).dropdown('set selected', scope.$parent[attr.ngModel]);
             }, 0);
         }
     };

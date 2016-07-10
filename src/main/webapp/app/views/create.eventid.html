@@ -36,13 +36,13 @@
         </a>
         <div class="right menu">
         
-          <div class="ui language dropdown item">
+          <div class="ui language dropdown item" action="activate">
     Event Language
     <i class="dropdown icon"></i>
-                                    <div class="menu">
-                                        <div class="item" ng-click="setLanguage('IT')" data-value="IT">IT</div>
-                                        <div class="item" ng-click="setLanguage('EN')" data-value="EN">EN</div>
-                                    </div>
+        <div class="menu">
+            <div class="item" ng-click="setLanguage('IT')" data-value="IT">IT</div>
+            <div class="item" ng-click="setLanguage('EN')" data-value="EN">EN</div>
+        </div>
   </div>
         <a ng-click="saveEvent()" class="item">    
             Save
@@ -70,7 +70,7 @@
                         <div class="ui items">
                             <div class="item">
                                 <div class="image">
-                                    <img ng-src="{{event.shipOwner.imageURL}}">
+                                    <img ng-src="{{shipOwner.imageURL}}">
                                     <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
                                 </div>
                                 <div class="content">
@@ -275,7 +275,7 @@
                 <div class="ui segment">
                     <div class="angular-google-map-container">
                         <ui-gmap-google-map refresh="refresh" events="map.events" options='map.options' center='map.center' zoom='map.zoom' control='map.control'>
-                        <ui-gmap-marker ng-repeat="marker in markers" coords="marker.coords"  idkey="marker.id" control="marker.control">
+                        <ui-gmap-marker ng-repeat="marker in markers" fit="true"  coords="marker.coords"  idkey="marker.id" control="marker.control">
                             </ui-gmap-marker>
                         </ui-gmap-google-map>
                         

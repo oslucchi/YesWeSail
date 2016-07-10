@@ -59,7 +59,7 @@
 
                         <div class="ui items">
                             <div class="item">
-                                <div class="image">
+                                <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})">
                                     <img ng-src="{{shipOwner.imageURL}}">
                                     <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
                                 </div>
@@ -199,12 +199,12 @@
   Partecipants
 </h2>
                 <div class="ui massive horizontal divided list">
-                    <div ng-repeat="participant in event.participants" class="item">
+                    <a ui-sref="userId.profile({userId: participant.idUsers})" ng-repeat="participant in event.participants" class="item">
                         <img class="ui avatar image" ng-src="{{participant.imageURL}}">
                         <div class="content">
                             <div class="header">{{participant.name}}</div>
                         </div>
-                    </div>
+                    </a>
                 </div>
 
 

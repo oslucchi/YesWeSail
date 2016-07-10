@@ -29,6 +29,14 @@ angular.module('yeswesailApp')
           CartService.totalAmount=totalAmount;
           };
           
+          scope.availableTickets=function(tickets){
+                var sum= 0;  
+              angular.forEach(tickets, function(value, key){
+                    sum+=(value.available-value.booked);
+                });  
+              return sum;
+          };
+          
           scope.addToCart=function(tickets, cabinType){
               
               CartService.addToCart(tickets, cabinType).then(function(res){

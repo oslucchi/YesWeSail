@@ -544,3 +544,11 @@ footer{
     display: none;
     width: 80%;
 }
+
+.ui.dropdown > .text > img, .ui.dropdown > .text > .image, .ui.dropdown .menu > .item > .image, .ui.dropdown .menu > .item > img {
+    max-width: 2em;
+}
+
+.shipOwner.image{
+    cursor: pointer;
+}

@@ -50,7 +50,11 @@ angular.module('yeswesailApp')
                 }
                 
                
-               
+                 $('.reputation.star.rating').rating({
+                    maxRating: 5,
+                    readOnly: true
+                });
+                
 
             }, function (err) {});
 
@@ -66,7 +70,7 @@ angular.module('yeswesailApp')
                 }
             }).then(function (response) {
                 toastr.success('Uploaded Boat');
-                 $scope.user.imageURL=response.data.images[0];
+                 $scope.user.imageURL=response.data.images[0]+ '?decache=' + Math.random();;
             }, function (response) {
 
             }, function (evt) {
