@@ -18,9 +18,9 @@ angular.module('yeswesailApp')
             AuthService.login(credentials).then(function (res) {
                  $http.defaults.headers.common['Authorization'] = res.token;
                 if(res.user.roleId==3){
-                    $window.location.href = '/#/admin?token='+res.token;
+                    $window.location.href = '#/admin?token='+res.token;
                 }else{
-                    $window.location.href = '/#/?token='+res.token;    
+                    $window.location.href = '#/?token='+res.token;    
                 }
                 
                 $scope.setCurrentUser(res.user);
