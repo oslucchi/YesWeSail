@@ -439,7 +439,67 @@ public class DBInterface implements Serializable
 		}
 	}
 	
-	public void populateObject(DBConnection conn, String sql, Object tbObj) throws Exception
+    private static ArrayList<Object> populateGenericObjectFromRecordset(ResultSetMetaData rsm, ResultSet rs) 
+			throws Exception
+	{
+		Exception e = null;
+		ArrayList<Object> retVal = new ArrayList<>();
+		try
+		{
+			for(int i = 1; i <= rsm.getColumnCount(); i++)
+			{
+				switch(rsm.getColumnType(i))
+				{
+				case Types.INTEGER:
+				case Types.BIGINT:
+				case Types.SMALLINT:
+				case Types.TINYINT:
+				case Types.NUMERIC:
+				case Types.BIT:
+					retVal.add(new Integer(rs.getInt(rsm.getColumnName(i))));
+					break;
+
+				case Types.DATE:
+					retVal.add(rs.getDate(rsm.getColumnName(i)));
+					break;
+
+				case Types.TIMESTAMP:
+					retVal.add(rs.getTimestamp(rsm.getColumnName(i)));
+					break;
+
+				case Types.BLOB:
+				case Types.CHAR:
+				case Types.VARCHAR:
+				case Types.LONGVARCHAR:
+					retVal.add(rs.getString(rsm.getColumnName(i)));
+					break;
+
+				case Types.FLOAT:
+				case Types.REAL:
+				case Types.DOUBLE:
+				case Types.DECIMAL:
+					retVal.add(rs.getDouble(rsm.getColumnName(i)));
+					break;
+
+				default:
+					retVal.add(rs.getString(rsm.getColumnName(i)));
+				}							
+			}
+		}
+		catch (IllegalArgumentException e1) {
+			e = e1;
+		}
+		catch (SQLException e1) {
+			e = e1;
+		}
+		if (e != null)
+		{
+			throw new Exception(e);
+		}
+		return retVal;
+	}
+
+    public void populateObject(DBConnection conn, String sql, Object tbObj) throws Exception
 	{
 		conn.executeQuery(sql);
 		try 
@@ -771,6 +831,17 @@ public class DBInterface implements Serializable
 		{
 			throw e;
 		}
+	}
+	
+	public static ArrayList<Object> executeAggregateStatement(DBConnection conn, String sql) throws Exception
+	{
+		ArrayList<Object> retVal = null;
+		conn.executeQuery(sql);
+		if (conn.getRs().next())
+		{
+			retVal = populateGenericObjectFromRecordset(conn.getRsm(), conn.getRs());
+		}
+		return retVal;
 	}
 	
 	public static DBConnection TransactionStart() throws Exception

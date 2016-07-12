@@ -250,8 +250,7 @@ public class HandlePendingActions {
 			log.trace("Retrieving pending actions");
 			conn = DBInterface.connect();
 			u = new Users(conn, id);
-//			u.setPassword("******");
-			docs = UploadFiles.getExistingFilesPath("sh_" + u.getIdUsers() + "_licenses_", "/images/shipowner");
+			docs = UploadFiles.getExistingFilesPath("docs_" + u.getIdUsers() + "_", "/images/shipowner");
 			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 
@@ -302,10 +301,13 @@ public class HandlePendingActions {
 				u = new Users(conn, id);
 				log.trace("changing user's role");
 				u.setRoleId(Roles.SHIP_OWNER);
-				u.update(conn, "idUsers");
 				u.setIsShipOwner(true);
 				log.trace("changed");
 				u.update(conn, "idUsers");
+				if (sd.getBasicProfile(u.getIdUsers()) != null)
+				{
+					sd.getBasicProfile(u.getIdUsers()).setRoleId(Roles.ADMINISTRATOR);
+				}
 			}
 
 			action = new PendingActions(conn, idPendingActions);

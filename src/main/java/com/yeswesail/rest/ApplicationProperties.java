@@ -35,6 +35,7 @@ public class ApplicationProperties {
 	private String braintreePublicKey;
 	private String braintreePrivateKey;
 	private ServletContext context;
+	private String adminEmail;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -89,6 +90,7 @@ public class ApplicationProperties {
 		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
 		braintreePublicKey = properties.getProperty("braintreePublicKey");
 		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
+		adminEmail = properties.getProperty("adminEmail");
     	
     	try
     	{
@@ -210,5 +212,9 @@ public class ApplicationProperties {
 
 	public void setContext(ServletContext context) {
 		this.context = context;
+	}
+
+	public String getAdminEmail() {
+		return adminEmail;
 	}
 }

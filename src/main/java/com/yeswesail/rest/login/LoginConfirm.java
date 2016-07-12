@@ -34,8 +34,7 @@ public class LoginConfirm {
 		ApplicationProperties prop = ApplicationProperties.getInstance();
 		URI location;
 		RegistrationConfirm rc = null;
-		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
-
+		Users u = null;
 		DBConnection conn = null;
 		try {
 			conn = DBInterface.connect();
@@ -72,7 +71,7 @@ public class LoginConfirm {
 				UsersAuth ua = UsersAuth.findToken(token);
 				ua.setLastRefreshed(new Date());
 				ua.update(conn, "idUsersAuth");
-				Users u = new Users(conn, ua.getUserId());
+				u = new Users(conn, ua.getUserId());
 				u.setEmail(email);
 				u.setStatus("A");
 				u.update(conn, "idUsers");
@@ -84,13 +83,16 @@ public class LoginConfirm {
 						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
 			}
 		}
-			
+		String uri = null;
 		try 
 		{
-			location = new URI(uri);
-			Users u = new Users(conn,rc.getUserId());
+			u = new Users(conn,rc.getUserId());
 			u.setStatus("A");
 			u.update(conn, "idUsers");
+			// Redirect on the profile page
+			uri = prop.getWebHost() + "/#/users/" + u.getIdUsers() + "/info?token=" + token + "&profileIncomplete=true";
+			location = new URI(uri);
+			
 			rc.setStatus("I");
 			rc.update(conn, "idRegistrationConfirm");
 			UsersAuth ua = new UsersAuth();

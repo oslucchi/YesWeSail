@@ -251,7 +251,7 @@ public class TicketsHandler {
 	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnBuySubject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
-			Mailer.sendMail(jsonIn[0][0].userName, subject, htmlText, imagePath);
+			Mailer.sendMail(jsonIn[0][0].userName, prop.getAdminEmail(), subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{

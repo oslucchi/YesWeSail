@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
 public class Mailer {
 	private static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
-	public static void sendMail(String to, String subject, String body, String imagePath) 
+	public static void sendMail(String to, String cc, String subject, String body, String imagePath) 
 			throws AddressException, MessagingException
 	{
 		Properties properties = System.getProperties();
@@ -35,6 +35,8 @@ public class Mailer {
 		MimeMessage message = new MimeMessage(session);
 		message.setFrom(new InternetAddress(prop.getMailFrom()));
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
+		if (cc != null)
+			message.addRecipient(Message.RecipientType.BCC, new InternetAddress(cc));
 		message.setSubject(subject);
 
         MimeMultipart multipart = new MimeMultipart("related");
@@ -61,5 +63,11 @@ public class Mailer {
 
 		// Send message
 		Transport.send(message);
+	}
+	
+	public static void sendMail(String to, String subject, String body, String imagePath) 
+			throws AddressException, MessagingException
+	{
+		sendMail(to, null, subject, body, imagePath);
 	}
 }

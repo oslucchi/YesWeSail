@@ -304,8 +304,7 @@ public class UsersHandler {
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
-		if ((sd.getBasicProfile(token).getIdUsers() != userId) &&
-			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
+		if (!Utils.userSelfOrAdmin(token, userId, languageId))
 		{
 			return fillBasicProfile(userId, languageId, false);
 		}
@@ -427,7 +426,7 @@ public class UsersHandler {
 			u.setImageURL(imagePath.get(0));
 			u.update(conn, "idUsers");
 			SessionData sd = SessionData.getInstance();
-			sd.getBasicProfile(u.getIdUsers()).setImageURL(imagePath.get(0));
+			sd.addUser(u.getIdUsers(), languageId);;
 		}
 		catch(Exception e)
 		{

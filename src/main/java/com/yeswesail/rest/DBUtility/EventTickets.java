@@ -68,6 +68,20 @@ public class EventTickets extends DBInterface
 		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 
+	public static EventTickets[] getAllTicketByEventId(int eventId, int languageId) throws Exception
+	{
+		String sql = "SELECT a.*, b.description " +
+				 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
+				 	 "     a.ticketType = b.ticketType AND " +
+				 	 "     b.languageId = " + languageId + " " +
+					 "WHERE eventId = " + eventId + " " +
+					 "ORDER BY ticketType, price ASC";
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTickets> tickets=
+			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+		return(tickets.toArray(new EventTickets[tickets.size()]));
+	}
+
 	public int getIdEventTickets() {
 		return idEventTickets;
 	}

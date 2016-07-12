@@ -90,6 +90,20 @@ public class CartHandler {
 			for(TicketLocks ticket : tickets)
 			{
 				EventTickets ev = new EventTickets(conn, ticket.getEventTicketId());
+				if (ev.getTicketType() == EventTickets.ALL_BOAT)
+				{
+					EventTickets[] et = EventTickets.getAllTicketByEventId(ev.getEventId(), languageId);
+					for (EventTickets item : et)
+					{
+						if (item.getTicketType() == EventTickets.ALL_BOAT)
+							continue;
+						while(item.getBooked() != 0)
+						{
+							item.releaseATicket();
+						}
+						item.update(conn, "idEventTickets");
+					}
+				}
 				ev.releaseATicket();
 				ev.update(conn, "idEventTickets");
 				ticket.delete(conn, ticket.getIdTicketLocks());

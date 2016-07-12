@@ -1,7 +1,9 @@
 package com.yeswesail.rest.reviews;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
@@ -144,10 +146,37 @@ public class ReviewsHandler {
 					.build();
 		}
 	
-		log.trace("Returning an array of ");
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
+	@GET
+	@Path("/{userId}/rating")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response rating(@HeaderParam("Language") String language,
+						   @HeaderParam("Authorization") String token,
+						   @PathParam("userId") int userId)
+	{
+		ArrayList<Object> results = null;
+		
+		DBConnection conn;
+		try
+		{
+			conn = DBInterface.connect();
+			String sql = "SELECT AVG(rating) FROM Reviews " +
+						 "WHERE reviewForId = " + userId;
+			results = DBInterface.executeAggregateStatement(conn, sql);
+			HashMap<String, Double> json = new HashMap<>();
+			json.put("rating", (Double) results.get(0));
+			jh.jasonize(json, language);
+		}
+		catch(Exception e)
+		{
+			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+		return Response.status(Response.Status.OK).entity(jh.json).build();
+	}
+	
 	@GET
 	@Path("/{idReviews}")
 	@Produces(MediaType.APPLICATION_JSON)

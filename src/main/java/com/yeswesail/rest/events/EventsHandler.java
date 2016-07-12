@@ -388,6 +388,10 @@ public class EventsHandler {
 			int index = -1;
 			for (int i = 0; i < allTickets.length; i++)
 			{
+				if ((allTickets[i].getTicketType() == EventTickets.ALL_BOAT) && Utils.anyTicketAlreadySold(event.getIdEvents()))
+				{
+					continue;
+				}
 				if (allTickets[i].getTicketType() != ticketType)
 				{
 					ticketType = allTickets[i].getTicketType();
