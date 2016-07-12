@@ -8,7 +8,7 @@
  * Service in the yeswesailApp.
  */
 angular.module('yeswesailApp')
-  .factory('MAPS', function ($http) {
+  .factory('MAPS', function ($http, URLs) {
     var MAPS={};
     var MAPSService={};
     
@@ -16,7 +16,7 @@ angular.module('yeswesailApp')
   
     
     MAPSService.getMap=function(map){
-        var promise =   $http.post('http://yeswesail.ddns.net:8080/YesWeSail/rest/maps', {mapName: 'all'}).then(function(res){
+        var promise =   $http.post(URLs.ddns + 'rest/maps', {mapName: 'all'}).then(function(res){
             
             return res.data[map];
         

@@ -54,7 +54,7 @@ angular
 
 
 .constant('URLs', {
-    ddns: 'http://188.213.171.213:8080/YesWeSail/'
+    ddns: 'http://test.yeswesail.com:8080/YesWeSail/'
 //    ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
 })
 .constant('LOCALES', {
