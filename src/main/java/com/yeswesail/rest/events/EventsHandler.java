@@ -380,6 +380,7 @@ public class EventsHandler {
 		jsonResponse.put("event", event);
 		
 		EventTickets[] allTickets = null;
+		int ticketsAvailable = 0;
 		try
 		{
 			allTickets = EventTickets.findByEventId(event.getIdEvents(), languageId);
@@ -398,6 +399,7 @@ public class EventsHandler {
 					index++;
 					tickets.add(new ArrayList<EventTickets>());
 				}
+				ticketsAvailable += allTickets[i].getAvailable() - allTickets[i].getBooked();
 				tickets.get(index).add(allTickets[i]);
 			}
 			jsonResponse.put("tickets", tickets);
@@ -412,6 +414,21 @@ public class EventsHandler {
 		try
 		{
 			participants = EventTicketsSold.findParticipants(event.getIdEvents(), languageId);
+			if (ticketsAvailable == 0)
+			{
+				jsonResponse.put("participant-msg", 
+								 LanguageResources.getResource(languageId, "events.nospotsleft"));
+			}
+			else if (ticketsAvailable <= 3)
+			{
+				jsonResponse.put("participant-msg", 
+						 LanguageResources.getResource(languageId, "events.fewspotsleft"));
+			}
+			else if (participants.length == 0)
+			{
+				jsonResponse.put("participant-msg", 
+						 LanguageResources.getResource(languageId, "events.noparticipants"));
+			}
 			jsonResponse.put("participants", participants);
 		}
 		catch(Exception e)
