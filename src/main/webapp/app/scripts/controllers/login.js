@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('LoginCtrl', function ($scope, $rootScope, ngDialog, AUTH_EVENTS, AuthService, $location, $window, $http) {
+    .controller('LoginCtrl', function ($scope, $rootScope, ngDialog, AUTH_EVENTS, AuthService, $location, $window, $http, USER_ROLES) {
         $scope.credentials = {
             username: '',
             password: ''
@@ -17,7 +17,7 @@ angular.module('yeswesailApp')
             
             AuthService.login(credentials).then(function (res) {
                  $http.defaults.headers.common['Authorization'] = res.token;
-                if(res.user.roleId==3){
+                if(res.user.roleId==USER_ROLES.ADMIN){
                     $window.location.href = '#/admin?token='+res.token;
                 }else{
                     $window.location.href = '#/?token='+res.token;    

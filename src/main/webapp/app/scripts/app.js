@@ -45,10 +45,10 @@ angular
 
 
 .constant('USER_ROLES', {
-    all: '*',
-    user: 'user',
-    admin: 'admin',
-    sailor: 'sailor'
+    FAKE: 1,
+    TRAVELLER: 3,
+    SHIPOWNER: 6,
+    ADMIN: 9
 })
 
 
@@ -128,7 +128,7 @@ angular
 })
 
 
-.config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider) {
+.config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES) {
     
     $translateProvider.useStaticFilesLoader({
         prefix: 'resources/locale-',// path to translations files
@@ -147,10 +147,8 @@ angular
     .state('main', {
       url: "/",
       templateUrl: 'views/main.html',
-      controller:'MainCtrl',
-      data: {
-                accessLevel: 0
-            }
+      controller:'MainCtrl'
+      
     })
     .state('howitworks', {
       url: "/howitworks",
@@ -164,152 +162,126 @@ angular
       url: "/users/{userId}",
       templateUrl: 'views/userId.html',
       controller:  'UseridCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('userId.profile', {
       url: "/profile",
       templateUrl: 'views/userId.profile.html',
       controller:  'UseridProfileCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('userId.boats', {
       url: "/boats",
       templateUrl: 'views/userId.boats.html',
       controller:  'UseridBoatsCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('userId.documents', {
       url: "/documents",
       templateUrl: 'views/userId.documents.html',
       controller:  'UseridDocumentsCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('userId.info', {
       url: "/personal-info",
       templateUrl: 'views/userId.info.html',
       controller:  'UseridInfoCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('userId.events', {
       url: "/events",
       templateUrl: 'views/userId.events.html',
       controller:  'UseridCtrl',
-      data: {
-                accessLevel: 0
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
     .state('events', {
       url: "/events?location&categoryId",
       templateUrl: 'views/events.html',
-      controller:  'EventsCtrl',
-      data: {
-                accessLevel: 0
-            }
+      controller:  'EventsCtrl'
     })
     .state('event', {
       url: "/events/:eventId",
       templateUrl:  'views/eventid.html',
-      controller: 'EventidCtrl',
-      data: {
-                accessLevel: 0
-            }
+      controller: 'EventidCtrl'
     })
     .state('editEvent', {
       url: "/edit-event/:eventId",
       templateUrl:  'views/create.eventid.html',
       controller: 'EditEventCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.SHIPOWNER
     })
       .state('cart', {
       url: "/cart",
       templateUrl:  'views/cart.html',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     }) 
       .state('cartSuccess', {
       url: "/cart/success",
       templateUrl:  'views/cartsuccess.html',
       controller: 'CartSuccessCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
       .state('cartError', {
       url: "/cart/error",
       templateUrl:  'views/carterror.html',
       controller: 'CartErrorCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
       .state('admin', {
       url: "/admin",
       templateUrl:  'views/admin.html',
       controller: 'AdminCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.ADMIN
     }) 
       .state('admin.events', {
       url: "/events",
       templateUrl:  'views/admin.events.html',
       controller: 'AdmineventsCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.ADMIN
     }) 
       .state('admin.users', {
       url: "/users",
       templateUrl:  'views/admin.users.html',
       controller: 'AdminCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.ADMIN
     })
       .state('admin.requests', {
       url: "/requests",
       templateUrl:  'views/admin.requests.html',
       controller: 'AdminrequestsCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.ADMIN
     })
       .state('sailorRegistration', {
       url: "/sailor-registration",
       templateUrl:  'views/sailor-registration.html',
       controller: 'SailorRegistrationCtrl',
-      data: {
-                accessLevel: 3
-            }
+      accessLevel: USER_ROLES.TRAVELLER
     })
       .state('resetPassword', {
       url: "/reset-password",
       templateUrl:  'views/reset-password.html',
-      controller: 'PasswordResetCtrl',
-      data: {
-                accessLevel: 3
-            }
+      controller: 'PasswordResetCtrl'
     });
     
     
     })
-    .run(function($http) {
+    .run(function($http, $rootScope, $state, AuthService) {
     
      $http.defaults.headers.common['Language'] = 'IT';
- 
+    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+         if (!!toState.accessLevel && !AuthService.isAuthorized(toState.accessLevel)) {
+              event.preventDefault();
+              if (AuthService.isAuthenticated()) {
+                // user is not allowed
+                $state.go('main'); 
+              } else {
+                // user is not logged in
+                $rootScope.$broadcast('LoginRequired', 'Some data');
+                   event.preventDefault();
+                   $state.go('main'); 
+              }
+            }
+  });
 })
     
     

@@ -395,6 +395,12 @@ module.exports = function (grunt) {
               'resources/{,*/}*.*'
           ]
         },
+                {
+                    expand: true,
+                    cwd: 'bower_components/semantic/dist/themes/default/assets/fonts/',
+                    src: ['**/*'],
+                    dest: 'styles/themes/default/assets/fonts'
+                },
         {
             expand: true,
             cwd: 'bower_components/angular-i18n/',

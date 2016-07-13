@@ -108,6 +108,8 @@ angular.module('yeswesailApp')
         var registerDialog = ngDialog;
         var invalidEmailDialog = ngDialog;
 
+
+    
         $scope.popupLogin = function () {
 
             ngDialog.closeAll();
@@ -124,10 +126,11 @@ angular.module('yeswesailApp')
             registerDialog.open({
                 template: 'views/register.html'
                 , className: 'ngdialog-theme-default'
-                , controller: 'RegisterCtrl'
+                , controller: 'RegisterCtrl',
+                scope: $scope
             });
         }; 
-    $scope.popupCreateEventDialog = function () {
+           $scope.popupCreateEventDialog = function () {
             ngDialog.closeAll();
         
             registerDialog.open({
@@ -149,6 +152,11 @@ angular.module('yeswesailApp')
             });
     }
     
+     $scope.$on('LoginRequired', function (event, data) {
+         $scope.popupLogin();
+     
+     });
+
     
 //       $rootScope.$on("$stateChangeStart", 
 //    function (event, toState, toParams, 

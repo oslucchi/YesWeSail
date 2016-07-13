@@ -52,10 +52,9 @@ angular.module('yeswesailApp')
             return !!Session.getCurrentUser();
         };
 
-        authService.isAuthorized = function (roleId) {
-            if(Session.userProfile){
-
-                if(roleId<=Session.userProfile.roleId){
+        authService.isAuthorized = function (role) {
+            if(!!Session.userProfile){
+                if(role<=Session.userProfile.roleId){
                     return true;
                 }   
             }
