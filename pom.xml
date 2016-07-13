@@ -155,12 +155,10 @@
 					        <directory>src/main/webapp/dist</directory> 
 					        <targetPath>/</targetPath>
 					      </resource> 
-<!-- 
 					      <resource> 
-					        <directory>src/main/webapp/bower_components</directory> 
-					        <targetPath>/bower_components</targetPath>
+					        <directory>src/main/webapp/bower_components/semantic/dist/themes</directory> 
+					        <targetPath>/styles/themes</targetPath>
 					      </resource> 
--->
 					      <resource> 
 					        <directory>images</directory> 
 					        <targetPath>/images</targetPath>
