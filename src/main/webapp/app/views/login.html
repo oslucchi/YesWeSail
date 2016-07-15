@@ -47,7 +47,7 @@
         Esegui l'accesso al tuo account
       </div>
     </h2>
-    <form ng-submit=login(credentials) class="ui large form">
+    <form ng-submit="login(credentials)" method="post" class="ui large form">
       <div class="ui stacked segment">
           <a href="https://www.facebook.com/dialog/oauth?client_id=484756285065008&redirect_uri=http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
            <div class="ui horizontal divider"></div>
