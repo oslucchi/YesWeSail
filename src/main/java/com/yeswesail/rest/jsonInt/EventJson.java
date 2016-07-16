@@ -6,7 +6,7 @@ public class EventJson {
 	public int eventId;
 	public int idEvents;
 	public int shipOwnerId;
-	public int shipId;
+	public int boatId;
 	public int eventType;
 	public String status;
 	public String dateStart;

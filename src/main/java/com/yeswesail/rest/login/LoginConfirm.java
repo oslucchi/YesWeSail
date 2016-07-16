@@ -90,7 +90,7 @@ public class LoginConfirm {
 			u.setStatus("A");
 			u.update(conn, "idUsers");
 			// Redirect on the profile page
-			uri = prop.getWebHost() + "/#/users/" + u.getIdUsers() + "/info?token=" + token + "&profileIncomplete=true";
+			uri = prop.getWebHost() + "/#/users/" + u.getIdUsers() + "/personal-info?token=" + token + "&profileIncomplete=true";
 			location = new URI(uri);
 			
 			rc.setStatus("I");

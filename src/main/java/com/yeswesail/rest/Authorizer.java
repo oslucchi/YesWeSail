@@ -66,7 +66,7 @@ public class Authorizer implements ContainerRequestFilter
 		Object[] sessionProfile = sd.getSessionData(token);
 		if (sessionProfile != null)
 		{
-			if (SessionData.getInstance().getLanguage(token) != Constants.getLanguageCode(language))
+			if (sd.getLanguage(token) != Constants.getLanguageCode(language))
 			{
 				sd.setLanguage(token, Constants.getLanguageCode(language));
 			}

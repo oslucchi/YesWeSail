@@ -416,17 +416,17 @@ public class EventsHandler {
 			participants = EventTicketsSold.findParticipants(event.getIdEvents(), languageId);
 			if (ticketsAvailable == 0)
 			{
-				jsonResponse.put("participant-msg", 
+				jsonResponse.put("participantMessage", 
 								 LanguageResources.getResource(languageId, "events.nospotsleft"));
 			}
 			else if (ticketsAvailable <= 3)
 			{
-				jsonResponse.put("participant-msg", 
+				jsonResponse.put("participantMessage", 
 						 LanguageResources.getResource(languageId, "events.fewspotsleft"));
 			}
 			else if (participants.length == 0)
 			{
-				jsonResponse.put("participant-msg", 
+				jsonResponse.put("participantMessage", 
 						 LanguageResources.getResource(languageId, "events.noparticipants"));
 			}
 			jsonResponse.put("participants", participants);
@@ -494,7 +494,15 @@ public class EventsHandler {
 
 		try
 		{
-			Boats b = new Boats(conn, event.getShipId());
+			Boats b = new Boats(conn, event.getBoatId());
+			ArrayList<String> images = UploadFiles.getExistingFilesPath(
+					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(UploadFiles.getExistingFilesPath(
+					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats"));
+			b.setImages(images);
+			b.setDocs(UploadFiles.getExistingFilesPath(
+					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
+
 			jsonResponse.put("boat", b);
 		}
 		catch (Exception e) {
@@ -549,7 +557,7 @@ public class EventsHandler {
 		if (jsonIn.location == null)
 			jsonIn.location = "TBD";
 		event.setLocation(jsonIn.location);
-		event.setShipId(jsonIn.shipId);
+		event.setBoatId(jsonIn.boatId);
 		event.setShipOwnerId(jsonIn.shipOwnerId);
 		if (jsonIn.status == null)
 		{
@@ -925,17 +933,16 @@ public class EventsHandler {
 	@Path("/addTickets")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addTickets(TicketJson[] jsonIn, @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	public Response addTickets(TicketJson[][] jsonIn, @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 
 		DBConnection conn = null;
-		try//					savedFile.write(item.data);
-//		savedFile.close();
-
+		try
 		{
 			conn = DBInterface.TransactionStart();
-			handleInsertTicket(jsonIn, conn);
+			for(TicketJson[] ticket : jsonIn)
+				handleInsertTicket(ticket, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
@@ -1066,8 +1073,31 @@ public class EventsHandler {
 		}
 		Utils jsonizer = new Utils();
 
-		jsonizer.addToJsonContainer("images", 
-								 UploadFiles.getExistingFilesPath(prefix, contextPath), true);
+		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.connect();
+			for(String image : images)
+			{
+				if (image.startsWith(prefix + "0"))
+				{
+					Events e = new Events(conn, eventId);
+					e.setImageURL(image);
+					e.update(conn, "idEvents");
+					break;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			log.warn("Unable to update main image for event " + eventId + ". Exception " + e.getMessage());
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		jsonizer.addToJsonContainer("images", images, true);
 		
 		StatusType status = Response.Status.OK;
 		if (response.getStatusInfo() != Response.Status.OK)

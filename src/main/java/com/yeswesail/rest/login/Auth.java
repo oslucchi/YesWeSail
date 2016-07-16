@@ -11,6 +11,7 @@ import javax.mail.MessagingException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 
@@ -180,11 +181,16 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response register(AuthJson jsonIn, @HeaderParam("Language") String language) 
 	{
+		int languageId = Utils.setLanguageId(language);
 		if (jsonIn.username == null)
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "users.badMail");
 		}
-		jsonIn.token = UUID.randomUUID().toString();		
+		if ((jsonIn.password == null) || (jsonIn.password.length() == 0))
+		{
+			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.badPassword");
+		}
+		jsonIn.token = UUID.randomUUID().toString();
 
 		Response response;
 		if ((response = populateUsersTable(jsonIn, false, language)) != null)
@@ -193,7 +199,36 @@ public class Auth {
 		if ((response = prepareAndSendMail("mail.body", "mail.subject", "confirmUser", language, jsonIn)) != null)
 			return response;
 		
-		return Utils.jsonizeResponse(Response.Status.OK, null, language, "auth.registerRedirectMsg");
+		Utils ut = new Utils();
+		ut.addToJsonContainer("responseMessage", LanguageResources.getResource(languageId, "auth.registerRedirectMsg"), true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
+	}
+
+	@GET
+	@Path("/isAuthenticated")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response isAtuhenticated(@HeaderParam("Language") String language,
+									@HeaderParam("Authorization") String token) 
+	{
+		SessionData sa = SessionData.getInstance();
+		Utils ut = new Utils();
+		if (sa.getBasicProfile(token) != null)
+		{
+			ut.addToJsonContainer("authorized", "true", true);
+			return Response.status(Status.OK).entity(ut.jsonize()).build();
+		}
+		
+		try 
+		{
+			UsersAuth.findToken(token);
+		}
+		catch (Exception e) {
+			ut.addToJsonContainer("authorized", "false", true);
+			return Response.status(Status.UNAUTHORIZED).entity(ut.jsonize()).build();
+		}
+		ut.addToJsonContainer("authorized", "true", true);
+		return Response.status(Status.OK).entity(ut.jsonize()).build();
 	}
 
 	
@@ -286,20 +321,22 @@ public class Auth {
 		}
 
 		SessionData sa = SessionData.getInstance();
-		Object[] userProfile = sa.getWholeProfile(u.getIdUsers());
+		Object[] userProfile = sa.getSessionData(token);
 		if (userProfile == null)
 		{
-			userProfile = new Object[2];
+			userProfile = new Object[SessionData.SESSION_ELEMENTS];
+			userProfile[SessionData.LANGUAGE] = new Integer(Utils.setLanguageId(language));
 		}
-		userProfile[0] = u;
 		try 
 		{
-			userProfile[1] = AddressInfo.findUserId(u.getIdUsers());
+			userProfile[SessionData.BASIC_PROFILE] = u;
+			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(u.getIdUsers());
 		}
 		catch (Exception e) 
 		{
 			;
 		}
+		
 		sa.updateSession(u.getIdUsers(), userProfile, token);
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();

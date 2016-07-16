@@ -1,6 +1,7 @@
 package com.yeswesail.rest;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import com.yeswesail.rest.DBUtility.AddressInfo;
@@ -156,26 +157,42 @@ public class SessionData {
 
 	public void removeUser(int userId)
 	{
-		for(String token: sessionData.keySet())
+		Iterator<Map.Entry<String, Object[]>> iter = sessionData.entrySet().iterator();
+		while (iter.hasNext()) 
 		{
-			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
+		    Map.Entry<String, Object[]> entry = iter.next();
+		    if(((Users) entry.getValue()[BASIC_PROFILE]).getIdUsers() == userId)
 			{
-				sessionData.remove(token);
-			}
+		        iter.remove();
+		        break;
+		    }
 		}
 		return;
 	}
 
 	public void updateSession(int userId, Object[] data, String newToken)
 	{
-		for(String token: sessionData.keySet())
+		Iterator<Map.Entry<String, Object[]>> iter = sessionData.entrySet().iterator();
+		Object[] sessionItem = null;
+		while (iter.hasNext()) 
 		{
-			if (((Users)sessionData.get(token)[BASIC_PROFILE]).getIdUsers() == userId)
+		    Map.Entry<String, Object[]> entry = iter.next();
+		    if(((Users) entry.getValue()[BASIC_PROFILE]).getIdUsers() == userId)
 			{
-				sessionData.remove(token);
-				sessionData.put(newToken, data);
-			}
+		    	sessionItem = entry.getValue();
+		        iter.remove();
+		        break;
+		    }
 		}
+		if ((sessionItem == null) || (sessionItem.length != SESSION_ELEMENTS))
+		{
+			data[LANGUAGE] = Utils.setLanguageId("EN");
+		}
+		else
+		{
+			data[LANGUAGE] = sessionItem[LANGUAGE];
+		}
+		sessionData.put(newToken, data);
 	}
 
 	public void updateSession(String token, Object[] data)

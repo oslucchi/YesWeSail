@@ -38,6 +38,7 @@ import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.DocumentTypes;
 import com.yeswesail.rest.DBUtility.Documents;
+import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.Users;
@@ -339,6 +340,12 @@ public class UsersHandler {
 			for(int i = 0; i < usersList.size(); i++)
 			{
 				AddressInfo[] ai = AddressInfo.findUserId(usersList.get(i).getIdUsers());
+				if ((ai == null) || (ai.length == 0))
+				{
+					ai = new AddressInfo[2];
+					ai[0] = new AddressInfo();
+					ai[1] = ai[0];
+				}
 				usersList.get(i).setPersonalInfo(ai[0]);
 				usersList.get(i).setBillingInfo(ai[1]);
 			}
@@ -362,6 +369,51 @@ public class UsersHandler {
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+	
+	@SuppressWarnings("unchecked")
+	@GET
+	@Path("events")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response usersEvents(@HeaderParam("Authorization") String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(token);
+		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId))
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(utils.jsonize())
+					.build();
+		}
+		
+		ArrayList<Events> eventsList = null;
+		DBConnection conn = null;
+		int userId = sd.getBasicProfile(token).getIdUsers();
+		try 
+		{
+			conn = DBInterface.connect();
+			eventsList = (ArrayList<Events>) Events.populateCollection(
+							"SELECT * FROM Events " +
+							"WHERE userId = " + userId + " " +
+							"ORDER BY dateStart DESC", Events.class);
+		}
+		catch (Exception e) 
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils ut = new Utils();
+		ut.addToJsonContainer("events", eventsList, true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
+	}
+
 	@POST
     @Path("/{userId}/profilePic")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -479,6 +531,7 @@ public class UsersHandler {
 			if (jsonIn.birthday != null)
 				u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
 			u.setRoleId(jsonIn.roleId);
+			u.update(conn, "idUsers");
 			AddressInfoJson[] aiJson = new AddressInfoJson[2];
 			aiJson[0] = jsonIn.personalInfo;
 			aiJson[1] = jsonIn.billingInfo;
@@ -842,9 +895,11 @@ public class UsersHandler {
 
 		for(Boats boat : boats)
 		{
-			boat.setImages(
-					UploadFiles.getExistingFilesPath(
-							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats"));
+			ArrayList<String> images = UploadFiles.getExistingFilesPath(
+											"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(UploadFiles.getExistingFilesPath(
+									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats"));
+			boat.setImages(images);
 			boat.setDocs(
 					UploadFiles.getExistingFilesPath(
 							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));

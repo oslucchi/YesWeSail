@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
+import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
@@ -163,11 +164,13 @@ public class ReviewsHandler {
 		try
 		{
 			conn = DBInterface.connect();
-			String sql = "SELECT AVG(rating) FROM Reviews " +
+			String sql = "SELECT AVG(rating), count(*) as population " +
+						 "FROM Reviews " +
 						 "WHERE reviewForId = " + userId;
 			results = DBInterface.executeAggregateStatement(conn, sql);
-			HashMap<String, Double> json = new HashMap<>();
+			HashMap<String, Object> json = new HashMap<>();
 			json.put("rating", (Double) results.get(0));
+			json.put("populationSize", new Integer((int) results.get(1)));
 			jh.jasonize(json, language);
 		}
 		catch(Exception e)
@@ -236,7 +239,6 @@ public class ReviewsHandler {
 		DBConnection conn = null;
 		try 
 		{
-			log.trace("Review added");
 			conn = DBInterface.TransactionStart();
 			review = new Reviews();
 			review.setReview(jsonIn.review);
@@ -247,6 +249,7 @@ public class ReviewsHandler {
 			review.setCreated(new Date());
 			review.setUpdated(review.getCreated());
 			int id = review.insertAndReturnId(conn, "idReviews", review);
+			log.trace("Review added");
 			
 			PendingActions pa = new PendingActions();
 			pa.setActionType("review");
@@ -270,7 +273,10 @@ public class ReviewsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 		}
-		return Response.status(Response.Status.OK).entity("{}").build();
+		Utils ut = new Utils();
+		ut.addToJsonContainer("message", 
+					LanguageResources.getResource(languageId, "reviews.successfullyInserted"), true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
 	}
 
 	@PUT

@@ -22,7 +22,7 @@ public class Events extends DBInterface
 	protected int categoryId;
 	protected String imageURL;
 	protected int shipOwnerId;
-	protected int shipId;
+	protected int boatId;
 	protected String labels;
 	protected String title;
 	protected int minPrice;
@@ -255,12 +255,12 @@ public class Events extends DBInterface
 		this.shipOwnerId = shipOwnerId;
 	}
 
-	public int getShipId() {
-		return shipId;
+	public int getBoatId() {
+		return boatId;
 	}
 
-	public void setShipId(int shipId) {
-		this.shipId = shipId;
+	public void setBoatId(int boatId) {
+		this.boatId = boatId;
 	}
 
 	public String getLabels() {
