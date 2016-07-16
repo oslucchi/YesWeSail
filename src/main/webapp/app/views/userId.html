@@ -13,11 +13,12 @@
             {{user.name}} {{user.surname}}
               <div class="ui divider"></div>
             <div ng-if="user.isShipOwner" class="sub header"><div class="ui large blue label">Armatore</div></div>
-
+              
                             
           </div>
                 
         </h2>
+            <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback
             <div ng-if="isOwner || isAdmin" class="ui divider"></div>
 <!--
               <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">

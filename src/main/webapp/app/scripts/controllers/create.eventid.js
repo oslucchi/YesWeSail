@@ -22,6 +22,16 @@ angular.module('yeswesailApp')
     $scope.selectedLanguage='IT';
     $scope.tempEvent={};
     $scope.markers=[];
+    $scope.selectedBoat=null;
+    
+    $scope.getBoats = function (userId) {
+            $http.get(URLs.ddns + 'rest/users/shipowners/' + userId + '/boats').then(function (res) {
+                $scope.boats = res.data.boats;
+            });
+        };
+      $scope.setSelectedBoat=function(boat){
+            $scope.selectedBoat=boat;
+        }
     $scope.getEvent=function(){
         $http.post(URLs.ddns + 'rest/events/details', {eventId: $stateParams.eventId
         }, {headers: {'Edit-Mode': 'true', 'Language': $scope.selectedLanguage}}).then(function (res) {
@@ -36,7 +46,7 @@ angular.module('yeswesailApp')
             $scope.logistics= res.data.logistics;
             $scope.includes= res.data.includes;
             $scope.excludes= res.data.excludes;
-            $scope.boat= res.data.boat;
+            $scope.setSelectedBoat(res.data.boat);
             $scope.description= res.data.description;
             $scope.newLocation={
                     latitude:res.data.route[0].lat,
@@ -83,7 +93,7 @@ angular.module('yeswesailApp')
             
             
             
-            
+            $scope.getBoats($scope.shipOwner.idUsers);
             angular.element('.cover-img')
                 .css({'background-image': 'url(\'' + $scope.event.imageURL +'\')'});
         }, function (err) {});
@@ -102,35 +112,34 @@ $scope.getEvent();
         
         $scope.saveEvent=function(){
             
-                $scope.tempEvent.categoryId= $scope.event.categoryId,
-                $scope.tempEvent.idEvents= $scope.event.idEvents,
-                $scope.tempEvent.shipOwnerId=$scope.shipOwner.idUsers,
-                $scope.tempEvent.shipId= $scope.boat.idBoats,
-                $scope.tempEvent.eventType= $scope.event.eventType,
-                $scope.tempEvent.dateStart= $scope.event.dateStart,
-                $scope.tempEvent.dateEnd= $scope.event.dateEnd,
-                $scope.tempEvent.title= $scope.event.title,
-                $scope.tempEvent.description= $scope.description,
-                $scope.tempEvent.logistics= $scope.logistics,
-                $scope.tempEvent.includes= $scope.includes,
-                $scope.tempEvent.excludes= $scope.excludes,
-                $scope.tempEvent.location= $scope.event.location,
-                $scope.tempEvent.imageURL= $scope.event.imageURL,
-                $scope.tempEvent.labels= []
+                $scope.tempEvent.categoryId= $scope.event.categoryId;
+                $scope.tempEvent.idEvents= $scope.event.idEvents;
+                $scope.tempEvent.shipOwnerId=$scope.shipOwner.idUsers;
+                $scope.tempEvent.eventType= $scope.event.eventType;
+                $scope.tempEvent.dateStart= $scope.event.dateStart;
+                $scope.tempEvent.dateEnd= $scope.event.dateEnd;
+                $scope.tempEvent.title= $scope.event.title;
+                $scope.tempEvent.description= $scope.description;
+                $scope.tempEvent.logistics= $scope.logistics;
+                $scope.tempEvent.includes= $scope.includes;
+                $scope.tempEvent.excludes= $scope.excludes;
+                $scope.tempEvent.location= $scope.event.location;
+                $scope.tempEvent.imageURL= $scope.event.imageURL;
+                $scope.tempEvent.labels= [];
+                $scope.tempEvent.boatId=$scope.selectedBoat.idBoats;
             
             
             $http.put(URLs.ddns+'rest/events/'+$scope.event.idEvents, $scope.tempEvent, {headers: {'Language': $scope.selectedLanguage}}).then(function(res){
                 toastr.success($translate.instant('edit.events.success.save'));
-            }, function(err){})
-            
-            
-            
+            }, function(err){
+                toastr.error(err.data.error);
+            })
         }
      
                 
            
       
-         $scope.uploadFiles = function (files) {
+        $scope.uploadFiles = function (files) {
         $scope.files = files;
         if (files && files.length) {
             Upload.upload({
@@ -184,4 +193,10 @@ $scope.getEvent();
         angular.element('.ui.language.dropdown').dropdown({
             action: 'activate'
         });
+    
+      
+      
+    
+        
+    
     });

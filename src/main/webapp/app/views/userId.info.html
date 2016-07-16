@@ -30,13 +30,13 @@
 
 <div class="ui horizontal segments">
   <div class="ui segment">
-<form class="ui form">
+<form class="ui form" name="form">
   <h4 class="ui dividing header">Dati personali</h4>
-  <div class="field">
+  <div class="field" ng-class="{'error': form.birthday.$invalid}">
     <label>Data di nascita</label>
+        <input type="text" name="birthday" ng-model="user.birthday" ng-pattern="regexBirthday" placeholder="Data Nascita" required>
       <div class="field">
-          <input date-time format="DD/MM/YYYY" ng-model="user.birthday" view="date" max-view="year" min-view="date" placeholder="Data Nascita">
-<!--        <input type="text" ng-model="user.birthday" placeholder="Data Nascita">-->
+<!--          <input date-time format="DD/MM/YYYY" ng-model="user.birthday" view="date" max-view="year" min-view="date" placeholder="Data Nascita">-->
       </div>
   </div> 
     <div class="field">

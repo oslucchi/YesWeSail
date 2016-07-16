@@ -32,6 +32,7 @@ angular.module('yeswesailApp')
         }
         $scope.currentUser = null;
         $scope.setCurrentUser=function(user){
+            $rootScope.currentUser=user;
             $scope.currentUser=user;
         }
         var token = $location.search().token;
@@ -57,7 +58,7 @@ angular.module('yeswesailApp')
                 $http.post(URLs.ddns + 'rest/users/basic').then(function (res) {
 
                     Session.create($rootScope.globals.currentUser.token, res.data);
-                    $scope.currentUser = res.data;
+                    $scope.setCurrentUser(res.data);
                 }, function (err) {
                     if (err.status == 401) {
                         Session.destroy();

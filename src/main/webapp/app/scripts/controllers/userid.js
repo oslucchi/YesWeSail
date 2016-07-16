@@ -50,16 +50,34 @@ angular.module('yeswesailApp')
                 }
                 
                
-                 $('.reputation.star.rating').rating({
-                    maxRating: 5,
-                    readOnly: true
-                });
                 
 
             }, function (err) {});
 
         };
         getUser();
+  
+    
+    $scope.getRating=function(userId){
+        $http.get(URLs.ddns + 'rest/reviews/'+userId+'/rating').then(function(res){
+           
+            $scope.reputation={
+                rating: res.data.rating,
+                populationSize: res.data.populationSize
+            };
+            
+                
+                 $('.reputation.star.rating').rating({
+                    initialRating: Math.round($scope.reputation.rating),
+                    maxRating: 5
+            }).rating('disable');
+        });
+        
+    };
+    
+    $scope.getRating($stateParams.userId);
+    
+    
     $('.ui.checkbox').checkbox();
     
     $scope.uploadProfilePic=function(pic){

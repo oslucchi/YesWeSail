@@ -7,7 +7,7 @@
  * # tickets
  */
 angular.module('yeswesailApp')
-  .directive('tickets', function ($http, URLs, toastr, CartService) {
+  .directive('tickets', function ($http, URLs, toastr, CartService, ngDialog) {
     
     return {
         
@@ -37,13 +37,21 @@ angular.module('yeswesailApp')
               return sum;
           };
           
-          scope.addToCart=function(tickets, cabinType){
+          scope.confirmAddToCart=function(tickets, cabinType){
+              scope.selectedTickets=tickets;
+              scope.selectedCabinType=cabinType;
               
-              CartService.addToCart(tickets, cabinType).then(function(res){
-                  scope.globalTickets=res.data;
-              });
+              ngDialog.open({
+                template: 'views/tickets.confirm.html'
+                , className: 'ngdialog-theme-default'
+                , controller: 'TicketsConfirmCtrl',
+                scope: scope
+            });
               
           };
+          
+           
+          
           scope.buy=CartService.buy;
           
       }

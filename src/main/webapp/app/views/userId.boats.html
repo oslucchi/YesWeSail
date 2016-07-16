@@ -1,5 +1,43 @@
 <div class="ui blue button" ng-if="isOwner && user.isShipOwner || isAdmin" ng-click="showAddBoatDialog()">Add Boat</div>
 
-<div class="ui segment" ng-repeat="boat in boats">
-  {{boat}}
+<div class="ui segment">
+<div class="ui divided items">
+  <div class="item" ng-repeat="boat in boats">
+    <div class="image">
+      <img ng-src="{{boat.images[0]}}">
+    </div>
+    <div class="content">
+      <a class="header">{{boat.name}}</a>
+      <div class="meta">
+        <span>{{boat.model}} - {{boat.year}}</span>
+      </div>
+      <div class="description">
+       <table class="ui very basic table">
+  <tbody>
+    <tr>
+      <td>Cabine con bagno</td>
+      <td>{{boat.cabinsWithBathroom}}</td>
+    </tr>
+      
+      <tr>
+      <td>Cabine senza bagno</td>
+      <td>{{boat.cabinsNoBathroom}}</td>
+    </tr>
+
+      <tr>
+      <td>Bagni condivisi</td>
+      <td>{{boat.sharedBathrooms}}</td>
+    </tr>
+
+           </tbody>
+</table>
+      </div>
+    </div>
+  </div>
 </div>
+    
+    
+    
+  
+</div>
+

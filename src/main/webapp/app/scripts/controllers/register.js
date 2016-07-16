@@ -17,12 +17,13 @@ angular.module('yeswesailApp')
         };
         $scope.register = function (credentials) {
 
-            AuthService.register(credentials).then(function (responseMessage) {
+            AuthService.register(credentials).then(function (res) {
                 $rootScope.$broadcast(AUTH_EVENTS.registerSuccess);
                 ngDialog.closeAll();
-                $scope.responseMessage=responseMessage;
-                 $window.location.href = '/#/'; 
-            }, function () {
+                $rootScope.responseMessage=res.data.responseMessage;
+                 $window.location.href = '#/register-success'; 
+            }, function(res) {
+                $scope.error=res.data.error;
                 $rootScope.$broadcast(AUTH_EVENTS.registerFailed);
             });
         };

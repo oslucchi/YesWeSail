@@ -1,41 +1,4 @@
- <script>
-  $(document)
-    .ready(function() {
-      $('.ui.form')
-        .form({
-          fields: {
-            email: {
-              identifier  : 'email',
-              rules: [
-                {
-                  type   : 'empty',
-                  prompt : 'Please enter your e-mail'
-                },
-                {
-                  type   : 'email',
-                  prompt : 'Please enter a valid e-mail'
-                }
-              ]
-            },
-            password: {
-              identifier  : 'password',
-              rules: [
-                {
-                  type   : 'empty',
-                  prompt : 'Please enter your password'
-                },
-                {
-                  type   : 'length[6]',
-                  prompt : 'Your password must be at least 6 characters'
-                }
-              ]
-            }
-          }
-        })
-      ;
-    })
-  ;
-  </script>
+
 
 <div class="register_container">
     <div class="ui container">
@@ -47,10 +10,8 @@
         Unisciti a noi per navigare
       </div>
     </h2>
-    <form ng-submit="register(credentials)" method="post" class="ui large form">
+    <form ng-submit="register(credentials)" class="ui large form">
       <div class="ui stacked segment">
-          
-          
              <a href="https://www.facebook.com/dialog/oauth?client_id=484756285065008&redirect_uri=http://yeswesail.ddns.net:8080/YesWeSail/rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
     
            <div class="ui horizontal divider"></div>
@@ -86,7 +47,7 @@
         <input type="submit" class="ui fluid large blue button" value="Registrati">
       </div>
 
-      <div class="ui error message"></div>
+      <div ng-class="{'visible': error}" class="ui error message">{{error}}</div>
 
     </form>
 

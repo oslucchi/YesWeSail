@@ -7,7 +7,7 @@
     <a class="grey item"><i class="edit icon"></i>Edit</a>
 </div>
 -->
-<div ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
 
 
 </div>
@@ -23,8 +23,8 @@
 -->
 
 
-<div class="ui anchor-menu sticky attached stackable menu">
     <div class="ui container">
+<div class="ui anchor-menu sticky attached stackable menu">
         <a class="item" ng-click="goToSection('gallery')">
             <i class="home icon"></i> Gallery
         </a>
@@ -62,6 +62,7 @@
                                 <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})">
                                     <img ng-src="{{shipOwner.imageURL}}">
                                     <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
+                                    <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback
                                 </div>
                                 <div class="content">
                                     
@@ -198,6 +199,8 @@
   <i class="users icon"></i>
   Partecipants
 </h2>
+                
+                <div class="ui header">{{event.participantMessage}}</div>
                 <div class="ui massive horizontal divided list">
                     <a ui-sref="userId.profile({userId: participant.idUsers})" ng-repeat="participant in event.participants" class="item">
                         <img class="ui avatar image" ng-src="{{participant.imageURL}}">
@@ -251,10 +254,42 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
-    The Boat
+                The Boat
                 </h2>
+                <div class="ui divided items">
+                  <div class="item">
+                    <div class="ui large image">
+                      <img ng-src="{{boat.images[0]}}">
+                    </div>
+                    <div class="content">
+                      <a class="header">{{boat.name}}</a>
+                      <div class="meta">
+                        <span>{{boat.model}} - {{boat.year}}</span>
+                      </div>
+                      <div class="description">
+                       <table class="ui very basic table">
+                  <tbody>
+                    <tr>
+                      <td>Cabine con bagno</td>
+                      <td>{{boat.cabinsWithBathroom}}</td>
+                    </tr>
 
-                <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+                      <tr>
+                      <td>Cabine senza bagno</td>
+                      <td>{{boat.cabinsNoBathroom}}</td>
+                    </tr>
+
+                      <tr>
+                      <td>Bagni condivisi</td>
+                      <td>{{boat.sharedBathrooms}}</td>
+                    </tr>
+
+                           </tbody>
+                </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
             </div>
 
@@ -262,14 +297,17 @@
 
 
 
-
+<div class="ui divider"></div>
 
    
 
-<div class="row" id="location">
+        <div class="row" id="location">
             <div class="twelve wide column">
                 
-                
+                <h2 class="ui left aligned header">
+                    <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
+                Location
+                </h2>
                 
         <div class="angular-google-map-container">
             <ui-gmap-google-map ng-if="event.route" options='map.options' center='map.center' zoom='map.zoom'>

@@ -552,3 +552,15 @@ footer{
 .shipOwner.image{
     cursor: pointer;
 }
+.add-boat{
+    overflow-x: auto;
+}
+
+.boat.item{
+    cursor: pointer;
+}
+
+.boat.item.selected{
+    background: rgba(0,0,0,.03);
+    color: rgba(0,0,0,.8);
+}

@@ -14,11 +14,11 @@ angular.module('yeswesailApp')
             password: ''
         };
         $scope.login = function (credentials) {
-            
+            $scope.error=null;
             AuthService.login(credentials).then(function (res) {
                  $http.defaults.headers.common['Authorization'] = res.token;
                 if(res.user.roleId==USER_ROLES.ADMIN){
-                    $window.location.href = '#/admin?token='+res.token;
+                    $window.location.href = '#/admin/events?token='+res.token;
                 }else{
                     $window.location.href = '#/?token='+res.token;    
                 }
@@ -30,7 +30,8 @@ angular.module('yeswesailApp')
                 
                 
                 
-            }, function () {
+            }, function (res) {
+                $scope.error=res.data.error;
                 $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
             });
         };

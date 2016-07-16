@@ -20,7 +20,26 @@ angular.module('yeswesailApp')
             offset: 105
             });
 
+     $scope.getRating=function(userId){
+            $http.get(URLs.ddns + 'rest/reviews/'+userId+'/rating').then(function(res){
 
+                $scope.reputation={
+                    rating: res.data.rating,
+                    populationSize: res.data.populationSize
+                };
+
+
+                     $('.reputation.star.rating').rating({
+                        initialRating: Math.round($scope.reputation.rating),
+                        maxRating: 5
+                }).rating('disable');
+            });
+
+        };
+    
+    
+        
+    
         $http.post(URLs.ddns + 'rest/events/details', {
             eventId: $stateParams.eventId
         }).then(function (res) {
@@ -29,9 +48,13 @@ angular.module('yeswesailApp')
             $scope.shipOwner = res.data.shipOwner;
             $scope.event.images = res.data.images;
             $scope.event.tickets = res.data.tickets;
+            $scope.boat=res.data.boat;
+            if(!!res.data.participantMessage){
+                $scope.event.participantMessage=res.data.participantMessage;
+            };
             if(!!res.data.description){
                 $scope.event.description=res.data.description.description;
-            }
+            };
             $scope.event.participants=res.data.participants;
             $scope.event.logistics= res.data.logistics;
             $scope.event.includes= res.data.includes;
@@ -50,7 +73,9 @@ angular.module('yeswesailApp')
             
         };
             
-            
+        
+
+        $scope.getRating(res.data.shipOwner.idUsers);
             
         }, function (err) {});
 

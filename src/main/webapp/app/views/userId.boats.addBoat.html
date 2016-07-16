@@ -1,6 +1,6 @@
 <div class="ui container">
 
-    <div class="ui segment">
+    <div class="ui segment add-boat">
         <form class="ui form">
 
 
@@ -165,7 +165,7 @@
             <div class="ui divider"></div>
             <div class="field">
 
-                <button class="ui blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">Upload Boat</button>
+                <button class="ui right floated blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">Upload Boat</button>
                 <button class="ui button" ng-if="boatUploadedPartially" ng-click="closeModals()">Close</button>
                     <div ng-class="{'visible': !!error.rejectedList}" class="ui warning message">
                       <div class="header">

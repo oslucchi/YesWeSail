@@ -49,7 +49,8 @@ angular.module('yeswesailApp')
         $scope.addReview = function (review) {
             review.reviewerId = Session.getCurrentUser().idUsers;
             $http.post(URLs.ddns + 'rest/reviews', review).then(function (res) {
-                toastr.success('Review sent for approval');
+                toastr.success(res.data.message);
+                $scope.tempReview.review='';
             }, function (err) {});
         };
 

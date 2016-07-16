@@ -8,8 +8,8 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('UseridInfoCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload) {
-
+    .controller('UseridInfoCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload, $filter) {
+    $scope.regexBirthday='^(\\d{4})-(\\d{2})-(\\d{2})$';
     $scope.$watch('currentUser.idUsers', function(dataLoaded) {
           if (dataLoaded) {
               if($stateParams.userId == $scope.currentUser.idUsers){
@@ -29,6 +29,7 @@ angular.module('yeswesailApp')
     $scope.saveChanges=function(){
         $scope.user.personalInfo.country=$scope.personalCountry;
         $scope.user.billingInfo.country=$scope.billingCountry;
+//        $scope.user.birthday=$filter('date')($scope.user.birthday, 'yyyy-MM-DD');
  
         $http.put(URLs.ddns + 'rest/users', $scope.user).then(function(res){
             $scope.editMode=false;
@@ -47,6 +48,7 @@ $scope.differentBillingAddress=false;
                 if(!!res.data.docs){
                     $scope.user = res.data.user;
                     $scope.docs = res.data.docs;
+                    $scope.user.birthday=$filter('date')(res.data.user.birthday, 'yyyy-MM-dd');
                 }else{
                     $scope.user=res.data;
                 }

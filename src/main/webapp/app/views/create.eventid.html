@@ -1,4 +1,4 @@
-<div style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-style="{'background-image':'url('+images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
 
 
 </div>
@@ -14,8 +14,8 @@
 -->
 
 
-<div class="ui anchor-menu sticky attached stackable menu">
     <div class="ui container">
+<div class="ui anchor-menu sticky attached stackable menu">
         <a class="item">
             <i class="home icon"></i> Gallery
         </a>
@@ -37,7 +37,7 @@
         <div class="right menu">
         
           <div class="ui language dropdown item" action="activate">
-    Event Language
+    {{selectedLanguage}}
     <i class="dropdown icon"></i>
         <div class="menu">
             <div class="item" ng-click="setLanguage('IT')" data-value="IT">IT</div>
@@ -214,29 +214,17 @@
                 </h2>
                     <div class="boats-container">
                         <div class="boats-container-boat-list">
-                            <div class="ui large horizontal divided list">
-                          <div class="item">
-                            <img class="ui avatar image" src="/images/avatar/small/helen.jpg">
+                            <div class="ui massive horizontal divided list">
+                          <div ng-click="setSelectedBoat(boat)" class="boat item" ng-class="{'selected': selectedBoat==boat}" ng-repeat="boat in boats">
+                            <img class="ui tiny image" ng-src="{{boat.images[0]}}">
                             <div class="content">
-                              <div class="header">Helen</div>
-                            </div>
-                          </div>
-                          <div class="item">
-                            <img class="ui avatar image" src="/images/avatar/small/christian.jpg">
-                            <div class="content">
-                              <div class="header">Christian</div>
-                            </div>
-                          </div>
-                          <div class="item">
-                            <img class="ui avatar image" src="/images/avatar/small/daniel.jpg">
-                            <div class="content">
-                              <div class="header">Daniel</div>
+                              <div class="header">{{boat.name}}</div>
                             </div>
                           </div>
                             </div>
                         </div>
                         <div class="boats-container-selected-boat">
-                            <img ng-src="http://www.rottediportolano.com/uploads/styles/shadowbox-copy/public/boat-jeanneau_yacht_plans_20120713112835_0.jpg?itok=pO4lFyZ2">
+                            <img ng-src="{{selectedBoat.images[0]}}">
                         </div>
                     </div>
 
@@ -248,8 +236,8 @@
 
 
 
+<div class="ui divider"></div>
             </div>
-
 
 
 
@@ -287,11 +275,7 @@
 
 
             </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
+          
         </div>
 
  

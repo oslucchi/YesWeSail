@@ -44,12 +44,16 @@ angular.module('yeswesailApp')
             return $http
                 .post(URLs.ddns + 'rest/auth/register', credentials)
                 .then(function (res) {
-                    return res.data;
+                    return res;
                 });
         };
 
         authService.isAuthenticated = function () {
-            return !!Session.getCurrentUser();
+            return $http.get(URLs.ddns+'rest/auth/isAuthenticated').then(function(res){
+                return res.data.authorized;
+            }, function(res){
+                return res.data.authorized;
+            });
         };
 
         authService.isAuthorized = function (role) {

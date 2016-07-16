@@ -125,6 +125,16 @@ angular
             setLocale(locale);
         }
     };
+}).factory('AuthResolver', function ($state, $http, URLs) {
+  return {
+    resolve: function() {
+        return $http.get(URLs.ddns+'rest/auth/isAuthenticated').then(function(res){
+                return res.data.authorized;
+            }, function(res){
+                return false;
+            });
+    }
+  };
 })
 
 
@@ -147,8 +157,12 @@ angular
     .state('main', {
       url: "/",
       templateUrl: 'views/main.html',
-      controller:'MainCtrl'
-      
+      controller:'MainCtrl',
+       resolve: {
+        auth: function resolveAuthentication(AuthResolver) { 
+          return AuthResolver.resolve();
+        }
+      }
     })
     .state('howitworks', {
       url: "/howitworks",
@@ -186,7 +200,12 @@ angular
       url: "/personal-info",
       templateUrl: 'views/userId.info.html',
       controller:  'UseridInfoCtrl',
-      accessLevel: USER_ROLES.TRAVELLER
+      accessLevel: USER_ROLES.TRAVELLER,
+      resolve: {
+        auth: function resolveAuthentication(AuthResolver) { 
+          return AuthResolver.resolve();
+        }
+      }
     })
     .state('userId.events', {
       url: "/events",
@@ -213,6 +232,7 @@ angular
       .state('cart', {
       url: "/cart",
       templateUrl:  'views/cart.html',
+      controller: 'CartCtrl',
       accessLevel: USER_ROLES.TRAVELLER
     }) 
       .state('cartSuccess', {
@@ -261,6 +281,11 @@ angular
       url: "/reset-password",
       templateUrl:  'views/reset-password.html',
       controller: 'PasswordResetCtrl'
+    })
+      .state('registerSuccess', {
+      url: "/register-success",
+      templateUrl:  'views/register.success.html',
+      controller: 'RegisterSuccessCtrl'
     });
     
     
@@ -268,43 +293,26 @@ angular
     .run(function($http, $rootScope, $state, AuthService) {
     
      $http.defaults.headers.common['Language'] = 'IT';
-    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
-         if (!!toState.accessLevel && !AuthService.isAuthorized(toState.accessLevel)) {
-              event.preventDefault();
-              if (AuthService.isAuthenticated()) {
-                // user is not allowed
-                $state.go('main'); 
-              } else {
-                // user is not logged in
-                $rootScope.$broadcast('LoginRequired', 'Some data');
-                   event.preventDefault();
-                   $state.go('main'); 
-              }
-            }
-  });
+//    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
+//         if (!!toState.accessLevel && !AuthService.isAuthorized(toState.accessLevel)) {
+//              event.preventDefault();
+//             AuthService.isAuthenticated().then(function(res){
+//              if (res) {
+//                // user is not allowed
+//                $state.go('main');
+//              } else {
+//                // user is not logged in
+//                $rootScope.$broadcast('LoginRequired', 'Some data');
+//                   event.preventDefault();
+//                   $state.go('main'); 
+//              }
+//             });
+//            }
+//  });
 })
     
     
-    
-    .factory('AuthResolver', function ($q, $rootScope, $state) {
-  return {
-    resolve: function () {
-      var deferred = $q.defer();
-      var unwatch = $rootScope.$watch('currentUser', function (currentUser) {
-        if (angular.isDefined(currentUser)) {
-          if (currentUser) {
-            deferred.resolve(currentUser);
-          } else {
-            deferred.reject();
-            $state.go('main');
-          }
-          unwatch();
-        }
-      });
-      return deferred.promise;
-    }
-  };
-})
+  
 
 .directive('dropdown', function ($timeout) {
     return {
