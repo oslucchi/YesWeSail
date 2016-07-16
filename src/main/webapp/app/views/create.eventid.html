@@ -230,6 +230,52 @@
 
                     </div>
 
+                </div> 
+        
+        <div class="row">
+                    <div class=" column">
+                        <h2 class="ui left aligned header">
+                    <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
+                        Tickets
+                            
+                            
+                </h2>
+                        
+                        {{tickets}}
+                 <table class="ui definition table">
+                  <thead>
+                    <tr  class="center aligned"><th></th>
+                    <th ng-repeat="number in getNumber(maxTickets) track by $index">{{$index+1}}</th>
+                  </tr></thead>
+                  <tbody>
+                    <tr>
+                      <td>Bunks</td>
+                      <td ng-repeat="number in getNumber(selectedBoat.bunks) track by $index">
+                        <div class="ui fluid input">
+                          <input ng-model="tickets.bunks[$index]" type="text">
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td>Cabins without Bathroom</td>
+                        <td ng-repeat="number in getNumber(selectedBoat.cabinsNoBathroom*2) track by $index">
+                            <div class="ui fluid input">
+                              <input ng-model="tickets.cabinsNoBathroom[$index]" type="text">
+                            </div>
+                        </td>
+                    </tr>
+                      <tr>
+                      <td>Cabins with Bathroom</td>
+                        <td ng-repeat="number in getNumber(selectedBoat.cabinsWithBathroom*2) track by $index">
+                            <div class="ui fluid input">
+                              <input ng-model="tickets.cabinsWithBathroom[$index]" type="text">
+                            </div>
+                        </td>
+                    </tr>
+                </tbody></table>
+
+                    </div>
+
                 </div>
 
 

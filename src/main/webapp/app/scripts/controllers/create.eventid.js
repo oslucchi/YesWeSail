@@ -52,6 +52,7 @@ angular.module('yeswesailApp')
                     latitude:res.data.route[0].lat,
                     longitude:res.data.route[0].lng
                 };
+            $scope.maxTickets=maxTicketsForBoat(res.data.boat);
              $scope.map = {
             center: {
                 latitude: $scope.newLocation.latitude,
@@ -98,10 +99,53 @@ angular.module('yeswesailApp')
                 .css({'background-image': 'url(\'' + $scope.event.imageURL +'\')'});
         }, function (err) {});
         
-        
     };
         
 $scope.getEvent();
+    $scope.getNumber = function(num) {
+    return new Array(num);   
+}
+    function maxTicketsForBoat(boat){
+        var nBunks, nCabinsWBathroom, nCabinsNBathroom, max;
+        nBunks=boat.bunks;
+        nCabinsWBathroom=boat.cabinsWithBathroom*2;
+        nCabinsNBathroom=boat.cabinsNoBathroom*2;
+        
+        max=Math.max(nBunks, nCabinsNBathroom, nCabinsWBathroom);
+        
+        return max;
+    }
+    
+    
+    
+    $scope.tempTickets=[
+                          [
+                            {
+                              "eventId": 2,
+                              "price": 70,
+                              "ticketType": 1
+                            },
+                              {
+                              "eventId": 2,
+                              "price": 150,
+                              "ticketType": 1
+                            }
+                          ],
+                          [
+                            {
+                              "eventId": 2,
+                              "price": 120,
+                              "ticketType": 2
+                            }
+                          ]
+                        ];
+
+    $scope.tempTickets[0][0]
+    
+    $scope.updateTickets=function(ticketTypeIndex, priceIndex, value){
+        $scope.tempTickets[ticketTypeIndex][priceIndex].price=value;
+    };
+    
     
         $scope.deleteImage=function(image){
                
