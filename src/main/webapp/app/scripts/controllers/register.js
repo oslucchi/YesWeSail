@@ -23,7 +23,14 @@ angular.module('yeswesailApp')
                 $rootScope.responseMessage=res.data.responseMessage;
                  $window.location.href = '#/register-success'; 
             }, function(res) {
-                $scope.error=res.data.error;
+                if (res.data.error == undefined)
+            	{
+                    $scope.error="Errore interno al server";            	
+            	}
+                else
+                {
+                    $scope.error=res.data.error;
+                }
                 $rootScope.$broadcast(AUTH_EVENTS.registerFailed);
             });
         };

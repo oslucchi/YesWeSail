@@ -1,5 +1,6 @@
 package com.yeswesail.rest.login;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -164,13 +165,17 @@ public class Auth {
 	        String htmlText = LanguageResources.getResource(languageId, bodyProperty);
 	        htmlText = htmlText.replaceAll("CNFMLINK", httpLink);
 	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), subjectProperty);
-			URL url = getClass().getResource("/images/mailLogo.png");
+			URL url = null;
+			url = prop.getContext().getResource("/images/application/mailLogo.png");
 			String imagePath = url.getPath();
 			Mailer.sendMail(jsonIn.username, subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "mailer.sendError");
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		return null;
 	}
