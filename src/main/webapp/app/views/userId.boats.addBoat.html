@@ -7,25 +7,25 @@
 
 
 
-            <h4 class="ui dividing header">General Info</h4>
+            <h4 class="ui dividing header">{{"userid.boats.addBoat.formName" | translate}}</h4>
             <div class="field">
                 <div class="six fields">
 
                     <div class="field">
-                        <label>Name</label>
+                        <label>{{"userid.boats.addBoat.name" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.name" placeholder="Number...">
                         </div>
                     </div>
 
                     <div class="field">
-                        <label>Model</label>
+                        <label>{{"userid.boats.addBoat.model" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.model" placeholder="Number...">
                         </div>
                     </div>
                     <div class="field">
-                        <label>Year</label>
+                        <label>{{"userid.boats.addBoat.year" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.year" placeholder="Number...">
                         </div>
@@ -33,19 +33,19 @@
 
 
                     <div class="field">
-                        <label>Plate</label>
+                        <label>{{"userid.boats.addBoat.plate" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.plate" placeholder="Number...">
                         </div>
                     </div>
                     <div class="field">
-                        <label>Engine</label>
+                        <label>{{"userid.boats.addBoat.engine" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.engineType" placeholder="Number...">
                         </div>
                     </div>
                     <div class="field">
-                        <label>Length</label>
+                        <label>{{"userid.boats.addBoat.lenght" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.length" placeholder="Number...">
                         </div>
@@ -53,25 +53,25 @@
                 </div>
             </div>
 
-            <h4 class="ui dividing header">Documents</h4>
+            <h4 class="ui dividing header">{{"userid.boats.addBoat.documents" | translate}}</h4>
             <div class="field">
                 <div class="three fields">
                     <div class="field">
-                        <label>Insurance</label>
+                        <label>{{"userid.boats.addBoat.insurance" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.insurance" placeholder="Number...">
                         </div>
                     </div>
 
                     <div class="field">
-                        <label>Sec. Certification</label>
+                        <label>{{"userid.boats.addBoat.sailingCertification" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.securityCertification" placeholder="Number...">
                         </div>
                     </div>
 
                     <div class="field">
-                        <label>RTF License</label>
+                        <label>{{"userid.boats.addBoat.rtfLicense" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.RTFLicense" placeholder="Number...">
                         </div>
@@ -80,7 +80,7 @@
             </div>
             <div class="field">
                 <div class="doc-upload">
-                    <button class="ui blue button" ngf-select="addDocs($files)" multiple accept="*/*">Select Documents</button>
+                    <button class="ui blue button" ngf-select="addDocs($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
 
                     <div class="document-container">
                             <p ng-repeat="doc in tempBoat.files.docs">{{doc}}</p>
@@ -90,25 +90,25 @@
 
 
 
-            <h4 class="ui dividing header">Housing</h4>
+            <h4 class="ui dividing header">{{"userid.boats.addBoat.internalDetails" | translate}}</h4>
             <div class="field">
                 <div class="three fields">
                     <div class="field">
-                        <label>Bunks</label>
+                        <label>{{"userid.boats.addBoat.bunks" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.bunks" placeholder="Number...">
                         </div>
                     </div>
 
                     <div class="field">
-                        <label>Cabins w/ bath</label>
+                        <label>{{"userid.boats.addBoat.cabinsWithBath" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.cabinsWithBathroom" placeholder="Number...">
                         </div>
                     </div>
 
                     <div class="field">
-                        <label>Cabins w/out bath</label>
+                        <label>{{"userid.boats.addBoat.cabinsNoBath" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.cabinsNoBathroom" placeholder="Number...">
                         </div>
@@ -127,13 +127,13 @@
 
 
 
-            <h4 class="ui dividing header">Images</h4>
+            <h4 class="ui dividing header">{{"userid.boats.addBoat.images" | translate}}</h4>
             <div class="field">
 
-                <label>Blue Prints</label>
+                <label>{{"userid.boats.addBoat.blueprints" | translate}}</label>
                 <div class="field">
                     <div class="doc-upload">
-                        <button class="ui blue button" ngf-select="addBluePrints($files)" multiple accept="*/*">Select Files</button>
+                        <button class="ui blue button" ngf-select="addBluePrints($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
 
                         <div class="document-container">
                             <div class="ui tiny images">
@@ -146,10 +146,10 @@
             </div>
             <div class="field">
 
-                <label>Other</label>
+                <label>{{"userid.boats.addBoat.other" | translate}}</label>
                 <div class="field">
                     <div class="doc-upload">
-                        <button class="ui blue button" ngf-select="addOtherImages($files)" multiple accept="*/*">Select Files</button>
+                        <button class="ui blue button" ngf-select="addOtherImages($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
 
                         <div class="document-container">
                             <div class="ui tiny images">
@@ -165,7 +165,7 @@
             <div class="ui divider"></div>
             <div class="field">
 
-                <button class="ui right floated blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">Upload Boat</button>
+                <button class="ui right floated blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">{{"global.insert" | translate}}</button>
                 <button class="ui button" ng-if="boatUploadedPartially" ng-click="closeModals()">Close</button>
                     <div ng-class="{'visible': !!error.rejectedList}" class="ui warning message">
                       <div class="header">

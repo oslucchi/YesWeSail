@@ -45,6 +45,7 @@
     "global.tickets": "Biglietti",
     "global.uploadingFiles": "Caricamento in corso",
     "global.shareOnSocial": "Condividi con i tuoi amici!",
+    "global.insert": "Inserisci",
      
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Add Passenger",
@@ -87,5 +88,32 @@
     "shipownerRegistration.registrationForm": "Dati per la registrazione",
     "shipownerRegistration.sailingLicense": "Patente nautica",
     "shipownerRegistration.atLeastOneDocument": "E' obbligatorio caricare almeno un file relativo al documento",
-    "shipownerRegistration.sendingRequest": "Invio richiesta in corso"
+    "shipownerRegistration.sendingRequest": "Invio richiesta in corso",
+    
+    "tickets.confirmBuy": "Confermi di acquistare il biglietto selezionato?",
+    "tickets.addToCart": "Aggiungi al carrello",
+    "tickets.soldout": "Tutti i bliglietti di questo evento sono stati venduti!",
+    "tickets.type": "Tipo biglietto",
+    "tickets.available": "Disponibili",
+    "tickets.goToCart": "Vai al carrello",
+    
+    "userid.boats.addBoat.formName": "Informazioni sulla barca",
+    "userid.boats.addBoat.name": "Nome",
+    "userid.boats.addBoat.model": "Modello",
+    "userid.boats.addBoat.year": "Anno",
+    "userid.boats.addBoat.plate": "Targa",
+    "userid.boats.addBoat.length": "Lunghezza",
+    "userid.boats.addBoat.engine": "Vela/Motore",
+    "userid.boats.addBoat.documents": "Documenti",
+    "userid.boats.addBoat.insurance": "Assicurazione",
+    "userid.boats.addBoat.sailingCertification": "Certificato di navigazione",
+    "userid.boats.addBoat.rtfLicense": "Licenza RTF",
+    "userid.boats.addBoat.internalDetails": "Dettagli interni",
+    "userid.boats.addBoat.bunks": "Posto in dinette",
+    "userid.boats.addBoat.cabinsWithBath": "Cabine con bagno",
+    "userid.boats.addBoat.cabinsNoBath": "Cabine senza bagno",
+    "userid.boats.addBoat.images": "Immagini",
+    "userid.boats.addBoat.blueprints": "Planimetria",
+    "userid.boats.addBoat.other": "Altre"
+    
 }

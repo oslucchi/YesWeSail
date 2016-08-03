@@ -1,14 +1,14 @@
 <div class="tickets-container">
     <div class="ui info message" ng-class="{'hidden': globalTickets.length>0}">
-        Tickets for this event have sold out!
+        {{"tickets.soldout" | translate}}
     </div>
 
 
     <table ng-if="globalTickets.length>0" class="ui very basic  celled table">
         <thead>
             <tr>
-                <th>Ticket Type</th>
-                <th classs="center aligned">Available</th>
+                <th>{{"tickets.type" | translate}}</th>
+                <th classs="center aligned">{{"tickets.available" | translate}}</th>
                 <th class="five center aligned wide"><i class="user icon"></i></th>
                 <th class="four center aligned wide"><i class="user icon"></i><i class="user icon"></i></th>
             </tr>
@@ -25,5 +25,5 @@
 
         </tbody>
     </table>
-    <button ui-sref="cart" class="ui blue button">Go to cart</button>
+    <button ui-sref="cart" class="ui blue button">{{"tickets.goToCart" | translate}}</button>
 </div>
