@@ -9,16 +9,17 @@
 
             <div class="ui fluid three item menu">
 
-                <select ng-model="selectedLocation" class="ui dropdown item">
+                <select dropdown-selection ng-model="selectedLocation" class="ui dropdown item">
                     <option value="">{{"global.selectLocation" | translate}}</option>
                     <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
                 </select>
-                <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
+                <select dropdown-selection ng-model="selectedCategory"  class="ui dropdown item">
                     <option value="">{{"global.selectCategory" | translate}}</option>
+                    <option value="{{category.categoryId}}" ng-repeat="category in CATEGORIES">{{category.description}}</option>
                 </select>
 
 
-                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory.categoryId}}" class="item">{{"global.search" | translate}}</a>
+                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a>
 
             </div>
 

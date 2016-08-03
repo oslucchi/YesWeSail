@@ -341,6 +341,33 @@ angular
     };
 })
 
+.directive('dropdownSelection', function ($timeout) {
+    return {
+        restrict: "A",
+        link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dropdown().dropdown('setting', {
+                    action: attr.action || 'activate',
+                    onChange: function (value) {
+                        scope.$parent[attr.ngModel] = value;
+                        scope.$parent.$apply();
+                    }
+                });
+            }, 0);
+
+            scope.$watch(attr.ngModel, function (value) {
+                $timeout(function () {
+
+                    var selected = $(elm).dropdown('get value');
+                    if (value != selected[0] && !!value) {
+                        $(elm).dropdown('set exactly', value);
+                    }
+                });
+            }, true);
+        }
+    };
+})
+
 .directive('ngReallyClick', [function () {
     return {
         restrict: 'A',

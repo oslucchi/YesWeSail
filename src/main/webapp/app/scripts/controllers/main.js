@@ -45,16 +45,16 @@ angular.module('yeswesailApp')
 //  }
   
       
-  
-   $scope.initializeSelect = function () {
-
-
-            angular.element('.ui.dropdown.item').dropdown();
-
-
-
-        };
-    
+//  
+//   $scope.initializeSelect = function () {
+//
+//
+//            angular.element('.ui.dropdown.item').dropdown();
+//
+//
+//
+//        };
+//    
       $scope.showAvailableDatesForEvents=function(events){
           $scope.aggregatedEvents=events;
             ngDialog.open({
