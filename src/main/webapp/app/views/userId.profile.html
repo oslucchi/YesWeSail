@@ -32,7 +32,7 @@
                 </div>
             
             
-                <form class="ui reply form">
+                <form class="ui reply form" ng-if="!isOwner">
                     
                     <div class="field">
                         <textarea ng-model="tempReview.review"></textarea>

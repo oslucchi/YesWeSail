@@ -12,7 +12,7 @@ angular.module('yeswesailApp')
 
         $scope.reviews = {};
     
-  
+        console.log(Session.getCurrentUser());
     
     
         $scope.tempReview = {

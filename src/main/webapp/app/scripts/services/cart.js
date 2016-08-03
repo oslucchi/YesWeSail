@@ -86,10 +86,10 @@ angular.module('yeswesailApp')
             return $http
                 .get(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce='+nonce)
                 .then(function (res) {
-                    $window.location.href = '/#/cart/success?transactionId='+res.data.transactionId;    
+                    $window.location.href = '#/cart/success?transactionId='+res.data.transactionId;    
                     return res;
                 }, function(err){
-                    $window.location.href = '/#/cart/error?responseCode='+err.data.responseCode;    
+                    $window.location.href = '#/cart/error?responseCode='+err.data.responseCode;    
                 });
         };
 

@@ -110,7 +110,7 @@
 <div class="ui stackable three column grid">
 
     <div class="ui fluid column bordered rounded images" ng-repeat="category in CATEGORIES track by $index">
-        <a href="/#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
+        <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
             <img ng-src="{{category.url}}">
         </a>
     </div>

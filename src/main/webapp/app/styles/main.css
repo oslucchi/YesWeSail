@@ -16,6 +16,16 @@ body {
 }
 
 
+/* 
+  Allow angular.js to be loaded in body, hiding cloaked elements until 
+  templates compile.  The !important is important given that there may be 
+  other selectors that are more specific or come later and might alter display.  
+ */
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
+
+
 .header_menu{
     height: 75px;
     width: 100%;
@@ -422,9 +432,17 @@ ul[rn-carousel], .image-slide {
         top: 10px;
     left: 46px;
 }
+
 tr{
     cursor: pointer;
 }
+
+/*temp fix for cursor in tables*/
+
+.non-clickable{
+    cursor: default !important;
+}
+
 .admin-events-container{
     height: calc(100vh - 60.2px);
     background-color: white;

@@ -1,21 +1,29 @@
 <div class="tickets-container">
-<table class="ui very basic  celled table">
-  <thead>
-    <tr><th>Ticket Type</th>
-    <th classs="center aligned">Available</th>
-    <th  class="five center aligned wide"><i class="user icon"></i></th>
-    <th class="four center aligned wide"><i class="user icon"></i><i class="user icon"></i></th>
-  </tr></thead>
-  <tbody>
-    <tr ng-repeat="tickets in globalTickets track by $index">
-     
-        <td>{{tickets[0].description}} </td>
-        <td classs="center aligned">{{availableTickets(tickets)}} </td>
-        <td class="add-to-cart" ng-click="confirmAddToCart(tickets, 'single')">{{tickets[0].price}}€<i class="add to cart icon"></i></td>
-        <td ng-if="calculatePrice(tickets)" class="add-to-cart" ng-click="confirmAddToCart(tickets, 'double')">{{calculatePrice(tickets)}}<span >€<i class="add to cart icon"></i></span></td>
-        
-    </tr>
-    
-  </tbody>
-</table>
+    <div class="ui info message" ng-class="{'hidden': globalTickets.length>0}">
+        Tickets for this event have sold out!
+    </div>
+
+
+    <table ng-if="globalTickets.length>0" class="ui very basic  celled table">
+        <thead>
+            <tr>
+                <th>Ticket Type</th>
+                <th classs="center aligned">Available</th>
+                <th class="five center aligned wide"><i class="user icon"></i></th>
+                <th class="four center aligned wide"><i class="user icon"></i><i class="user icon"></i></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-repeat="tickets in globalTickets track by $index">
+
+                <td>{{tickets[0].description}} </td>
+                <td classs="center aligned">{{availableTickets(tickets)}} </td>
+                <td class="add-to-cart" ng-click="confirmAddToCart(tickets, 'single')">{{tickets[0].price}}€<i class="add to cart icon"></i></td>
+                <td ng-if="calculatePrice(tickets)" class="add-to-cart" ng-click="confirmAddToCart(tickets, 'double')">{{calculatePrice(tickets)}}<span>€<i class="add to cart icon"></i></span></td>
+
+            </tr>
+
+        </tbody>
+    </table>
+    <button ui-sref="cart" class="ui blue button">Go to cart</button>
 </div>
