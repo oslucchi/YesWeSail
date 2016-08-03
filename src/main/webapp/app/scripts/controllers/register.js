@@ -8,13 +8,15 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $window) {
+    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $window, URLs) {
         $scope.credentials = {
             username: '',
             password: '',
             firstName: '',
             lastName: ''
         };
+    
+    $scope.fbRedirectUrl=URLs.ddns;
         $scope.register = function (credentials) {
 
             AuthService.register(credentials).then(function (res) {
