@@ -529,7 +529,7 @@ public class UsersHandler {
 			if (sd.getBasicProfile(token).getRoleId() == Roles.ADMINISTRATOR)
 				u.setStatus(jsonIn.status);
 			if (jsonIn.birthday != null)
-				u.setBirthday(jsonIn.birthday, "yyyy-MM-dd");
+				u.setBirthday(jsonIn.birthday, "dd/MM/yyyy");
 			u.setRoleId(jsonIn.roleId);
 			u.update(conn, "idUsers");
 			AddressInfoJson[] aiJson = new AddressInfoJson[2];
