@@ -7,7 +7,7 @@
     <h2 class="ui white image header">
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
-        Esegui l'accesso al tuo account
+        {{"login.singIn" | translate}}
       </div>
     </h2>
     <form ng-submit="login(credentials)" ng-keyup="$event.keyCode == 13 && login(credentials)" class="ui large form">
@@ -16,7 +16,7 @@
            <div class="ui horizontal divider"></div>
              <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>
          <div class="ui horizontal divider">
-            Oppure
+            {{"global.or" | translate}}
           </div>
         <div class="field">
           <div class="ui left icon input">
@@ -38,8 +38,8 @@
     </form>
 
     <div class="ui message">
-      Non ti ricordi la password? <a ng-click="closeModals()" ui-sref="resetPassword">Recupera password</a><br>
-      Non hai un account? <a href ng-click="popupRegister()">Registrati</a>
+      {{"login.forgottenPassword" | translate}} <a ng-click="closeModals()" ui-sref="resetPassword">{{"login.changePassword" | translate}}</a><br>
+      {{"login.noAccountYet" | translate}}<a href ng-click="popupRegister()">{{"login.signUp" | translate}}</a>
     </div>
   </div>
 </div>

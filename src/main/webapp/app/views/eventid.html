@@ -26,22 +26,22 @@
     <div class="ui container">
 <div class="ui anchor-menu sticky attached stackable menu">
         <a class="item" ng-click="goToSection('gallery')">
-            <i class="home icon"></i> Gallery
+            <i class="home icon"></i>{{"event.gallery" | translate}}
         </a>
         <a class="item"  ng-click="goToSection('partecipants')">
-            <i class="grid layout icon"></i> Partecipants
+            <i class="grid layout icon"></i>{{"event.participants" | translate}}
         </a>
         <a class="item"  ng-click="goToSection('logistics')">
-            <i class="mail icon"></i> Logistics
+            <i class="mail icon"></i>{{"event.logistics" | translate}}
         </a>
         <a class="item"  ng-click="goToSection('location')">
-            <i class="mail icon"></i> Location
+            <i class="mail icon"></i>{{"event.location" | translate}}
         </a>
         <a class="item"  ng-click="goToSection('package')">
-            <i class="mail icon"></i> Package
+            <i class="mail icon"></i>{{"event.package" | translate}}
         </a>
         <a class="item"  ng-click="goToSection('optionals')">
-            <i class="mail icon"></i> Optionals
+            <i class="mail icon"></i>{{"event.optionals" | translate}}
         </a>
 
     </div>
@@ -153,7 +153,7 @@
                     
 
                     <div class="ui segment">
-                        <p>Share with a friend!</p>
+                        <p>{{"global.shareOnSocial" | translate}}</p>
                         <button class="ui blue icon button">
                             <i class="facebook icon"></i>
                         </button>
@@ -197,7 +197,7 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
   <i class="users icon"></i>
-  Partecipants
+  {{"event.participants" | translate}}
 </h2>
                 
                 <div class="ui header">{{event.participantMessage}}</div>
@@ -220,7 +220,7 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Logistics
+                  {{"event.logistics" | translate}}
                 </h2>
                 <div ng-bind-html="event.logistics.description"></div>
             </div>
@@ -232,7 +232,7 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Includes
+                  {{"event.package" | translate}}
                 </h2>
                 <div ng-bind-html="event.includes.description"></div>
             </div>
@@ -242,7 +242,7 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Excludes
+                  {{"event.optionals" | translate}}
                 </h2>
                 <div ng-bind-html="event.excludes.description"></div>
             </div>
@@ -254,7 +254,7 @@
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
-                The Boat
+                {{"event.theBoat" | translate}}
                 </h2>
                 <div class="ui divided items">
                   <div class="item">
@@ -270,18 +270,23 @@
                        <table class="ui very basic table">
                   <tbody>
                     <tr class="non-clickable">
-                      <td>Cabine con bagno</td>
+                      <td>{{"event.cabinsWithBath" | translate}}</td>
                       <td>{{boat.cabinsWithBathroom}}</td>
                     </tr>
 
                       <tr class="non-clickable">
-                      <td>Cabine senza bagno</td>
+                      <td>{{"event.cabinsNoBath" | translate}}</td>
                       <td>{{boat.cabinsNoBathroom}}</td>
                     </tr>
 
                       <tr class="non-clickable">
-                      <td>Bagni condivisi</td>
+                      <td>{{"event.sharedBathrooms" | translate}}</td>
                       <td>{{boat.sharedBathrooms}}</td>
+                    </tr>
+
+                      <tr class="non-clickable">
+                      <td>{{"event.bunks" | translate}}</td>
+                      <td>{{boat.bunks}}</td>
                     </tr>
 
                            </tbody>
@@ -306,7 +311,7 @@
                 
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
-                Location
+                {{"event.location" | translate}}
                 </h2>
                 
         <div class="angular-google-map-container">

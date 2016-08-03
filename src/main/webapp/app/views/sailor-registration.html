@@ -1,18 +1,18 @@
 <div class="ui container sailor-registration">
     <div class="ui info message visible transition" ng-if="pendingRequests>0">
         <div class="header">
-            Your request has been sent and is pending for approval
+            {{"shipownerRegistration.submitted" | translate}}
         </div>
     </div>
 
     <form ng-if="pendingRequests<1" class="ui form">
-        <h4 class="ui dividing header">Sailor Registration</h4>
+        <h4 class="ui dividing header">{{"shipownerRegistration.registrationForm" | translate}}</h4>
         <div class="field">
-            <label>Sailing License</label>
+            <label>{{"shipownerRegistration.sailingLicense" | translate}}</label>
             <div class="field">
                 <input type="text" ng-required="true" name="salingLicense" ng-model="sailor.sailingLicense" placeholder="Number...">
                 <div class="doc-upload">
-                    <button class="ui blue button" ng-required="true" ngf-select="uploadSailingFiles($files)" multiple accept="*/*">Select Files</button>
+                    <button class="ui blue button" ng-required="true" ngf-select="uploadSailingFiles($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
                     <br>
 
                     
@@ -27,12 +27,13 @@
 
                 <div class="ui warning message transition" ng-class="{'visible': sailingDocsNotLoaded}">
                     <div class="header">
-                        You must upload at least one Sailing Document!
+                        {{"shipownerRegistration.atLeastOneDocument" | translate}}
                     </div>
                 </div>
             </div>
         </div>
 
+<!-- 
         <div class="field">
             <label>Navigation License</label>
             <div class="field">
@@ -54,15 +55,16 @@
                 </div>
             </div>
         </div>
+ -->
 
         <div class="field">
 
-            <button class="ui blue button" ng-click="sendFiles(sailor)">Send Registration</button>
+            <button class="ui blue button" ng-click="sendFiles(sailor)">{{"global.send" | translate}}</button>
             <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
                                    <div class="bar">
                                         <div class="progress"></div>
                                     </div>
-                                    <div class="label">Sending request</div>
+                                    <div class="label">{{"shipownerRegistration.sendingRequest" | translate}}</div>
                                 </div>
         </div>
 

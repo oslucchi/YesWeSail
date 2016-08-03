@@ -1,7 +1,7 @@
 <div class="ui container">
 <div class="cart-container">
 <cart></cart>
-    <div class="ui header">Suggested events</div>
+    <div class="ui header">{{"cart.suggestedEvents" | translate}}</div>
     <div class="ui stackable four column grid">
                 <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
                     <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">

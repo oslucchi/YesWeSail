@@ -83,13 +83,13 @@
         <div class="field">
          <div class="ui left aligned checkbox">
           <input type="checkbox" ng-model="tempCloneEvent.aggregateKey"> <label></label>
-            <label>Aggregated</label>
+            <label>{{"admin.events.clone.aggregated" | translate}}</label>
             </div>
         </div>
         
       </div>
 <button ng-click="clone(tempCloneEvent)" class="ui blue button">Clone</button>
-<button ng-click="closeModals()" class="ui button">Cancel</button>
+<button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
 
     </form>
 

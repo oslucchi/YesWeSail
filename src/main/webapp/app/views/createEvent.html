@@ -44,7 +44,7 @@
     <h2 class="ui white image header">
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
-        Crea un evento
+        {{"create.event.create" | translate}}
       </div>
     </h2>
     <ng-form  ng-submit="create(tempEvent)" class="ui large form">
@@ -59,7 +59,7 @@
         <div class="field">
           
             <select after-render="initializeSelect()" ng-model="tempEvent.eventType" ng-options="eventType.idEventTypes as eventType.description for eventType in EVENTTYPES" class="ui dropdown type item">
-                <option value="">Type...</option>
+                <option value="">{{"create.event.type" | translate}}</option>
             </select>
    
         </div>
@@ -71,8 +71,8 @@
          
 
         </div>
-        <button type="submit" class="ui large primary button" ng-click="create(tempEvent)">Create</button>
-        <div class="ui large button" ng-click="closeModals()">Cancel</div>
+        <button type="submit" class="ui large primary button" ng-click="create(tempEvent)">{{"global.create" | translate}}</button>
+        <div class="ui large button" ng-click="closeModals()">{{"global.cancel" | translate}}</div>
       </div>
 
       <div class="ui error message"></div>

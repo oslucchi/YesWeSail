@@ -7,7 +7,7 @@
     <h2 class="ui white image header">
       <img src="images/cropped-cropped-YWS-60x70.png" class="image">
       <div class="content">
-        Unisciti a noi per navigare
+		{{"register.joinUs" | translate}}
       </div>
     </h2>
     <form ng-submit="register(credentials)" class="ui large form">
@@ -17,7 +17,7 @@
            <div class="ui horizontal divider"></div>
              <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>
          <div class="ui horizontal divider">
-            Oppure
+            {{"global.or" | translate}}
           </div>
         <div class="field">
           <div class="ui left icon input">
@@ -52,7 +52,7 @@
     </form>
 
     <div class="ui message">
-      Sei già membro? <a href ng-click="popupLogin()">Accedi</a>
+      {{"register.memberAlready" | translate}}<a href ng-click="popupLogin()">{{"register.access" | translate}}</a>
     </div>
   </div>
 </div>

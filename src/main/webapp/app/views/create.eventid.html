@@ -17,22 +17,22 @@
     <div class="ui container">
 <div class="ui anchor-menu sticky attached stackable menu">
         <a class="item">
-            <i class="home icon"></i> Gallery
+            <i class="home icon"></i>{{"event.gallery" | translate}}
         </a>
         <a class="item">
-            <i class="grid layout icon"></i> Partecipants
+            <i class="grid layout icon"></i>{{"event.participants" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i> Logistics
+            <i class="mail icon"></i>{{"event.logistics" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i> Location
+            <i class="mail icon"></i>{{"event.location" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i> Package
+            <i class="mail icon"></i>{{"event.package" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i> Optionals
+            <i class="mail icon"></i>{{"event.optionals" | translate}}
         </a>
         <div class="right menu">
         
@@ -45,7 +45,7 @@
         </div>
   </div>
         <a ng-click="saveEvent()" class="item">    
-            Save
+            {{"global.save" | translate}}
 <!--
             <button  class="ui blue icon button">
                 Save
@@ -130,7 +130,7 @@
                 <div class="row">
 
                     <div class=" column">
-                        <div class="ui header">Description</div>
+                        <div class="ui header">{{"global.description" | translate}}</div>
 
 
                         <div text-angular ng-model="description.description"></div>
@@ -143,14 +143,14 @@
                     <div class=" column">
 
                         <div class="ui container">
-                            <button class="ui blue button" ngf-select="uploadFiles($files)" multiple accept="image/*">Select Files</button>
+                            <button class="ui blue button" ngf-select="uploadFiles($files)" multiple accept="image/*">{{"global.selectFiles" | translate}}</button>
                             <br>
 
                             <div ng-if="progress" class="ui blue large progress" data-percent="{{progress}}" id="file-upload-progress">
                                 <div class="bar">
                                     <div class="progress"></div>
                                 </div>
-                                <div class="label">Uploading Files</div>
+                                <div class="label">{{"global.uploadingFiles" | translate}}</div>
                             </div>
                             <br>
 
@@ -176,7 +176,7 @@
                     <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Logistics
+                  {{"event.logistics" | translate}}
                 </h2>
                         <div text-angular ng-model="logistics.description"></div>
                     </div>
@@ -188,7 +188,7 @@
                     <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Includes
+                  {{"event.package" | translate}}
                 </h2>
                         <div text-angular ng-model="includes.description"></div>
                     </div>
@@ -198,7 +198,8 @@
                     <div class=" column">
                         <h2 class="ui left aligned header">
                   <i class="users icon"></i>
-                  Excludes
+                  {{"event.optionals" | translate}}
+
                 </h2>
                         <div text-angular ng-model="excludes.description"></div>
                     </div>
@@ -210,7 +211,7 @@
                     <div class=" column">
                         <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
-                        The Boat
+						{{"event.theBoat" | translate}}
                 </h2>
                     <div class="boats-container">
                         <div class="boats-container-boat-list">
@@ -236,7 +237,7 @@
                     <div class=" column">
                         <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
-                        Tickets
+                        {{"global.tickets" | translate}}
                             
                             
                 </h2>
@@ -249,7 +250,7 @@
                   </tr></thead>
                   <tbody>
                     <tr>
-                      <td>Bunks</td>
+                      <td>{{"event.bunks" | translate}}</td>
                       <td ng-repeat="number in getNumber(selectedBoat.bunks) track by $index">
                         <div class="ui fluid input">
                           <input ng-model="tickets.bunks[$index]" type="text">
@@ -257,7 +258,7 @@
                       </td>
                     </tr>
                     <tr>
-                      <td>Cabins without Bathroom</td>
+                      <td>{{"event.cabinsNoBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsNoBathroom*2) track by $index">
                             <div class="ui fluid input">
                               <input ng-model="tickets.cabinsNoBathroom[$index]" type="text">
@@ -265,7 +266,7 @@
                         </td>
                     </tr>
                       <tr>
-                      <td>Cabins with Bathroom</td>
+                      <td>{{"event.cabinsWithBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsWithBathroom*2) track by $index">
                             <div class="ui fluid input">
                               <input ng-model="tickets.cabinsWithBathroom[$index]" type="text">
@@ -295,10 +296,10 @@
                     <div class="ui category search item">
                         <div class="ui action labeled input">
                             <div class="ui label">
-                                Boarding place
+                                {{"event.boardingPlace" | translate}}
                             </div>
                             <input ng-autocomplete ng-model="autocomplete" options="options" details="mapDetails" type="text" placeholder="Search...">
-                            <button ng-click="searchLocation()" class="ui button">Search</button>
+                            <button ng-click="searchLocation()" class="ui button">{{"global.search" | translate}}</button>
                         </div>
 
 
