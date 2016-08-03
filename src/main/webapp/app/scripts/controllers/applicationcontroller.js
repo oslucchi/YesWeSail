@@ -111,8 +111,8 @@ angular.module('yeswesailApp')
 
 
     
-        $scope.popupLogin = function () {
-
+        $scope.popupLogin = function (data) {
+            $scope.previousState=data;
             ngDialog.closeAll();
             loginDialog.open({
                 template: 'views/login.html'
@@ -141,6 +141,10 @@ angular.module('yeswesailApp')
             });
             
         };
+    
+        
+    
+    
     if(invalidEmail=='true'){
         invalidEmailDialog.open({
                 template: 'views/invalidemail.html'
@@ -154,7 +158,7 @@ angular.module('yeswesailApp')
     }
     
      $scope.$on('LoginRequired', function (event, data) {
-         $scope.popupLogin();
+         $scope.popupLogin(data);
      
      });
 

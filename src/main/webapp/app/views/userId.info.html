@@ -1,39 +1,40 @@
- <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">
+ <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges(infoForm) : enterEditMode()">
             <span ng-if="!editMode">Edit Profile</span><span ng-if="editMode">Save Profile</span> 
         </button>
-<form class="ui form">
+<div class="ui divider"></div>
+<form class="ui form" name="infoForm">
   <h4 class="ui dividing header">Informazioni base</h4>
   <div class="field">
     <label>Name</label>
     <div class="two fields">
       <div class="field">
-        <input type="text" ng-model="user.name" placeholder="First Name">
+        <input ng-disabled="!editMode" type="text" ng-model="user.name" placeholder="First Name">
       </div>
       <div class="field">
-        <input type="text" ng-model="user.surname" placeholder="Last Name">
+        <input ng-disabled="!editMode" type="text" ng-model="user.surname" placeholder="Last Name">
       </div>
     </div>
   </div>
     <div class="field">
     <label>Email</label>
     <div class="two fields">
-      <div class="field">
-        <input type="text" ng-model="user.email" placeholder="Email">
+      <div class="field" ng-class="{'error': infoForm.email.$invalid}">
+        <input ng-disabled="!editMode" name="email" type="email" ng-model="user.email" placeholder="Email" required>
       </div>
       <div ui-sref="resetPassword" class="field">
           <button type="text" class="ui button">Change Password</button>
       </div>
     </div>
   </div>
-</form>
+
 
 <div class="ui horizontal segments">
   <div class="ui segment">
-<form class="ui form" name="form">
+
   <h4 class="ui dividing header">Dati personali</h4>
-  <div class="field" ng-class="{'error': form.birthday.$invalid}">
-    <label>Data di nascita</label>
-        <input type="text" name="birthday" ng-model="user.birthday" ng-pattern="regexBirthday" placeholder="Data Nascita" required>
+  <div class="field" ng-class="{'error': infoForm.birthday.$invalid}">
+    <label>Data di nascita (gg/mm/aaaa)</label>
+        <input ng-disabled="!editMode" type="text" name="birthday" ng-model="user.birthday" ng-pattern="regexBirthday" placeholder="Data Nascita" required>
       <div class="field">
 <!--          <input date-time format="DD/MM/YYYY" ng-model="user.birthday" view="date" max-view="year" min-view="date" placeholder="Data Nascita">-->
       </div>
@@ -41,19 +42,19 @@
     <div class="field">
     <label>Recapiti telefonici</label>
     <div class="two fields">
-      <div class="field">
-        <input type="text" ng-model="user.phone1" placeholder="Cellphone">
+      <div class="field" ng-class="{'error': infoForm.phone1.$invalid}">
+        <input ng-disabled="!editMode" name="phone1" type="text" ng-model="user.phone1" placeholder="Cellphone" required>
       </div>
       <div class="field">
-        <input type="text" ng-model="user.phone2" placeholder="Home">
+        <input ng-disabled="!editMode" type="text" ng-model="user.phone2" placeholder="Home">
       </div>
     </div>
   </div>  
     
     <div class="field">
     <label>Indirizzo</label>
-        <input type="text" ng-model="user.personalInfo.address1" placeholder="Indirizzo 1">
-        <input type="text" ng-model="user.personalInfo.address2" placeholder="Indirizzo 2">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address1" placeholder="Indirizzo 1">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address2" placeholder="Indirizzo 2">
   </div>
     
        <div class="field">
@@ -61,15 +62,15 @@
     <div class="four fields">
       <div class="field">
             <label>Città</label>
-            <input type="text" ng-model="user.personalInfo.city" placeholder="Città">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.city" placeholder="Città">
       </div>
       <div class="field">
             <label>Provincia</label>
-            <input type="text" ng-model="user.personalInfo.province" placeholder="Provincia">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.province" placeholder="Provincia">
       </div>
       <div class="field">
             <label>CAP</label>
-            <input type="text" ng-model="user.personalInfo.zip" placeholder="CAP">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.zip" placeholder="CAP">
       </div>
         
       
@@ -77,7 +78,7 @@
         <div class="field">
             
       <label>Country</label>
-      <div ng-model="personalCountry" class="ui fluid search selection dropdown">
+      <div ng-class="{'disabled': !editMode}" dropdown ng-model="personalCountry" class="ui fluid search selection dropdown">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <div class="default text">Select Country</div>
@@ -332,37 +333,37 @@
     <div class="field">
     <label>CF</label>
       <div class="field">
-        <input type="text" ng-model="user.personalInfo.taxCode" placeholder="Codice Fiscale">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.taxCode" placeholder="Codice Fiscale">
       </div>
   </div>
     <div ng-click="toggleBilling(differentBillingAddress)" class="ui checkbox">
-      <input type="checkbox" >
+      <input ng-disabled="!editMode" type="checkbox" >
       <label>Dati di fatturazione diversi</label>
     </div>
     
 
-</form>
+
   </div>
   <div ng-show="differentBillingAddress" class="ui segment">
-<form class="ui form">
+
   <h4 class="ui dividing header">Dati fiscali</h4>
   <div class="field">
     <label>P.IVA</label>
       <div class="field">
-        <input type="text" ng-model="user.billingInfo.taxCode" placeholder="Partita IVA">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.taxCode" placeholder="Partita IVA">
       </div>
   </div>
     <div class="field">
     <label>Nome azienda</label>
       <div class="field">
-        <input type="text" ng-model="user.billingInfo.companyName" placeholder="Nome azienda">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.companyName" placeholder="Nome azienda">
       </div>
   </div>
     
        <div class="field">
     <label>Indirizzo</label>
-        <input type="text" ng-model="user.billingInfo.address1" placeholder="Indirizzo 1">
-        <input type="text" ng-model="user.billingInfo.address2" placeholder="Indirizzo 2">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address1" placeholder="Indirizzo 1">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address2" placeholder="Indirizzo 2">
   </div>
     
        <div class="field">
@@ -370,20 +371,20 @@
     <div class="four fields">
       <div class="field">
             <label>Città</label>
-            <input type="text" ng-model="user.billingInfo.city" placeholder="Città">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.city" placeholder="Città">
       </div>
       <div class="field">
             <label>Provincia</label>
-            <input type="text" ng-model="user.billingInfo.province" placeholder="Provincia">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.province" placeholder="Provincia">
       </div>
       <div class="field">
             <label>CAP</label>
-            <input type="text" ng-model="user.billingInfo.zip" placeholder="CAP">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.zip" placeholder="CAP">
       </div>
     </div>
          <div class="field">
              <label>Country</label>
-      <div ng-model="billingCountry" class="ui fluid search selection dropdown">
+      <div ng-class="{'disabled': !editMode}" dropdown ng-model="billingCountry" class="ui fluid search selection dropdown">
         <input type="hidden" name="country">
         <i class="dropdown icon"></i>
         <div class="default text">Select Country</div>
@@ -636,6 +637,6 @@
     </div>
     
     
-</form>
-  </div>
 </div>
+  </div>
+</form>

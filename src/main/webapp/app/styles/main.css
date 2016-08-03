@@ -42,6 +42,11 @@ body {
     
 }
 
+input:disabled{
+    color: black !important;
+    opacity: 1 !important;
+}
+
 .layered-paper {
     background: #eee;
     box-shadow:

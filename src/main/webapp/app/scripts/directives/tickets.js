@@ -7,7 +7,7 @@
  * # tickets
  */
 angular.module('yeswesailApp')
-  .directive('tickets', function ($http, URLs, toastr, CartService, ngDialog) {
+  .directive('tickets', function ($http, URLs, toastr, CartService, ngDialog, Session, $rootScope, $state) {
     
     return {
         
@@ -17,7 +17,7 @@ angular.module('yeswesailApp')
         },
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
-          
+          var user=Session.getCurrentUser();
           var totalAmount=0;
           scope.calculatePrice=function(tickets){
               if(tickets[0].ticketType==1){
@@ -38,6 +38,10 @@ angular.module('yeswesailApp')
           };
           
           scope.confirmAddToCart=function(tickets, cabinType){
+              if(!!!user){
+                  $rootScope.$broadcast('LoginRequired', $state);
+                  return;
+              }
               scope.selectedTickets=tickets;
               scope.selectedCabinType=cabinType;
               
