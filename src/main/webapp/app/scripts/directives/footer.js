@@ -12,14 +12,16 @@ angular.module('yeswesailApp')
       templateUrl: 'views/footer.html',
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
-        element.find('.ui.selection.language.dropdown').dropdown();
+        element.find('.ui.selection.language.dropdown').dropdown({
+            action: 'activate'
+        });
           
-          scope.changeLanguage=function(lang){
-              $http.defaults.headers.common['Language'] = lang;
-              LocaleService.setLocale(lang.toLowerCase()+'_'+lang.toUpperCase());
-              $state.go($state.current, {}, {reload: true});
-              
-          }
+//          scope.changeLanguage=function(lang){
+//              $http.defaults.headers.common['Language'] = lang;
+//              LocaleService.setLocale(lang.toLowerCase()+'_'+lang.toUpperCase());
+//              $state.go($state.current, {}, {reload: true});
+//              
+//          }
       }
     };
   });

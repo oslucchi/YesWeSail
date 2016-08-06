@@ -9,11 +9,11 @@
 
             <div class="ui fluid three item menu">
 
-                <select dropdown-selection ng-model="selectedLocation" class="ui dropdown item">
+                <select  ng-if="locationsLoaded" dropdown-selection ng-model="selectedLocation" class="ui dropdown item">
                     <option value="">{{"global.selectLocation" | translate}}</option>
                     <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
                 </select>
-                <select dropdown-selection ng-model="selectedCategory"  class="ui dropdown item">
+                <select  ng-if="categoriesLoaded" dropdown-selection ng-model="selectedCategory"  class="ui dropdown item">
                     <option value="">{{"global.selectCategory" | translate}}</option>
                     <option value="{{category.categoryId}}" ng-repeat="category in CATEGORIES">{{category.description}}</option>
                 </select>

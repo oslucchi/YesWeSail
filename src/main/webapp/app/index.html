@@ -25,97 +25,68 @@
     <!-- endbuild -->
     <!-- build:css(.tmp) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-
     <!-- endbuild -->
     <!-- Begin Cookie Consent plugin by Silktide - http://silktide.com/cookieconsent -->
     <script type="text/javascript">
         window.cookieconsent_options = {
-            "message": "This website uses cookies to ensure you get the best experience on our website",
-            "dismiss": "Got it!",
-            "learnMore": "More info",
-            "link": null,
-            "theme": "dark-floating"
+            "message": "This website uses cookies to ensure you get the best experience on our website"
+            , "dismiss": "Got it!"
+            , "learnMore": "More info"
+            , "link": null
+            , "theme": "dark-floating"
         };
     </script>
-
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/cookieconsent2/1.0.10/cookieconsent.min.js"></script>
     <!-- End Cookie Consent plugin -->
-
-
 </head>
 
 <body ng-cloak ng-app="yeswesailApp" ng-controller="ApplicationCtrl">
     <!--[if lte IE 8]>
       <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
-
     <!-- Add your site or application content here -->
-
-
-
-
     <div class="ui top blue inverted fixed menu">
         <div class="ui container">
-            <a href="#/" class="item">
-                <img src="images/cropped-cropped-YWS-60x70.png">
-            </a>
-
+            <a href="#/" class="item"> <img src="images/cropped-cropped-YWS-60x70.png"> </a>
             <div class="right menu">
+                <div class="ui item">
+                     <div dropdown-selection ng-model="language" class="ui language dropdown">
+                      <input type="hidden" name="language">
+                      <div class="default text">Choose</div>
+                      <div class="menu">
+                          <div ng-click="changeLanguage('IT')" class="item" data-value="IT"><i class="it flag"></i></div>
+                        <div ng-click="changeLanguage('EN')" class="item" data-value="EN"><i class="gb flag"></i></div>
+                      </div>
+                    </div>
+                    
+                    
+                  
+               
+                </div>
                 <a ng-if="!currentUser.isShipOwner" class="ui item">
                     <button ui-sref="sailorRegistration" class="ui inverted basic button">Diventa armatore</button>
                 </a>
-                <a ui-sref="cart" ng-if="cartQty" class="item">
-                    <i class="cart icon"></i>
+                <a ui-sref="cart" ng-if="cartQty" class="item"> <i class="cart icon"></i>
                     <div class="floating ui red label">{{cartQty}}</div>
-                </a>
-
-
-                <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">
+                </a> <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">
       Accedi
     </a>
-
-
                 <a ng-show="currentUser" class="item">
-                    <div class="ui usermenu dropdown" action="hide">
-                        <div class="text">
-                            <img ng-if="currentUser.imageURL" class="ui avatar image" ng-src="{{currentUser.imageURL}}">
-                            <img ng-if="!currentUser.imageURL" class="ui avatar image" ng-src="images/default-icon.jpg">
-                            <span ng-if="currentUser.name">{{currentUser.name}}</span>
-                            <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span>
-                        </div>
-                        <i class="dropdown icon"></i>
+                    <div class="ui usermenu dropdown" dropdown action="hide">
+                        <div class="text"> <img ng-if="currentUser.imageURL" class="ui avatar image" ng-src="{{currentUser.imageURL}}"> <img ng-if="!currentUser.imageURL" class="ui avatar image" ng-src="images/default-icon.jpg"> <span ng-if="currentUser.name">{{currentUser.name}}</span> <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span> </div> <i class="dropdown icon"></i>
                         <div class="menu">
-                            <div ui-sref="userId.profile({userId: currentUser.idUsers})" class="item">
-                                Il mio profilo
-                            </div>
-                            <div ui-sref="userId.events({userId:currentUser.idUsers})" class="item">
-                                I miei viaggi
-                            </div>
-                            <div ng-if="currentUser.roleId>8" ui-sref="admin.events" class="item">
-                                Admin Panel
-                            </div>
-                            <div ng-if="currentUser.isShipOwner" ng-click="popupCreateEventDialog()" class="item">
-                                Crea Evento
-                            </div>
-
-                            <div ng-click="logout()" class="item">
-                                Esci
-                            </div>
-
+                            <div ui-sref="userId.profile({userId: currentUser.idUsers})" class="item"> Il mio profilo </div>
+                            <div ui-sref="userId.events({userId:currentUser.idUsers})" class="item"> I miei viaggi </div>
+                            <div ng-if="currentUser.roleId>8" ui-sref="admin.events" class="item"> Admin Panel </div>
+                            <div ng-if="currentUser.isShipOwner" ng-click="popupCreateEventDialog()" class="item"> Crea Evento </div>
+                            <div ng-click="logout()" class="item"> Esci </div>
                         </div>
                     </div>
-
                 </a>
             </div>
         </div>
     </div>
-
-        <div ui-view></div>
-
-
-
-
-
+    <div ui-view></div>
     <div ng-show="!currentUser" class="register banner">
         <div class="ui container">
             <div class="ui two centered column grid">
@@ -128,21 +99,15 @@
             </div>
         </div>
     </div>
-
-
     <footer></footer>
-
-
-
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID -->
     <script>
         ! function (A, n, g, u, l, a, r) {
             A.GoogleAnalyticsObject = l, A[l] = A[l] || function () {
                     (A[l].q = A[l].q || []).push(arguments)
-                }, A[l].l = +new Date, a = n.createElement(g),
-                r = n.getElementsByTagName(g)[0], a.src = u, r.parentNode.insertBefore(a, r)
+                }, A[l].l = +new Date, a = n.createElement(g)
+                , r = n.getElementsByTagName(g)[0], a.src = u, r.parentNode.insertBefore(a, r)
         }(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
-
         ga('create', 'UA-XXXXX-X');
         ga('send', 'pageview');
     </script>
@@ -198,7 +163,6 @@
     <script src="bower_components/angular-datepicker/dist/angular-datepicker.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
-
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers/main.js"></script>

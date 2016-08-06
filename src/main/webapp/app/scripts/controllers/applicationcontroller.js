@@ -8,16 +8,20 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService) {
+    .controller('ApplicationCtrl', function ($scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService, LocaleService, $state) {
 //        $rootScope.$on("$locationChangeStart", function(event, next, current) { 
 //            if(!AuthService.isAuthenticated()){
 //                 event.preventDefault()
 //            }
 //      });
-        
-        angular.element('.ui.dropdown').dropdown().dropdown({
-            action: 'nothing'
+        $('.ui.selection.language.dropdown').dropdown({
+            action: 'activate'
         });
+    $scope.language='IT';
+    
+    //        angular.element('.ui.dropdown').dropdown().dropdown({
+    //            action: 'nothing'
+    //        });
         $scope.cartQty=null;
         
         $scope.$watch( function () { return CartService.cartQty; }, function (data) {
@@ -142,8 +146,18 @@ angular.module('yeswesailApp')
             
         };
     
+   
         
-    
+      $scope.changeLanguage=function(lang){
+              $http.defaults.headers.common['Language'] = lang;
+                if(lang=='EN'){
+                    LocaleService.setLocale(lang.toLowerCase()+'_US');      
+                }else{
+                    LocaleService.setLocale(lang.toLowerCase()+'_'+lang.toUpperCase());
+                }
+              $state.go($state.current, {}, {reload: true});
+              
+          }
     
     if(invalidEmail=='true'){
         invalidEmailDialog.open({
