@@ -13,19 +13,7 @@
                           <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
                       </div>
                     </div>
-                
-<!--
-                <select dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
-                    <option value="">{{"global.selectLocation" | translate}}</option>
-                    <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
-                </select>
--->
-<!--
-                
-                <select ng-model="selectedLocation" ng-options="location for location in LOCATIONS" class="ui dropdown item">
-                    <option value="">{{"global.selectLocation" | translate}}</option>
-                </select>
--->
+
             </div>
             <div class="three wide column">
                 
@@ -37,12 +25,6 @@
                           <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
                       </div>
                     </div>
-<!--
-                
-                <select after-render="initializeSelect()" ng-model="selectedCategory" ng-options="category.description for category in CATEGORIES" class="ui dropdown item">
-                    <option value="">{{"global.selectCategory" | translate}}</option>
-                </select>
--->
             </div>
 
 
