@@ -6,6 +6,7 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.SessionData;
 
 public class Events extends DBInterface
@@ -161,6 +162,18 @@ public class Events extends DBInterface
 				 	 whereClause;
 		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		if (languageId != Constants.LNG_IT)
+		{
+			sql = "SELECT a.*, b.description AS `title` " +
+				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 	 "     ON a.idEvents = b.eventId AND " +
+				 	 "        b.languageId = " + Constants.LNG_IT + " AND " +
+					 "		  b.anchorZone = 0 " + 
+				 	 whereClause;
+			@SuppressWarnings("unchecked")
+			ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+			events.addAll(eventsIT);
+		}
 		if (events.size() == 0)
 			return null;
 		for(Events e : events)

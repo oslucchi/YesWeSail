@@ -24,8 +24,8 @@ public class EventJson {
 	public boolean earlyBooking;
 	public boolean lastMinute;
 	public boolean hotEvent;
-	public UsersJson participants;
-	public TicketJson[] tickets;
+	public UsersJson[] participants;
+	public TicketJson[][] tickets;
 	public boolean activeOnly;
 	public EventRouteJson[] route;
 }

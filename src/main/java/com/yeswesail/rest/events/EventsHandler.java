@@ -471,8 +471,15 @@ public class EventsHandler {
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		jsonResponse.put("images", 
-						 UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_",contextPath));
+		ArrayList<String> images = UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_",contextPath);
+		if (images.isEmpty())
+		{
+			images.add(event.getImageURL());
+		}
+		else
+		{
+			jsonResponse.put("images", images);
+		}
 
 		try
 		{
@@ -495,10 +502,10 @@ public class EventsHandler {
 		try
 		{
 			Boats b = new Boats(conn, event.getBoatId());
-			ArrayList<String> images = UploadFiles.getExistingFilesPath(
-					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
+			images = UploadFiles.getExistingFilesPath(
+						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
 			images.addAll(UploadFiles.getExistingFilesPath(
-					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats"));
+						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats"));
 			b.setImages(images);
 			b.setDocs(UploadFiles.getExistingFilesPath(
 					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
@@ -557,7 +564,7 @@ public class EventsHandler {
 		if (jsonIn.location == null)
 			jsonIn.location = "TBD";
 		event.setLocation(jsonIn.location);
-		event.setBoatId(jsonIn.boatId);
+		event.setBoatId((jsonIn.boatId == 0 ? 1 : jsonIn.boatId));
 		event.setShipOwnerId(jsonIn.shipOwnerId);
 		if (jsonIn.status == null)
 		{
@@ -913,19 +920,55 @@ public class EventsHandler {
 		return eventDetailsHandler(jsonIn, language, 1);
 	}
 
-	private void handleInsertTicket(TicketJson[] jsonIn, DBConnection conn) throws Exception
+	private void handleInsertTicket(TicketJson[][] jsonIn, DBConnection conn) throws Exception
 	{
 		EventTickets et = null;
-		for(TicketJson t : jsonIn)
+		EventTickets[] eventTickets = EventTickets.findByEventId(jsonIn[0][0].eventId, Constants.LNG_IT);
+		ArrayList<EventTickets> ticketsToDel = new ArrayList<>();
+		for(int y = 0; y < jsonIn.length; y++)
 		{
-			et = new EventTickets();
-			et.setAvailable(t.available);
-			et.setBooked(0);
-			et.setCabinRef(t.cabinRef);
-			et.setEventId(t.eventId);
-			et.setPrice(t.price);
-			et.setTicketType(t.ticketType);
-			et.insert(conn, "eventTicketId", t);
+			for(TicketJson t : jsonIn[y])
+			{
+				et = null;
+				for(int i = 0; i < eventTickets.length; i++)
+				{
+					if (eventTickets[i].getIdEventTickets() == t.idEventTickets)
+					{
+						et = eventTickets[i];
+						break;
+					}
+				}
+				if (et == null)
+				{
+					et = new EventTickets();
+					et.setAvailable(t.available);
+					et.setBooked(0);
+					et.setCabinRef(t.cabinRef);
+					et.setEventId(t.eventId);
+					et.setTicketType(t.ticketType);
+					et.setPrice(t.price);
+					et.insert(conn, "idEventTickets", et);
+				}
+				else
+				{
+					et.setPrice(t.price);
+					et.update(conn, "idEventTickets");
+					ticketsToDel.add(et);
+				}
+			}
+			if (!ticketsToDel.isEmpty())
+			{
+				String sql = "DELETE FROM EventTickets " +
+						 	 "WHERE idEventTickets IN (";
+				String sep = "";
+				for(int i = 0; i < ticketsToDel.size(); i++)
+				{
+					sql += sep + ticketsToDel.get(i).getIdEventTickets();
+					sep = ",";
+				}
+				sql += ")";
+				EventTickets.executeStatement(conn, sql, false);
+			}
 		}
 	}
 	
@@ -941,8 +984,7 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			for(TicketJson[] ticket : jsonIn)
-				handleInsertTicket(ticket, conn);
+			handleInsertTicket(jsonIn, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 

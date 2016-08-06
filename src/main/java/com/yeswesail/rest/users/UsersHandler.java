@@ -489,12 +489,19 @@ public class UsersHandler {
     }
 
 	@PUT
+	@Path("/{userId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response update(UsersJson jsonIn, @HeaderParam("Authorization") String token)
+	public Response update(UsersJson jsonIn, @PathParam("userId") int userId, 
+							@HeaderParam("Authorization") String token)
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
+		jsonIn.idUsers = userId;
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		boolean retVal = true;
 		if ((jsonIn.billingInfo != null) && (jsonIn.billingInfo.taxCode != null))
 		{
@@ -532,25 +539,28 @@ public class UsersHandler {
 				u.setBirthday(jsonIn.birthday, "dd/MM/yyyy");
 			u.setRoleId(jsonIn.roleId);
 			u.update(conn, "idUsers");
-			AddressInfoJson[] aiJson = new AddressInfoJson[2];
-			aiJson[0] = jsonIn.personalInfo;
-			aiJson[1] = jsonIn.billingInfo;
-			AddressInfo ai = new AddressInfo();
-			String sql = "DELETE FROM AddressInfo WHERE userId = " + jsonIn.idUsers;
-			AddressInfo.executeStatement(conn, sql, false);
-			for(int i = 0; i < 2; i++)
+			if ((jsonIn.personalInfo.type != null) && (jsonIn.billingInfo.type != null))
 			{
-				ai.setAddress1(aiJson[i].address1);
-				ai.setAddress2(aiJson[i].address2);
-				ai.setCompanyName(aiJson[i].companyName);
-				ai.setCity(aiJson[i].city);
-				ai.setCountry(aiJson[i].country);
-				ai.setProvince(aiJson[i].province);
-				ai.setZip(aiJson[i].zip);
-				ai.setTaxCode(aiJson[i].taxCode);
-				ai.setType(aiJson[i].type);
-				ai.setUserId(jsonIn.idUsers);
-				ai.insert(conn, "idAddressInfo", ai);
+				AddressInfoJson[] aiJson = new AddressInfoJson[2];
+				aiJson[0] = jsonIn.personalInfo;
+				aiJson[1] = jsonIn.billingInfo;
+				AddressInfo ai = new AddressInfo();
+				String sql = "DELETE FROM AddressInfo WHERE userId = " + jsonIn.idUsers;
+				AddressInfo.executeStatement(conn, sql, false);
+				for(int i = 0; i < 2; i++)
+				{
+						ai.setAddress1(aiJson[i].address1);
+						ai.setAddress2(aiJson[i].address2);
+						ai.setCompanyName(aiJson[i].companyName);
+						ai.setCity(aiJson[i].city);
+						ai.setCountry(aiJson[i].country);
+						ai.setProvince(aiJson[i].province);
+						ai.setZip(aiJson[i].zip);
+						ai.setTaxCode(aiJson[i].taxCode);
+						ai.setType(aiJson[i].type);
+						ai.setUserId(jsonIn.idUsers);
+						ai.insert(conn, "idAddressInfo", ai);
+				}
 			}
 			DBInterface.TransactionCommit(conn);
 		}
@@ -631,7 +641,7 @@ public class UsersHandler {
 				break;
 			}
 		}
-		log.trace("Got shipowner info: " + sh.usersId + " - " + sh.navigationLicense + " - " + sh.sailingLicense);
+		log.trace("Got shipowner info: " + sh.usersId + " - " + sh.sailingLicense);
 		
 		DBConnection conn = null;
 		SessionData sd = SessionData.getInstance();
@@ -670,7 +680,7 @@ public class UsersHandler {
 				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
 				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
 			}
-			
+/*			
 			doc.setUserId(sh.usersId);
 			doc.setDocumentTypesId(DocumentTypes.NAVIGATION_CERTIFICATE);
 			doc.setNumber(sh.navigationLicense);
@@ -691,6 +701,7 @@ public class UsersHandler {
 				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
 				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
 			}
+*/
 			String destPath = prop.getContext().getResource("/images/shipowner").getPath();
 			UploadFiles.moveFiles( destPath + "/" + token, destPath, "docs_" + sh.usersId + "_" , true);
 			

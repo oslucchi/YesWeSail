@@ -105,7 +105,7 @@ public class Users extends DBInterface
 		ArrayList<Users> retList = (ArrayList<Users>) populateCollection(sql, Users.class);
 		for(Users u : retList)
 		{
-			if (!u.getImageURL().startsWith("http"))
+			if ((u.imageURL != null) && !u.getImageURL().startsWith("http"))
 			{
 				u.setImageURL(prop.getWebHost() + "/" + u.getImageURL());
 			}

@@ -5,11 +5,11 @@ public class Constants {
 	public static int LNG_EN	= 2;
 	public static int LNG_FR	= 3;
 	public static int LNG_DE	= 4;
-	public static int LNG_SP	= 5;
+	public static int LNG_ES	= 5;
 	
 	public static int getLanguageCode(String language)
 	{
-		switch(language.toUpperCase())
+		switch(language.substring(0,2).toUpperCase())
 		{
 		case "IT":
 			return(LNG_IT);
@@ -23,8 +23,8 @@ public class Constants {
 		case "DE":
 			return(LNG_DE);
 
-		case "SP":
-			return(LNG_SP);
+		case "ES":
+			return(LNG_ES);
 
 		default:
 			return(LNG_EN);
