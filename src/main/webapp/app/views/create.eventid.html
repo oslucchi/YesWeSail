@@ -65,8 +65,6 @@
             <div class=" column">
                 <div class="ui grid">
                     <div class=" column">
-
-
                         <div class="ui items">
                             <div class="item">
                                 <div class="image">
@@ -95,7 +93,7 @@
                                         <div class="ui input">
                                             <datepicker date-format="yyyy-MM-dd">
 
-                                                <input type="text" name="dateFrom" ng-model="event.dateEnd" placeholder="To...">
+                                                <input type="text" date-min-limit="{{event.dateStart.toString()}}" name="dateTo" ng-model="event.dateEnd" placeholder="To...">
 
                                             </datepicker>
                                             <div class="ui input">

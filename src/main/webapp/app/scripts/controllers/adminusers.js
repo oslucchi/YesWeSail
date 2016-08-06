@@ -19,47 +19,28 @@ angular.module('yeswesailApp')
     };
     
     $scope.getUsers();
+    
+    
+    
+    
      $scope.activate=function(user){
-        event.status='A';
+        user.status='A';
         $http.put(URLs.ddns + 'rest/users/'+user.idUsers, user).then(function(res){
             toastr.success('User correctly activated!');
         }, function(err){
             toastr.error('Something went wrong while trying to activate the user, maybe the hamsters ran away!');
         });
     }
-    $scope.deactivate=function(event){
-        event.status='P';
-        $http.put(URLs.ddns + 'rest/events/'+event.idEvents, event).then(function(res){
-            toastr.success('Event correctly deactivated!');
+    $scope.deactivate=function(user){
+        user.status='P';
+        $http.put(URLs.ddns + 'rest/users/'+user.idUsers, user).then(function(res){
+            toastr.success('User correctly deactivated!');
         }, function(err){
             toastr.error('Something went wrong while trying to activate the event, maybe the hamsters ran away!');
         });
     }
-    $scope.remove=function(user){
-         $http.delete(URLs.ddns + 'rest/users/delete/'+ user.idusers).then(function(res){
-            toastr.success('Event deleted!');
-             $scope.events.splice($scope.events.indexOf(event),1);
-             
-        }, function(err){
-            toastr.error('Something went wrong while trying to delete the event, the gods chose to spare this event!');
-        });
-    }
-    $scope.clone=function(event){
-        
-        event.dateStart=new Date(event.dateStart);
-        event.dateEnd=new Date(event.dateEnd);
-        event.dateStart=$filter('date')(event.dateStart, 'yyyy-MM-dd');
-        event.dateEnd=$filter('date')(event.dateEnd, 'yyyy-MM-dd');
-        
-        $http.post(URLs.ddns + 'rest/events/clone', event).then(function(res){
-            toastr.success('Event '+event.idEvents+' duplicated! New ID '+res.data.idEvents);
-            $scope.closeModals();
-        }, function(err){
-            toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
-            $scope.closeModals();
-        });
-    };
-    
+
+
  
     
     $scope.showClonePopup=function(event){

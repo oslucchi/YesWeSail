@@ -34,7 +34,7 @@ angular.module('yeswesailApp')
                 
 
 
-                $http.put(URLs.ddns + 'rest/users', $scope.user).then(function (res) {
+                $http.put(URLs.ddns + 'rest/users/'+$scope.currentUser.idUsers, $scope.user).then(function (res) {
                     $scope.editMode = false;
                     toastr.success('Changes Saved');
                 }, function (err) {

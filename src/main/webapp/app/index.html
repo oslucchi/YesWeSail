@@ -54,16 +54,12 @@
                       <input type="hidden" name="language">
                       <div class="default text">Choose</div>
                       <div class="menu">
-                          <div ng-click="changeLanguage('IT')" class="item" data-value="IT"><i class="it flag"></i></div>
-                        <div ng-click="changeLanguage('EN')" class="item" data-value="EN"><i class="gb flag"></i></div>
+                          <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT"><i class="it flag"></i></div>
+                        <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
                       </div>
                     </div>
-                    
-                    
-                  
-               
                 </div>
-                <a ng-if="!currentUser.isShipOwner" class="ui item">
+                <a ng-if="!currentUser.isShipOwner" ng-show="!!currentUser" class="ui item">
                     <button ui-sref="sailorRegistration" class="ui inverted basic button">Diventa armatore</button>
                 </a>
                 <a ui-sref="cart" ng-if="cartQty" class="item"> <i class="cart icon"></i>

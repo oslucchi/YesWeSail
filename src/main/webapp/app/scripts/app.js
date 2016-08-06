@@ -62,7 +62,7 @@ angular
             'it_IT': 'Italiano',
             'en_US': 'English'
         },
-        'preferredLocale': 'en_US'
+        'preferredLocale': 'it_IT'
     })
     .service('LocaleService', function ($translate, LOCALES, $rootScope, tmhDynamicLocale) {
         'use strict';
@@ -80,6 +80,7 @@ angular
         });
 
         // STORING CURRENT LOCALE
+        
         var currentLocale = $translate.proposedLanguage(); // because of async loading
 
         // METHODS
@@ -147,7 +148,7 @@ angular
             prefix: 'resources/locale-', // path to translations files
             suffix: '.json' // suffix, currently- extension of the translations
         });
-        $translateProvider.preferredLanguage('en_US'); // is applied on first load
+        $translateProvider.preferredLanguage('it_IT'); // is applied on first load
         tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
 
 
@@ -265,7 +266,7 @@ angular
             .state('admin.users', {
                 url: "/users",
                 templateUrl: 'views/admin.users.html',
-                controller: 'AdminCtrl',
+                controller: 'AdminusersCtrl',
                 accessLevel: USER_ROLES.ADMIN
             })
             .state('admin.requests', {
