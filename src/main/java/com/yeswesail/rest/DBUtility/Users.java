@@ -7,10 +7,13 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.yeswesail.rest.ApplicationProperties;
+
 public class Users extends DBInterface
 {	
 	private static final long serialVersionUID = -4849479160608801245L;
 	private final Logger log = Logger.getLogger(this.getClass());
+	private static final ApplicationProperties prop = ApplicationProperties.getInstance();
 	
 	protected int idUsers;
 	protected String name;
@@ -57,6 +60,10 @@ public class Users extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 	}
 
 	public Users(DBConnection conn, String email) throws Exception
@@ -71,6 +78,10 @@ public class Users extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE email = '" + email + "'";
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 	}
 
 	public void findByFacebookID(DBConnection conn, String id) throws Exception
@@ -79,6 +90,10 @@ public class Users extends DBInterface
 					 "FROM Users " +
 					 "WHERE facebook = '" + id + "'";
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -87,7 +102,15 @@ public class Users extends DBInterface
 		String sql = "SELECT name, surname, idUsers, imageURL " +
 				 "FROM Users " +
 				 "WHERE roleId = " + role;
-		return (ArrayList<Users>) populateCollection(sql, Users.class);
+		ArrayList<Users> retList = (ArrayList<Users>) populateCollection(sql, Users.class);
+		for(Users u : retList)
+		{
+			if (!u.getImageURL().startsWith("http"))
+			{
+				u.setImageURL(prop.getWebHost() + "/" + u.getImageURL());
+			}
+		}
+		return retList;
 	}
 	
 	public int getIdUsers() {

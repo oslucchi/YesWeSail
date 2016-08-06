@@ -56,6 +56,10 @@ public class Events extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 	}
 	
 	public Events(DBConnection conn, int id, int languageId) throws Exception
@@ -69,6 +73,10 @@ public class Events extends DBInterface
 				 "WHERE idEvents = " + id + " AND " +
 				 "      status = 'A'";
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 		events = new ArrayList<Events>();
 		events.add(this);
 		getTicketMaxAndMin(events);
@@ -89,6 +97,10 @@ public class Events extends DBInterface
 		}
 		
 		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
 		events = new ArrayList<Events>();
 		events.add(this);
 		getTicketMaxAndMin(events);
@@ -118,6 +130,7 @@ public class Events extends DBInterface
 		{
 			if (e.minPrice != 0)
 			{
+				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
 				retList.add(e);
 			}
 			if ((prop.getMaxNumHotOffers() != 0) && (retList.size() == prop.getMaxNumHotOffers()))
@@ -150,6 +163,13 @@ public class Events extends DBInterface
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		if (events.size() == 0)
 			return null;
+		for(Events e : events)
+		{
+			if (e.minPrice != 0)
+			{
+				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
+			}
+		}
 		getTicketMaxAndMin(events);
 		return(events.toArray(new Events[events.size()]));
 	}
