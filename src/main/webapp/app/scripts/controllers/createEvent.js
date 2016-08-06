@@ -32,6 +32,7 @@ angular.module('yeswesailApp')
           labels: []
         };
     $scope.isAuthorized=AuthService.isAuthorized;
+    
         $scope.create = function (temporaryEvent) {
             
             if(!!!$scope.suggestedOwner){
@@ -39,7 +40,6 @@ angular.module('yeswesailApp')
                 
             }else{
                 temporaryEvent.shipOwnerId=$scope.suggestedOwner.originalObject.idUsers;
-                
             }
             $http.post(URLs.ddns + 'rest/events/create', temporaryEvent).then(function (res) {
                 $window.location.href = '/#/edit-event/'+res.data.idEvents;
@@ -49,6 +49,8 @@ angular.module('yeswesailApp')
                 console.log(err);
             });
         };
+    
+    
         $scope.EVENTTYPES=[];
         
         MAPS.getMap('EVENTTYPES').then(function(res){
@@ -70,12 +72,7 @@ angular.module('yeswesailApp')
     };
     
    $scope.initializeSelect = function () {
-
-
             angular.element('.ui.selection.dropdown').dropdown();
-
-
-
         };
      angular.element('.ui.type.dropdown').dropdown();
     });

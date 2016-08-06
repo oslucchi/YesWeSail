@@ -40,8 +40,8 @@
     {{selectedLanguage}}
     <i class="dropdown icon"></i>
         <div class="menu">
-            <div class="item" ng-click="setLanguage('IT')" data-value="IT">IT</div>
-            <div class="item" ng-click="setLanguage('EN')" data-value="EN">EN</div>
+            <div class="item" ng-click="setLanguage('it_IT')" data-value="IT">IT</div>
+            <div class="item" ng-click="setLanguage('en_US')" data-value="EN">EN</div>
         </div>
   </div>
         <a ng-click="saveEvent()" class="item">    
@@ -250,24 +250,27 @@
                     <tr>
                       <td>{{"event.bunks" | translate}}</td>
                       <td ng-repeat="number in getNumber(selectedBoat.bunks) track by $index">
-                        <div class="ui fluid input">
-                          <input ng-model="tickets.bunks[$index]" type="text">
+                         <button ng-disabled="tDisabled" ng-if="!!!tickets[0][$index].price" ng-click="addTicket(0, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tickets[0][$index].price" class="ui fluid input ticket-price">
+                          <input ng-model="tickets[0][$index].price" type="text">
                         </div>
                       </td>
                     </tr>
                     <tr>
                       <td>{{"event.cabinsNoBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsNoBathroom*2) track by $index">
-                            <div class="ui fluid input">
-                              <input ng-model="tickets.cabinsNoBathroom[$index]" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tickets[1][$index].price" ng-click="addTicket(1, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tickets[1][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tickets[1][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
                       <tr>
                       <td>{{"event.cabinsWithBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsWithBathroom*2) track by $index">
-                            <div class="ui fluid input">
-                              <input ng-model="tickets.cabinsWithBathroom[$index]" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tickets[2][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tickets[2][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
