@@ -17,7 +17,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     });
     var bDisabled = false;
     $scope.tDisabled=false;
-    $scope.selectedLanguage = 'it_IT';
+
+    
+    
+    $scope.selectedLanguage = $translate.proposedLanguage();
     $scope.tempEvent = {};
     $scope.markers = [];
     $scope.selectedBoat = null;
@@ -27,13 +30,13 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         });
     };
     $scope.setSelectedBoat = function (boat) {
-        if (bDisabled) {
-            alert($translate.instant('global.boatEditDisabled'));
-        }
-        else {
+//        if (bDisabled) {
+//            alert($translate.instant('global.boatEditDisabled'));
+//        }
+//        else {
             $scope.selectedBoat = boat;
             $scope.maxTickets = maxTicketsForBoat(boat)
-        }
+//        }
     }
     $scope.getEvent = function () {
         $http.post(URLs.ddns + 'rest/events/details', {
@@ -50,6 +53,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.shipOwner = res.data.shipOwner;
             $scope.images = res.data.images;
             $scope.tickets = res.data.tickets;
+            
             $scope.participants = res.data.participants;
             $scope.logistics = res.data.logistics;
             $scope.includes = res.data.includes;
@@ -64,10 +68,23 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             else {
                 bDisabled = false;
             }
-            if (!!res.data.tickets) {
+            if (res.data.tickets>0) {
                 $scope.tDisabled = true;
             }
             else {
+                    $scope.tickets=[
+        [{
+            "available": 1
+            , "booked": 0
+            , "bookedTo": null
+            , "cabinRef": 0
+            , "description": ""
+            , "eventId": $stateParams.eventId
+            , "idEventTickets": 0
+            , "price": 100
+            , "ticketType": 1
+        }]
+    ]
                 $scope.tDisabled = false;
             }
             $scope.newLocation = {
@@ -130,6 +147,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         return max;
     }
     $scope.addTicket = function (row, col) {
+        
         $scope.tickets[row][col] = {
             "available": 1
             , "booked": 0
