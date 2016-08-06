@@ -92,7 +92,10 @@ angular
                 console.error('Locale name "' + locale + '" is invalid');
                 return;
             }
-            currentLocale = locale; // updating current locale
+         
+      
+            currentLocale = locale;
+            
 
             // asking angular-translate to load and apply proper translations
             $translate.use(locale);
@@ -364,6 +367,46 @@ angular
                     }
                 });
             }, true);
+        }
+    };
+})
+
+.directive('dropdownSearchSelection', function ($timeout) {
+    return {
+        restrict: "A",
+        link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dropdown().dropdown('setting', {
+                    action: attr.action || 'activate',
+                    onChange: function (value) {
+                        scope.$parent[attr.ngModel] = value;
+                        scope.$parent.$apply();
+                    }
+                });
+            }, 0);
+
+            scope.$watch(attr.ngModel, function (value) {
+                $timeout(function () {
+
+                    var selected = $(elm).dropdown('get value');
+                    if (value != selected && !!value) {
+                        $(elm).dropdown('set selected', value);
+                    }
+                });
+            }, true);
+        }
+    };
+})
+    
+    .directive('dropdownMenu', function ($timeout) {
+    return {
+        restrict: "A",
+        link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dropdown().dropdown('setting', {
+                    action: attr.action || 'nothing'
+                });
+            }, 0);
         }
     };
 })
