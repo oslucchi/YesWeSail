@@ -4,8 +4,8 @@
 </div>
 
    <div class="ui comments" >
-                <h3 class="ui dividing header">Reviews</h3>
-                <span ng-if="!!!reviews">There are no reviews yet!</span>
+                <h3 class="ui dividing header">{{"user.reviews" | translate}}</h3>
+                <span ng-if="!!!reviews">{{"user.noReviewsSubmitted" | translate}}</span>
                 <div class="comment" ng-repeat="review in reviews">
                     
                     <a class="avatar">
@@ -18,7 +18,7 @@
                             <span class="date">{{review.created | date: 'EEEE, MMMM d, y h:mm:ss a'}}</span>
                              <div class="rating">
                                   <i class="star icon"></i>
-                                  {{review.rating}} Stars
+                                  {{review.rating}} {{"user.reviewStars" | translate}}
                                 </div>
                         </div>
                         
@@ -41,7 +41,7 @@
                        <div class="ui new star rating" data-rating="3"></div>
                     </div>
                     <div class="ui blue labeled icon button" ng-click="addReview(tempReview)">
-                        <i class="icon edit"></i> Add Review
+                        <i class="icon edit"></i> {{"user.addReview" | translate}}
                     </div>
                 </form>
             </div>

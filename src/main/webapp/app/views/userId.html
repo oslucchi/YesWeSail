@@ -7,18 +7,18 @@
           <span ngf-select="uploadProfilePic($files)" ngf-drop="" ng-model="files" ng-disabled="!isOwner" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
                 <img class="ui small image" ng-if="!!user.imageURL" ng-src="{{user.imageURL}}">
                 <img class="ui small image" ng-if="!!!user.imageURL" ng-src="images/default-icon.jpg">
-                <div class="change-image-message">Click to change your image</div>      
+                <div class="change-image-message">{{"user.changeProfileImage" | translate}}</div>      
             </span>
           <div class="content">
             {{user.name}} {{user.surname}}
               <div class="ui divider"></div>
-            <div ng-if="user.isShipOwner" class="sub header"><div class="ui large blue label">Armatore</div></div>
+            <div ng-if="user.isShipOwner" class="sub header"><div class="ui large blue label">{{"user.shipOwner" | translate}}</div></div>
               
                             
           </div>
                 
         </h2>
-            <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback
+            <div class="reputation ui star rating"></div> {{reputation.populationSize}} {{"user.feedback" | translate}}
             <div ng-if="isOwner || isAdmin" class="ui divider"></div>
 <!--
               <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">
@@ -35,7 +35,7 @@
             <div class="ui divider"></div>
             <!--            ng-if="!!user.languagesSpoken"-->
             <span ng-if="user.languagesSpoken">
-            <h3>Languages</h3>
+            <h3>{{"user.spokenLanguages" | translate}}</h3>
             <i ng-repeat="language in user.languagesSpoken.split(',')" class="{{language}} flag"></i>
             </span>
         </div>
@@ -48,19 +48,19 @@
 <div ng-if="isAdmin || isOwner || user.isShipOwner" class="ui anchor-menu sticky attached stackable menu">
     <div class="ui container">
         <a class="item" ui-sref="userId.profile">
-            <i class="home icon"></i> Profile
+            <i class="home icon"></i> {{"user.profile" | translate}}
         </a>
         <a ng-if="isAdmin || user.isShipOwner" class="item" ui-sref="userId.boats">
-            <i class="grid layout icon"></i> Boats
+            <i class="grid layout icon"></i> {{"user.boats" | translate}}
         </a>
         <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.documents">
-            <i class="mail icon"></i> Documents
+            <i class="mail icon"></i> {{"user.documents" | translate}}
         </a>
         <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.info">
-            <i class="mail icon"></i> Personal Info
+            <i class="mail icon"></i> {{"user.personalInfo" | translate}}
         </a>
         <a ng-if="isAdmin || isOwner" class="item" ui-sref="userId.events">
-            <i class="mail icon"></i> My Events
+            <i class="mail icon"></i> {{"user.myEvents" | translate}}
         </a>
             </div>
 </div>

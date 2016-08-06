@@ -26,7 +26,7 @@
     "directives.language-select.Language": "Language",
     
     "global.availableDatesHeader": "Date disponibili per l'evento selezionato",
-    "global.cancel": "Cancel",
+    "global.cancel": "Cancella",
     "global.create": "Crea",
     "global.description": "Descrizione",
     "global.error": "Errore",
@@ -48,13 +48,13 @@
     "global.insert": "Inserisci",
      
     "admin.events.addPassenger.newUser": "Nuovo utente?",
-    "admin.events.addPassenger.addUser": "Add Passenger",
+    "admin.events.addPassenger.addUser": "Aggiungi passeggero",
     
     "admin.events.clone.aggregated": "Eventi aggregati",
     
     "admin.events.success.update": "Evento {{eventId}} aggiornato",
     
-    "cart.suggestedEvents": "Suggested events",
+    "cart.suggestedEvents": "Eventi suggeriti",
     "carterror.message": "Il pagamento non e' andato a buon fine",
     "cartsuccess.message": "Il pagamento e' andato a buon fine",
     
@@ -114,6 +114,52 @@
     "userid.boats.addBoat.cabinsNoBath": "Cabine senza bagno",
     "userid.boats.addBoat.images": "Immagini",
     "userid.boats.addBoat.blueprints": "Planimetria",
-    "userid.boats.addBoat.other": "Altre"
+    "userid.boats.addBoat.other": "Altre",
+  
+    "boats.cabinWithBath": "Cabine con bagno",
+    "boats.cabinWithoutBath": "Cabine senza bagno",
+    "boats.sharedBath": "Bagni condivisi",
+    "boats.bunks": "Posti in dinette",
+    
+    "documents.number": "Numero documento",
+    "documents.issuedOn": "Emesso il",
+    "documents.expiringDate": "Scade il",
+    
+    "user.changeProfileImage": "Clicca per cambiare la tua immagine",
+    "user.shipOwner": "Armatore",
+    "user.feedback": "feedback",
+    "user.spokenLanguages": "Lingue parlate",
+    "user.profile": "Profilo",
+	"user.boats": "Barche",
+    "user.documents": "Documenti",
+    "user.personalInfo": "Informazioni personali",
+	"user.myEvents": "I miei eventi",
+  
+    "user.editProfile": "Modifica profilo",
+ 	"user.saveProfile": "Salva profilo",
+ 	"user.basicProfile", "Informazioni personali"
+ 	"user.name": "Nome",
+ 	"user.firstName": "Nome",
+ 	"user.lastName": "Cognome",
+ 	"user.email": "e-mail",
+ 	"user.changePassword": "Modifica password",
+ 	"user.personalInfo": "Dati anagrafici",
+ 	"user.birthDay": "Data di nascita (gg/mm/aaaa)",
+ 	"user.Phones": "Recapiti telefonici",
+ 	"user.addressStreet": "Indirizzo",
+ 	"user.addressCity": "Citta'",
+	"user.addressState": "Provincia",
+	"user.addressZipcode": "CAP",
+	"user.addressCountry": "Paese",
+	"user.selectCountry": "Seleziona paese",
+	"user.taxcode": "Cod Fis",
+	"user.billingInfoSection": "Dati alternativi per fatturazione",
+	"user.billingInfo": "Informazioni aggiuntive",
+	"user.VAT": "P.Iva",
+	"user.billingCompanyName": "Nome azienda",
+    "user.reviews": "Commenti",
+	"user.noReviewsSubmitted": "Non ci sono commenti su questo utente!",
+	"user.reviewStars": "Stelle",
+	"user.addReview": "Aggiungi un commento"
     
 }
