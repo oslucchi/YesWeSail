@@ -137,7 +137,7 @@
   
     "user.editProfile": "Modifica profilo",
  	"user.saveProfile": "Salva profilo",
- 	"user.basicProfile", "Informazioni personali"
+ 	"user.basicProfile": "Informazioni personali",
  	"user.name": "Nome",
  	"user.firstName": "Nome",
  	"user.lastName": "Cognome",

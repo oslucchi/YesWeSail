@@ -137,7 +137,7 @@
   
  	"user.editProfile": "Edit profile",
  	"user.saveProfile": "Save profile",
- 	"user.basicProfile", "Basic profile"
+ 	"user.basicProfile": "Basic profile",
  	"user.name": "Name",
  	"user.firstName": "First name",
  	"user.lastName": "Last name",
