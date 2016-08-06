@@ -9,6 +9,7 @@
                       <input type="hidden" name="language">
                       <div class="default text">{{"global.selectLocation" | translate}}</div>
                       <div class="menu">
+                          <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
                           <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
                       </div>
                     </div>
@@ -32,6 +33,7 @@
                       <input type="hidden" name="language">
                       <div class="default text">{{"global.selectCategory" | translate}}</div>
                       <div class="menu">
+                          <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
                           <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
                       </div>
                     </div>

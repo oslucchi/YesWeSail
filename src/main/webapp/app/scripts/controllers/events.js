@@ -24,6 +24,7 @@ angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, 
         $scope.CATEGORIES = res;
         $scope.categoriesLoaded=true;
     });
+    
     if ($stateParams.location != '') {
         body.location = $stateParams.location;
     }

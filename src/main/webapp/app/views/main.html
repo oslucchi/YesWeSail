@@ -9,14 +9,42 @@
 
             <div class="ui fluid three item menu">
 
+                   <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
+                      <input type="hidden" name="language">
+                      <div class="default text">{{"global.selectLocation" | translate}}</div>
+                      <div class="menu">
+                          <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
+                          <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
+                      </div>
+                    </div>
+
+                <div ng-if="categoriesLoaded" dropdown-search-selection ng-model="selectedCategory" class="ui selection dropdown item">
+                      <input type="hidden" name="language">
+                      <div class="default text">{{"global.selectCategory" | translate}}</div>
+                      <div class="menu">
+                          <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
+                          <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
+                      </div>
+                    </div>
+       
+                
+                
+                
+                
+                
+                
+<!--
                 <select  ng-if="locationsLoaded" dropdown-selection ng-model="selectedLocation" class="ui dropdown item">
+                    <option value="">{{"global.selectLocation" | translate}}</option>
                     <option value="">{{"global.selectLocation" | translate}}</option>
                     <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
                 </select>
                 <select  ng-if="categoriesLoaded" dropdown-selection ng-model="selectedCategory"  class="ui dropdown item">
                     <option value="">{{"global.selectCategory" | translate}}</option>
+                    <option value="">{{"global.selectCategory" | translate}}</option>
                     <option value="{{category.categoryId}}" ng-repeat="category in CATEGORIES">{{category.description}}</option>
                 </select>
+-->
 
 
                 <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a>
