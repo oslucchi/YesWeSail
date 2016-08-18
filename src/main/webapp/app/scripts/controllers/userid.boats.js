@@ -70,7 +70,7 @@ angular.module('yeswesailApp')
                     other: boat.files.other
                 }
             }).then(function (response) {
-                toastr.success('Uploaded Boat');
+            	toastr.success($translate.instant('userIdBoats.dataUploaded'));
                 $scope.error={
                     rejectionMessage:response.data.rejectionMessage,
                     rejectedList:response.data.rejectedList,

@@ -21,11 +21,11 @@ angular.module('yeswesailApp')
 
         $scope.update = function (link, action, actionId) {
             $http.put(URLs.ddns + link +'/'+actionId+'/'+action).then(function (res) {
-                toastr.success('Updated!');
+            	toastr.success($translate.instant('adminRequest.updateCompleted'));
                 $scope.closeModals();
                 $scope.getRequests();
             }, function (err) {
-                toastr.error('Something went wrong!');
+            	toastr.error($translate.instant('adminRequest.updateError'));
             });
         }
   

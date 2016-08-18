@@ -49,7 +49,7 @@ angular.module('yeswesailApp').controller('SailorRegistrationCtrl', function ($s
                     , filesSailingDocs: sailorInfo.sailingDocs
                 }
             }).then(function (response) {
-                toastr.success('Registration sent!');
+            	toastr.success($translate.instant('sailorRegistration.requestSent'));
                 $scope.getPendingRequests();
                 $scope.progress = null;
             }, function (response) {

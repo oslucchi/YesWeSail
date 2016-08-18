@@ -36,12 +36,15 @@ angular.module('yeswesailApp')
 
                 $http.put(URLs.ddns + 'rest/users/'+$scope.currentUser.idUsers, $scope.user).then(function (res) {
                     $scope.editMode = false;
-                    toastr.success('Changes Saved');
-                }, function (err) {
-                    toastr.error('Unable to save');
+                	toastr.success($translate.instant('useridInfo.updateSuccess'));
+                 }, function (err) {
+                 	toastr.error($translate.instant('global.updateError'),
+                 				 {
+                 					errorMsg: ""
+                 				 });
                 })
             }else{
-                  toastr.warning('Please check the fields highlighted in red');
+                  toastr.warning($translate.instant('useridInfo.updateWarning'));
             }
         };
         $scope.differentBillingAddress = false;
@@ -79,7 +82,7 @@ angular.module('yeswesailApp')
                     picture: pic
                 }
             }).then(function (response) {
-                toastr.success('Uploaded Boat');
+            	toastr.success($translate.instant('useridInfo.uploadedBoat'));
                 $scope.user.imageURL = response.data.images[0];
             }, function (response) {
 

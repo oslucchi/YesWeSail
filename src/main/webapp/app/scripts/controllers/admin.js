@@ -56,26 +56,25 @@ angular.module('yeswesailApp')
         $scope.activate = function (event) {
             event.status = 'A';
             $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
-                toastr.success('Event correctly activated!');
+            	toastr.success($translate.instant('admin.eventActivatingSuccess'));
             }, function (err) {
-                toastr.error('Something went wrong while trying to activate the event, maybe the hamsters ran away!');
+            	toastr.error($translate.instant('admin.eventActivatingFailure'));
             });
         }
         $scope.deactivate = function (event) {
             event.status = 'P';
             $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
-                toastr.success('Event correctly deactivated!');
+            	toastr.success($translate.instant('admin.eventDectivatingSuccess'));
             }, function (err) {
-                toastr.error('Something went wrong while trying to activate the event, maybe the hamsters ran away!');
+            	toastr.error($translate.instant('admin.eventDeactivatingFailure'));
             });
         }
         $scope.remove = function (event) {
             $http.delete(URLs.ddns + 'rest/events/delete/' + event.idEvents).then(function (res) {
-                toastr.success('Event deleted!');
+               	toastr.success($translate.instant('admin.eventDeleteSuccess'));
                 $scope.events.splice($scope.events.indexOf(event), 1);
-
             }, function (err) {
-                toastr.error('Something went wrong while trying to delete the event, the gods chose to spare this event!');
+            	toastr.error($translate.instant('admin.eventDeleteFailure'));
             });
         }
         $scope.clone = function (event) {
@@ -86,10 +85,14 @@ angular.module('yeswesailApp')
             event.dateEnd = $filter('date')(event.dateEnd, 'yyyy-MM-dd');
 
             $http.post(URLs.ddns + 'rest/events/clone', event).then(function (res) {
-                toastr.success('Event ' + event.idEvents + ' duplicated! New ID ' + res.data.idEvents);
+               	toastr.success($translate.instant('admin.eventDuplicateSuccess'), 
+               				   {
+               					 eventId: event.IdEvents,
+               					 newEventId: res.data.idEvents
+               				   });
                 $scope.closeModals();
             }, function (err) {
-                toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
+            	toastr.error($translate.instant('admin.eventDuplicateFailure'));
                 $scope.closeModals();
             });
         };
@@ -102,7 +105,7 @@ angular.module('yeswesailApp')
                 }));
             }, function (err) {
                 event.earlyBooking = !state;
-                toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
+            	toastr.error($translate.instant('admin.eventUpdateFailure'));
             });
         };
 
@@ -114,7 +117,7 @@ angular.module('yeswesailApp')
                 }));
             }, function (err) {
                 event.lastMinute = !state;
-                toastr.error('Something went wrong while trying to duplicate the event, the monkeys are probably on strike again!');
+            	toastr.error($translate.instant('admin.eventUpdateFailure'));
             });
         };
 

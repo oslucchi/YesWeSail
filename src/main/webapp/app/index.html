@@ -52,7 +52,7 @@
                 <div class="ui item">
                      <div dropdown-selection ng-model="language" class="ui language dropdown">
                       <input type="hidden" name="language">
-                      <div class="default text">Language</div>
+                      <div class="default text">{{'index.language' | translate}}</div>
                       <div class="menu">
                           <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT"><i class="it flag"></i></div>
                         <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
@@ -60,22 +60,21 @@
                     </div>
                 </div>
                 <a ng-if="!currentUser.isShipOwner" ng-show="!!currentUser" class="ui item">
-                    <button ui-sref="sailorRegistration" class="ui inverted basic button">Diventa armatore</button>
+                    <button ui-sref="sailorRegistration" class="ui inverted basic button">{{'index.becomeAShipowner' | translate}}</button>
                 </a>
                 <a ui-sref="cart" ng-if="cartQty" class="item"> <i class="cart icon"></i>
                     <div class="floating ui red label">{{cartQty}}</div>
-                </a> <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">
-      Accedi
-    </a>
+                </a> 
+                <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">{{'index.signIn' | translate}}</a>
                 <a ng-show="currentUser" class="item">
                     <div class="ui usermenu dropdown" dropdown action="hide">
                         <div class="text"> <img ng-if="currentUser.imageURL" class="ui avatar image" ng-src="{{currentUser.imageURL}}"> <img ng-if="!currentUser.imageURL" class="ui avatar image" ng-src="images/default-icon.jpg"> <span ng-if="currentUser.name">{{currentUser.name}}</span> <span ng-if="!currentUser.name">{{currentUser.email | noemaildomain}}</span> </div> <i class="dropdown icon"></i>
                         <div class="menu">
-                            <div ui-sref="userId.profile({userId: currentUser.idUsers})" class="item"> Il mio profilo </div>
-                            <div ui-sref="userId.events({userId:currentUser.idUsers})" class="item"> I miei viaggi </div>
-                            <div ng-if="currentUser.roleId>8" ui-sref="admin.events" class="item"> Admin Panel </div>
-                            <div ng-if="currentUser.isShipOwner" ng-click="popupCreateEventDialog()" class="item"> Crea Evento </div>
-                            <div ng-click="logout()" class="item"> Esci </div>
+                            <div ui-sref="userId.profile({userId: currentUser.idUsers})" class="item"> {{'index.myProfile' | translate}} </div>
+                            <div ui-sref="userId.events({userId:currentUser.idUsers})" class="item"> {{'index.myEvents' | translate}} </div>
+                            <div ng-if="currentUser.isShipOwner" ng-click="popupCreateEventDialog()" class="item"> {{'index.createEvent' | translate}} </div>
+                            <div ng-if="currentUser.roleId>8" ui-sref="admin.events" class="item"> {{'index.adminPanel' | translate}} </div>
+                            <div ng-click="logout()" class="item"> {{'index.logout' | translate}} </div>
                         </div>
                     </div>
                 </a>
@@ -87,10 +86,10 @@
         <div class="ui container">
             <div class="ui two centered column grid">
                 <div class="ui seven wide column">
-                    <div class="ui large header">Salta a bordo e vivi fantastiche avventure! </div>
+                    <div class="ui large header">{{'index.registrationBanner' | translate}}</div>
                 </div>
                 <div class="ui column">
-                    <div ng-click="popupRegister()" class="ui inverted basic button">Registrati</div>
+                    <div ng-click="popupRegister()" class="ui inverted basic button">{{'index.signUp' | translate}}</div>
                 </div>
             </div>
         </div>

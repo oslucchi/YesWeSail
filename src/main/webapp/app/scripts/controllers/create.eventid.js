@@ -37,7 +37,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.selectedBoat = boat;
             $scope.maxTickets = maxTicketsForBoat(boat)
 //        }
-    }
+    };
     $scope.getEvent = function () {
         $http.post(URLs.ddns + 'rest/events/details', {
             eventId: $stateParams.eventId
@@ -159,7 +159,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             , "price": 100
             , "ticketType": row + 1
         }
-    }
+    };
     $scope.tempTickets = [
                           [
             {
@@ -181,7 +181,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                             }
                           ]
                         ];
-    $scope.tempTickets[0][0]
+    // $scope.tempTickets[0][0]
     $scope.updateTickets = function (ticketTypeIndex, priceIndex, value) {
         $scope.tempTickets[ticketTypeIndex][priceIndex].price = value;
     };
@@ -214,11 +214,15 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 'Language': $scope.selectedLanguage
             }
         }).then(function (res) {
-            toastr.success($translate.instant('edit.events.success.save'));
+            toastr.success($translate.instant('createeventid.saved'));
         }, function (err) {
-            toastr.error(err.data.error);
+        	
+            toastr.error($translate.instant('global.updateError',
+            			 {
+            				errorMsg: err.data.error
+            			 }));
         })
-    }
+    };
     $scope.uploadFiles = function (files) {
         $scope.files = files;
         if (files && files.length) {

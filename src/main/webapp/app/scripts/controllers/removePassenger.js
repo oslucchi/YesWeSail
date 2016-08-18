@@ -26,9 +26,14 @@ angular.module('yeswesailApp')
     
     $scope.removeTicket=function(ticket){
       $http.delete(URLs.ddns+'rest/tickets/'+$scope.selectedTicket.idEventTicketsSold, {}).then(function(res){
-          toastr.success('Ticket removed!');
+          toastr.success($translate.instant('removePassenger.ticketRemoved'));
            $scope.closeModals();
-      }, function(err){})  
+      }, function(err){
+          toastr.error($translate.instant('global.updateError',
+     			 {
+     				errorMsg: ""
+     			 }));
+      })  
     };
     
     $scope.closeModals=function(){

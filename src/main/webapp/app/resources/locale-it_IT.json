@@ -46,6 +46,7 @@
     "global.uploadingFiles": "Caricamento in corso",
     "global.shareOnSocial": "Condividi con i tuoi amici!",
     "global.insert": "Inserisci",
+    "global.updateError": "Errore durante la modifica {{errorMsg}}",
      
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
@@ -132,9 +133,7 @@
     "user.profile": "Profilo",
 	"user.boats": "Barche",
     "user.documents": "Documenti",
-    "user.personalInfo": "Informazioni personali",
 	"user.myEvents": "I miei eventi",
-  
     "user.editProfile": "Modifica profilo",
  	"user.saveProfile": "Salva profilo",
  	"user.basicProfile": "Informazioni personali",
@@ -160,6 +159,50 @@
     "user.reviews": "Commenti",
 	"user.noReviewsSubmitted": "Non ci sono commenti su questo utente!",
 	"user.reviewStars": "Stelle",
-	"user.addReview": "Aggiungi un commento"
+	"user.addReview": "Aggiungi un commento",
     
+    
+    "addPassenger.userAdded": "Utente aggiunto",
+    "addPassenger.userAddFailed": "Errore nell'aggiunta dell'utente",
+    "admin.eventActivatingSuccess": "Evento attivato",
+    "admin.eventActivatingFailure": "Errore nell'attivazione dell'evento",
+    "admin.eventDectivatingSuccess": "Evento disattivato",
+    "admin.eventDectivatingFailure": "Errore nella disattivazione dell'evento",
+    "admin.eventDeleteSuccess": "Cancellazione dell'evento avvenuta",
+    "admin.eventDeleteFailure": "Errore nella cancellazione dell'evento",
+    "admin.eventDuplicateSuccess": "Evento {{eventId}} duplicato! Il nuovo ID e' {{newEventId}}",
+    "admin.eventDuplicateFailure": "Errore nella duplicazione dell'evento",
+	"admin.eventUpdateFailure": "Errore nella modifica dell'evento",
+
+	"adminRequest.updateCompleted": "Modifica completata con successo",
+	"adminRequest.updateError": "Errore durante la modifica",
+	
+	"adminuser.activatedSuccess": "Utente attivato con successo",
+	"adminuser.activatedFailure": "Errore durante l'attivazione dell'utente",
+	"adminuser.deactivatedSuccess": "Utente disattivato!",
+	"adminuser.deactivatedFailure": "Errore durante la disattivazione dell'utente",
+	
+	"createeventid.saved": "Evento salvato",
+	
+	"removePassenger.ticketRemoved": "Biglietto cancellato",
+	"sailorRegistration.requestSent": "Richiesta di registrazione inviata",
+	"userIdBoats.dataUploaded": "I dati e gli allegati dell'imbarcazione sono stati caricati",
+	"useridInfo.updateSuccess": "Modifiche apportate con successo",
+	"useridInfo.updateWarning": "Modifiche non accettate. Rivedere i campi evidenziati in rosso",
+	"useridInfo.uploadedBoat": "I dati dell'imbarcazione sono stati modificati",
+	"userid.uploadedBoat": "I dati dell'imbarcazione sono stati modificati",
+	"userid.addReview": "{{message}}",
+	"cart.ticketAdded": "Biglietto aggiunto al carrello",
+	
+	"index.registrationBanner": "Salta a bordo e vivi fantastiche avventure!",
+	"index.becomeAShipowner": "Diventa armatore",
+	"index.signIn": "Accedi",
+	"index.myProfile": "Il mio profilo",
+	"index.myEvents": "I miei viaggi",
+	"index.adminPanel": "Amministratore",
+	"index.createEvent": "Crea evento",
+	"index.logout": "Esci",
+	"index.signUp": "Registrati",
+	"index.language": "Lingua"
+	
 }

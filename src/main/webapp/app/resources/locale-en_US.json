@@ -46,6 +46,7 @@
     "global.uploadingFiles": "Uploading files...",
     "global.shareOnSocial": "Share with your friends!",
     "global.insert": "Insert",
+    "global.updateError": "Error during the update {{errorMsg}}",
      
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",
@@ -132,9 +133,7 @@
     "user.profile": "Profile",
 	"user.boats": "Boats",
     "user.documents": "Documents",
-    "user.personalInfo": "Personal Info",
 	"user.myEvents": "My events",
-  
  	"user.editProfile": "Edit profile",
  	"user.saveProfile": "Save profile",
  	"user.basicProfile": "Basic profile",
@@ -160,5 +159,49 @@
 	"user.reviews": "Reviews",
 	"user.noReviewsSubmitted": "There are no reviews yet!",
 	"user.reviewStars": "Stars",
-	"user.addReview": "Add review"
+	"user.addReview": "Add review",
+	
+	"addPassenger.userAdded": "THe user has been succesfully added",
+    "addPassenger.userAddFailed": "Error adding the user",
+    "admin.eventActivatingSuccess": "The event has been successfully activated",
+    "admin.eventActivatingFailure": "Error deactivating the event",
+    "admin.eventDectivatingSuccess": "The event has been successfully deactivated",
+    "admin.eventDectivatingFailure": "Error deactivating the event",
+    "admin.eventDeleteSuccess": "The event has been successfully deleted",
+    "admin.eventDeleteFailure": "Error deleting the event",
+    "admin.eventDuplicateSuccess": "Event {{event.idEvents}} succesfully duplicated! New ID {{res.data.idEvents}}",
+    "admin.eventDuplicateFailure": "Error duplicating the event",
+	"admin.eventUpdateFailure": "Error updating the event",
+
+	"adminRequest.updateCompleted": "Update successfully completed",
+	"adminRequest.updateError": "Error during the update",
+	
+	"adminuser.activatedSuccess": "User successfully activated",
+	"adminuser.activatedFailure": "Error during the user activation",
+	"adminuser.deactivatedSuccess": "The user has been successfully deactivated",
+	"adminuser.deactivatedFailure": "Error during the user deactivation",
+	
+	"createeventid.saved": "Event saved",
+	
+	"removePassenger.ticketRemoved": "Ticket cancelled",
+	"sailorRegistration.requestSent": "Registration request submitted",
+	"userIdBoats.dataUploaded": "All data and documents for the boat have been uploaded",
+	"useridInfo.updateSuccess": "Updates successfully applied",
+	"useridInfo.updateWarning": "Errors filling the form. Please review the fields highligted in red",
+	"useridInfo.uploadedBoat": "All data and documents for the boat have been saved",
+	"userid.uploadedBoat": "All data and documents for the boat have been saved",
+	"userid.addReview": "{{message}}",
+	"cart.ticketAdded": "Ticket added to cart",
+	
+	"index.registrationBanner": "Get in and start living unforgettable adventures!",
+	"index.becomeAShipowner": "Become a shipowner",
+	"index.signIn": "Sign in",
+	"index.myProfile": "My profile",
+	"index.myEvents": "My events",
+	"index.adminPanel": "Admin panel",
+	"index.createEvent": "Create event",
+	"index.logout": "Logout",
+	"index.signUp": "Sign up",
+	"index.language": "Language"
+	
 }

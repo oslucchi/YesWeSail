@@ -26,17 +26,17 @@ angular.module('yeswesailApp')
      $scope.activate=function(user){
         user.status='A';
         $http.put(URLs.ddns + 'rest/users/'+user.idUsers, user).then(function(res){
-            toastr.success('User correctly activated!');
+        	toastr.success($translate.instant('adminuser.activatedSuccess'));
         }, function(err){
-            toastr.error('Something went wrong while trying to activate the user, maybe the hamsters ran away!');
+        	toastr.error($translate.instant('adminuser.activatedFailure'));
         });
     }
     $scope.deactivate=function(user){
         user.status='P';
         $http.put(URLs.ddns + 'rest/users/'+user.idUsers, user).then(function(res){
-            toastr.success('User correctly deactivated!');
+        	toastr.success($translate.instant('adminuser.deactivatedSuccess'));
         }, function(err){
-            toastr.error('Something went wrong while trying to activate the event, maybe the hamsters ran away!');
+        	toastr.error($translate.instant('adminuser.deactivatedFailure'));
         });
     }
 

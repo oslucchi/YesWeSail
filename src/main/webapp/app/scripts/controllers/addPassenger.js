@@ -43,11 +43,10 @@ angular.module('yeswesailApp')
              eventsId: eventId,
              idEventTickets: ticket.idEventTickets
          }).then(function(res){
-              $scope.closeModals();
-             toastr.success('User added!');
-             
+             $scope.closeModals();
+             $translate.instant('addPassenger.userAdded')             
          },function(err){
-             toastr.error('Failed to add user!');
+             $translate.instant('addPassenger.userAddFailed')             
          })
      };
     
