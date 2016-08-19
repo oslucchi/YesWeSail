@@ -34,7 +34,7 @@
   <h4 class="ui dividing header">{{"user.personalInfo" | translate}}</h4>
   <div class="field" ng-class="{'error': infoForm.birthday.$invalid}">
     <label>{{"user.birthDay" | translate}}</label>
-        <input ng-disabled="!editMode" type="text" name="birthday" ng-model="user.birthday" ng-pattern="regexBirthday" placeholder="Data Nascita" required>
+        <input ng-disabled="!editMode" type="text" name="birthday" ng-model="user.birthday" ng-pattern="regexBirthday" placeholder="{{'user.dob' | translate}}" required>
       <div class="field">
 <!--          <input date-time format="DD/MM/YYYY" ng-model="user.birthday" view="date" max-view="year" min-view="date" placeholder="Data Nascita">-->
       </div>
@@ -43,18 +43,18 @@
     <label>{{"user.phones" | translate}}</label>
     <div class="two fields">
       <div class="field" ng-class="{'error': infoForm.phone1.$invalid}">
-        <input ng-disabled="!editMode" name="phone1" type="text" ng-model="user.phone1" placeholder="Cellphone" required>
+        <input ng-disabled="!editMode" name="phone1" type="text" ng-model="user.phone1" placeholder="{{'user.mobile' | translate}}" required>
       </div>
       <div class="field">
-        <input ng-disabled="!editMode" type="text" ng-model="user.phone2" placeholder="Home">
+        <input ng-disabled="!editMode" type="text" ng-model="user.phone2" placeholder="{{'user.landline' | translate}}">
       </div>
     </div>
   </div>  
     
     <div class="field">
     <label>{{"user.addressStreet" | translate}}</label>
-        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address1" placeholder="Indirizzo 1">
-        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address2" placeholder="Indirizzo 2">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address1" placeholder="{{'user.address1' | translate}}">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.address2" placeholder="{{'user.address2' | translate}}">
   </div>
     
        <div class="field">
@@ -62,15 +62,15 @@
     <div class="four fields">
       <div class="field">
             <label>{{"user.addressCity" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.city" placeholder="Città">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.city" placeholder="{{'user.city' | translate}}">
       </div>
       <div class="field">
             <label>{{"user.addressState" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.province" placeholder="Provincia">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.province" placeholder="{{'user.state' | translate}}">
       </div>
       <div class="field">
             <label>{{"user.addressZipcode" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.zip" placeholder="CAP">
+            <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.zip" placeholder="{{'user.zip' | translate}}">
       </div>
         
       
@@ -333,7 +333,7 @@
     <div class="field">
     <label>{{"user.taxcode" | translate}}</label>
       <div class="field">
-        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.taxCode" placeholder="Codice Fiscale">
+        <input ng-disabled="!editMode" type="text" ng-model="user.personalInfo.taxCode" placeholder="{{'user.taxCode' | translate}}">
       </div>
   </div>
     <div ng-click="toggleBilling(differentBillingAddress)" class="ui checkbox">
@@ -350,20 +350,20 @@
   <div class="field">
     <label>{{"user.VAT" | translate}}</label>
       <div class="field">
-        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.taxCode" placeholder="Partita IVA">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.taxCode" placeholder="{{'user.vat' | translate}}">
       </div>
   </div>
     <div class="field">
     <label>{{"user.billingCompanyName" | translate}}</label>
       <div class="field">
-        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.companyName" placeholder="Nome azienda">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.companyName" placeholder="{{'user.company' | translate}}">
       </div>
   </div>
     
        <div class="field">
     <label>{{"user.addressStreet" | translate}}</label>
-        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address1" placeholder="Indirizzo 1">
-        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address2" placeholder="Indirizzo 2">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address1" placeholder="{{'user.address1' | translate}}">
+        <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.address2" placeholder="{{'user.address2' | translate}}">
   </div>
     
        <div class="field">
@@ -371,15 +371,15 @@
     <div class="four fields">
       <div class="field">
             <label>{{"user.addressCity" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.city" placeholder="Città">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.city" placeholder="{{'user.city' | translate}}">
       </div>
       <div class="field">
             <label>{{"user.addressState" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.province" placeholder="Provincia">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.province" placeholder="{{'user.state' | translate}}">
       </div>
       <div class="field">
             <label>{{"user.addressZipcode" | translate}}</label>
-            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.zip" placeholder="CAP">
+            <input ng-disabled="!editMode" type="text" ng-model="user.billingInfo.zip" placeholder="{{'user.zip' | translate}}">
       </div>
     </div>
          <div class="field">

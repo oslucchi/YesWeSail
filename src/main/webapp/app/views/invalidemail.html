@@ -26,9 +26,9 @@
 
 <div class="ui segment">
 
-    <h2 class="ui center aligned header">Controlla e completa i tuoi dati</h2>
+    <h2 class="ui center aligned header">{{"invalidemail.completeData" | translate}}</h2>
     <p>
-    Per poter proseguire con la registrazione abbiamo bisogno che completi i seguenti dati non forniti da Facebook.
+    	{{"invalidemail.lackOfData" | translate}}
     </p>
 
 </div>
@@ -39,7 +39,7 @@
     <div class="ui segment">
         
         <div class="field">
-            <label>Email</label>
+            <label>{{"invalidemail.email" | translate}}</label>
             <div class="ui right icon input">
             <i class="mail icon"></i>
             <input type="text" name="email" placeholder="Email" ng-model="correctEmail">
@@ -47,7 +47,7 @@
             
         </div>
         
-        <button ng-click="confirmRegistration()" class="ui button primary">Completa registrazione</button>
+        <button ng-click="confirmRegistration()" class="ui button primary">{{"invalidemail.completeRegistration" | translate}}</button>
 <div ng-if="errorMessage" class="ui  message">
   <div class="header">
     {{errorMessage}}

@@ -15,7 +15,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $('.ui.selection.language.dropdown').dropdown({
         action: 'activate'
     });
-    $scope.language = $translate.proposedLanguage();
+    $scope.language = "it_IT "; // $translate.proposedLanguage();
     $scope.cartQty = null;
     $scope.$watch(function () {
         return CartService.cartQty;

@@ -3,12 +3,12 @@
 <table class="ui compact sortable selectable celled  table">
   <thead>
     <tr>
-      <th>Status</th>
-      <th>ID</th>
-      <th>Type</th>
-      <th>Issued By</th>
-      <th>Created</th>
-      <th>Updated</th>
+      <th>{{"adminrequests.gridCols.status" | translate}}</th>
+      <th>{{"adminrequests.gridCols.id" | translate}}</th>
+      <th>{{"adminrequests.gridCols.type" | translate}}</th>
+      <th>{{"adminrequests.gridCols.issuedBy" | translate}}</th>
+      <th>{{"adminrequests.gridCols.created" | translate}}</th>
+      <th>{{"adminrequests.gridCols.updated" | translate}}</th>
     </tr>
   </thead>
     
@@ -26,11 +26,11 @@
               </div>
             </div>
       </td>
-      <td class="collapsing">{{request.idPendingActions}}</td>
-      <td class="collapsing">{{request.actionType}}</td>
-      <td class="collapsing">{{request.userId}}</td>
-      <td class="collapsing">{{request.created | date}}</td>
-      <td class="collapsing">{{request.updated | date}}</td>
+      <td class="collapsing">{{requests.idPendingActions}}</td>
+      <td class="collapsing">{{requests.actionType}}</td>
+      <td class="collapsing">{{requests.userId}}</td>
+      <td class="collapsing">{{requests.created | date}}</td>
+      <td class="collapsing">{{requests.updated | date}}</td>
        
     </tr>
    
@@ -38,10 +38,10 @@
   <tfoot class="full-width">
     <tr>
       <th><div class="ui small disabled button">
-          Approve All
+          {{"global.approveAll" | translate}}
         </div></th>
       <th colspan="9">
-        <button ng-click="getRequests()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
+        <button ng-click="getRequests()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
         <button ng-click="popupCreaterequestDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add request</button>
       </th>
     </tr>

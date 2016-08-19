@@ -1,21 +1,21 @@
 <div class="tickets-container"> 
        
 <button ng-if="paymentProceeded && total>0" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button">
-    <i class="money icon"></i>Proceed with payment</button>
+    <i class="money icon"></i>{{"cartTemplate.proceed" | translate}}</button>
 <button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button">
-    <i class="remove icon"></i>Empty Cart</button>
+    <i class="remove icon"></i>{{"cartTemplate.emptyCart" | translate}}</button>
     
  <div ng-if="!paymentProceeded" ng-class="{'loading': status.paying}" class="ui center aligned segment">
   <div id="paypal-container"></div>
   <div class="ui horizontal divider">
-    Or
+    {{"global.or" | translate}}
   </div>
      
      <form id="checkout" class="ui form"  action="{{checkoutUrl | trusted}}" method="get">
   
    <div class="fields">
     <div class="seven wide field">
-      <label>Card Number</label>
+      <label>{{"cartTemplate.cardNumber" | translate}}</label>
       <input type="text" value="4111111111111111" data-braintree-name="number" maxlength="16" placeholder="Card #">
     </div>
 <!--
@@ -25,23 +25,23 @@
     </div>
 -->
     <div class="six wide field">
-      <label>Expiration</label>
+      <label>{{"cartTemplate.expiration" | translate}}</label>
       <div class="two fields">
         <div class="field">
           <select class="ui fluid search dropdown" data-braintree-name="expiration_month" >
-            <option value="">Month</option>
-            <option value="1">January</option>
-            <option value="2">February</option>
-            <option value="3">March</option>
-            <option value="4">April</option>
-            <option value="5">May</option>
-            <option value="6">June</option>
-            <option value="7">July</option>
-            <option value="8">August</option>
-            <option value="9">September</option>
-            <option selected="selected" value="10">October</option>
-            <option value="11">November</option>
-            <option value="12">December</option>
+            <option value="">{{"global.month" | translate}}</option>
+            <option value="1">{{"global.month.january" | translate}}</option>
+            <option value="2">{{"global.month.february" | translate}}</option>
+            <option value="3">{{"global.month.march" | translate}}</option>
+            <option value="4">{{"global.month.april" | translate}}</option>
+            <option value="5">{{"global.month.may" | translate}}</option>
+            <option value="6">{{"global.month.june" | translate}}</option>
+            <option value="7">{{"global.month.july" | translate}}</option>
+            <option value="8">{{"global.month.august" | translate}}</option>
+            <option value="9">{{"global.month.september" | translate}}</option>
+            <option value="10">{{"global.month.october" | translate}}</option>
+            <option value="11">{{"global.month.november" | translate}}</option>
+            <option value="12">{{"global.month.december" | translate}}</option>
           </select>
         </div>
         <div class="field">
@@ -52,19 +52,15 @@
   </div>
      <input type="submit" class="ui blue button" id="submit" value="Pay">
      </form>
-     
-     
-     
-     
 
 </div>
      <div ng-if="total>0"  class="ui right aligned segment">
           
-        <h2 class="ui header">Total: {{total}}€</h2>
+        <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2>
     </div>
         <div ng-if="bookedEvents==0" class="ui center aligned segment">
           
-        <h2 class="ui header">There are no tickets in your cart, check out these events that might be of interest</h2>
+        <h2 class="ui header">{{"cartTemplate.noTicketsInCart" | translate}}</h2>
     </div>
     
     
@@ -78,9 +74,9 @@
        <table class="ui very basic  celled table">
       <thead>
         <tr>
-            <th ng-if="paymentProceeded" class="">Selected</th>
-            <th class="">Ticket</th>
-            <th class="">Price</th>
+            <th ng-if="paymentProceeded" class="">{{"cartTemplate.gridsCol.selected" | translate}}</th>
+            <th class="">{{"cartTemplate.gridsCol.ticket" | translate}}</th>
+            <th class="">{{"cartTemplate.gridsCol.price" | translate}</th>
       </tr></thead>
       <tbody>
     <tr ng-repeat="ticket in event.tickets track by $index">

@@ -3,15 +3,15 @@
 <table class="ui compact sortable selectable celled table">
   <thead>
     <tr>
-      <th>Select</th>
-      <th  class="ui fitted center aligned">Actions</th>
-      <th>Status</th>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Surname</th>
-      <th>Role</th>
-      <th>Email</th>
-      <th>Phone</th>
+      <th>{{"adminusers.gridCols.select" | translate}}</th>
+      <th  class="ui fitted center aligned">{{"adminusers.gridCols.actions" | translate}}</th>
+      <th>{{"adminusers.gridCols.status" | translate}}</th>
+      <th>{{"adminusers.gridCols.id" | translate}}</th>
+      <th>{{"adminusers.gridCols.name" | translate}}</th>
+      <th>{{"adminusers.gridCols.surname" | translate}}</th>
+      <th>{{"adminusers.gridCols.select" | translate}}role</th>
+      <th>{{"adminusers.gridCols.email" | translate}}</th>
+      <th>{{"adminusers.gridCols.phone" | translate}}</th>
     </tr>
   </thead>
     
@@ -56,11 +56,11 @@
   <tfoot class="full-width">
     <tr>
       <th><div class="ui small disabled button">
-          Approve All
+          {{"global.approveAll" | translate}}
         </div></th>
       <th colspan="9">
-        <button ng-click="getusers()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
-        <button ng-disabled="true" ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add user</button>
+        <button ng-click="getusers()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
+        <button ng-disabled="true" ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminusers.gridCols.addUser" | translate}}</button>
       </th>
     </tr>
   </tfoot>

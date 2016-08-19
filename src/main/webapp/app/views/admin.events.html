@@ -3,17 +3,17 @@
 <table class="ui compact sortable selectable celled  table">
   <thead>
     <tr>
-      <th>Select</th>
-      <th  class="ui fitted center aligned">Actions</th>
-      <th>Status</th>
-      <th>Hot Event</th>
-      <th>Early Booking</th>
-      <th>Last Minute</th>
-      <th>ID</th>
-      <th>Title</th>
-      <th>Created By</th>
-      <th>Created On</th>
-      <th>Location</th>
+      <th>{{"adminevents.gridCols.select" | translate}}</th>
+      <th  class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
+      <th>{{"adminevents.gridCols.Status" | translate}}</th>
+      <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
+      <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
+      <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
+      <th>{{"adminevents.gridCols.eventId" | translate}}</th>
+      <th>{{"adminevents.gridCols.title" | translate}}</th>
+      <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
+      <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
+      <th>{{"adminevents.gridCols.location" | translate}}</th>
      
         
     </tr>
@@ -77,11 +77,11 @@
   <tfoot class="full-width">
     <tr>
       <th><div class="ui small disabled button">
-          Approve All
+          {{"global.approveAll" | translate}}
         </div></th>
       <th colspan="9">
-        <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>Refresh</button>
-        <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add Event</button>
+        <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
+        <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminevents.addEvent" | translate}}</button>
       </th>
     </tr>
   </tfoot>

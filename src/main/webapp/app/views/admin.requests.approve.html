@@ -24,12 +24,12 @@
                   <img ng-src="{{reqDetails.reviewerURL}}">
                 </a>
                 <div class="content">
-                  <a class="author">{{reqDetails.review.reviewerName}}     {{reqDetails.review.reviewerSurname}} reviewed {{reqDetails.review.targetName}} {{reqDetails.review.targetSurname}}</a>
+                  <a class="author">{{reqDetails.review.reviewerName}} {{reqDetails.review.reviewerSurname}} {{"adminrequests.reviewed" | translate}} {{reqDetails.review.targetName}} {{reqDetails.review.targetSurname}}</a>
                   <div class="metadata">
                     <div class="date">{{reqDetails.review.created | date}}</div>
                     <div class="rating">
                       <i class="star icon"></i>
-                      {{reqDetails.review.rating}} Stars
+                      {{reqDetails.review.rating}} {{"adminrequests.stars" | translate}}
                      </div>
                   </div>
                   <div class="text">
@@ -50,7 +50,7 @@
                   <img ng-src="{{reqDetails.user.imageURL}}">
                 </a>
                 <div class="content">
-                  <a class="author">{{reqDetails.user.name}} {{reqDetails.user.surname}} requested to become a Shipowner </a>
+                  <a class="author">{{reqDetails.user.name}} {{reqDetails.user.surname}} {{"adminrequests.shipownerRequest" | translate}}</a>
                   <div class="metadata">
                     
                   </div>
@@ -68,9 +68,9 @@
                         </span>
 
                     </div>
-                    <button ng-click="update(reqLink, 'approve', actionId)" class="ui green button">Approve</button>
-                    <button ng-click="update(reqLink, 'reject', actionId)" class="ui red button">Reject</button>
-                    <button ng-click="closeModals()" class="ui button">Cancel</button>
+                    <button ng-click="update(reqLink, 'approve', actionId)" class="ui green button">{{"global.approve" | translate}}</button>
+                    <button ng-click="update(reqLink, 'reject', actionId)" class="ui red button">{{"global.reject" | translate}}</button>
+                    <button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
 
                 </form>
 
