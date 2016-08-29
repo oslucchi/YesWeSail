@@ -42,7 +42,7 @@ angular.module('yeswesailApp')
                 temporaryEvent.shipOwnerId=$scope.suggestedOwner.originalObject.idUsers;
             }
             $http.post(URLs.ddns + 'rest/events/create', temporaryEvent).then(function (res) {
-                $window.location.href = '/#/edit-event/'+res.data.idEvents;
+                $window.location.href = '#/edit-event/'+res.data.idEvents;
                 //$window.location.reload();
                 ngDialog.closeAll();                
             }, function (err) {
