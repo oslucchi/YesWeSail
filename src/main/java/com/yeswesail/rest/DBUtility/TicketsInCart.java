@@ -13,6 +13,7 @@ public class TicketsInCart
 		private int price;
 		private int quantity;
 		private boolean toBuy;
+		private String lockTime;
 	
 		public int getIdEventTickets() {
 			return idEventTickets;
@@ -58,6 +59,12 @@ public class TicketsInCart
 		}
 		public void setToBuy(boolean toBuy) {
 			this.toBuy = toBuy;
+		}
+		public String getLockTime() {
+			return lockTime;
+		}
+		public void setLockTime(String lockTime) {
+			this.lockTime = lockTime;
 		}
 	}
 	private int idEvents;

@@ -2,6 +2,7 @@ package com.yeswesail.rest.events;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -23,6 +24,7 @@ import com.braintreegateway.Result;
 import com.braintreegateway.Transaction;
 import com.braintreegateway.TransactionRequest;
 import com.braintreegateway.ValidationError;
+import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.SessionData;
@@ -49,13 +51,22 @@ public class CartHandler {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response getCart(@HeaderParam("Authorization") String token)
 	{
+		Genson genson = new Genson();
 		int languageId = SessionData.getInstance().getLanguage(token);
 		TicketsInCart[] cart = null;
 		DBConnection conn = null;
+		HashMap<String, Object> jsonResponse = new HashMap<>();
 		try
 		{
 			conn = DBInterface.connect();
 			cart = Cart.getCartItems(conn, SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
+			jsonResponse.put("tickets", cart);
+			int ticketsCount = 0;
+			for(TicketsInCart item : cart)
+			{
+				ticketsCount += item.getTickets().size();
+			}
+			jsonResponse.put("ticketsCount", ticketsCount);
 		}
 		catch(Exception e)
 		{
@@ -65,14 +76,9 @@ public class CartHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		
-		if (jh.jasonize(cart, languageId) != Response.Status.OK)
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-		
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+
+		String entity = genson.serialize(jsonResponse);
+		return Response.status(Response.Status.OK).entity(entity).build();
 	}
 
 	@DELETE
@@ -90,12 +96,12 @@ public class CartHandler {
 			for(TicketLocks ticket : tickets)
 			{
 				EventTickets ev = new EventTickets(conn, ticket.getEventTicketId());
-				if (ev.getTicketType() == EventTickets.ALL_BOAT)
+				if (ev.getTicketType() == EventTickets.WHOLE_BOAT)
 				{
 					EventTickets[] et = EventTickets.getAllTicketByEventId(ev.getEventId(), languageId);
 					for (EventTickets item : et)
 					{
-						if (item.getTicketType() == EventTickets.ALL_BOAT)
+						if (item.getTicketType() == EventTickets.WHOLE_BOAT)
 							continue;
 						while(item.getBooked() != 0)
 						{

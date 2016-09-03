@@ -1,9 +1,12 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
+
+import com.yeswesail.rest.ApplicationProperties;
 
 public class Cart extends DBInterface
 {	
@@ -22,6 +25,7 @@ public class Cart extends DBInterface
 	protected int quantity;
 	protected int idTicketLocks;
 	private boolean toBuy;
+	private Date lockTime;
 	
 	private void setNames()
 	{
@@ -94,6 +98,7 @@ public class Cart extends DBInterface
 	@SuppressWarnings("unchecked")
 	public static TicketsInCart[] getCartItems(DBConnection conn, int userId, int languageId) throws Exception
 	{
+		ApplicationProperties prop = ApplicationProperties.getInstance();
 		String sql = 
 				"SELECT DISTINCT idEvents, dateStart, dateEnd, location, description AS title " +
 				"FROM ((EventTickets a INNER JOIN TicketLocks b ON " +
@@ -111,7 +116,7 @@ public class Cart extends DBInterface
 		for(Events e : events)
 		{
 			sql = 	"SELECT idTicketLocks, idEventTickets, price, e.ticketType, " +
-					"                e.description AS ticketDescription " +
+					"                e.description AS ticketDescription, lockTime " +
 					"FROM (EventTickets a INNER JOIN TicketLocks b ON " +
 					"        a.idEventTickets = b.eventTicketId AND " +
 					"        b.userId = " + userId + ") " +
@@ -131,6 +136,7 @@ public class Cart extends DBInterface
 			cartItem.setTickets(new ArrayList<TicketsInCart.Tickets>());
 			retList.add(cartItem);
 			i++;
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 			for(Cart ticket : tickets)
 			{
 				TicketsInCart.Tickets t = cartItem.new Tickets();
@@ -139,6 +145,8 @@ public class Cart extends DBInterface
 				t.setTicketDescription(ticket.ticketDescription);
 				t.setTicketType(ticket.ticketType);
 				t.setIdTicketLocks(ticket.idTicketLocks);
+				// t.setLockTime(format.format(new Date(ticket.lockTime.getTime() + prop.getReleaseTicketLocksAfter())));
+				t.setLockTime(format.format(new Date(new Date().getTime() + prop.getReleaseTicketLocksAfter() * 1000)));
 				t.setQuantity(1);
 				t.setToBuy(true);
 				retList.get(i).getTickets().add(t);
@@ -219,4 +227,13 @@ public class Cart extends DBInterface
 	{
 		this.toBuy = toBuy;
 	}
+
+	public Date getLockTime() {
+		return lockTime;
+	}
+
+	public void setLockTime(Date lockTime) {
+		this.lockTime = lockTime;
+	}
+	
 }

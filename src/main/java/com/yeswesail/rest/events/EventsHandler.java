@@ -383,13 +383,13 @@ public class EventsHandler {
 		int ticketsAvailable = 0;
 		try
 		{
-			allTickets = EventTickets.findByEventId(event.getIdEvents(), languageId);
+			allTickets = EventTickets.getAllTicketByEventId(event.getIdEvents(), languageId);
 			ArrayList<ArrayList<EventTickets>> tickets = new ArrayList<>();
 			int ticketType = -1;
 			int index = -1;
 			for (int i = 0; i < allTickets.length; i++)
 			{
-				if ((allTickets[i].getTicketType() == EventTickets.ALL_BOAT) && Utils.anyTicketAlreadySold(event.getIdEvents()))
+				if ((allTickets[i].getTicketType() == EventTickets.WHOLE_BOAT) && Utils.anyTicketAlreadySold(event.getIdEvents()))
 				{
 					continue;
 				}
@@ -399,8 +399,11 @@ public class EventsHandler {
 					index++;
 					tickets.add(new ArrayList<EventTickets>());
 				}
-				ticketsAvailable += allTickets[i].getAvailable() - allTickets[i].getBooked();
-				tickets.get(index).add(allTickets[i]);
+				if (allTickets[i].getAvailable() - allTickets[i].getBooked() > 0)
+				{
+					ticketsAvailable += allTickets[i].getAvailable() - allTickets[i].getBooked();
+					tickets.get(index).add(allTickets[i]);
+				}
 			}
 			jsonResponse.put("tickets", tickets);
 		}
@@ -663,7 +666,8 @@ public class EventsHandler {
 		try
 		{
 			ed.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId + " AND " +
-										   "      languageId = " + languageId);
+								   "      languageId = " + languageId + " AND " +
+								   "      anchorZone != 0");
 		}
 		catch(Exception e)
 		{
@@ -737,7 +741,7 @@ public class EventsHandler {
 			}
 			if (jsonIn.tickets != null)
 			{
-				handleInsertTicket(jsonIn.tickets, conn);
+				handleInsertTicket(jsonIn.tickets, jsonIn.idEvents, conn);
 			}
 			DBInterface.TransactionCommit(conn);
 		}
@@ -920,11 +924,11 @@ public class EventsHandler {
 		return eventDetailsHandler(jsonIn, language, 1);
 	}
 
-	private void handleInsertTicket(TicketJson[][] jsonIn, DBConnection conn) throws Exception
+	private void handleInsertTicket(TicketJson[][] jsonIn, int eventId, DBConnection conn) throws Exception
 	{
 		EventTickets et = null;
-		EventTickets[] eventTickets = EventTickets.findByEventId(jsonIn[0][0].eventId, Constants.LNG_IT);
-		ArrayList<EventTickets> ticketsToDel = new ArrayList<>();
+		EventTickets[] eventTickets = EventTickets.findByEventId(eventId, Constants.LNG_IT);
+//		ArrayList<EventTickets> ticketsToDel = new ArrayList<>();
 		for(int y = 0; y < jsonIn.length; y++)
 		{
 			for(TicketJson t : jsonIn[y])
@@ -953,22 +957,22 @@ public class EventsHandler {
 				{
 					et.setPrice(t.price);
 					et.update(conn, "idEventTickets");
-					ticketsToDel.add(et);
+//					ticketsToDel.add(et);
 				}
 			}
-			if (!ticketsToDel.isEmpty())
-			{
-				String sql = "DELETE FROM EventTickets " +
-						 	 "WHERE idEventTickets IN (";
-				String sep = "";
-				for(int i = 0; i < ticketsToDel.size(); i++)
-				{
-					sql += sep + ticketsToDel.get(i).getIdEventTickets();
-					sep = ",";
-				}
-				sql += ")";
-				EventTickets.executeStatement(conn, sql, false);
-			}
+//			if (!ticketsToDel.isEmpty())
+//			{
+//				String sql = "DELETE FROM EventTickets " +
+//						 	 "WHERE idEventTickets IN (";
+//				String sep = "";
+//				for(int i = 0; i < ticketsToDel.size(); i++)
+//				{
+//					sql += sep + ticketsToDel.get(i).getIdEventTickets();
+//					sep = ",";
+//				}
+//				sql += ")";
+//				EventTickets.executeStatement(conn, sql, false);
+//			}
 		}
 	}
 	
@@ -976,7 +980,9 @@ public class EventsHandler {
 	@Path("/addTickets")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response addTickets(TicketJson[][] jsonIn, @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+	public Response addTickets(TicketJson[][] jsonIn, 
+							   @HeaderParam("Language") String language, 
+							   @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -984,7 +990,7 @@ public class EventsHandler {
 		try
 		{
 			conn = DBInterface.TransactionStart();
-			handleInsertTicket(jsonIn, conn);
+			handleInsertTicket(jsonIn, jsonIn[0][0].eventId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 

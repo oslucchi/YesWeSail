@@ -65,6 +65,27 @@ public class TicketLocks extends DBInterface
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 	
+	public static TicketLocks findByEventTicketId(DBConnection conn, int eventTicketId) throws Exception
+	{
+		TicketLocks ticket = new TicketLocks();
+		String sql = "SELECT * " +
+					 "FROM TicketLocks " +
+					 "WHERE eventTicketId = " + eventTicketId;
+		ticket.populateObject(conn, sql, ticket);
+		return ticket;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static TicketLocks[] findAll() throws Exception
+	{
+		ArrayList<TicketLocks> tickets = new ArrayList<>();
+		String sql = "SELECT a.* " +
+					 "FROM TicketLocks a INNER JOIN EventTickets b ON " +
+					 "     a.eventTicketId = b.idEventTickets ";
+		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		return(tickets.toArray(new TicketLocks[tickets.size()]));
+	}
+	
 	public int getIdTicketLocks() {
 		return idTicketLocks;
 	}

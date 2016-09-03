@@ -2,6 +2,8 @@ package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
 
+import com.yeswesail.rest.Constants;
+
 public class EventDescription extends DBInterface 
 {
 	private static final long serialVersionUID = -1022667590563399335L;
@@ -32,16 +34,36 @@ public class EventDescription extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static EventDescription[] findByEventId(int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT * " +
-				 	 "FROM EventDescription a " +
+				 	 "FROM EventDescription " +
 					 "WHERE eventId = " + eventId + " AND " +
 				 	 "      languageId = " + languageId + " " +
 					 "ORDER BY anchorZone";
-		@SuppressWarnings("unchecked")
 		ArrayList<EventDescription> eventDescriptions =
 			(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+		if (eventDescriptions.size() == 0)
+		{
+			sql = "SELECT * " +
+				 	 "FROM EventDescription " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      languageId = " + Constants.getLanguageCode("en_US") + " " +
+					 "ORDER BY anchorZone";
+			eventDescriptions =
+					(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+		}
+		if (eventDescriptions.size() == 0)
+		{
+			sql = "SELECT * " +
+				 	 "FROM EventDescription " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      languageId = " + Constants.getLanguageCode("it_IT") + " " +
+					 "ORDER BY anchorZone";
+			eventDescriptions =
+					(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+		}
 		return(eventDescriptions.toArray(new EventDescription[eventDescriptions.size()]));
 	}
 

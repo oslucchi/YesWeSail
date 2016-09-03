@@ -10,6 +10,7 @@ public class UsersJson {
 	public String password;
 	public String phone1;
 	public String phone2;
+	public String about;
 	public String interests;
 	public int age;
 	public String facebook;

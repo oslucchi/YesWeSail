@@ -36,6 +36,7 @@ public class ApplicationProperties {
 	private String braintreePrivateKey;
 	private ServletContext context;
 	private String adminEmail;
+	private int releaseTicketLocksAfter = 600;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -98,6 +99,8 @@ public class ApplicationProperties {
     		sessionExpireTime = Integer.parseInt(properties.getProperty("sessionExpireTime"));
     		variable = "maxNumHotOffers";
     		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
+    		variable = "releaseTicketLocksAfter";
+    		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
     	}
     	catch(NumberFormatException e)
     	{
@@ -217,4 +220,10 @@ public class ApplicationProperties {
 	public String getAdminEmail() {
 		return adminEmail;
 	}
+
+	public int getReleaseTicketLocksAfter() {
+		return releaseTicketLocksAfter;
+	}
+	
+	
 }

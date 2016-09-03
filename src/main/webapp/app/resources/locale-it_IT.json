@@ -72,6 +72,7 @@
 	"global.privacy": "Gestione della privacy",
 	"global.password": "Password",
 	"global.total": "Totale",
+	"global.reject": "Rifiuta",
 	     
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
@@ -91,7 +92,8 @@
 	"event.cabinsNoBath": "Cabine senza bagno",
 	"event.cabinsWithBath": "Cabine con bagno",
 	"event.boardingPlace": "Luogo di imbarco",
-    "event.sharedBathrooms": "Bagni condivisi</td>",
+    "event.sharedBathrooms": "Bagni condivisi",
+    "event.wholeBoat": "Tutta la barca",
     "event.gallery": "Immagini",
     "event.participants": "Partecipanti",
 	"event.logistics": "Dettagli",
@@ -278,6 +280,8 @@
 	"cartTemplate.gridsCol.selected": "Selected",
     "cartTemplate.gridsCol.ticket": "Ticket",
     "cartTemplate.gridsCol.price": "Price",
+    "cartTemplate.gridsCol.timeLeft": "Tempo per l'acquisto",
+    
 
 	"footer.company": "Società",
 	"footer.aboutUs": "Chi siamo",

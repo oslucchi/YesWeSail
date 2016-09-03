@@ -72,7 +72,8 @@
 	"global.privacy": "Privacy",
 	"global.password": "Password",
 	"global.total": "Total amount",
-     
+	"global.reject": "Reject",
+
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",
     
@@ -91,7 +92,8 @@
 	"event.cabinsNoBath": "Cabin without bath",
 	"event.cabinsWithBath": "Cabin with bath",
 	"event.boardingPlace": "Boarding location",
-    "event.sharedBathrooms": "Shared baths</td>",
+    "event.sharedBathrooms": "Shared baths",
+    "event.wholeBoat": "Whole boat",
     "event.gallery": "Images",
     "event.participants": "Participants",
 	"event.logistics": "Details",
@@ -274,9 +276,11 @@
 	"cartTemplate.cardNumber": "Number",
 	"cartTemplate.expiration": "Expiring",
 	"cartTemplate.noTicketsInCart": "There are no tickets in your cart, check out these events that might be of interest",
-	"cartTemplate.gridsCol.selected": "Seleziona",
-    "cartTemplate.gridsCol.ticket": "Biglietto",
-    "cartTemplate.gridsCol.price": "Prezzo",
+	"cartTemplate.gridsCol.selected": "Select",
+    "cartTemplate.gridsCol.ticket": "Ticket type",
+    "cartTemplate.gridsCol.price": "Price",
+    "cartTemplate.gridsCol.timeLeft": "Time to complete",
+    
 
 	"footer.company": "Company",
 	"footer.aboutUs": "About us",

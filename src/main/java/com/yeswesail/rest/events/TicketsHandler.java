@@ -51,7 +51,7 @@ public class TicketsHandler {
 	private Response getTikectsFromDB(TicketJson jsonIn, String language)
 	{
 		int languageId = Utils.setLanguageId(language);
-		
+
 		EventTickets[] tickets = null;
 		try 
 		{
@@ -61,13 +61,13 @@ public class TicketsHandler {
 		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
-		
+
 		// No record found. return an empty object
 		if (tickets == null)
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
-		
+
 		int ticketType = -1;
 		int index = -1;
 		ArrayList<ArrayList<EventTickets>> toReturn = new ArrayList<>();
@@ -88,10 +88,10 @@ public class TicketsHandler {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(jh.json).build();
 		}
-		
+
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
-	
+
 	@POST
 	@Path("/eventTickets")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -106,7 +106,7 @@ public class TicketsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response bookTicket(TicketJson[] jsonIn, @HeaderParam("Language") String language, 
-							   @HeaderParam("Authorization") String token)
+			@HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -119,14 +119,7 @@ public class TicketsHandler {
 			conn = DBInterface.TransactionStart();
 			for (TicketJson t : jsonIn)
 			{
-				et = new EventTickets(conn, t.idEventTickets);
-				if (et.getAvailable() - et.getBooked() <= 0)
-				{
-					DBInterface.TransactionRollback(conn);
-					return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
-				}
-
-				if (et.getTicketType() == EventTickets.ALL_BOAT) 
+				if (t.ticketType == EventTickets.WHOLE_BOAT) 
 				{
 					if (Utils.anyTicketAlreadySold(t.eventId))
 					{
@@ -136,7 +129,7 @@ public class TicketsHandler {
 					EventTickets[] tickets = EventTickets.findByEventId(t.eventId, languageId);
 					for (EventTickets item : tickets)
 					{
-						if (item.getTicketType() == EventTickets.ALL_BOAT)
+						if (item.getTicketType() == EventTickets.WHOLE_BOAT)
 							continue;
 						while(item.getBooked() != item.getAvailable())
 						{
@@ -145,13 +138,23 @@ public class TicketsHandler {
 						item.update(conn, "idEventTickets");
 					}
 				}
-				et.bookATicket();
-				et.update(conn, "idEventTickets");
+				else
+				{
+					et = new EventTickets(conn, t.idEventTickets);
+					if (et.getAvailable() - et.getBooked() <= 0)
+					{
+						DBInterface.TransactionRollback(conn);
+						return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
+					}
+
+					et.bookATicket();
+					et.update(conn, "idEventTickets");
+				}
 				TicketLocks tl = new TicketLocks();
 				tl.setEventTicketId(t.idEventTickets);
 				tl.setLockTime(new Date());
 				tl.setBookedTo((t.bookedTo != null ? t.bookedTo : 
-								SessionData.getInstance().getBasicProfile(token).getEmail()));
+					SessionData.getInstance().getBasicProfile(token).getEmail()));
 				tl.setUserId(u.getIdUsers());
 				tl.setStatus("P");
 				tl.insert(conn, "idTicketLocks", tl);
@@ -178,13 +181,46 @@ public class TicketsHandler {
 		return(getTikectsFromDB(jsonIn[0], language));
 	}
 
+	public boolean freeTicket(int idEventTickets)
+	{
+		EventTickets et = null;
+		TicketLocks tl = null;
+		DBConnection conn = null;
+
+		try 
+		{
+			conn = DBInterface.TransactionStart();
+			tl = new TicketLocks(conn, idEventTickets);
+			et = new EventTickets(conn, tl.getEventTicketId());
+			if (et.getTicketType() == EventTickets.WHOLE_BOAT) 
+			{
+				EventTickets[] tickets = EventTickets.findByEventId(et.getEventId(), 1);
+				for (EventTickets item : tickets)
+				{
+					item.setBooked(0);
+					item.update(conn, "idEventTickets");
+				}
+			}
+			DBInterface.TransactionCommit(conn);
+		}
+		catch (Exception e) 
+		{
+			return false;
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return true;
+	}
+	
 	@POST
 	@Path("/buyTickets")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response buyTickets(TicketJson[][] jsonIn, 
-							  @HeaderParam("Language") String language, 
-							  @HeaderParam("Authorization") String token)
+			@HeaderParam("Language") String language, 
+			@HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 		if (Utils.userSelfOrAdmin(token, jsonIn[0][0].usersId, languageId))
@@ -199,7 +235,7 @@ public class TicketsHandler {
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "users.taxcodeInvalid");
 		}
-		
+
 		String listForApproval = "";
 		String sep = "";
 		String ticketsList = "<ul>";
@@ -243,12 +279,12 @@ public class TicketsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		
+
 		try
 		{
-	        String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnBuy");
-	        htmlText = htmlText.replaceAll("TICKETLIST", ticketsList);
-	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnBuySubject");
+			String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnBuy");
+			htmlText = htmlText.replaceAll("TICKETLIST", ticketsList);
+			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnBuySubject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
 			Mailer.sendMail(jsonIn[0][0].userName, prop.getAdminEmail(), subject, htmlText, imagePath);
@@ -265,8 +301,8 @@ public class TicketsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response confirmTickets(@HeaderParam("Language") String language,
-							     @QueryParam("tickets") String ticketsList,
-							     @QueryParam("userId") int userId)
+			@QueryParam("tickets") String ticketsList,
+			@QueryParam("userId") int userId)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -294,12 +330,12 @@ public class TicketsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		
+
 		try
 		{
-	        String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirmSubject");
-	        htmlText = htmlText.replaceAll("TICKETLIST", ticketsHTML);
-	        String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirm");
+			String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirmSubject");
+			htmlText = htmlText.replaceAll("TICKETLIST", ticketsHTML);
+			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirm");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();			
 			Mailer.sendMail(SessionData.getInstance().getBasicProfile(userId).getEmail(), subject, htmlText, imagePath);
@@ -315,7 +351,7 @@ public class TicketsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response eventTickets(@HeaderParam("Language") String language,
-							   @QueryParam("eventId") int eventId)
+			@QueryParam("eventId") int eventId)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -348,8 +384,8 @@ public class TicketsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response ticketsSold(@HeaderParam("Language") String language, 
-								@HeaderParam("Authorization") String token,
-							    @PathParam("eventId") int eventId)
+			@HeaderParam("Authorization") String token,
+			@PathParam("eventId") int eventId)
 	{
 		int languageId = Utils.setLanguageId(language);
 		SessionData sd = SessionData.getInstance();
@@ -392,14 +428,14 @@ public class TicketsHandler {
 				.entity(jsonizer.jsonize())
 				.build();
 	}
-	
+
 	@DELETE
 	@Path("/{idEventTicketsSold}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response removePassenger(@PathParam("idEventTicketsSold") int idEventTicketsSold, 
-									@HeaderParam("Language") String language, 
-									@HeaderParam("Authorization") String token)
+			@HeaderParam("Language") String language, 
+			@HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
 		SessionData sd = SessionData.getInstance();
@@ -428,5 +464,5 @@ public class TicketsHandler {
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();
 	}
-	
+
 }

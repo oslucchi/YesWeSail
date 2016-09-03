@@ -463,7 +463,7 @@ public class Auth {
 		return Response.status(Response.Status.OK)
 				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
 	}
-
+	
 	@GET
 	@Path("confirmPasswordChange/{token}")
 	@Consumes(MediaType.TEXT_HTML)
@@ -582,5 +582,10 @@ public class Auth {
 				.entity("{}")
 				.header("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT")
 				.build();
+	}
+	
+	public Users getUser()
+	{
+		return u;
 	}
 }

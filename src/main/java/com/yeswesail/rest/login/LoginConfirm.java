@@ -3,8 +3,10 @@ package com.yeswesail.rest.login;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Date;
+import java.util.HashMap;
 
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -14,10 +16,15 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
+import com.yeswesail.rest.ResponseEntityCreator;
+import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
+import com.yeswesail.rest.DBUtility.PasswordHandler;
 import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
@@ -25,23 +32,143 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 @Path("/auth/confirmUser")
 public class LoginConfirm {
 	final Logger log = Logger.getLogger(this.getClass());
-	
+	private Genson genson = new Genson();
+
 	@GET
-	@Path("/{token}")
+	@Path("FB/{token}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response connectFBAccount(@HeaderParam("Language") String language,
+									 @PathParam("token") String token,
+									 @QueryParam("email") String email,
+									 @QueryParam("password") String password)
+	{
+		ApplicationProperties prop = ApplicationProperties.getInstance();
+		DBConnection conn = null;
+		if ((email.compareTo("") == 0) || ((password != null) && (password.compareTo("") == 0)))
+		{
+			DBInterface.disconnect(conn);
+			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
+					prop.getDefaultLang(), "auth.wrongCredentials");
+		}
+		
+		Users u = null;
+		try {
+			conn = DBInterface.connect();
+		} 
+		catch (Exception e1) {
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
+					prop.getDefaultLang(), "generic.execError");
+		}
+		
+		if (password == null)
+		{
+			try 
+			{
+				u = new Users();
+				u.findByEmail(conn, email);
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.CONFLICT, null, 
+						prop.getDefaultLang(), "auth.emailAlreadyRegistered");
+			}
+			catch(Exception e)
+			{
+				;
+			}
+		}
+		else
+		{
+			try 
+			{
+				u = new Users();
+				u.findByEmail(conn, email);
+			}
+			catch(Exception e)
+			{
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.CONFLICT, null, 
+						prop.getDefaultLang(), "auth.invalidEmail");
+			}
+		}
+		
+		try 
+		{
+			if (password == null)
+			{
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.CONFLICT, null, 
+						prop.getDefaultLang(), "auth.specifyAPassword");
+			}
+			UsersAuth ua = UsersAuth.findToken(token);			
+			Users uFB = new Users(conn, ua.getUserId());
+			try
+			{
+				PasswordHandler pw = new PasswordHandler();
+				pw.userPassword(conn, u.getIdUsers());
+				
+				log.debug("Found. Password in database is '" + pw.getPassword() + "'");
+				if ((pw.getPassword() == null) || (pw.getPassword().compareTo(password) != 0))
+				{
+					log.debug("Wrong password, returning UNAUTHORIZED");
+					DBInterface.disconnect(conn);
+					return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
+												 prop.getDefaultLang(), "auth.wrongCredentials");
+				}
+			}
+			catch(Exception e)
+			{
+				log.debug("Exception " + e.getMessage() + ", returning UNAUTHORIZED");
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
+											 prop.getDefaultLang(), "auth.wrongCredentials");
+			}
+			ua.setUserId(u.getIdUsers());
+			ua.setLastRefreshed(new Date());
+			ua.update(conn, "idUsersAuth");
+
+			u.setStatus("A");
+			u.setFacebook(uFB.getFacebook());
+			u.update(conn, "idUsers");
+			SessionData sd = SessionData.getInstance();
+			sd.removeUser(token);
+			sd.addUser(token, Constants.getLanguageCode(language));
+			
+			// Delete the entry eventually created during login FB
+			uFB.delete(conn, uFB.getIdUsers());
+			HashMap<String, Object> jsonResponse = new HashMap<>();
+			jsonResponse.put("token", token);
+			jsonResponse.put("user", u);
+			String entity = genson.serialize(jsonResponse);
+			return Response.status(Response.Status.OK).entity(entity).build();
+		}
+		catch(Exception e)
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
+					prop.getDefaultLang(), "auth.confirmTokenInvalid");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+	}
+
+	@GET
+	@Path("{token}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response register(@PathParam("token") String token, @QueryParam("email") String email)
 	{
 		ApplicationProperties prop = ApplicationProperties.getInstance();
 		URI location;
 		RegistrationConfirm rc = null;
-		Users u = null;
+		String uri = prop.getWebHost() + "/" + prop.getRedirectHome() + "?token=" + token;
+
 		DBConnection conn = null;
 		try {
 			conn = DBInterface.connect();
 		} 
 		catch (Exception e1) {
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
-										 prop.getDefaultLang(), "generic.execError");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(ResponseEntityCreator.formatEntity(
+								prop.getDefaultLang(), "generic.execError")).build();
 		};
 		if (email == null)
 		{
@@ -54,8 +181,8 @@ public class LoginConfirm {
 			catch (Exception e) 
 			{
 				DBInterface.disconnect(conn);
-				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
-						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
 		else
@@ -63,15 +190,15 @@ public class LoginConfirm {
 			if (email.compareTo("") == 0)
 			{
 				DBInterface.disconnect(conn);
-				return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
-						 prop.getDefaultLang(), "auth.invalidEmail");
+				return Response.status(Response.Status.BAD_REQUEST)
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
 			try 
 			{
 				UsersAuth ua = UsersAuth.findToken(token);
 				ua.setLastRefreshed(new Date());
 				ua.update(conn, "idUsersAuth");
-				u = new Users(conn, ua.getUserId());
+				Users u = new Users(conn, ua.getUserId());
 				u.setEmail(email);
 				u.setStatus("A");
 				u.update(conn, "idUsers");
@@ -79,20 +206,17 @@ public class LoginConfirm {
 			}
 			catch(Exception e)
 			{
-				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
-						 prop.getDefaultLang(), "auth.confirmTokenInvalid");
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
 		}
-		String uri = null;
+			
 		try 
 		{
-			u = new Users(conn,rc.getUserId());
+			location = new URI(uri);
+			Users u = new Users(conn,rc.getUserId());
 			u.setStatus("A");
 			u.update(conn, "idUsers");
-			// Redirect on the profile page
-			uri = prop.getWebHost() + "/#/users/" + u.getIdUsers() + "/personal-info?token=" + token + "&profileIncomplete=true";
-			location = new URI(uri);
-			
 			rc.setStatus("I");
 			rc.update(conn, "idRegistrationConfirm");
 			UsersAuth ua = new UsersAuth();
@@ -110,6 +234,6 @@ public class LoginConfirm {
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
 		}
-		return Response.status(Response.Status.OK).entity("{}").build();
+		return Response.status(Response.Status.OK).build();
 	}
 }

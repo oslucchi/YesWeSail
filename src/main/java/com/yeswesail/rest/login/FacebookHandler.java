@@ -216,13 +216,28 @@ public class FacebookHandler implements Serializable
 						u.findByFacebookID(conn, getAttributeAsString(json, "id"));
 						u.setConnectedVia("F");
 						if (getAttributeAsString(json, "user_birthday") != null)
-							u.setAge(50);
+							u.setAge(0);
 						u.update(conn, "idUsers");
 					}
 					catch (Exception e1) 
 					{
 						// All exceptions. No record found is treated as a particular case
-						return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e1, Constants.LNG_EN, "generic.execError");
+						if (e1.getMessage().compareTo("No record found") == 0)
+						{
+							try
+							{
+								u = a.getUser();
+								u.setConnectedVia("F");
+								if (getAttributeAsString(json, "user_birthday") != null)
+									u.setAge(0);
+								u.insert(conn, "idUsers", u);
+							}
+							catch(Exception e2)
+							{
+								return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e2, Constants.LNG_EN, "generic.execError");
+							}
+							return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e1, Constants.LNG_EN, "generic.execError");
+						}
 					}
 					response = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang());
 					if (response != null)

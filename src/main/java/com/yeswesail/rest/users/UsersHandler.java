@@ -513,10 +513,10 @@ public class UsersHandler {
 			retVal = TaxcodeChecker.checkTaxcode(jsonIn.personalInfo.country, 
 												 jsonIn.personalInfo.taxCode, TaxcodeChecker.PERSONAL);
 		}
-		if (retVal == false)
-		{
-			return Utils.jsonizeResponse(Status.BAD_REQUEST, null, languageId, "users.taxcodeIncorrect");
-		}
+//		if (retVal == false)
+//		{
+//			return Utils.jsonizeResponse(Status.BAD_REQUEST, null, languageId, "users.taxcodeIncorrect");
+//		}
 		
 		DBConnection conn = null;
 		Users u = null;
@@ -533,6 +533,7 @@ public class UsersHandler {
 			u.setSurname(jsonIn.surname);
 			u.setPhone1(jsonIn.phone1);
 			u.setPhone2(jsonIn.phone2);
+			u.setAbout(jsonIn.about);
 			if (sd.getBasicProfile(token).getRoleId() == Roles.ADMINISTRATOR)
 				u.setStatus(jsonIn.status);
 			if (jsonIn.birthday != null)

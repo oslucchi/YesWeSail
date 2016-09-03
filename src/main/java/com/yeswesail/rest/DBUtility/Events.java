@@ -1,6 +1,7 @@
 package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -9,7 +10,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.SessionData;
 
-public class Events extends DBInterface
+public class Events extends DBInterface implements Comparable<Events>
 {	
 	private static final long serialVersionUID = 2658938461796360575L;
 	private static final Logger log = Logger.getLogger(DBInterface.class);
@@ -106,22 +107,60 @@ public class Events extends DBInterface
 		events.add(this);
 		getTicketMaxAndMin(events);
 	}
-
-	@SuppressWarnings("unchecked")
-	public static Events[] findHot(int languageId) throws Exception
+	
+	private static ArrayList<Events> retrieveEvents(String whereClause, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description AS `title` " +
-				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-				 	 "     ON a.idEvents = b.eventId AND " +
-				 	 "        b.languageId = " + languageId + " AND " +
-					 "		  b.anchorZone = 0 " + " AND " +
-					 "        a.status = 'A' AND " +
-					 "        a.dateStart > NOW() AND " +
-					 "        a.hotEvent = 1 " +
-				 	 "ORDER BY dateStart ";
+			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+			 	 "     ON a.idEvents = b.eventId AND " +
+			 	 "        b.languageId = " + languageId + " AND " +
+				 "		  b.anchorZone = 0 " + 
+			 	 whereClause;
+		log.trace("Populate collection with sql '" + sql + "'");
+		@SuppressWarnings("unchecked")
+		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		
-		log.trace("trying to populate collection with sql '" + sql + "'");
-		events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		// Getting other events not having the description in the current language for which 
+		// the description is available in the alternative language
+		int alternateLanguage;
+		switch(languageId)
+		{
+		case Constants.LNG_IT:
+			alternateLanguage = Constants.LNG_EN;
+			break;
+		default:
+			alternateLanguage = Constants.LNG_IT;
+			break;
+		}
+		sql = "SELECT a.*, b.description AS `title` " +
+			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+			 	 "     ON a.idEvents = b.eventId AND " +
+			 	 "        b.languageId = " + alternateLanguage + " AND " +
+				 "		  b.anchorZone = 0 AND " +
+				 "        a.idEvents NOT IN (";
+		String sep = "";
+		for(Events e : events)
+		{
+			sql += sep + e.getIdEvents();
+			sep = ",";
+		}
+		sql += ") " + whereClause;
+		log.trace("Adding events on alternative laguages via '" + sql + "'");
+		@SuppressWarnings("unchecked")
+		ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		events.addAll(eventsIT);
+		
+		return events;
+	}
+
+	public static Events[] findHot(int languageId) throws Exception
+	{
+		String whereClause = "WHERE   a.status = 'A' AND " +
+							 "        a.dateStart > NOW() AND " +
+							 "        a.hotEvent = 1 " +
+						 	 "ORDER BY dateStart ";
+		events = retrieveEvents(whereClause, languageId);
+		
 		log.trace("Done. There are " + events.size() + " elemets");
 		log.trace("Get tickets for the event");
 		getTicketMaxAndMin(events);
@@ -153,37 +192,20 @@ public class Events extends DBInterface
 	}
 
 	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
-	{
-		String sql = "SELECT a.*, b.description AS `title` " +
-				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-				 	 "     ON a.idEvents = b.eventId AND " +
-				 	 "        b.languageId = " + languageId + " AND " +
-					 "		  b.anchorZone = 0 " + 
-				 	 whereClause;
-		@SuppressWarnings("unchecked")
-		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-		if (languageId != Constants.LNG_IT)
-		{
-			sql = "SELECT a.*, b.description AS `title` " +
-				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-				 	 "     ON a.idEvents = b.eventId AND " +
-				 	 "        b.languageId = " + Constants.LNG_IT + " AND " +
-					 "		  b.anchorZone = 0 " + 
-				 	 whereClause;
-			@SuppressWarnings("unchecked")
-			ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-			events.addAll(eventsIT);
-		}
+	{		
+		events = retrieveEvents(whereClause, languageId);
 		if (events.size() == 0)
 			return null;
 		for(Events e : events)
 		{
-			if (e.minPrice != 0)
+			if (!e.getImageURL().startsWith("http"))
 			{
 				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
 			}
 		}
 		getTicketMaxAndMin(events);
+		
+		Collections.sort(events);
 		return(events.toArray(new Events[events.size()]));
 	}
 
@@ -390,5 +412,10 @@ public class Events extends DBInterface
 
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
+	}
+
+	@Override
+	public int compareTo(Events o) {
+		return (int) (this.dateStart.getTime() - o.dateStart.getTime());
 	}
 }

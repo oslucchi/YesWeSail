@@ -9,7 +9,7 @@ public class EventTickets extends DBInterface
 	public static final int CABIN_NO_BATH = 2;
 	public static final int CABIN_BATH = 3;
 	public static final int CABIN_VIP = 4;
-	public static final int ALL_BOAT = 5;
+	public static final int WHOLE_BOAT = 5;
 	
 	protected int idEventTickets;
 	protected int eventId;

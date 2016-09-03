@@ -90,7 +90,7 @@ public class Users extends DBInterface
 					 "FROM Users " +
 					 "WHERE facebook = '" + id + "'";
 		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
+		if ((getImageURL() != null) && !getImageURL().startsWith("http"))
 		{
 			setImageURL(prop.getWebHost() + "/" + getImageURL());
 		}
