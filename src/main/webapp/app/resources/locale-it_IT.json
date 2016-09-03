@@ -65,12 +65,13 @@
 	"global.month.december": "Dicembre",
 	"global.title": "Titolo",
 	"global.usagePolicy": "Policy di utilizzo",
+	"global.clientPolicy": "Policy per il cliente",
+	"global.shipownerPolicy": "Policy per l'armatore",
 	"global.siteMap": "Mappa del sito",
 	"global.contacts": "Contatti",
 	"global.privacy": "Gestione della privacy",
-	"global.clientPolicy": "Policy per il cliente",
-	"global.shipownerPolicy": "Policy per l'armatore",
-	
+	"global.password": "Password",
+	"global.total": "Totale",
 	     
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
