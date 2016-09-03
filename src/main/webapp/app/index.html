@@ -54,7 +54,7 @@
                       <input type="hidden" name="language">
                       <div class="default text">{{"index.language" | translate}}</div>
                       <div class="menu">
-                          <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT"><i class="it flag"></i></div>
+                          <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT" ><i class="it flag"></i></div>
                         <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
                       </div>
                     </div>
@@ -62,8 +62,8 @@
                 <a ng-if="!currentUser.isShipOwner" ng-show="!!currentUser" class="ui item">
                     <button ui-sref="sailorRegistration" class="ui inverted basic button">{{"index.becomeAShipowner" | translate}}</button>
                 </a>
-                <a ui-sref="cart" ng-if="cartQty" class="item"> <i class="cart icon"></i>
-                    <div class="floating ui red label">{{cartQty}}</div>
+                <a ui-sref="cart" class="item"> <i class="cart icon"></i>
+                    <div ng-if="cartQty" class="floating ui red label">{{cartQty}}</div>
                 </a> 
                 <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">{{"index.signIn" | translate}}</a>
                 <a ng-show="currentUser" class="item">
@@ -174,7 +174,7 @@
     <script src="scripts/controllers/eventid.js"></script>
     <script src="scripts/controllers/invalidemail.js"></script>
     <script src="scripts/controllers/create.eventid.js"></script>
-    <script src="scripts/controllers/createEvent.js"></script>
+    <script src="scripts/controllers/createevent.js"></script>
     <script src="scripts/services/mapsservice.js"></script>
     <script src="scripts/directives/afterRenderDirective.js"></script>
     <script src="scripts/directives/clickToEdit.js"></script>

@@ -45,9 +45,18 @@
             <input type="text" name="email" placeholder="Email" ng-model="correctEmail">
             </div>
             
+        </div> 
+        <div class="field" ng-show="confirmPassword">
+            <label>{{"global.password" | translate}}</label>
+            <div class="ui right icon input">
+            <i class="password icon"></i>
+            <input type="password" name="password" placeholder="Password" ng-model="correctPassword">
+            </div>
+            
         </div>
         
-        <button ng-click="confirmRegistration()" class="ui button primary">{{"invalidemail.completeRegistration" | translate}}</button>
+        <button ng-if="!confirmPassword" ng-click="confirmRegistration()" class="ui button primary">{{"invalidemail.completeRegistration" | translate}}</button>
+        <button ng-if="confirmPassword" ng-click="confirmFacebookAccountLink()" class="ui button primary">{{"invalidemail.completeRegistration" | translate}}</button>
 <div ng-if="errorMessage" class="ui  message">
   <div class="header">
     {{errorMessage}}

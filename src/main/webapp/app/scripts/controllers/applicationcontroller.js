@@ -22,11 +22,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     }, function (data) {
         $scope.cartQty = data
     });
-    if ($cookieStore.get('bookedTickets')) {
-        CartService.bookedTickets = $cookieStore.get('bookedTickets');
-        CartService.cartQty = CartService.bookedTickets.length;;
-        $scope.cartQty = CartService.bookedTickets.length;
-    }
+    
     $scope.currentUser = null;
     $scope.setCurrentUser = function (user) {
         $rootScope.currentUser = user;
@@ -71,6 +67,9 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
             return true;
         }
     }
+    
+    CartService.getAllItems();
+    
     $scope.login = AuthService.login;
     $scope.logout = function () {
         AuthService.logout().then(function () {

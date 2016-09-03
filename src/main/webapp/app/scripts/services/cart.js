@@ -8,7 +8,7 @@
  * Service in the yeswesailApp.
  */
 angular.module('yeswesailApp')
-  .service('CartService', function ($http, URLs, toastr, $cookieStore, $window, Session) {
+  .service('CartService', function ($http, URLs, toastr, $cookieStore, $window, Session, $translate) {
     var cartService = {};
         cartService.cartQty=null;
         cartService.bookedTickets=[];
@@ -32,7 +32,6 @@ angular.module('yeswesailApp')
                   cartService.availableTickets=res.data;
                   toastr.success($translate.instant('cart.ticketAdded'));
                   cartService.bookedTickets.push(ticketArray);
-                  $cookieStore.put('bookedTickets', cartService.bookedTickets);
                   return res;
               });
                return promise;  
@@ -97,7 +96,8 @@ angular.module('yeswesailApp')
              return $http
                 .get(URLs.ddns + 'rest/cart')
                 .then(function (res) {
-                 cartService.bookedTickets=res.data;
+                 cartService.cartQty=res.data.ticketsCount;
+                 cartService.bookedTickets=res.data.tickets;
                     return res;
                 });
         };

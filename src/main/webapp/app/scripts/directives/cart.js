@@ -48,7 +48,7 @@ angular.module('yeswesailApp')
                     scope.total = 0;
 
                     angular.forEach(scope.bookedEvents, function (value, key) {
-                        CartService.cartQty += value.tickets.length;
+//                        CartService.cartQty += value.tickets.length;
                         scope.getTotal(value.tickets);
                     })
 

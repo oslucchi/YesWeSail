@@ -16,7 +16,20 @@ angular.module('yeswesailApp')
         $http.get(URLs.ddns + 'rest/auth/confirmUser/'+token+'?email='+$scope.correctEmail).then(function(res){
             ngDialog.closeAll();
         }, function(err){
-            $scope.errorMessage=err.data.message;
+            if(err.status==409){
+                $scope.confirmPassword=true;
+            }else{
+                $scope.confirmPassword=false;
+            }
+            $scope.errorMessage=err.data.error;
+        });
+    };  
+    
+    $scope.confirmFacebookAccountLink=function(){
+        $http.get(URLs.ddns + 'rest/auth/confirmUser/'+token+'?email='+$scope.correctEmail+'&password='+$scope.correctPassword).then(function(res){
+            ngDialog.closeAll();
+        }, function(err){
+            $scope.errorMessage=err.data.error;
         });
     };
     

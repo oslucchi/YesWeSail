@@ -6,7 +6,7 @@
 
     <table ng-if="globalTickets.length>0" class="ui very basic  celled table">
         <thead>
-            <tr>
+            <tr class="non-clickable">
                 <th>{{"tickets.type" | translate}}</th>
                 <th classs="center aligned">{{"tickets.available" | translate}}</th>
                 <th class="five center aligned wide"><i class="user icon"></i></th>
@@ -16,8 +16,8 @@
         <tbody>
             <tr ng-repeat="tickets in globalTickets track by $index">
 
-                <td>{{tickets[0].description}} </td>
-                <td classs="center aligned">{{availableTickets(tickets)}} </td>
+                <td class="non-clickable">{{tickets[0].description}} </td>
+                <td class="center aligned non-clickable" >{{availableTickets(tickets)}} </td>
                 <td class="add-to-cart" ng-click="confirmAddToCart(tickets, 'single')">{{tickets[0].price}}€<i class="add to cart icon"></i></td>
                 <td ng-if="calculatePrice(tickets)" class="add-to-cart" ng-click="confirmAddToCart(tickets, 'double')">{{calculatePrice(tickets)}}<span>€<i class="add to cart icon"></i></span></td>
 
