@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('UseridInfoCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload, $filter) {
+    .controller('UseridInfoCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload, $filter, $translate) {
         $scope.regexBirthday = '^(\\d{2})/(\\d{2})/(\\d{4})$';
         $scope.$watch('currentUser.idUsers', function (dataLoaded) {
             if (dataLoaded) {

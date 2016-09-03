@@ -22,7 +22,6 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     }, function (data) {
         $scope.cartQty = data
     });
-    
     $scope.currentUser = null;
     $scope.setCurrentUser = function (user) {
         $rootScope.currentUser = user;
@@ -68,8 +67,11 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
         }
     }
     
-    CartService.getAllItems();
+    $rootScope.$on("$stateChangeSuccess", function(){
+     window.scrollTo(0,0);
+    })
     
+    CartService.getAllItems();
     $scope.login = AuthService.login;
     $scope.logout = function () {
         AuthService.logout().then(function () {
@@ -112,9 +114,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     };
     $scope.changeLanguage = function (lang) {
         $http.defaults.headers.common['Language'] = lang;
-  
-            LocaleService.setLocale(lang);
-    
+        LocaleService.setLocale(lang);
         $state.go($state.current, {}, {
             reload: true
         });
@@ -124,12 +124,15 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
             template: 'views/invalidemail.html'
             , className: 'ngdialog-theme-default'
             , controller: 'InvalidEmailCtrl'
+            , scope: $scope
             , closeByEscape: false
             , showClose: false
             , closeByNavigation: false
             , closeByDocument: false
         });
     }
+    
+    
     $scope.$on('LoginRequired', function (event, data) {
         $scope.popupLogin(data);
     });

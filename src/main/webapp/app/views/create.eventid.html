@@ -239,8 +239,6 @@
                             
                             
                 </h2>
-                        
-                        {{tickets}}
                  <table class="ui definition table">
                   <thead>
                     <tr  class="center aligned"><th></th>
@@ -271,6 +269,14 @@
                             <button ng-disabled="tDisabled" ng-if="!!!tickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
                             <div ng-if="!!tickets[2][$index].price" class="ui fluid input ticket-price">
                               <input ng-model="tickets[2][$index].price" type="text">
+                            </div>
+                        </td>
+                    </tr>
+                      <tr>
+                      <td>{{"event.wholeBoat" | translate}}</td>
+                        <td>
+                            <div ng-if="!!tickets[3][0].price" class="ui fluid input ticket-price">
+                              <input ng-model="tickets[3][0].price" type="text">
                             </div>
                         </td>
                     </tr>

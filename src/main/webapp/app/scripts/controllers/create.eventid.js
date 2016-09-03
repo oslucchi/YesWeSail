@@ -20,7 +20,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
 
     
     
-    $scope.selectedLanguage = $translate.proposedLanguage();
+    $scope.selectedLanguage = 'it_IT';
     $scope.tempEvent = {};
     $scope.markers = [];
     $scope.selectedBoat = null;
@@ -68,7 +68,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             else {
                 bDisabled = false;
             }
-            if (res.data.tickets>0) {
+            if (res.data.tickets.length>0) {
                 $scope.tDisabled = true;
             }
             else {
@@ -77,12 +77,45 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             "available": 1
             , "booked": 0
             , "bookedTo": null
-            , "cabinRef": 0
+            , "cabinRef": null
             , "description": ""
             , "eventId": $stateParams.eventId
             , "idEventTickets": 0
             , "price": 100
             , "ticketType": 1
+        }],
+                          [{
+            "available": 1
+            , "booked": 0
+            , "bookedTo": null
+            , "cabinRef": null
+            , "description": ""
+            , "eventId": $stateParams.eventId
+            , "idEventTickets": 0
+            , "price": 100
+            , "ticketType": 2
+        }],
+                          [{
+            "available": 1
+            , "booked": 0
+            , "bookedTo": null
+            , "cabinRef": null
+            , "description": ""
+            , "eventId": $stateParams.eventId
+            , "idEventTickets": 0
+            , "price": 100
+            , "ticketType": 3
+        }],
+                          [{
+            "available": 1
+            , "booked": 0
+            , "bookedTo": null
+            , "cabinRef": null
+            , "description": ""
+            , "eventId": $stateParams.eventId
+            , "idEventTickets": 0
+            , "price": 100
+            , "ticketType": 5
         }]
     ]
                 $scope.tDisabled = false;

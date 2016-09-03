@@ -1,10 +1,10 @@
 <div class="tickets-container">
-    <div class="ui info message" ng-class="{'hidden': globalTickets.length>0}">
+    <div class="ui info message" ng-class="{'hidden': globalTickets[0].length>0}">
         {{"tickets.soldout" | translate}}
     </div>
 
 
-    <table ng-if="globalTickets.length>0" class="ui very basic  celled table">
+    <table ng-if="globalTickets[0].length>0" class="ui very basic  celled table">
         <thead>
             <tr class="non-clickable">
                 <th>{{"tickets.type" | translate}}</th>
@@ -14,7 +14,7 @@
             </tr>
         </thead>
         <tbody>
-            <tr ng-repeat="tickets in globalTickets track by $index">
+            <tr ng-repeat="tickets in globalTickets track by $index" ng-if="availableTickets(tickets) > 0">
 
                 <td class="non-clickable">{{tickets[0].description}} </td>
                 <td class="center aligned non-clickable" >{{availableTickets(tickets)}} </td>

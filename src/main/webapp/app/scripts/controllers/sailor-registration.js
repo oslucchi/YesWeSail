@@ -6,7 +6,7 @@
  * # SailorRegistrationCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('SailorRegistrationCtrl', function ($scope, Session, toastr, $http, URLs, Upload) {
+angular.module('yeswesailApp').controller('SailorRegistrationCtrl', function ($scope, Session, toastr, $http, URLs, Upload, $translate) {
     $scope.sailor = {
         usersId: null
         , sailingDocs: null

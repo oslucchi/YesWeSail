@@ -7,7 +7,7 @@
     <a class="grey item"><i class="edit icon"></i>Edit</a>
 </div>
 -->
-<div ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img">
 
 
 </div>
@@ -23,7 +23,7 @@
 -->
 
 
-    <div class="ui container">
+    <div class="ui container computer-only index-fix">
 <div class="ui anchor-menu sticky attached stackable menu">
         <a class="item" ng-click="goToSection('gallery')">
             <i class="home icon"></i>{{"event.gallery" | translate}}
@@ -55,8 +55,6 @@
             <div class="twelve wide column">
                 <div class="ui grid">
                     <div class="twelve wide column">
-
-
                         <div class="ui items">
                             <div class="item">
                                 <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})">
@@ -97,57 +95,10 @@
 
 
             </div>
-            <div class="four wide column">
+            <div class="four wide column computer-only">
                 <div class="ui book sticky">
                     <tickets global-tickets="event.tickets"></tickets>
-                    
-
-<!--
-                    <table class="ui compact celled definition table">
-                        <thead class="full-width">
-                            <tr>
-                                <th>Ticket</th>
-                                <th>Price</th>
-                                <th>Available</th>
-                                <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-if="ticket[0]" ng-repeat="ticket in event.tickets">
-                                
-                                <td>{{ticket[0].description}}</td>
-                                <td>{{ticket[0].price}}€</td>
-                                <td>{{ticket[0].available-ticket[0].booked}}</td>
-                                
-                                <td>
-                                    <div class="ui fluid input">
-                                        <input type="text">
-                                    </div>
-                                </td>
-
-                               
-
-                            </tr>
-
-
-
-                        </tbody>
-                        <tfoot class="full-width">
-                            <tr>
-
-                                <th colspan="4">
-                                    <div ng-click="bookTicket()" class="ui right floated small primary button">
-                                        Buy</div>
-
-                                </th>
-                            </tr>
-                        </tfoot>
-                    </table>
--->
-
-                    
-                    
-                    
+                
 
                     
                     
@@ -301,8 +252,8 @@
         </div>
 
 
-
 <div class="ui divider"></div>
+<tickets class="mobile-only" global-tickets="event.tickets"></tickets>
 
    
 

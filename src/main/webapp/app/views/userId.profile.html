@@ -1,47 +1,33 @@
 <h3 class="ui dividing header">{{"userid.profile.aboutMe" | translate}}</h3>
 <div class="ui basic segment">
-  <p>{{user.about}}</p>
+    <p ng-if="!isOwner">{{user.about}}</p>
+    
+    <div ng-if="isOwner"  class="ui form">
+        <div class="field">
+            <textarea ng-model="user.about"></textarea>
+        </div>
+    <button class="ui blue button" ng-click="updateUser(user)">Salva</button>
+    </div>
 </div>
-
-   <div class="ui comments" >
-                <h3 class="ui dividing header">{{"user.reviews" | translate}}</h3>
-                <span ng-if="!!!reviews">{{"user.noReviewsSubmitted" | translate}}</span>
-                <div class="comment" ng-repeat="review in reviews">
-                    
-                    <a class="avatar">
-                        <img ng-if="!!review.reviewerURL" ng-src="{{review.reviewerURL}}">
-                        <img ng-if="!!!review.reviewerURL" src="/images/default-icon.jpg">
-                    </a>
-                    <div class="content">
-                        <a href="/#/users/{{review.reviewerId}}" class="author">{{review.reviewerName}} {{review.reviewerSurname}}</a>
-                        <div class="metadata">
-                            <span class="date">{{review.created | date: 'EEEE, MMMM d, y h:mm:ss a'}}</span>
-                             <div class="rating">
-                                  <i class="star icon"></i>
-                                  {{review.rating}} {{"user.reviewStars" | translate}}
-                                </div>
-                        </div>
-                        
-       
-                           
-                        <div class="text">
-<!--                            <div class="ui comment star rating" data-rating="{{review.rating}}"></div> - -->
-                            {{review.review}}
-                        </div>
-                    </div>
-                </div>
-            
-            
-                <form class="ui reply form" ng-if="!isOwner">
-                    
-                    <div class="field">
-                        <textarea ng-model="tempReview.review"></textarea>
-                    </div>
-                    <div class="field">
-                       <div class="ui new star rating" data-rating="3"></div>
-                    </div>
-                    <div class="ui blue labeled icon button" ng-click="addReview(tempReview)">
-                        <i class="icon edit"></i> {{"user.addReview" | translate}}
-                    </div>
-                </form>
+<div class="ui comments">
+    <h3 class="ui dividing header">{{"user.reviews" | translate}}</h3> <span ng-if="!!!reviews">{{"user.noReviewsSubmitted" | translate}}</span>
+    <div class="comment" ng-repeat="review in reviews">
+        <a class="avatar"> <img ng-if="!!review.reviewerURL" ng-src="{{review.reviewerURL}}"> <img ng-if="!!!review.reviewerURL" src="/images/default-icon.jpg"> </a>
+        <div class="content"> <a href="/#/users/{{review.reviewerId}}" class="author">{{review.reviewerName}} {{review.reviewerSurname}}</a>
+            <div class="metadata"> <span class="date">{{review.created | date: 'EEEE, MMMM d, y h:mm:ss a'}}</span>
+                <div class="rating"> <i class="star icon"></i> {{review.rating}} {{"user.reviewStars" | translate}} </div>
             </div>
+            <div class="text">
+                <!--                            <div class="ui comment star rating" data-rating="{{review.rating}}"></div> - -->{{review.review}} </div>
+        </div>
+    </div>
+    <form class="ui reply form" ng-if="!isOwner">
+        <div class="field">
+            <textarea ng-model="tempReview.review"></textarea>
+        </div>
+        <div class="field">
+            <div class="ui new star rating" data-rating="3"></div>
+        </div>
+        <div class="ui blue labeled icon button" ng-click="addReview(tempReview)"> <i class="icon edit"></i> {{"user.addReview" | translate}} </div>
+    </form>
+</div>

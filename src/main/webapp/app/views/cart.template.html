@@ -76,7 +76,8 @@
         <tr>
             <th ng-if="paymentProceeded" class="">{{"cartTemplate.gridsCol.selected" | translate}}</th>
             <th class="">{{"cartTemplate.gridsCol.ticket" | translate}}</th>
-            <th class="">{{"cartTemplate.gridsCol.price" | translate}</th>
+            <th class="">{{"cartTemplate.gridsCol.price" | translate}}</th>
+            <th class="">{{"cartTemplate.gridsCol.timeLeft" | translate}}</th>
       </tr></thead>
       <tbody>
     <tr ng-repeat="ticket in event.tickets track by $index">
@@ -87,6 +88,7 @@
         </div></td>
         <td>{{ticket.ticketDescription}} </td>
         <td>{{ticket.price}}€</td>
+        <td><span countdown='' date="{{ticket.lockTime}}">&nbsp;</span></td>
        
 
     </tr>

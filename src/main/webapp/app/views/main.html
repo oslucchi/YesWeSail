@@ -6,8 +6,7 @@
             <h1 class="ui center aligned header main-title">{{"main.title" | translate}}</h1>
             <h2 class="ui center aligned header main-subtitle">{{"main.subtitle" | translate}}</h2>
 
-
-            <div class="ui fluid three item menu">
+            <div class="ui fluid three item stackable menu">
 
                    <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
                       <input type="hidden" name="language">
@@ -30,22 +29,6 @@
                 
                 
                 
-                
-                
-                
-<!--
-                <select  ng-if="locationsLoaded" dropdown-selection ng-model="selectedLocation" class="ui dropdown item">
-                    <option value="">{{"global.selectLocation" | translate}}</option>
-                    <option value="">{{"global.selectLocation" | translate}}</option>
-                    <option value="{{location}}" ng-repeat="location in LOCATIONS">{{location}}</option>
-                </select>
-                <select  ng-if="categoriesLoaded" dropdown-selection ng-model="selectedCategory"  class="ui dropdown item">
-                    <option value="">{{"global.selectCategory" | translate}}</option>
-                    <option value="">{{"global.selectCategory" | translate}}</option>
-                    <option value="{{category.categoryId}}" ng-repeat="category in CATEGORIES">{{category.description}}</option>
-                </select>
--->
-
 
                 <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a>
 
