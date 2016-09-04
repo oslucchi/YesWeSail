@@ -17,7 +17,9 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     });
     $scope.language = "it_IT "; // $translate.proposedLanguage();
     $scope.cartQty = null;
+	$scope.cartExpires = null;
     $scope.$watch(function () {
+    	$scope.cartExpires = CartService.cartExpires;
         return CartService.cartQty;
     }, function (data) {
         $scope.cartQty = data

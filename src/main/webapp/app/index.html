@@ -62,8 +62,24 @@
                 <a ng-if="!currentUser.isShipOwner" ng-show="!!currentUser" class="ui item">
                     <button ui-sref="sailorRegistration" class="ui inverted basic button">{{"index.becomeAShipowner" | translate}}</button>
                 </a>
-                <a ui-sref="cart" class="item"> <i class="cart icon"></i>
-                    <div ng-if="cartQty" class="floating ui red label">{{cartQty}}</div>
+                <a ui-sref="cart" class="item">
+                	<table>
+                	<tr>
+                		<td>
+		                	<i class="cart icon"></i>
+		                </td>
+		            </tr>
+		            <tr>
+		            	<td>
+		                    <div ng-if="cartQty && (cartExpires != null)" >
+			                   	<span countdown='' date="{{cartExpires}}">&nbsp;</span>
+			                </div>
+			            </td>
+			        </tr>
+                	</table> 
+                    <div ng-if="cartQty" class="floating ui red label">
+                    	{{cartQty}}
+                    </div>
                 </a> 
                 <a ng-click="popupLogin()" ng-show="!currentUser" class="ui item">{{"index.signIn" | translate}}</a>
                 <a ng-show="currentUser" class="item">

@@ -2,6 +2,8 @@ package com.yeswesail.rest.events;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
@@ -36,6 +38,7 @@ import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.TicketsInCart;
+import com.yeswesail.rest.DBUtility.TicketsInCart.Tickets;
 import com.yeswesail.rest.jsonInt.CartJson;
 import com.yeswesail.rest.jsonInt.TicketJson;
 
@@ -61,12 +64,22 @@ public class CartHandler {
 			conn = DBInterface.connect();
 			cart = Cart.getCartItems(conn, SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonResponse.put("tickets", cart);
+			Date minLockTime = new Date(new Date().getTime() + 3600000);
 			int ticketsCount = 0;
 			for(TicketsInCart item : cart)
 			{
 				ticketsCount += item.getTickets().size();
+				for(Tickets ticket : item.getTickets())
+				{
+					if (minLockTime.getTime() > ticket.getLockTimeDate().getTime())
+					{
+						minLockTime = ticket.getLockTimeDate();
+					}
+				}
 			}
 			jsonResponse.put("ticketsCount", ticketsCount);
+			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+			jsonResponse.put("expiring", format.format(minLockTime));
 		}
 		catch(Exception e)
 		{

@@ -18,45 +18,49 @@ public class TicketReleaser extends Thread {
 	{
 		EventTickets[] ticketsToRelease;
 
-		return;
-//		DBInterface.TransactionStart();
-//		EventTickets et = new EventTickets(conn, tl.getEventTicketId());
-//		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
-//		{
-//			ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
-//		}
-//		else
-//		{
-//			ticketsToRelease = new EventTickets[1];
-//			ticketsToRelease[0] = et;
-//		}
-//		for(EventTickets item : ticketsToRelease)
-//		{
-//			try
-//			{
-//				TicketLocks ticket = TicketLocks.findByEventTicketId(conn, item.getIdEventTickets());
-//				log.debug("Deleting lock id " + ticket.getIdTicketLocks());
-//				ticket.delete(conn, ticket.getIdTicketLocks());
-//			}
-//			catch(Exception e)
-//			{
-//				if (e.getMessage().compareTo("No record found") != 0)
-//				{
-//					throw e;
-//				}
-//			}
-//			finally
-//			{
-//				DBInterface.TransactionRollback(conn);
-//			}
-//			if (item.getBooked() > 0)
-//			{
-//				log.debug("Updating booked status for event ticket " + item.getIdEventTickets());
-//				item.setBooked(item.getBooked() - 1);
-//				item.update(conn, "idEventTickets");
-//			}
-//		}
-//		DBInterface.TransactionCommit(conn);
+		EventTickets et = new EventTickets(conn, tl.getEventTicketId());
+		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
+		{
+			ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
+		}
+		else
+		{
+			ticketsToRelease = new EventTickets[1];
+			ticketsToRelease[0] = et;
+		}
+		try
+		{
+			DBInterface.TransactionStart();
+			for(EventTickets item : ticketsToRelease)
+			{
+				try
+				{
+					TicketLocks ticket = TicketLocks.findByEventTicketId(conn, item.getIdEventTickets());
+					log.debug("Deleting lock id " + ticket.getIdTicketLocks());
+					ticket.delete(conn, ticket.getIdTicketLocks());
+				}
+				catch(Exception e)
+				{
+					if (e.getMessage().compareTo("No record found") != 0)
+					{
+						DBInterface.TransactionRollback(conn);
+						throw e;
+					}
+				}
+				if (item.getBooked() > 0)
+				{
+					log.debug("Updating booked status for event ticket " + item.getIdEventTickets());
+					item.setBooked(item.getBooked() - 1);
+					item.update(conn, "idEventTickets");
+				}
+			}			
+		}
+		catch(Exception e)
+		{
+			DBInterface.TransactionRollback(conn);
+			return;
+		}
+		DBInterface.TransactionCommit(conn);
 	}
 	
 	public void doShutdown()
@@ -75,18 +79,18 @@ public class TicketReleaser extends Thread {
     		conn = DBInterface.connect();
         	while(true)
         	{
-//        		now = new Date();
-//        		TicketLocks[] tList = TicketLocks.findAll();
-//        		for(TicketLocks tl : tList)
-//        		{
-//        			if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
-//        			{
-//        				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
-//        						  " eventTicketId " + tl.getEventTicketId() + 
-//        		 				  " expired will be removed");
-//        				release(tl);
-//        			}
-//        		}
+        		now = new Date();
+        		TicketLocks[] tList = TicketLocks.findAll();
+        		for(TicketLocks tl : tList)
+        		{
+        			if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
+        			{
+        				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
+        						  " eventTicketId " + tl.getEventTicketId() + 
+        		 				  " expired will be removed");
+        				release(tl);
+        			}
+        		}
         		Thread.sleep(1000);
         		if (++count == 60)
         		{

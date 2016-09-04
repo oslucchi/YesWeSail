@@ -11,6 +11,7 @@ angular.module('yeswesailApp')
   .service('CartService', function ($http, URLs, toastr, $cookieStore, $window, Session, $translate) {
     var cartService = {};
         cartService.cartQty=null;
+        cartService.cartExpires = null;
         cartService.bookedTickets=[];
         cartService.totalAmount=0;
         cartService.status={
@@ -98,6 +99,7 @@ angular.module('yeswesailApp')
                 .then(function (res) {
                  cartService.cartQty=res.data.ticketsCount;
                  cartService.bookedTickets=res.data.tickets;
+                 cartService.cartExpires = res.data.expiring;
                     return res;
                 });
         };
@@ -106,6 +108,7 @@ angular.module('yeswesailApp')
             return $http.delete(URLs.ddns + 'rest/cart')
                 .then(function (res) {
                 cartService.cartQty=null;
+                cartService.cartExpires = null;
                 
                  $cookieStore.remove('bookedTickets');
                     return res;

@@ -24,8 +24,8 @@ public class Cart extends DBInterface
 	protected int price;
 	protected int quantity;
 	protected int idTicketLocks;
+	protected Date lockTime;
 	private boolean toBuy;
-	private Date lockTime;
 	
 	private void setNames()
 	{
@@ -145,8 +145,9 @@ public class Cart extends DBInterface
 				t.setTicketDescription(ticket.ticketDescription);
 				t.setTicketType(ticket.ticketType);
 				t.setIdTicketLocks(ticket.idTicketLocks);
-				// t.setLockTime(format.format(new Date(ticket.lockTime.getTime() + prop.getReleaseTicketLocksAfter())));
-				t.setLockTime(format.format(new Date(new Date().getTime() + prop.getReleaseTicketLocksAfter() * 1000)));
+				t.setLockTimeDate(new Date(ticket.lockTime.getTime() + prop.getReleaseTicketLocksAfter() * 1000));
+				t.setLockTime(format.format(t.getLockTimeDate()));
+				// t.setLockTime(format.format(new Date(new Date().getTime() + prop.getReleaseTicketLocksAfter() * 1000)));
 				t.setQuantity(1);
 				t.setToBuy(true);
 				retList.get(i).getTickets().add(t);

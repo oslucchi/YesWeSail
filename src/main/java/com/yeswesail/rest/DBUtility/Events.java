@@ -108,6 +108,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		getTicketMaxAndMin(events);
 	}
 	
+	@SuppressWarnings("unchecked")
 	private static ArrayList<Events> retrieveEvents(String whereClause, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description AS `title` " +
@@ -117,9 +118,8 @@ public class Events extends DBInterface implements Comparable<Events>
 				 "		  b.anchorZone = 0 " + 
 			 	 whereClause;
 		log.trace("Populate collection with sql '" + sql + "'");
-		@SuppressWarnings("unchecked")
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-		
+				
 		// Getting other events not having the description in the current language for which 
 		// the description is available in the alternative language
 		int alternateLanguage;
@@ -136,17 +136,21 @@ public class Events extends DBInterface implements Comparable<Events>
 			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 			 	 "     ON a.idEvents = b.eventId AND " +
 			 	 "        b.languageId = " + alternateLanguage + " AND " +
-				 "		  b.anchorZone = 0 AND " +
-				 "        a.idEvents NOT IN (";
+				 "		  b.anchorZone = 0 ";
 		String sep = "";
+		String eventIds = "";
 		for(Events e : events)
 		{
-			sql += sep + e.getIdEvents();
+			eventIds += sep + e.getIdEvents();
 			sep = ",";
 		}
-		sql += ") " + whereClause;
+		if (eventIds.compareTo("") != 0)
+		{
+			whereClause = "AND        a.idEvents NOT IN (" + eventIds + ") " + whereClause;
+
+		}
+		sql += whereClause;
 		log.trace("Adding events on alternative laguages via '" + sql + "'");
-		@SuppressWarnings("unchecked")
 		ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		events.addAll(eventsIT);
 		

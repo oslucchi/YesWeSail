@@ -48,8 +48,8 @@ angular.module('yeswesailApp', [
         //    ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
 }).constant('LOCALES', {
     'locales': {
-        'it_IT': 'Italiano'
-        , 'en_US': 'English'
+        'it_IT': 'Italiano',
+        'en_US': 'English'
     }
     , 'preferredLocale': navigator.language
 }).service('LocaleService', function ($translate, LOCALES, $rootScope, tmhDynamicLocale) {
@@ -294,13 +294,27 @@ angular.module('yeswesailApp', [
             return {
                 restrict: 'A',
                 scope: { date: '@' },
+                controller: function($scope, CartService) {
+                    $scope.cartGetAllItems = function() {
+                    	CartService.getAllItems ();
+                    }
+                 },
                 link: function (scope, element) {
                     var future;
                     future = new Date(scope.date);
                     $interval(function () {
                         var diff;
                         diff = Math.floor((future.getTime() - new Date().getTime()) / 1000);
-                        return element.text(Util.dhms(diff));
+                        if (diff <= 0)
+                    	{
+                        	if (diff == -10)
+                        	{
+                        		scope.cartGetAllItems();
+                        	}
+                        	return '0m 0s';
+                    	}
+                        else
+                        	return element.text(Util.dhms(diff));
                     }, 1000);
                 }
             };
