@@ -6,7 +6,7 @@
  * # ApplicationCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translate, $scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService, LocaleService, $state) {
+angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translate, $scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService, LocaleService, $state, LOCALES) {
     //        $rootScope.$on("$locationChangeStart", function(event, next, current) { 
     //            if(!AuthService.isAuthenticated()){
     //                 event.preventDefault()
@@ -15,7 +15,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $('.ui.selection.language.dropdown').dropdown({
         action: 'activate'
     });
-    $scope.language = "it_IT "; // $translate.proposedLanguage();
+    $scope.language = LOCALES.preferredLocale; // "it_IT "; // $translate.proposedLanguage();
     $scope.cartQty = null;
     $scope.$watch(function () {
         return CartService.cartQty;
