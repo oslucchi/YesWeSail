@@ -50,8 +50,10 @@ angular.module('yeswesailApp', [
     'locales': {
         'it_IT': 'Italiano',
         'en_US': 'English'
-    }
-    , 'preferredLocale': navigator.language
+    },
+	'preferredLocale': (navigator.language.startsWith("it") ? "it_IT" :
+	    					 (navigator.language.startsWith("en") ? "en_US" :
+	    					 (navigator.language.startsWith("fr") ? "fr_FR" : "en_US" ))) 
 }).service('LocaleService', function ($translate, LOCALES, $rootScope, tmhDynamicLocale) {
     'use strict';
     // PREPARING LOCALES INFO
@@ -90,15 +92,18 @@ angular.module('yeswesailApp', [
     return {
         getLocaleDisplayName: function () {
             return localesObj[currentLocale];
-        }
-        , setLocaleByDisplayName: function (localeDisplayName) {
+        },
+        setLocaleByDisplayName: function (localeDisplayName) {
             setLocale(_LOCALES[_LOCALES_DISPLAY_NAMES.indexOf(localeDisplayName) // get locale index
                 ]);
-        }
-        , getLocalesDisplayNames: function () {
+        },
+        getCurrentLocale: function () {
+        	return currentLocale;
+        },
+        getLocalesDisplayNames: function () {
             return _LOCALES_DISPLAY_NAMES;
-        }
-        , setLocale: function (locale) {
+        },
+        setLocale: function (locale) {
             setLocale(locale);
         }
     };
