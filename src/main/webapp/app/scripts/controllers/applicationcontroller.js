@@ -17,13 +17,21 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     });
     $scope.language = "it_IT "; // $translate.proposedLanguage();
     $scope.cartQty = null;
-	$scope.cartExpires = null;
     $scope.$watch(function () {
-    	$scope.cartExpires = CartService.cartExpires;
         return CartService.cartQty;
     }, function (data) {
         $scope.cartQty = data
     });
+    
+    
+	$scope.cartExpires = null;
+    $scope.$watch(function () {
+    	return CartService.cartExpires;
+    }, function (data) {
+        $scope.cartExpires = data
+    });
+    
+    
     $scope.currentUser = null;
     $scope.setCurrentUser = function (user) {
         $rootScope.currentUser = user;
