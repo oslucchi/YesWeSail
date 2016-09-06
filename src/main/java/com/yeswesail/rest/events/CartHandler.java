@@ -2,7 +2,6 @@ package com.yeswesail.rest.events;
 
 import java.math.BigDecimal;
 import java.net.URI;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -64,22 +63,22 @@ public class CartHandler {
 			conn = DBInterface.connect();
 			cart = Cart.getCartItems(conn, SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonResponse.put("tickets", cart);
-			Date minLockTime = new Date(new Date().getTime() + 3600000);
+			Date minLockTime = null;
 			int ticketsCount = 0;
 			for(TicketsInCart item : cart)
 			{
 				ticketsCount += item.getTickets().size();
 				for(Tickets ticket : item.getTickets())
 				{
-					if (minLockTime.getTime() > ticket.getLockTimeDate().getTime())
+					if ((minLockTime == null) ||
+						(minLockTime.getTime() > ticket.getLockTime().getTime()))
 					{
-						minLockTime = ticket.getLockTimeDate();
+						minLockTime = ticket.getLockTime();
 					}
 				}
 			}
 			jsonResponse.put("ticketsCount", ticketsCount);
-			SimpleDateFormat format = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-			jsonResponse.put("expiring", format.format(minLockTime));
+			jsonResponse.put("expiring", minLockTime);
 		}
 		catch(Exception e)
 		{

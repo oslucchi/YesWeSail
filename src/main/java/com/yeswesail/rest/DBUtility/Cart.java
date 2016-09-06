@@ -145,9 +145,8 @@ public class Cart extends DBInterface
 				t.setTicketDescription(ticket.ticketDescription);
 				t.setTicketType(ticket.ticketType);
 				t.setIdTicketLocks(ticket.idTicketLocks);
-				t.setLockTimeDate(new Date(ticket.lockTime.getTime() + prop.getReleaseTicketLocksAfter() * 1000));
-				t.setLockTime(format.format(t.getLockTimeDate()));
-				// t.setLockTime(format.format(new Date(new Date().getTime() + prop.getReleaseTicketLocksAfter() * 1000)));
+				t.setLockTime(new Date(ticket.lockTime.getTime() + prop.getReleaseTicketLocksAfter() * 1000));
+				t.setLockTimeFmtd(format.format(t.getLockTime()));
 				t.setQuantity(1);
 				t.setToBuy(true);
 				retList.get(i).getTickets().add(t);

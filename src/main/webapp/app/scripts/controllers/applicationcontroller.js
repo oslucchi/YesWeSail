@@ -20,7 +20,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $scope.$watch(function () {
         return CartService.cartQty;
     }, function (data) {
-        $scope.cartQty = data
+        $scope.cartQty = data;
     });
     
     
@@ -28,12 +28,13 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $scope.$watch(function () {
     	return CartService.cartExpires;
     }, function (data) {
-        $scope.cartExpires = 1473147600000
+        $scope.cartExpires = data;
     });
     
     $scope.callbackTimer={
         finished: function(){
              $timeout(CartService.getAllItems, 5000);
+             $scope.cartExpires = data;
         }
     }
     

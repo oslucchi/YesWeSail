@@ -444,7 +444,7 @@ public class Auth {
 			rc.setStatus("A");
 			rc.setToken(jsonIn.token);
 			rc.setUserId(u.getIdUsers());
-			rc.insert(conn, "idRegistrationCOnfirm", rc);
+			rc.insert(conn, "idRegistrationConfirm", rc);
 		}
 		catch (Exception e) 
 		{

@@ -73,7 +73,7 @@
 		            	<td>
 		                    <div ng-if="cartExpires != null" >
 <!--			                   	<span countdown='' date="{{cartExpires}}">&nbsp;</span>-->
-                                <timer finish-callback="callbackTimer.finished()" end-time="cartExpires">{{minutes}} m, {{seconds}} s</timer>
+                                <timer finish-callback="callbackTimer.finished()" end-time="cartExpires">{{minutes}}m {{seconds}}s</timer>
 			                </div>
 			            </td>
 			        </tr>

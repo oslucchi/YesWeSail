@@ -90,7 +90,7 @@ public class TaxcodeChecker {
 			return false;
 			
 		default:
-			return false;
+			return true;
 		}
 	}
 }

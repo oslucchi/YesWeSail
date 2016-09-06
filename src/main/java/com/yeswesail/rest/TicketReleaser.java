@@ -21,6 +21,7 @@ public class TicketReleaser extends Thread {
 		EventTickets et = new EventTickets(conn, tl.getEventTicketId());
 		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
 		{
+			log.debug("WHOLE_BOAT ticket required to be released");
 			ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
 		}
 		else
@@ -43,6 +44,8 @@ public class TicketReleaser extends Thread {
 				{
 					if (e.getMessage().compareTo("No record found") != 0)
 					{
+						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
+								 item.getIdEventTickets());
 						DBInterface.TransactionRollback(conn);
 						throw e;
 					}
@@ -60,7 +63,10 @@ public class TicketReleaser extends Thread {
 			DBInterface.TransactionRollback(conn);
 			return;
 		}
-		DBInterface.TransactionCommit(conn);
+		finally
+		{
+			DBInterface.TransactionCommit(conn);
+		}
 	}
 	
 	public void doShutdown()
@@ -83,7 +89,8 @@ public class TicketReleaser extends Thread {
         		TicketLocks[] tList = TicketLocks.findAll();
         		for(TicketLocks tl : tList)
         		{
-        			if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
+        			if ((tl.getLockTime() != null) && 
+        				(now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000))
         			{
         				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
         						  " eventTicketId " + tl.getEventTicketId() + 

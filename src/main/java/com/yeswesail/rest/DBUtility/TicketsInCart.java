@@ -13,8 +13,8 @@ public class TicketsInCart
 		private int price;
 		private int quantity;
 		private boolean toBuy;
-		private String lockTime;
-		private Date lockTimeDate;
+		private Date lockTime;
+		private String lockTimeFmtd;
 	
 		public int getIdEventTickets() {
 			return idEventTickets;
@@ -61,17 +61,17 @@ public class TicketsInCart
 		public void setToBuy(boolean toBuy) {
 			this.toBuy = toBuy;
 		}
-		public String getLockTime() {
+		public Date getLockTime() {
 			return lockTime;
 		}
-		public void setLockTime(String lockTime) {
+		public void setLockTime(Date lockTime) {
 			this.lockTime = lockTime;
 		}
-		public Date getLockTimeDate() {
-			return lockTimeDate;
+		public String getLockTimeFmtd() {
+			return lockTimeFmtd;
 		}
-		public void setLockTimeDate(Date lockTimeDate) {
-			this.lockTimeDate = lockTimeDate;
+		public void setLockTimeFmtd(String lockTimeFmtd) {
+			this.lockTimeFmtd = lockTimeFmtd;
 		}
 	}
 	private int idEvents;

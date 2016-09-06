@@ -493,15 +493,24 @@ public class UsersHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response update(UsersJson jsonIn, @PathParam("userId") int userId, 
-							@HeaderParam("Authorization") String token)
+						   @HeaderParam("Authorization") String token)
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
 		jsonIn.idUsers = userId;
+		log.debug("user id " + userId + " isadmin " + !Utils.userIsAdmin(token, languageId) +
+				  " email requested for change " + sd.getBasicProfile(token).getEmail() + 
+				  " email in json data " + jsonIn.email);
 		if (!Utils.userIsAdmin(token, languageId))
 		{
 			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
+		
+		if (jsonIn.email.compareTo(sd.getBasicProfile(token).getEmail()) != 0)
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "users.mailSpoofing");
+		}
+		
 		boolean retVal = true;
 		if ((jsonIn.billingInfo != null) && (jsonIn.billingInfo.taxCode != null))
 		{
@@ -513,10 +522,10 @@ public class UsersHandler {
 			retVal = TaxcodeChecker.checkTaxcode(jsonIn.personalInfo.country, 
 												 jsonIn.personalInfo.taxCode, TaxcodeChecker.PERSONAL);
 		}
-//		if (retVal == false)
-//		{
-//			return Utils.jsonizeResponse(Status.BAD_REQUEST, null, languageId, "users.taxcodeIncorrect");
-//		}
+		if (retVal == false)
+		{
+			return Utils.jsonizeResponse(Status.BAD_REQUEST, null, languageId, "users.taxcodeIncorrect");
+		}
 		
 		DBConnection conn = null;
 		Users u = null;
