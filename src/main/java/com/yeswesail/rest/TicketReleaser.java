@@ -17,6 +17,7 @@ public class TicketReleaser extends Thread {
 	private void release(TicketLocks tl) throws Exception
 	{
 		EventTickets[] ticketsToRelease;
+		DBConnection transaction = null;
 
 		EventTickets et = new EventTickets(conn, tl.getEventTicketId());
 		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
@@ -31,14 +32,14 @@ public class TicketReleaser extends Thread {
 		}
 		try
 		{
-			DBInterface.TransactionStart();
+			transaction = DBInterface.TransactionStart();
 			for(EventTickets item : ticketsToRelease)
 			{
 				try
 				{
-					TicketLocks ticket = TicketLocks.findByEventTicketId(conn, item.getIdEventTickets());
+					TicketLocks ticket = TicketLocks.findByEventTicketId(transaction, item.getIdEventTickets());
 					log.debug("Deleting lock id " + ticket.getIdTicketLocks());
-					ticket.delete(conn, ticket.getIdTicketLocks());
+					ticket.delete(transaction, ticket.getIdTicketLocks());
 				}
 				catch(Exception e)
 				{
@@ -46,7 +47,7 @@ public class TicketReleaser extends Thread {
 					{
 						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
 								 item.getIdEventTickets());
-						DBInterface.TransactionRollback(conn);
+						DBInterface.TransactionRollback(transaction);
 						throw e;
 					}
 				}
@@ -54,18 +55,18 @@ public class TicketReleaser extends Thread {
 				{
 					log.debug("Updating booked status for event ticket " + item.getIdEventTickets());
 					item.setBooked(item.getBooked() - 1);
-					item.update(conn, "idEventTickets");
+					item.update(transaction, "idEventTickets");
 				}
 			}			
 		}
 		catch(Exception e)
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.TransactionRollback(transaction);
 			return;
 		}
 		finally
 		{
-			DBInterface.TransactionCommit(conn);
+			DBInterface.TransactionCommit(transaction);
 		}
 	}
 	
