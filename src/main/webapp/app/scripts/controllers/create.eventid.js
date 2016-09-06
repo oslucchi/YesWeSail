@@ -18,7 +18,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     var bDisabled = false;
     $scope.tDisabled=false;
 
-    
+    $scope.minDate = new Date();
     
     $scope.selectedLanguage = 'it_IT';
     $scope.tempEvent = {};
@@ -48,12 +48,17 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             }
         }).then(function (res) {
             $scope.event = res.data.event;
+            if(res.data.event.dateStart == -3600000){
+               $scope.event.dateStart=$scope.minDate; 
+            }
+            if(res.data.event.dateEnd == -3600000){
+               $scope.event.dateEnd=$scope.minDate; 
+            }
             $scope.event.dateStart = $filter('date')(res.data.event.dateStart, 'yyyy-MM-dd');
             $scope.event.dateEnd = $filter('date')(res.data.event.dateEnd, 'yyyy-MM-dd');
             $scope.shipOwner = res.data.shipOwner;
             $scope.images = res.data.images;
             $scope.tickets = res.data.tickets;
-            
             $scope.participants = res.data.participants;
             $scope.logistics = res.data.logistics;
             $scope.includes = res.data.includes;

@@ -26,7 +26,7 @@ angular.module('yeswesailApp')
     $scope.closeModals=function(){
         ngDialog.closeAll();
     };
-    
+  
     $scope.processEventClick=function(events){
         
         if(events.length>1){

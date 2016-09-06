@@ -6,7 +6,7 @@
  * # ApplicationCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translate, $scope, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService, LocaleService, $state, LOCALES) {
+angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translate, $scope, $timeout, USER_ROLES, AUTH_EVENTS, AuthService, $location, $rootScope, $cookieStore, ngDialog, Session, URLs, $http, $log, CartService, LocaleService, $state, LOCALES) {
     //        $rootScope.$on("$locationChangeStart", function(event, next, current) { 
     //            if(!AuthService.isAuthenticated()){
     //                 event.preventDefault()
@@ -28,9 +28,14 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $scope.$watch(function () {
     	return CartService.cartExpires;
     }, function (data) {
-        $scope.cartExpires = data
+        $scope.cartExpires = 1473147600000
     });
     
+    $scope.callbackTimer={
+        finished: function(){
+             $timeout(CartService.getAllItems, 5000);
+        }
+    }
     
     $scope.currentUser = null;
     $scope.setCurrentUser = function (user) {

@@ -88,7 +88,7 @@
         </div></td>
         <td>{{ticket.ticketDescription}} </td>
         <td>{{ticket.price}}€</td>
-        <td><span countdown='' date="{{ticket.lockTime}}">&nbsp;</span></td>
+        <td><timer finish-callback="callbackTimer.finished()" end-time="ticket.lockTime">{{minutes}} m, {{seconds}} s</timer></td>
        
 
     </tr>

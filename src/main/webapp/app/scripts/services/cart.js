@@ -29,8 +29,9 @@ angular.module('yeswesailApp')
               }
               
              var promise= $http.post(URLs.ddns + 'rest/tickets/bookTicket', ticketArray).then(function(res){
-                  cartService.cartQty++;
-                  cartService.availableTickets=res.data;
+//                  cartService.cartQty++;
+//                  cartService.availableTickets=res.data;
+                 cartService.getAllItems();
                   toastr.success($translate.instant('cart.ticketAdded'));
                   cartService.bookedTickets.push(ticketArray);
                   return res;

@@ -32,7 +32,7 @@ angular.module('yeswesailApp')
                 $scope.user.personalInfo.country = $scope.personalCountry;
                 $scope.user.billingInfo.country = $scope.billingCountry;
                 
-
+                
 
                 $http.put(URLs.ddns + 'rest/users/'+$scope.currentUser.idUsers, $scope.user).then(function (res) {
                     $scope.editMode = false;

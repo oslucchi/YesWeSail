@@ -19,10 +19,10 @@
     <label>{{"user.email" | translate}}</label>
     <div class="two fields">
       <div class="field" ng-class="{'error': infoForm.email.$invalid}">
-        <input ng-disabled="!editMode" name="email" type="email" ng-model="user.email" placeholder="Email" required>
+        <input ng-disabled="true" name="email" type="email" ng-model="user.email" placeholder="Email" required>
       </div>
-      <div ui-sref="resetPassword" class="field">
-          <button type="text" class="ui button">{{"user.changePassword" | translate}}</button>
+      <div class="field">
+          <a href='#/reset-password?email={{user.email}}' type="text" class="ui button">{{"user.changePassword" | translate}}</a>
       </div>
     </div>
   </div>

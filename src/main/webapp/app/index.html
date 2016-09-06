@@ -71,8 +71,9 @@
 		            </tr>
 		            <tr>
 		            	<td>
-		                    <div ng-if="cartQty && (cartExpires != null)" >
-			                   	<span countdown='' date="{{cartExpires}}">&nbsp;</span>
+		                    <div ng-if="cartExpires != null" >
+<!--			                   	<span countdown='' date="{{cartExpires}}">&nbsp;</span>-->
+                                <timer finish-callback="callbackTimer.finished()" end-time="cartExpires">{{minutes}} m, {{seconds}} s</timer>
 			                </div>
 			            </td>
 			        </tr>
@@ -172,6 +173,8 @@
     <script src="bower_components/moment/moment.js"></script>
     <script src="bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020.js"></script>
     <script src="bower_components/angular-datepicker/dist/angular-datepicker.js"></script>
+    <script src="bower_components/humanize-duration/humanize-duration.js"></script>
+    <script src="bower_components/angular-timer/dist/angular-timer.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
     <!-- build:js({.tmp,app}) scripts/scripts.js -->

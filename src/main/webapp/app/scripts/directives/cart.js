@@ -7,7 +7,7 @@
  * # tickets
  */
 angular.module('yeswesailApp')
-    .directive('cart', function ($http, URLs, toastr, CartService, Session) {
+    .directive('cart', function ($http, URLs, toastr, CartService, Session, $timeout) {
 
         return {
 
@@ -37,6 +37,14 @@ angular.module('yeswesailApp')
 
                     CartService.totalAmount = scope.total;
                 }
+                
+                    scope.callbackTimer={
+                        finished: function(){
+                             $timeout(CartService.getAllItems, 10000);
+                        }
+                    }
+                
+                
                 scope.recalculateTotal = function () {
                     scope.total = 0;
                     angular.forEach(scope.bookedEvents, function (value, key) {

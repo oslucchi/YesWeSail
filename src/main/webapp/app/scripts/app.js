@@ -28,6 +28,7 @@ angular.module('yeswesailApp', [
  , 'tmh.dynamicLocale'
     , 'gridster'
     , 'datePicker'
+    , 'timer'
   ]).constant('AUTH_EVENTS', {
     loginSuccess: 'auth-login-success'
     , loginFailed: 'auth-login-failed'
@@ -48,12 +49,10 @@ angular.module('yeswesailApp', [
         //    ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
 }).constant('LOCALES', {
     'locales': {
-        'it_IT': 'Italiano',
-        'en_US': 'English'
-    },
-	'preferredLocale': (navigator.language.startsWith("it") ? "it_IT" :
-	    					 (navigator.language.startsWith("en") ? "en_US" :
-	    					 (navigator.language.startsWith("fr") ? "fr_FR" : "en_US" ))) 
+        'it_IT': 'Italiano'
+        , 'en_US': 'English'
+    }
+    , 'preferredLocale': (navigator.language.startsWith("it") ? "it_IT" : (navigator.language.startsWith("en") ? "en_US" : (navigator.language.startsWith("fr") ? "fr_FR" : "en_US")))
 }).service('LocaleService', function ($translate, LOCALES, $rootScope, tmhDynamicLocale) {
     'use strict';
     // PREPARING LOCALES INFO
@@ -92,18 +91,18 @@ angular.module('yeswesailApp', [
     return {
         getLocaleDisplayName: function () {
             return localesObj[currentLocale];
-        },
-        setLocaleByDisplayName: function (localeDisplayName) {
+        }
+        , setLocaleByDisplayName: function (localeDisplayName) {
             setLocale(_LOCALES[_LOCALES_DISPLAY_NAMES.indexOf(localeDisplayName) // get locale index
                 ]);
-        },
-        getCurrentLocale: function () {
-        	return currentLocale;
-        },
-        getLocalesDisplayNames: function () {
+        }
+        , getCurrentLocale: function () {
+            return currentLocale;
+        }
+        , getLocalesDisplayNames: function () {
             return _LOCALES_DISPLAY_NAMES;
-        },
-        setLocale: function (locale) {
+        }
+        , setLocale: function (locale) {
             setLocale(locale);
         }
     };
@@ -249,7 +248,7 @@ angular.module('yeswesailApp', [
         , controller: 'RegisterSuccessCtrl'
     });
 }).run(function ($http, $rootScope, $state, AuthService) {
-//    $http.defaults.headers.common['Language'] = 'IT';
+    //    $http.defaults.headers.common['Language'] = 'IT';
     //    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
     //         if (!!toState.accessLevel && !AuthService.isAuthorized(toState.accessLevel)) {
     //              event.preventDefault();
@@ -289,73 +288,55 @@ angular.module('yeswesailApp', [
             }, true);
         }
     };
-})
-    
-    
-    .directive('countdown', [
-        'Util',
-        '$interval',
-        function (Util, $interval) {
-            return {
-                restrict: 'A',
-                scope: { date: '@' },
-                controller: function($scope, CartService) {
-                    $scope.cartGetAllItems = function() {
-                    	CartService.getAllItems ();
-                    }
-                 },
-                link: function (scope, element) {
-                    var future;
-                    future = new Date(scope.date);
-                    $interval(function () {
-                        var diff;
-                        diff = Math.floor((future.getTime() - new Date().getTime()) / 1000);
-                        if (diff <= 0)
-                    	{
-                        	if (diff == -10)
-                        	{
-                        		scope.cartGetAllItems();
-                        	}
-                        	return '0m 0s';
-                    	}
-                        else
-                        	return element.text(Util.dhms(diff));
-                    }, 1000);
+}).directive('countdown', [
+        'Util'
+        , '$interval'
+        , function (Util, $interval) {
+        return {
+            restrict: 'A'
+            , scope: {
+                date: '@'
+            }
+            , controller: function ($scope, CartService) {
+                $scope.cartGetAllItems = function () {
+                    CartService.getAllItems();
                 }
-            };
+            }
+            , link: function (scope, element) {
+                var future;
+                future = new Date(scope.date);
+                $interval(function () {
+                    var diff;
+                    diff = Math.floor((future.getTime() - new Date().getTime()) / 1000);
+                    if (diff <= 0) {
+                        if (diff == -10) {
+                            scope.cartGetAllItems();
+                        }
+                        return '0m 0s';
+                    }
+                    else return element.text(Util.dhms(diff));
+                }, 1000);
+            }
+        };
         }
     ]).factory('Util', [function () {
-            return {
-                dhms: function (t) {
-                    var days, hours, minutes, seconds;
-                    days = Math.floor(t / 86400);
-                    t -= days * 86400;
-                    hours = Math.floor(t / 3600) % 24;
-                    t -= hours * 3600;
-                    minutes = Math.floor(t / 60) % 60;
-                    t -= minutes * 60;
-                    seconds = t % 60;
-                    return [
-                        minutes + 'm',
-                        seconds + 's'
+    return {
+        dhms: function (t) {
+            var days, hours, minutes, seconds;
+            days = Math.floor(t / 86400);
+            t -= days * 86400;
+            hours = Math.floor(t / 3600) % 24;
+            t -= hours * 3600;
+            minutes = Math.floor(t / 60) % 60;
+            t -= minutes * 60;
+            seconds = t % 60;
+            return [
+                        minutes + 'm'
+                        , seconds + 's'
                     ].join(' ');
-                }
-            };
-        }])
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    .directive('dropdownSelection', function ($timeout) {
+        }
+    };
+        }]).directive('dropdownSelection', function ($timeout) {
     return {
         restrict: "A"
         , link: function (scope, elm, attr) {

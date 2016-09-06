@@ -8,12 +8,12 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('PasswordResetCtrl', function ($scope, Session, toastr, $http, URLs, Upload) {
+    .controller('PasswordResetCtrl', function ($scope, Session, toastr, $http, URLs, Upload, $location) {
         $scope.credentials = {
-            username: null,
+            username: $location.search().email || null,
             password: null
         };
-
+        
         $scope.resetPassword = function (creds) {
             $http.post(URLs.ddns + 'rest/auth/changePassword', creds).then(function (res) {
                 $scope.successMessage=res.data.message;
@@ -21,10 +21,4 @@ angular.module('yeswesailApp')
                 $scope.errorMessage=err.data.error;
             });
         };
-    
-
-      
-
-   
-
     });
