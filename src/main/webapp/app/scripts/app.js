@@ -49,10 +49,13 @@ angular.module('yeswesailApp', [
         //    ddns: 'http://yeswesail.ddns.net:8080/YesWeSail/'
 }).constant('LOCALES', {
     'locales': {
-        'it_IT': 'Italiano'
-        , 'en_US': 'English'
-    }
-    , 'preferredLocale': (navigator.language.startsWith("it") ? "it_IT" : (navigator.language.startsWith("en") ? "en_US" : (navigator.language.startsWith("fr") ? "fr_FR" : "en_US")))
+        'it_IT': 'Italiano',
+        'en_US': 'English',
+        'de_DE': 'German'
+    },
+    'preferredLocale': (navigator.language.startsWith("it") ? "it_IT" : 
+    					(navigator.language.startsWith("en") ? "en_US" : 
+    					(navigator.language.startsWith("de") ? "de_DE" : "en_US")))
 }).service('LocaleService', function ($translate, LOCALES, $rootScope, tmhDynamicLocale) {
     'use strict';
     // PREPARING LOCALES INFO

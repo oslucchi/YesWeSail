@@ -57,10 +57,11 @@
                      <div dropdown-selection ng-model="language" class="ui language dropdown">
                       <input type="hidden" name="language">
                       <div class="default text">{{"index.language" | translate}}</div>
-                      <div class="menu">
-                          <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT" ><i class="it flag"></i></div>
-                        <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
-                      </div>
+	                      <div class="menu">
+	                        <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT" ><i class="it flag"></i></div>
+	                        <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
+	                        <div ng-click="changeLanguage('de_DE')" class="item" data-value="de_DE" ><i class="de flag"></i></div>
+						  </div>
                     </div>
                 </div>
                 <a ng-if="!currentUser.isShipOwner" ng-show="!!currentUser" class="ui item">
