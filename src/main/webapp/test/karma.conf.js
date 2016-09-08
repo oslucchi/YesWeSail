@@ -71,6 +71,10 @@ module.exports = function(config) {
       'bower_components/angular-datepicker/dist/angular-datepicker.js',
       'bower_components/humanize-duration/humanize-duration.js',
       'bower_components/angular-timer/dist/angular-timer.js',
+      'bower_components/slick-carousel/slick/slick.min.js',
+      'bower_components/slick-lightbox/dist/slick-lightbox.js',
+      'bower_components/slick-lightbox/dist/slick-lightbox.min.js',
+      'bower_components/owl.carousel/dist/owl.carousel.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

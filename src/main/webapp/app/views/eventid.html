@@ -7,10 +7,7 @@
     <a class="grey item"><i class="edit icon"></i>Edit</a>
 </div>
 -->
-<div ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img">
-
-
-</div>
+<div ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img"> </div>
 <!--
 <div class="ui six item bottom attached menu">
     <a class="active item">Gallery</a>
@@ -21,34 +18,16 @@
     <a class="item">Optionals</a>
 </div>
 -->
-
-
-    <div class="ui container computer-only index-fix">
-<div class="ui anchor-menu sticky attached stackable menu">
-        <a class="item" ng-click="goToSection('gallery')">
-            <i class="home icon"></i>{{"event.gallery" | translate}}
-        </a>
-        <a class="item"  ng-click="goToSection('partecipants')">
-            <i class="grid layout icon"></i>{{"event.participants" | translate}}
-        </a>
-        <a class="item"  ng-click="goToSection('logistics')">
-            <i class="mail icon"></i>{{"event.logistics" | translate}}
-        </a>
-        <a class="item"  ng-click="goToSection('location')">
-            <i class="mail icon"></i>{{"event.location" | translate}}
-        </a>
-        <a class="item"  ng-click="goToSection('package')">
-            <i class="mail icon"></i>{{"event.package" | translate}}
-        </a>
-        <a class="item"  ng-click="goToSection('optionals')">
-            <i class="mail icon"></i>{{"event.optionals" | translate}}
-        </a>
-
+<div class="ui container computer-only index-fix">
+    <div class="ui anchor-menu sticky attached stackable menu">
+        <a class="item" ng-click="goToSection('gallery')"> <i class="home icon"></i>{{"event.gallery" | translate}} </a>
+        <a class="item" ng-click="goToSection('partecipants')"> <i class="grid layout icon"></i>{{"event.participants" | translate}} </a>
+        <a class="item" ng-click="goToSection('logistics')"> <i class="mail icon"></i>{{"event.logistics" | translate}} </a>
+        <a class="item" ng-click="goToSection('location')"> <i class="mail icon"></i>{{"event.location" | translate}} </a>
+        <a class="item" ng-click="goToSection('package')"> <i class="mail icon"></i>{{"event.package" | translate}} </a>
+        <a class="item" ng-click="goToSection('optionals')"> <i class="mail icon"></i>{{"event.optionals" | translate}} </a>
     </div>
 </div>
-
-
-
 <div id="event-container">
     <div class="ui two column stackable container grid">
         <div class="row header-container">
@@ -57,82 +36,42 @@
                     <div class="twelve wide column">
                         <div class="ui items">
                             <div class="item">
-                                <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})">
-                                    <img ng-src="{{shipOwner.imageURL}}">
+                                <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})"> <img ng-src="{{shipOwner.imageURL}}">
                                     <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
-                                    <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback
-                                </div>
-                                <div class="content">
-                                    
-                                    
-                                    
-                                    
-                                    
-                                    <a class="header">{{event.title}}</a>
-                                    <div class="meta">
-                                        <span>{{event.location}}</span>
-                                    </div>
-                                    <div class="extra">
-                                        {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}
-                                    </div>
-                                    <div class="description">
-                                        
-                                    </div>
-
-
+                                    <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback </div>
+                                <div class="content"> <a class="header">{{event.title}}</a>
+                                    <div class="meta"> <span>{{event.location}}</span> </div>
+                                    <div class="extra"> {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}} </div>
+                                    <div class="description"> </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-
-
-
-
-
                 </div>
-
-
-
             </div>
             <div class="four wide column computer-only">
                 <div class="ui book sticky">
                     <tickets global-tickets="event.tickets"></tickets>
-                
-
-                    
-                    
-
                     <div class="ui segment">
                         <p>{{"global.shareOnSocial" | translate}}</p>
-                        <button class="ui blue icon button">
-                            <i class="facebook icon"></i>
-                        </button>
-                        <button class="ui teal icon button">
-                            <i class="twitter icon"></i>
-                        </button>
-                        <button class="ui red icon button">
-                            <i class="google plus icon"></i>
-                        </button>
-                        <button class="ui icon button">
-                            <i class="linkify icon"></i>
-                        </button>
-
+                        <button class="ui blue icon button"> <i class="facebook icon"></i> </button>
+                        <button class="ui teal icon button"> <i class="twitter icon"></i> </button>
+                        <button class="ui red icon button"> <i class="google plus icon"></i> </button>
+                        <button class="ui icon button"> <i class="linkify icon"></i> </button>
                     </div>
                 </div>
-
-
             </div>
         </div>
         <div class="ui divider"></div>
         <div class="row">
-            <div class="twelve wide column"><div ng-bind-html="event.description"></div></div>
-            
+            <div class="twelve wide column">
+                <div ng-bind-html="event.description"></div>
+            </div>
         </div>
         <div class="ui divider" id="gallery"></div>
         <div class="row">
             <div class="twelve wide column">
-
+                <!--
                 <ul rn-carousel-auto-slide rn-carousel class="image">
                     <li ng-repeat="image in event.images">
                         <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide" ></div>
@@ -140,8 +79,11 @@
                         
                     </li>
                 </ul>
-
+-->
+                <div id="slick-demo" class="ui small images">
+                        <a href ng-repeat="image in event.images"><img class="item" ng-src="{{image}}" alt=""></a>
                 </div>
+            </div>
         </div>
         <div class="ui divider" id="partecipants"></div>
         <div class="row">
@@ -150,23 +92,17 @@
   <i class="users icon"></i>
   {{"event.participants" | translate}}
 </h2>
-                
                 <div class="ui header">{{event.participantMessage}}</div>
                 <div class="ui massive horizontal divided list">
-                    <a ui-sref="userId.profile({userId: participant.idUsers})" ng-repeat="participant in event.participants" class="item">
-                        <img class="ui avatar image" ng-src="{{participant.imageURL}}">
+                    <a ui-sref="userId.profile({userId: participant.idUsers})" ng-repeat="participant in event.participants" class="item"> <img class="ui avatar image" ng-src="{{participant.imageURL}}">
                         <div class="content">
                             <div class="header">{{participant.name}}</div>
                         </div>
                     </a>
                 </div>
-
-
             </div>
-
         </div>
         <div class="ui divider" id="logistics"></div>
-
         <div class="row">
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
@@ -175,10 +111,8 @@
                 </h2>
                 <div ng-bind-html="event.logistics.description"></div>
             </div>
-
         </div>
         <div class="ui divider" id="package"></div>
-
         <div class="row">
             <div class="twelve wide column">
                 <h2 class="ui left aligned header">
@@ -187,7 +121,6 @@
                 </h2>
                 <div ng-bind-html="event.includes.description"></div>
             </div>
-
         </div>
         <div class="row" id="optionals">
             <div class="twelve wide column">
@@ -197,9 +130,7 @@
                 </h2>
                 <div ng-bind-html="event.excludes.description"></div>
             </div>
-
         </div>
-
         <div class="ui divider"></div>
         <div class="row">
             <div class="twelve wide column">
@@ -208,71 +139,51 @@
                 {{"event.theBoat" | translate}}
                 </h2>
                 <div class="ui divided items">
-                  <div class="item">
-                    <div class="ui large image">
-                      <img ng-src="{{boat.images[0]}}">
+                    <div class="item">
+                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>
+                        <div class="content"> <a class="header">{{boat.name}}</a>
+                            <div class="meta"> <span>{{boat.model}} - {{boat.year}}</span> </div>
+                            <div class="description">
+                                <table class="ui very basic table">
+                                    <tbody>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsWithBath" | translate}}</td>
+                                            <td>{{boat.cabinsWithBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsNoBath" | translate}}</td>
+                                            <td>{{boat.cabinsNoBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.sharedBathrooms" | translate}}</td>
+                                            <td>{{boat.sharedBathrooms}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.bunks" | translate}}</td>
+                                            <td>{{boat.bunks}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
-                    <div class="content">
-                      <a class="header">{{boat.name}}</a>
-                      <div class="meta">
-                        <span>{{boat.model}} - {{boat.year}}</span>
-                      </div>
-                      <div class="description">
-                       <table class="ui very basic table">
-                  <tbody>
-                    <tr class="non-clickable">
-                      <td>{{"event.cabinsWithBath" | translate}}</td>
-                      <td>{{boat.cabinsWithBathroom}}</td>
-                    </tr>
-
-                      <tr class="non-clickable">
-                      <td>{{"event.cabinsNoBath" | translate}}</td>
-                      <td>{{boat.cabinsNoBathroom}}</td>
-                    </tr>
-
-                      <tr class="non-clickable">
-                      <td>{{"event.sharedBathrooms" | translate}}</td>
-                      <td>{{boat.sharedBathrooms}}</td>
-                    </tr>
-
-                      <tr class="non-clickable">
-                      <td>{{"event.bunks" | translate}}</td>
-                      <td>{{boat.bunks}}</td>
-                    </tr>
-
-                           </tbody>
-                </table>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-
             </div>
-
         </div>
-
-
-<div class="ui divider"></div>
-<tickets class="mobile-only" global-tickets="event.tickets"></tickets>
-
-   
-
+        <div class="ui divider"></div>
+        <tickets class="mobile-only" global-tickets="event.tickets"></tickets>
         <div class="row" id="location">
             <div class="twelve wide column">
-                
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
                 {{"event.location" | translate}}
                 </h2>
-                
-        <div class="angular-google-map-container">
-            <ui-gmap-google-map ng-if="event.route" options='map.options' center='map.center' zoom='map.zoom'>
-            <ui-gmap-marker coords="{latitude: event.route[0].lat, longitude: event.route[0].lng}" options="marker.options" events="marker.events" idkey="event.route[0].seq">
-        </ui-gmap-marker>
-            </ui-gmap-google-map>
+                <div class="angular-google-map-container">
+                    <ui-gmap-google-map ng-if="event.route" options='map.options' center='map.center' zoom='map.zoom'>
+                        <ui-gmap-marker coords="{latitude: event.route[0].lat, longitude: event.route[0].lng}" options="marker.options" events="marker.events" idkey="event.route[0].seq"> </ui-gmap-marker>
+                    </ui-gmap-google-map>
+                </div>
+            </div>
         </div>
     </div>
-    </div>  
-    </div>  
-    </div>  
-      
+</div>
