@@ -122,21 +122,6 @@ public class Events extends DBInterface implements Comparable<Events>
 				
 		// Getting other events not having the description in the current language for which 
 		// the description is available in the alternative language
-		int alternateLanguage;
-		switch(languageId)
-		{
-		case Constants.LNG_IT:
-			alternateLanguage = Constants.LNG_EN;
-			break;
-		default:
-			alternateLanguage = Constants.LNG_IT;
-			break;
-		}
-		sql = "SELECT a.*, b.description AS `title` " +
-			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-			 	 "     ON a.idEvents = b.eventId AND " +
-			 	 "        b.languageId = " + alternateLanguage + " AND " +
-				 "		  b.anchorZone = 0 ";
 		String sep = "";
 		String eventIds = "";
 		for(Events e : events)
@@ -149,7 +134,12 @@ public class Events extends DBInterface implements Comparable<Events>
 			whereClause = "AND        a.idEvents NOT IN (" + eventIds + ") " + whereClause;
 
 		}
-		sql += whereClause;
+		sql = "SELECT a.*, b.description AS `title` " +
+			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+			 	 "     ON a.idEvents = b.eventId AND " +
+			 	 "        b.languageId = " + Constants.getAlternativeLanguage(languageId)+ " AND " +
+				 "		  b.anchorZone = 0 " + 
+			 	 whereClause;
 		log.trace("Adding events on alternative laguages via '" + sql + "'");
 		ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		events.addAll(eventsIT);

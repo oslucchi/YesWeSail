@@ -30,4 +30,52 @@ public class Constants {
 			return(LNG_EN);
 		}
 	}
+	
+	public static int getAlternativeLanguage(String language)
+	{
+		switch(language.substring(0,2).toUpperCase())
+		{
+		case "IT":
+			return(LNG_EN);
+
+		case "EN":
+			return(LNG_IT);
+
+		case "FR":
+			return(LNG_EN);
+
+		case "DE":
+			return(LNG_EN);
+
+		case "ES":
+			return(LNG_EN);
+
+		default:
+			return(LNG_EN);
+		}
+	}
+
+	public static int getAlternativeLanguage(int language)
+	{
+		switch(language)
+		{
+		case LNG_IT:
+			return(LNG_EN);
+
+		case LNG_EN:
+			return(LNG_IT);
+
+		case LNG_FR:
+			return(LNG_EN);
+
+		case LNG_DE:
+			return(LNG_EN);
+
+		case LNG_ES:
+			return(LNG_EN);
+
+		default:
+			return(LNG_EN);
+		}
+	}
 }
