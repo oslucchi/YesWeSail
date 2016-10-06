@@ -143,7 +143,9 @@ public class SessionData {
 	{
 		UsersAuth ua = UsersAuth.findUserId(userId);
 		if (sessionData.get(ua.getToken()) != null)
-			return;
+		{
+			removeUser(ua.getUserId());
+		}
 
 		Object[] userData = new Object[SESSION_ELEMENTS];
 		DBConnection conn = new DBConnection();

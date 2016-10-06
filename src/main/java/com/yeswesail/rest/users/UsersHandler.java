@@ -484,6 +484,10 @@ public class UsersHandler {
 		{
 			log.warn("Exception " + e.getMessage() + " setting user's image URL");
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		String jsonResponse = jsonizer.jsonize();
 		return Response.status(status).entity(jsonResponse).build();
     }
