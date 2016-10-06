@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('UseridCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload) {
+    .controller('UseridCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, $translate, ngDialog, Upload) {
 
     $scope.$watch('currentUser.idUsers', function(dataLoaded) {
           if (dataLoaded) {
