@@ -1,10 +1,15 @@
 <div class="tickets-container"> 
-       
+
+    
+<!--
 <button ng-if="paymentProceeded && total>0" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button">
     <i class="money icon"></i>{{"cartTemplate.proceed" | translate}}</button>
+-->
+         <button ng-if="paymentProceeded && total>0" class="ui icon blue button" ng-click="checkout()"><i class="paypal icon"></i>Pay with PayPal</button>
 <button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button">
     <i class="remove icon"></i>{{"cartTemplate.emptyCart" | translate}}</button>
     
+<!--
  <div ng-if="!paymentProceeded" ng-class="{'loading': status.paying}" class="ui center aligned segment">
   <div id="paypal-container"></div>
   <div class="ui horizontal divider">
@@ -13,17 +18,13 @@
      
      <form id="checkout" class="ui form"  action="{{checkoutUrl | trusted}}" method="get">
   
+         
+         
    <div class="fields">
     <div class="seven wide field">
       <label>{{"cartTemplate.cardNumber" | translate}}</label>
       <input type="text" value="4111111111111111" data-braintree-name="number" maxlength="16" placeholder="Card #">
     </div>
-<!--
-    <div class="three wide field">
-      <label>CVC</label>
-      <input type="text" maxlength="3" placeholder="CVC">
-    </div>
--->
     <div class="six wide field">
       <label>{{"cartTemplate.expiration" | translate}}</label>
       <div class="two fields">
@@ -54,6 +55,7 @@
      </form>
 
 </div>
+-->
      <div ng-if="total>0"  class="ui right aligned segment">
           
         <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2>
@@ -65,6 +67,10 @@
     
     
    <div class="ui segment" ng-repeat="event in bookedEvents">
+           
+    <div ng-if="paying" class="ui active inverted dimmer">
+    <div class="ui text loader">Loading</div>
+  </div>
      <div class="ui header">{{event.title}}
         <div class="ui sub header">{{event.location}}</div>
         <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>

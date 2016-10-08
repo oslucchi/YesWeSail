@@ -72,16 +72,14 @@
                         
                 </div>
             <div ng-if="singleEvent.lastMinute" class="last-minute-stamp">
-                        <img src="images/last-minute.png">
+                        <img src="images/lastMinute.png">
                     </div>
             <div ng-if="singleEvent.earlyBooking" class="early-booking-stamp">
-                        <img src="images/early-booking.png">
+                        <img src="images/earlyBooking.png">
                     </div>
             <div class="event-details">
                 <h2  style="color: white !important;" class="ui medium header">
                 {{singleEvent.title}}
-                
-              
                 </h2>
                 
                 <span>  {{singleEvent.location}}</span>
@@ -139,10 +137,10 @@
 
     <h1 class="ui center aligned header">{{"main.whyUs" | translate}}</h1>
     <div class="ui container">
-        <div class="ui three column stackable grid">
-                <div class="column">
+        <div class="ui three center aligned column stackable grid">
+                <div class="five wide column">
                     <div class="ui  image">
-                        <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/miglior-prezzo.png">
+                        <img src="/images/bestPrice.jpg">
                     </div>
                     <div class="middle aligned content">
                         <h2 class="center aligned header">{{"main.bestPriceGranted" | translate}}</h2>
@@ -152,10 +150,10 @@
 
                     </div>
                 </div>
-                <div class="column">
+                <div class="five wide column">
                     <div class="item">
                         <div class="ui image">
-                            <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/pagamenti-sicuri.png">
+                            <img src="/images/securePayments.png">
                         </div>
                         <div class="middle aligned content">
                             <h2 class="center aligned header">{{"main.securedPayments" | translate}}</h2>
@@ -166,9 +164,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="column">
+                <div class="five wide column">
                     <div class="ui image">
-                        <img src="http://www.yeswesail.com/wp-content/uploads/2016/02/servizio-personlizato.png">
+                        <img src="/images/bestChoice.jpg">
                     </div>
                     <div class="middle aligned content">
                         <h2 class="center aligned header">{{"main.personalizedService" | translate}}</h2>
@@ -178,8 +176,12 @@
 
                     </div>
                 </div>
-            <div class="row centered">
-                <div class="column"><span class="ui large header"><a href="#/howitworks">{{"main.howItWorks" | translate}}</a></span></div>
+            
+            <div class="row center aligned">
+            </div>
+            
+            <div class="row center aligned">
+                <div class="sixteen wide column"><span class="ui large header"><a href="#/howitworks">{{"main.howItWorks" | translate}}</a></span></div>
             </div>
         </div>
         <br>

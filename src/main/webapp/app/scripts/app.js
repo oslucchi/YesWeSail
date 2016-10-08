@@ -60,7 +60,6 @@ angular.module('yeswesailApp', [
     'use strict';
     // PREPARING LOCALES INFO
     var localesObj = LOCALES.locales;
-    console.error('Chosen preferredLocale <' + LOCALES.preferredLocale + '>');
     // locales and locales display names
     var _LOCALES = Object.keys(localesObj);
     if (!_LOCALES || _LOCALES.length === 0) {

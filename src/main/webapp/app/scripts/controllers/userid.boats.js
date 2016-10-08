@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('UseridBoatsCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload) {
+    .controller('UseridBoatsCtrl', function ($scope, $stateParams, $http, URLs, Session, toastr, $timeout, ngDialog, Upload, $translate) {
 
 
     
@@ -96,7 +96,7 @@ angular.module('yeswesailApp')
         $scope.showAddBoatDialog = function () {
             ngDialog.open({
                 template: 'views/userId.boats.addBoat.html',
-                className: 'ngdialog-theme-default',
+                className: 'ngdialog-theme-default custom-width',
                 controller: 'UseridBoatsCtrl',
                 scope: $scope
             });

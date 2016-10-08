@@ -73,8 +73,9 @@ angular.module('yeswesailApp')
                 scope.inProgress = false;
 
 
-                scope.checkout = function (obj) {
-                    console.log(obj);
+                scope.checkout = function(){
+                    scope.paying=true;
+                    CartService.checkout('QUALCOSA')
                 }
 
                 scope.requestToken = function () {

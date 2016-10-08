@@ -84,13 +84,12 @@ angular.module('yeswesailApp')
     
     
         cartService.checkout = function (nonce) {
-            return $http
-                .get(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce='+nonce)
+            $http.get(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce=null')
                 .then(function (res) {
-                    $window.location.href = '#/cart/success?transactionId='+res.data.transactionId;    
+                    $window.location.href = res.data.approval_url;    
                     return res;
                 }, function(err){
-                    $window.location.href = '#/cart/error?responseCode='+err.data.responseCode;    
+                    $window.location.href = '#/cart/error?responseCode='+err.data.error;    
                 });
         };
 

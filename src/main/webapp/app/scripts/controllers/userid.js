@@ -87,7 +87,7 @@ angular.module('yeswesailApp')
                     picture: pic
                 }
             }).then(function (response) {
-            	toastr.success($translate.instant('userid.uploadedBoat'));
+            	toastr.success('Image set');
                  $scope.user.imageURL=response.data.images[0]+ '?decache=' + Math.random();;
             }, function (response) {
 
