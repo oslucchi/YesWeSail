@@ -91,6 +91,7 @@ public class TicketReleaser extends Thread {
         		for(TicketLocks tl : tList)
         		{
         			if ((tl.getLockTime() != null) && 
+        				(tl.getStatus().compareTo("P") == 0) &&
         				(now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000))
         			{
         				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 

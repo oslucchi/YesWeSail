@@ -34,6 +34,8 @@ public class ApplicationProperties {
 	private String braintreeMerchantId;
 	private String braintreePublicKey;
 	private String braintreePrivateKey;
+	private String paypalClientId;
+	private String paypalClientSecret;
 	private ServletContext context;
 	private String adminEmail;
 	private int releaseTicketLocksAfter = 600;
@@ -91,6 +93,9 @@ public class ApplicationProperties {
 		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
 		braintreePublicKey = properties.getProperty("braintreePublicKey");
 		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
+		paypalClientId = properties.getProperty("paypalClientId");
+		paypalClientSecret = properties.getProperty("paypalClientSecret");
+
 		adminEmail = properties.getProperty("adminEmail");
     	
     	try
@@ -224,6 +229,12 @@ public class ApplicationProperties {
 	public int getReleaseTicketLocksAfter() {
 		return releaseTicketLocksAfter;
 	}
-	
-	
+
+	public String getPaypalClientId() {
+		return paypalClientId;
+	}
+
+	public String getPaypalClientSecret() {
+		return paypalClientSecret;
+	}	
 }

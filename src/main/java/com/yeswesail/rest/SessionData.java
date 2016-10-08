@@ -80,7 +80,7 @@ public class SessionData {
 				return(((Integer) sessionData.get(token)[LANGUAGE]).intValue());
 			}
 		}
-		return(1);
+		return(Constants.LNG_EN);
 	}
 	
 
