@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 public class LanguageResources {
-	private static Properties[] resource = new Properties[3];
+	private static Properties[] resource = new Properties[5];
 	private static LanguageResources singletonInstance = null;
 	private static int languageCode = Constants.LNG_IT;
 
@@ -20,6 +20,10 @@ public class LanguageResources {
         	in = LanguageResources.class.getResourceAsStream("/en.properties");
         	resource[Constants.LNG_EN] = new Properties();
         	resource[Constants.LNG_EN].load(in);
+        	resource[Constants.LNG_DE] = new Properties();
+        	resource[Constants.LNG_DE].load(in);
+        	resource[Constants.LNG_FR] = new Properties();
+        	resource[Constants.LNG_FR].load(in);
 	    	in.close();
 		}
     	catch (IOException e) 

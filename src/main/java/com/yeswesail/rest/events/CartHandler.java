@@ -1,8 +1,10 @@
 package com.yeswesail.rest.events;
 
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -167,6 +169,8 @@ public class CartHandler {
 								  @QueryParam("token") String token,
 								  @PathParam("userId") int userId)
 	{
+		log.trace("Paypal processs called back on userId " + userId + " paypal token '" + token + "'" +
+				  "' paymnet Id '" + paymentId + "' payer id '" + payerId + "'");
 		URI location = null;
 
 		APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), "sandbox");
@@ -182,13 +186,14 @@ public class CartHandler {
         catch (PayPalRESTException e) {
             try 
             {
-            	location = new URI(prop.getWebHost() + "/#/cart/error?responseCode=" + "hereTheErrorCode");
+            	location = new URI(prop.getWebHost() + "/#/cart/error?responseCode=" + 
+      				  					URLEncoder.encode(e.getMessage(),"UTF-8"));
             }
             catch(Exception e1)
             {
     			return Response
-    					.status(Response.Status.OK)
-    					.entity("{}")
+    					.status(Response.Status.UNAUTHORIZED)
+    					.entity("{responseCode : 'Error executing PayPal payment. Please contact YWS administrators'}")
     					.build();
             }
 			return Response.seeOther(location).build();
@@ -234,25 +239,35 @@ public class CartHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Path("paypal/cancel/{userId}")
-	public Response paypalCancel(@PathParam("userId") int userId)
+	public Response paypalCancel(@PathParam("userId") int userId,
+								 @QueryParam("token") String ppToken)
 	{
+		log.trace("Paypal cancel called back on userId " + userId + " paypal token '" + ppToken + "'");
 		URI location = null;
 		int languageId;
 		SessionData sd = SessionData.getInstance();
 
 		languageId = sd.getLanguage(userId);
 
+		String url = null;
 		try 
 		{
-			location = new URI(prop.getWebHost() + "/#/cart/error?responseCode=" + 
-							   LanguageResources.getResource(languageId, "payment.paypal.requestCancelled"));
+			url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
+				  URLEncoder.encode(
+						  LanguageResources.getResource(languageId, "payment.paypal.requestCancelled"),
+						  "UTF-8");
+
+			location = new URI(url);
 		} 
-		catch (URISyntaxException e) {
+		catch (URISyntaxException | UnsupportedEncodingException e) {
+			log.warn("Exception " + e.getMessage() + " On redirecting to '" + url + "'");
+					
 			return Response
 					.status(Response.Status.OK)
 					.entity("{}")
 					.build();
-		}
+		} 
+		log.debug("redirecting to " + location.getPath());
 		return Response.seeOther(location).build();
 	}
 	
@@ -450,7 +465,8 @@ public class CartHandler {
 				}
 				else
 				{
-		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + transaction.getProcessorResponseCode();
+		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
+		            		URLEncoder.encode(transaction.getProcessorResponseCode(),"UTF-8");
 					URI location = new URI(url);
 					return Response.seeOther(location).build();
 				}
