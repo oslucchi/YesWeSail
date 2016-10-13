@@ -486,24 +486,29 @@ public class EventsHandler {
 
 		try
 		{
+			log.debug("Trying to get the shipowner details for id " + event.getShipOwnerId());
 			Users u = new Users(conn, event.getShipOwnerId());
 			jsonResponse.put("shipOwner", u);
 		}
 		catch (Exception e) {
+			log.warn("Unable to get details, exception (" + e.getMessage() + ")");
 			jsonResponse.put("shipOwner", "{}");
 		}
 
 		try
 		{
+			log.debug("Trying to get the route details for event " + event.getIdEvents());
 			EventRoute[] r = EventRoute.getRoute(conn, event.getIdEvents());
 			jsonResponse.put("route", r);
 		}
 		catch (Exception e) {
+			log.warn("Unable to get route details, exception (" + e.getMessage() + ")");
 			jsonResponse.put("route", "{}");
 		}
 
 		try
 		{
+			log.debug("querying the boat details for this event");
 			Boats b = new Boats(conn, event.getBoatId());
 			images = UploadFiles.getExistingFilesPath(
 						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
@@ -516,6 +521,7 @@ public class EventsHandler {
 			jsonResponse.put("boat", b);
 		}
 		catch (Exception e) {
+			log.warn("Unable to get the required boat, exception (" + e.getMessage() + ")");
 			jsonResponse.put("boat", "{}");
 		}
 
