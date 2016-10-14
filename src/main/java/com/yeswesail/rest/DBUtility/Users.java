@@ -264,7 +264,7 @@ public class Users extends DBInterface
 	public String getImageURL() {
 		if (imageURL == null)
 		{
-			return (prop.getWebHost() + "/images/default_icon.jpg");
+			return (prop.getWebHost() + "/images/users/default_icon.png");
 		}
 		else
 		{

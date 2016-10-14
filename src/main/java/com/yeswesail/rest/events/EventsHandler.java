@@ -50,6 +50,7 @@ import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.Roles;
+import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.jsonInt.EventDescriptionJson;
 import com.yeswesail.rest.jsonInt.EventJson;
@@ -795,18 +796,37 @@ public class EventsHandler {
 		int languageId = Utils.setLanguageId(language);
 		DBConnection conn = null;
 		Events ev = null;
-		EventDescription ed = null;
+		
+
 		try
 		{
+			if ((EventTicketsSold.getTicketSold(idEvents, languageId).length > 0) ||
+				(TicketLocks.findByEventId(idEvents).length > 0))
+			{
+				log.warn("Tickets for this event have been sold already. can't delete");
+				DBInterface.TransactionRollback(conn);
+				return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, 
+											 languageId, "events.cannotDelete.ticketsSold");
+			}
+
 			conn = DBInterface.TransactionStart();
-			ed = new EventDescription();
+			EventDescription ed = new EventDescription();
+			log.trace("Deleting EventDescriptions");
 			ed.delete(conn, "DELETE FROM EventDescription WHERE eventId = " + idEvents);
+			EventRoute er = new EventRoute();
+			log.trace("Deleting EventRoutes");
+			er.delete(conn, "DELETE FROM EventRoute WHERE eventId = " + idEvents);
+			EventTickets et = new EventTickets();
+			log.trace("Deleting EventTickets");
+			et.delete(conn, "DELETE FROM EventTickets WHERE eventId = " + idEvents);
 			ev = new Events(conn, idEvents);
+			log.trace("Deleting Event");
 			ev.delete(conn, idEvents);
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) 
 		{
+			log.warn("Exception " + e.getMessage() + " raised");
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}

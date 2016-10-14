@@ -34,6 +34,7 @@ public class LoginConfirm {
 	final Logger log = Logger.getLogger(this.getClass());
 	private Genson genson = new Genson();
 
+
 	@GET
 	@Path("FB/{token}")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -42,26 +43,40 @@ public class LoginConfirm {
 									 @QueryParam("email") String email,
 									 @QueryParam("password") String password)
 	{
+		HashMap<String, Object> jsonResponse = new HashMap<>();
 		ApplicationProperties prop = ApplicationProperties.getInstance();
+
 		DBConnection conn = null;
-		if ((email.compareTo("") == 0) || ((password != null) && (password.compareTo("") == 0)))
+		if (((email == null) || (email.compareTo("") == 0))||
+			((password != null) && (password.compareTo("") == 0)))
 		{
+			log.debug("No valid mail/password passed");
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
 					prop.getDefaultLang(), "auth.wrongCredentials");
 		}
 		
+		SessionData sd = SessionData.getInstance();
+		UsersAuth ua = null;			
+		Users uFB = null;
 		Users u = null;
 		try {
 			conn = DBInterface.connect();
+			ua = UsersAuth.findToken(token);			
+			uFB = new Users(conn, ua.getUserId());
 		} 
 		catch (Exception e1) {
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
 					prop.getDefaultLang(), "generic.execError");
 		}
-		
+
+		String entity = null;
 		if (password == null)
 		{
+			/*
+			 * A request to enter a valid email during a FB login is raised.
+			 * Check if the email already exists
+			 */
 			try 
 			{
 				u = new Users();
@@ -72,55 +87,72 @@ public class LoginConfirm {
 			}
 			catch(Exception e)
 			{
-				;
-			}
-		}
-		else
-		{
-			try 
-			{
-				u = new Users();
-				u.findByEmail(conn, email);
-			}
-			catch(Exception e)
-			{
-				DBInterface.disconnect(conn);
-				return Utils.jsonizeResponse(Response.Status.CONFLICT, null, 
-						prop.getDefaultLang(), "auth.invalidEmail");
-			}
-		}
-		
-		try 
-		{
-			if (password == null)
-			{
-				DBInterface.disconnect(conn);
-				return Utils.jsonizeResponse(Response.Status.CONFLICT, null, 
-						prop.getDefaultLang(), "auth.specifyAPassword");
-			}
-			UsersAuth ua = UsersAuth.findToken(token);			
-			Users uFB = new Users(conn, ua.getUserId());
-			try
-			{
-				PasswordHandler pw = new PasswordHandler();
-				pw.userPassword(conn, u.getIdUsers());
-				
-				log.debug("Found. Password in database is '" + pw.getPassword() + "'");
-				if ((pw.getPassword() == null) || (pw.getPassword().compareTo(password) != 0))
+				if (!e.getMessage().equalsIgnoreCase("No record found"))
 				{
-					log.debug("Wrong password, returning UNAUTHORIZED");
-					DBInterface.disconnect(conn);
-					return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
-												 prop.getDefaultLang(), "auth.wrongCredentials");
+					log.warn("Exception " + e.getMessage() + 
+							 " searching user by the given email '" + email + "'");
+					return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
+							prop.getDefaultLang(), "generic.execError");
 				}
 			}
-			catch(Exception e)
+			
+			// It does not exists
+			try {
+				uFB.setEmail(email);
+				uFB.update(conn, "idUsers");
+				DBInterface.disconnect(conn);
+				// Updating the session data with current user data
+				sd.removeUser(token);
+				sd.addUser(token, Constants.getLanguageCode(language));
+			}
+			catch (Exception e) 
 			{
-				log.debug("Exception " + e.getMessage() + ", returning UNAUTHORIZED");
+				log.warn("Exception " + e.getMessage() + 
+						 " updating user with the given email '" + email + "'");
+				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
+						prop.getDefaultLang(), "generic.execError");
+			}
+			
+			// returning to the user
+			jsonResponse.put("token", token);
+			jsonResponse.put("user", u);
+			entity = genson.serialize(jsonResponse);
+			return Response.status(Response.Status.OK).entity(entity).build();
+		}
+		
+		/*
+		 * The User has another entry by email/password
+		 * Let's validate the data passed is correct
+		 */
+		
+		try
+		{
+			u = new Users();
+			u.findByEmail(conn, email);
+			PasswordHandler pw = new PasswordHandler();
+			pw.userPassword(conn, u.getIdUsers());
+			
+			if ((pw.getPassword() == null) || (pw.getPassword().compareTo(password) != 0))
+			{
+				log.debug("Wrong password, returning UNAUTHORIZED");
 				DBInterface.disconnect(conn);
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
 											 prop.getDefaultLang(), "auth.wrongCredentials");
 			}
+		}
+		catch(Exception e)
+		{
+			log.debug("Exception " + e.getMessage() + ", returning UNAUTHORIZED");
+			DBInterface.disconnect(conn);
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
+										 prop.getDefaultLang(), "auth.wrongCredentials");
+		}
+		
+		try
+		{
+			log.trace("Credential verified. Club existing entry and the FB one together");
+			// email and password passed match. They refer to a different profile though.
+			// We so need to club them together and remove the FB newly created
 			ua.setUserId(u.getIdUsers());
 			ua.setLastRefreshed(new Date());
 			ua.update(conn, "idUsersAuth");
@@ -128,22 +160,20 @@ public class LoginConfirm {
 			u.setStatus("A");
 			u.setFacebook(uFB.getFacebook());
 			u.update(conn, "idUsers");
-			SessionData sd = SessionData.getInstance();
 			sd.removeUser(token);
 			sd.addUser(token, Constants.getLanguageCode(language));
 			
 			// Delete the entry eventually created during login FB
 			uFB.delete(conn, uFB.getIdUsers());
-			HashMap<String, Object> jsonResponse = new HashMap<>();
 			jsonResponse.put("token", token);
 			jsonResponse.put("user", u);
-			String entity = genson.serialize(jsonResponse);
+			entity = genson.serialize(jsonResponse);
 			return Response.status(Response.Status.OK).entity(entity).build();
 		}
 		catch(Exception e)
 		{
-			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, 
-					prop.getDefaultLang(), "auth.confirmTokenInvalid");
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
+					prop.getDefaultLang(), "generic.execError");
 		}
 		finally
 		{
