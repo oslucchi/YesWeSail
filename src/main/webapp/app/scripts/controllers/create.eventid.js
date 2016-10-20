@@ -6,7 +6,7 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady) {
+angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService) {
     angular.element('.ui.anchor-menu').sticky({
         context: '#event-container'
         , offset: 60
@@ -20,7 +20,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
 
     $scope.minDate = new Date();
     
-    $scope.selectedLanguage = 'it_IT';
+    $scope.selectedLanguage = LocaleService.getCurrentLocale();
     $scope.tempEvent = {};
     $scope.markers = [];
     $scope.selectedBoat = null;
@@ -130,32 +130,39 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 , longitude: res.data.route[0].lng
             };
             $scope.maxTickets = maxTicketsForBoat(res.data.boat);
+            
+            
             $scope.map = {
                 center: {
                     latitude: $scope.newLocation.latitude
                     , longitude: $scope.newLocation.longitude
                 }
-                , zoom: 5
+                , zoom: 12
                 , options: {
                     scrollwheel: false
                 }
-                , control: {}
-                , events: {
-                    //            click: function (map, eventName, originalEventArgs) {
-                    //                var e = originalEventArgs[0];
-                    //                var lat = e.latLng.lat(),lon = e.latLng.lng();
-                    //                var marker = {
-                    //                    id: $scope.markers.length,
-                    //                    coords: {
-                    //                        latitude: lat,
-                    //                        longitude: lon
-                    //                    }
-                    //                };
-                    //                $scope.markers.push(marker);
-                    //                $scope.$apply();
-                    //            }
-                }
+//                , control: {}
+//                , events: {
+//                    //            click: function (map, eventName, originalEventArgs) {
+//                    //                var e = originalEventArgs[0];
+//                    //                var lat = e.latLng.lat(),lon = e.latLng.lng();
+//                    //                var marker = {
+//                    //                    id: $scope.markers.length,
+//                    //                    coords: {
+//                    //                        latitude: lat,
+//                    //                        longitude: lon
+//                    //                    }
+//                    //                };
+//                    //                $scope.markers.push(marker);
+//                    //                $scope.$apply();
+//                    //            }
+//                }
             };
+            
+            
+            
+            
+            
             angular.forEach(res.data.route, function (value, key) {
                 $scope.markers.push({
                     coords: {
@@ -198,6 +205,18 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             , "ticketType": row + 1
         }
     };
+    
+    $scope.setImageAsDefault=function(image){
+          $http.post(URLs.ddns + 'rest/events/images/default', 
+                      {
+              eventId: $scope.event.idEvents,
+              imageURL: image}
+                     ).then(function(res){
+              toastr.success('Image set as default');
+              $scope.event.imageUrl=image;
+          })
+    };
+    
     $scope.tempTickets = [
                           [
             {
@@ -286,11 +305,18 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             });
         }
     };
+    
+    
     $scope.searchLocation = function () {
         $scope.newLocation = {
             latitude: $scope.mapDetails.geometry.location.lat()
             , longitude: $scope.mapDetails.geometry.location.lng()
         };
+        $scope.map.zoom=12;
+        $scope.route[0]={"description":null,"eventId":$scope.event.idEvents,"idEventRoute":60,"lat":$scope.mapDetails.geometry.location.lat(),"lng":$scope.mapDetails.geometry.location.lng(),"seq":0}
+        $scope.map.center.latitude=$scope.mapDetails.geometry.location.lat()
+        $scope.map.center.longitude=$scope.mapDetails.geometry.location.lng()
+        
         $scope.markers[0].coords = $scope.newLocation;
         $scope.map.control.refresh($scope.newLocation);
         $scope.tempEvent.route = [{
@@ -300,6 +326,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             , lng: $scope.newLocation.longitude
             }];
     };
+    
+    
     $scope.setLanguage = function (lang) {
         $scope.selectedLanguage = lang;
         $scope.getEvent();
@@ -307,4 +335,12 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     angular.element('.ui.language.dropdown').dropdown({
         action: 'activate'
     });
+      angular.element('#slick-demo').slick({
+            slidesToShow: 3
+            , slidesToScroll: 3
+        });
+        angular.element('#slick-demo').slickLightbox({
+            src: 'src'
+            , itemSelector: '.item'
+        });
 });

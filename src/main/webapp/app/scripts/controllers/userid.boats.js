@@ -52,6 +52,20 @@ angular.module('yeswesailApp')
         $scope.addDocs = function (files) {
             $scope.tempBoat.files.docs = files;
         };
+    
+        $scope.removeFile=function(files, file){
+            files.splice(files.indexOf(file), 1);
+        }
+        
+        $scope.removeBoat=function(boat){
+            $http.delete( URLs.ddns + 'rest/users/shipowners/' + $scope.user.idUsers + '/boats/'+boat.idBoats).then(function(res){
+                toastr.success($translate.instant('global.delete.success'));
+                $scope.boats=res.data.boats;
+            }, function(err){
+                toastr.error($translate.instant('global.delete.error'));
+            })
+        }
+    
         $scope.addBluePrints = function (files) {
             $scope.tempBoat.files.bluePrints = files;
         };
@@ -80,6 +94,7 @@ angular.module('yeswesailApp')
                 }else{
                     $scope.boatUploadedPartially=true;
                 }
+                $scope.getBoats();
             }, function (response) {
 
             }, function (evt) {
@@ -92,7 +107,17 @@ angular.module('yeswesailApp')
             });
 
         };
-
+    
+        $scope.engines = [
+            {
+            engine: 'V',
+                description: $translate.instant('userid.boats.addBoat.propulsion.sail') 
+        },{
+            engine: 'M',
+                description: $translate.instant('userid.boats.addBoat.propulsion.engine') 
+        }
+                         ]    
+    
         $scope.showAddBoatDialog = function () {
             ngDialog.open({
                 template: 'views/userId.boats.addBoat.html',

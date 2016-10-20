@@ -37,6 +37,7 @@ angular.module('yeswesailApp')
             
             if(!!!$scope.suggestedOwner){
                 temporaryEvent.shipOwnerId=Session.getCurrentUser().idUsers;
+                temporaryEvent.eventType=$scope.EVENTTYPES[0].idEventTypes;
                 
             }else{
                 temporaryEvent.shipOwnerId=$scope.suggestedOwner.originalObject.idUsers;

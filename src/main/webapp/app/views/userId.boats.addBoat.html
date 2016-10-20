@@ -39,13 +39,15 @@
                         </div>
                     </div>
                     <div class="field">
-                        <label>{{"userid.boats.addBoat.engine" | translate}}</label>
+                        <label>{{"userid.boats.addBoat.propulsion" | translate}}</label>
                         <div class="field">
-                            <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.engineType" placeholder="Number...">
+                            <select ng-required="true" name="salingLicense" ng-model="tempBoat.info.engineType">
+                                <option ng-repeat="engine in engines" value="{{engine.engine}}">{{engine.description}}</option>
+                            </select>
                         </div>
                     </div>
                     <div class="field">
-                        <label>{{"userid.boats.addBoat.lenght" | translate}}</label>
+                        <label>{{"userid.boats.addBoat.length" | translate}}</label>
                         <div class="field">
                             <input type="text" ng-required="true" name="salingLicense" ng-model="tempBoat.info.length" placeholder="Number...">
                         </div>
@@ -81,9 +83,18 @@
             <div class="field">
                 <div class="doc-upload">
                     <button class="ui blue button" ngf-select="addDocs($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
-
+                    <div class="ui divider"></div>
                     <div class="document-container">
-                            <p ng-repeat="doc in tempBoat.files.docs">{{doc}}</p>
+                        <div class="ui middle aligned divided list">
+                          <div class="item" ng-repeat="doc in tempBoat.files.docs">
+                            <div class="right floated content">
+                              <div class="ui red button" ng-click="removeFile(tempBoat.files.docs, doc)">{{'global.button.remove' | translate}}</div>
+                            </div>
+                            <div class="content">
+                              {{doc.name}}
+                            </div>
+                          </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -114,8 +125,6 @@
                         </div>
                     </div>
 
-                </div>
-                <div class="three fields">
                     <div class="field">
                         <label>Shared bath</label>
                         <div class="field">
@@ -134,11 +143,18 @@
                 <div class="field">
                     <div class="doc-upload">
                         <button class="ui blue button" ngf-select="addBluePrints($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
-
+                        <div class="ui divider"></div>
                         <div class="document-container">
-                            <div class="ui tiny images">
-                                <img ngf-src="doc" ng-repeat="doc in tempBoat.files.bluePrints">
-                            </div>
+                              <div class="ui middle aligned divided list">
+                                  <div class="item" ng-repeat="doc in tempBoat.files.bluePrints">
+                                    <div class="right floated content">
+                                      <div class="ui red button" ng-click="removeFile(tempBoat.files.bluePrints, doc)">{{'global.button.remove' | translate}}</div>
+                                    </div>
+                                    <div class="content">
+                                      {{doc.name}}
+                                    </div>
+                                  </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -150,11 +166,18 @@
                 <div class="field">
                     <div class="doc-upload">
                         <button class="ui blue button" ngf-select="addOtherImages($files)" multiple accept="*/*">{{"global.selectFiles" | translate}}</button>
-
+                        <div class="ui divider"></div>
                         <div class="document-container">
-                            <div class="ui tiny images">
-                                <img ngf-src="doc" ng-repeat="doc in tempBoat.files.other">
-                            </div>
+                              <div class="ui middle aligned divided list">
+                                  <div class="item" ng-repeat="doc in tempBoat.files.other">
+                                    <div class="right floated content">
+                                      <div class="ui red button" ng-click="removeFile(tempBoat.files.other, doc)">{{'global.button.remove' | translate}}</div>
+                                    </div>
+                                    <div class="content">
+                                      {{doc.name}}
+                                    </div>
+                                  </div>
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -164,8 +187,7 @@
 
             <div class="ui divider"></div>
             <div class="field">
-
-                <button class="ui right floated blue button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">{{"global.insert" | translate}}</button>
+                <button class="ui green button" ng-if="!boatUploadedPartially" ng-click="sendBoat(tempBoat)">{{"global.insert" | translate}}</button>
                 <button class="ui button" ng-if="boatUploadedPartially" ng-click="closeModals()">Close</button>
                     <div ng-class="{'visible': !!error.rejectedList}" class="ui warning message">
                       <div class="header">

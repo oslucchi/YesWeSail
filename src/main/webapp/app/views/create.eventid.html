@@ -1,4 +1,4 @@
-<div ng-style="{'background-image':'url('+images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-style="{'background-image':'url('+event.imageUrl+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
 
 
 </div>
@@ -154,6 +154,7 @@
 
                         </div>
 
+<!--
                         <ul rn-carousel-auto-slide rn-carousel class="image">
                             <li ng-repeat="image in images">
                                 <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide">
@@ -163,7 +164,20 @@
 
                             </li>
                         </ul>
+-->
 
+                            <div id="slick-demo" class="ui small images">
+                                <a href ng-repeat="image in images"><img class="item thumbnail-image" ng-src="{{image}}" alt="">
+                                    
+                                    <button ng-click="setImageAsDefault(image)" class="ui tiny icon button"> <i class="link star icon"></i></button>
+                                    <button ng-click="deleteImage(image)" class="ui tiny icon button"> <i class="link trash outline icon"></i></button>
+                                
+                                
+                                </a>
+                        </div>
+                        
+                        
+                        
 
                     </div>
                 </div>

@@ -7,7 +7,8 @@
       <img ng-src="{{boat.images[0]}}">
     </div>
     <div class="content">
-      <a class="header">{{boat.name}}</a>
+      <a class="header">{{boat.name}}</a><div class="ui red button" ng-click="removeBoat(boat)">{{'global.button.remove' | translate}}</div>
+
       <div class="meta">
         <span>{{boat.model}} - {{boat.year}}</span>
       </div>
@@ -27,11 +28,17 @@
       <tr>
       <td>{{"boats.sharedBath" | translate}}</td>
       <td>{{boat.sharedBathrooms}}</td>
+    </tr>  
+      
+    <tr>
+      <td>{{"boats.sharedBath" | translate}}</td>
+      <td>{{boat.sharedBathrooms}}</td>
     </tr>
 
            </tbody>
 </table>
       </div>
+      
     </div>
   </div>
 </div>

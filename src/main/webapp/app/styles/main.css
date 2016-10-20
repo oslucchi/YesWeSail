@@ -606,6 +606,18 @@ footer{
     max-width: 2em;
 }
 
+.ngdialog.custom-width .ngdialog-content{
+    width: 1000px !important;
+}
+
+.thumbnail-image{
+}
+
+.thumbnail-image-actions{
+
+    
+}
+
 .shipOwner.image{
     cursor: pointer;
 }
