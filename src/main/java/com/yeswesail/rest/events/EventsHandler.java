@@ -347,6 +347,36 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
+
+	@POST
+	@Path("/images/default")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response changeEventImageURL(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		Events event = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			event = new Events(conn, jsonIn.eventId);
+			event.setImageURL(jsonIn.imageURL);
+			event.update(conn, "idEvents");
+		}
+		catch (Exception e) 
+		{
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)

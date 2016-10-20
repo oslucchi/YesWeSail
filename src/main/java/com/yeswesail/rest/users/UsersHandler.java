@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -885,6 +886,58 @@ public class UsersHandler {
 			return Response.status(Status.PARTIAL_CONTENT).entity(utils.jsonize()).build();
 		}
 		return Response.status(Status.OK).entity(utils.jsonize()).build();
+	}
+
+	@DELETE
+	@Path("/shipowners/{id}/boats/{idBoats}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteBoat(@PathParam("id") int shipownerId,
+							   @PathParam("idBoats") int idBoats,
+							   @HeaderParam("Authorization") String token,
+							   @HeaderParam("Language") String language)
+
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		DBConnection conn = null;
+		Boats bo = null;
+		Boats[] boats = null;
+		try 
+		{
+			bo = new Boats();
+			conn = DBInterface.connect();
+			log.trace("Deleting boat id " + idBoats);
+			bo.delete(conn, idBoats);
+			boats = Boats.findAll(languageId, shipownerId);
+		}
+		catch (Exception e) 
+		{
+			log.error("Exception '" + e.getMessage() + "' on boat delete");
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		for(Boats boat : boats)
+		{
+			ArrayList<String> images = UploadFiles.getExistingFilesPath(
+											"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(UploadFiles.getExistingFilesPath(
+									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats"));
+			boat.setImages(images);
+			boat.setDocs(
+					UploadFiles.getExistingFilesPath(
+							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
+		}
+
+		utils.addToJsonContainer("boats", boats, true);
+				String jsonResponse = utils.jsonize();
+		return Response.status(Response.Status.OK).entity(jsonResponse).build();
 	}
 
 	@GET
