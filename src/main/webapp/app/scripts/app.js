@@ -240,6 +240,10 @@ angular.module('yeswesailApp', [
         url: "/dynamic/{pageRef}"
         , templateUrl: 'views/dynamicPage.html'
         , controller: 'DynamicPageCtrl'
+    }).state('dynamicPageEdit', {
+        url: "/dynamic/edit/{pageRef}"
+        , templateUrl: 'views/dynamicPage.edit.html'
+        , controller: 'DynamicPageEditCtrl'
     }).state('sailorRegistration', {
         url: "/sailor-registration"
         , templateUrl: 'views/sailor-registration.html'
