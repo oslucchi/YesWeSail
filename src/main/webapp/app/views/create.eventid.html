@@ -36,12 +36,13 @@
         </a>
         <div class="right menu">
         
-          <div class="ui language dropdown item" action="activate">
-    {{selectedLanguage}}
+          <div class="ui language dropdown item" dropdown action="hide">
+    {{selectedLanguage.substring(0, 2).toUpperCase()}}
     <i class="dropdown icon"></i>
         <div class="menu">
-            <div class="item" ng-click="setLanguage('it_IT')" data-value="IT">IT</div>
-            <div class="item" ng-click="setLanguage('en_US')" data-value="EN">EN</div>
+            <div class="item" ng-click="setLanguage('it_IT')" data-value="it_IT">IT</div>
+            <div class="item" ng-click="setLanguage('en_US')" data-value="en_US">EN</div>
+            <div class="item" ng-click="setLanguage('de_DE')" data-value="de_DE">DE</div>
         </div>
   </div>
         <a ng-click="saveEvent()" class="item">    
@@ -74,35 +75,38 @@
                                 <div class="content">
 
 
-                                    <a class="header">
-                                        <div click-to-edit="event.title"></div>
+                                    <a class="header title-edit">
+                                        <div class="ui labeled fluid input">
+                                           <div class="ui label">{{'global.title' | translate}}</div>
+                                            <input type="text" ng-model="event.title">
+                                        </div>
+                                        
+<!--                                        <div click-to-edit="event.title"></div>-->
                                     </a>
 
                                     <div class="meta">
-                                        <div click-to-edit="event.location"></div>
+                                        <div class="ui labeled input">
+                                            <div class="ui label">{{'event.location' | translate}}</div>
+                                            <input type="text" ng-model="event.location">
+                                        </div>
+<!--                                        <div click-to-edit="event.location"></div>-->
                                     </div>
                                     <div class="extra">
-                                        <div class="ui input">
+                                        <div class="ui labeled input">
+                                                <div class="ui label">{{'global.from' | translate}}</div>
                                             <datepicker date-set="{{event.dateStart.toString()}}" date-min-limit="{{minDate.toString()}}" date-format="yyyy-MM-dd">
-
                                                 <input type="text" name="dateFrom"  ng-model="event.dateStart" placeholder='{{"global.from" | translate}}'>
 
                                             </datepicker>
                                         </div>
 
-                                        <div class="ui input">
+                                        <div class="ui labeled input">
+                                                <div class="ui label">{{'global.to' | translate}}</div>
                                             <datepicker  date-set="{{event.dateEnd.toString()}}" date-min-limit="{{event.dateStart.toString()}}" date-format="yyyy-MM-dd">
-
                                                 <input type="text" date-min-limit="{{event.dateStart.toString()}}" name="dateTo" ng-model="event.dateEnd" placeholder='{{"global.to" | translate}}'>
 
                                             </datepicker>
-                                            <div class="ui input">
-
-
-                                            </div>
-                                            <div class="description">
-
-                                            </div>
+                                    
 
 
                                         </div>
@@ -330,10 +334,13 @@
                 </div>
                 <div class="ui segment">
                     <div class="angular-google-map-container">
-                        <ui-gmap-google-map refresh="refresh" events="map.events" options='map.options' center='map.center' zoom='map.zoom' control='map.control'>
-                        <ui-gmap-marker ng-repeat="marker in markers" fit="true"  coords="marker.coords"  idkey="marker.id" control="marker.control">
+                        <ui-gmap-google-map ng-if="route" refresh="refresh" events="map.events" options='map.options' center='map.center' zoom='map.zoom' control='map.control'>
+                            <ui-gmap-marker ng-repeat="marker in markers" events="marker.events" click="marker.click" coords="marker.coords" options="marker.options" idkey="marker.id" control="marker.control">
                             </ui-gmap-marker>
+                            
+                            <ui-gmap-polyline path='path' visible="true"></ui-gmap-polyline>
                         </ui-gmap-google-map>
+                        
                         
                          
                     </div>

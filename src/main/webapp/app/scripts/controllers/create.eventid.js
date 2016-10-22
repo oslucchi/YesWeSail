@@ -6,7 +6,7 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService) {
+angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
     angular.element('.ui.anchor-menu').sticky({
         context: '#event-container'
         , offset: 60
@@ -19,6 +19,17 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     $scope.tDisabled=false;
 
     $scope.minDate = new Date();
+    var unsavedWork=false;
+    $scope.$on('$stateChangeStart', function (event, next, current) {
+                    if (unsavedWork) {
+                        var answer = confirm($translate.instant('global.leaveMessage'));
+                        if (!answer) {
+                            event.preventDefault();
+                        }else{
+                            
+                        }
+                    }
+                });
     
     $scope.selectedLanguage = LocaleService.getCurrentLocale();
     $scope.tempEvent = {};
@@ -131,7 +142,6 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             };
             $scope.maxTickets = maxTicketsForBoat(res.data.boat);
             
-            
             $scope.map = {
                 center: {
                     latitude: $scope.newLocation.latitude
@@ -141,37 +151,137 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 , options: {
                     scrollwheel: false
                 }
-//                , control: {}
-//                , events: {
-//                    //            click: function (map, eventName, originalEventArgs) {
-//                    //                var e = originalEventArgs[0];
-//                    //                var lat = e.latLng.lat(),lon = e.latLng.lng();
-//                    //                var marker = {
-//                    //                    id: $scope.markers.length,
-//                    //                    coords: {
-//                    //                        latitude: lat,
-//                    //                        longitude: lon
-//                    //                    }
-//                    //                };
-//                    //                $scope.markers.push(marker);
-//                    //                $scope.$apply();
-//                    //            }
-//                }
+                , control: {}
+                , events: {
+                                click: function (map, eventName, originalEventArgs) {
+                                    var e = originalEventArgs[0];
+                                    var lat = e.latLng.lat(),lon = e.latLng.lng();
+                                    
+                                    var description = prompt($translate.instant('global.enterDescription'));
+                                    if(!!description){
+                                        var marker = {
+                                            id: $scope.markers.length,
+                                            coords: {
+                                                latitude: lat,
+                                                longitude: lon
+                                            },
+                                            description: description,    
+                                            options: { draggable: true,
+                                                      icon: addComplexMarker($scope.markers.length).then(function(image){
+                                                          return image.url;
+                                                      })
+                                               },
+                                            click: function(marker){
+                                                var description= prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description); 
+                                                if(description){
+                                                    $scope.markers[marker.model.idKey].description = description;
+                                                }
+                                              },
+                                            events: {
+                                                rightclick: function(marker){
+
+                                                    $scope.markers.splice(marker.model.idKey, 1);
+
+                                                    angular.forEach($scope.markers, function(val, key){
+                                                        $scope.markers[key].id=key;
+                                                    })
+                                                }
+                                            }
+                                        };
+                                        $scope.markers.push(marker);
+                                        $scope.$apply();
+                                    }
+                                }
+                }
             };
             
             
             
             
             
+            
             angular.forEach(res.data.route, function (value, key) {
-                $scope.markers.push({
-                    coords: {
-                        latitude: value.lat
-                        , longitude: value.lng
-                    }
-                    , id: value.seq
-                })
+                
+             
+                
+                
+                if(key==res.data.route.length-1){
+                    $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: true,
+                                                       icon: '/images/spotlight-poi-green.png'
+                                               },
+                                            click: function(marker){
+                                                var description= prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description); 
+                                                if(description){
+                                                    $scope.markers[marker.model.idKey].description = description;
+                                                }
+                                              },
+                                            events: {
+                                                rightclick: function(marker){
+                                                    $scope.markers.splice(marker.model.idKey, 1);
+                                                    angular.forEach($scope.markers, function(val, key){
+                                                        $scope.markers[key].id=key;
+                                                    })
+                                                }
+                                            }
+                                    }
+                        )
+                }else if (key>0){
+                    $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: true
+                                               },
+                                            click: function(marker){
+                                                var description= prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description); 
+                                                if(description){
+                                                    $scope.markers[marker.model.idKey].description = description;
+                                                }
+                                              },
+                                            events: {
+                                                rightclick: function(marker){
+                                                    $scope.markers.splice(marker.model.idKey, 1);
+                                                    angular.forEach($scope.markers, function(val, key){
+                                                        $scope.markers[key].id=key;
+                                                    })
+                                                }
+                                            }
+                                    }
+                        )
+                }else{
+                      $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: true,
+                                                      icon: '/images/spotlight-poi-blue.png'
+                                               },
+                                            click: function(marker){
+                                                var description= prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description); 
+                                                if(description){
+                                                    $scope.markers[marker.model.idKey].description = description;
+                                                }
+                                              }
+                                    }
+                        )
+                }
+
             });
+                
+      
             $scope.getBoats($scope.shipOwner.idUsers);
             angular.element('.cover-img').css({
                 'background-image': 'url(\'' + $scope.event.imageURL + '\')'
@@ -183,6 +293,45 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         return new Array(num);
     }
 
+function addComplexMarker(label){
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext("2d");
+    var imageObj = new Image();
+    imageObj.src = "/images/map-marker.png";
+    
+    return $q(function(resolve, reject){
+        imageObj.onload = function(){
+            context.drawImage(imageObj, 0, 0);
+
+            //Adjustable parameters
+            context.font = "40px Arial";
+            context.fillText(label, 17, 55);
+            //End
+
+            var image = {
+                url: canvas.toDataURL(),
+                size: new google.maps.Size(80, 104),
+                origin: new google.maps.Point(0,0),
+                anchor: new google.maps.Point(40, 104)
+            };
+            // the clickable region of the icon.
+            var shape = {
+                coords: [1, 1, 1, 104, 80, 104, 80 , 1],
+                type: 'poly'
+            };
+            resolve(image);
+
+        };
+        
+        
+    })
+    
+    
+    
+    
+};
+    
+    
     function maxTicketsForBoat(boat) {
         var nBunks, nCabinsWBathroom, nCabinsNBathroom, max;
         nBunks = boat.bunks;
@@ -247,6 +396,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.images.splice($scope.images.indexOf(image), 1);
         }, function (err) {})
     };
+    
+    
+    
+    
     $scope.saveEvent = function () {
         $scope.tempEvent.categoryId = $scope.event.categoryId;
         $scope.tempEvent.idEvents = $scope.event.idEvents;
@@ -261,16 +414,23 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         $scope.tempEvent.excludes = $scope.excludes;
         $scope.tempEvent.location = $scope.event.location;
         $scope.tempEvent.imageURL = $scope.event.imageURL;
-        $scope.tempEvent.route=$scope.route;
+        $scope.tempEvent.route=[];
         $scope.tempEvent.participants=$scope.participants;
         $scope.tempEvent.labels = [];
         $scope.tempEvent.tickets = $scope.tickets;
         $scope.tempEvent.boatId = $scope.selectedBoat.idBoats;
+        angular.forEach($scope.markers, function(val, key){
+             $scope.tempEvent.route.push({"description":val.description,"eventId":$scope.event.idEvents,"lat":val.coords.latitude,"lng":val.coords.longitude,"seq":val.id})
+        })
+        
+        
+        
         $http.put(URLs.ddns + 'rest/events/' + $scope.event.idEvents, $scope.tempEvent, {
             headers: {
                 'Language': $scope.selectedLanguage
             }
         }).then(function (res) {
+            unsavedWork=false;
             toastr.success($translate.instant('createeventid.saved'));
         }, function (err) {
         	
@@ -312,7 +472,6 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             latitude: $scope.mapDetails.geometry.location.lat()
             , longitude: $scope.mapDetails.geometry.location.lng()
         };
-        $scope.map.zoom=12;
         $scope.route[0]={"description":null,"eventId":$scope.event.idEvents,"idEventRoute":60,"lat":$scope.mapDetails.geometry.location.lat(),"lng":$scope.mapDetails.geometry.location.lng(),"seq":0}
         $scope.map.center.latitude=$scope.mapDetails.geometry.location.lat()
         $scope.map.center.longitude=$scope.mapDetails.geometry.location.lng()
@@ -329,8 +488,20 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     
     
     $scope.setLanguage = function (lang) {
-        $scope.selectedLanguage = lang;
-        $scope.getEvent();
+          if (unsavedWork) {
+                var answer = confirm($translate.instant('global.changeLanguage'));
+                if (!answer) {
+                    event.preventDefault();
+                }else{
+                    $scope.selectedLanguage = lang;
+                    $scope.getEvent();
+                    unsavedWork=false;
+                }
+            }else{
+                $scope.selectedLanguage = lang;
+                $scope.getEvent();
+                unsavedWork=false;
+            }
     };
     angular.element('.ui.language.dropdown').dropdown({
         action: 'activate'
@@ -343,4 +514,39 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             src: 'src'
             , itemSelector: '.item'
         });
+    
+    
+//     $scope.tempEvent.description = $scope.description;
+//        $scope.tempEvent.logistics = $scope.logistics;
+//        $scope.tempEvent.includes = $scope.includes;
+//        $scope.tempEvent.excludes = $scope.excludes;
+//        $scope.tempEvent.location = $scope.event.location;
+//        $scope.tempEvent.imageURL = $scope.event.imageURL;
+//        $scope.tempEvent.route=$scope.route;
+//        $scope.tempEvent.participants=$scope.participants;
+//        $scope.tempEvent.labels = [];
+//        $scope.tempEvent.tickets = $scope.tickets;
+//        $scope.tempEvent.boatId = $scope.selectedBoat.idBoats;
+//  
+    
+    function isArrayContentUndefined(array){
+        for (var i = 0; i < array.length; i++) {
+           if(array[i]!=undefined){
+                return false;
+            }
+        }
+            return true;
+    }
+    
+    
+    
+    $scope.$watchCollection('[event, event.location, event.dateStart, event.dateEvent, event.title, description, logistics, includes, excludes, route, participants, tickets, seletedBoat]', function(newVal, oldVal, scope){
+        console.log(newVal, oldVal);
+        
+        if(newVal!=oldVal && !isArrayContentUndefined(oldVal)){
+            unsavedWork=true;
+        }
+        
+    })
+
 });

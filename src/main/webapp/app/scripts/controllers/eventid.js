@@ -36,6 +36,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
         $scope.event.images = res.data.images;
         $scope.event.tickets = res.data.tickets;
         $scope.boat = res.data.boat;
+        $scope.markers=[];
         if (!!res.data.participantMessage) {
             $scope.event.participantMessage = res.data.participantMessage;
         };
@@ -47,6 +48,69 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
         $scope.event.includes = res.data.includes;
         $scope.event.excludes = res.data.excludes;
         $scope.event.route = res.data.route;
+         angular.forEach(res.data.route, function (value, key) {
+                
+             
+                
+                
+                if(key==res.data.route.length-1){
+                    $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: false,
+                                                       icon: '/images/spotlight-poi-green.png'
+                                               },
+                                            click: function(marker){
+                                                 alert($scope.markers[marker.model.idKey].description)
+                                              }
+                                    }
+                        )
+                }else if (key>0){
+                    $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: false
+                                               },
+                                            click: function(marker){
+                                                 alert(marker.description)
+                                            },
+                                                events:{
+                                                    mouseover: function(marker){
+                                                        
+                                                    }
+                                                }
+                                    }
+                        )
+                }else{
+                      $scope.markers.push({
+                                            id: value.seq,
+                                            coords: {
+                                                latitude: value.lat,
+                                                longitude: value.lng
+                                            },
+                                            description: value.description,    
+                                            options: { draggable: false,
+                                                      icon: '/images/spotlight-poi-blue.png'
+                                               },
+                                            click: function(marker){
+                                                alert(marker.description)
+                                              }
+                                    }
+                        )
+                }
+
+            });
+               
+        
+        
         $scope.map = {
             center: {
                 latitude: $scope.event.route[0].lat

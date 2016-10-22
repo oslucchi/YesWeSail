@@ -356,6 +356,9 @@ body.ngdialog-open { overflow: initial !important; }
     color: white !important;
 }
 
+.title-edit{
+    width: 500px !important;   
+}
 
 .main_search_content > h2 {
     font-size: 24px !important;

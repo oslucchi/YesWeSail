@@ -180,7 +180,11 @@
                 </h2>
                 <div class="angular-google-map-container">
                     <ui-gmap-google-map ng-if="event.route" options='map.options' center='map.center' zoom='map.zoom'>
-                        <ui-gmap-marker coords="{latitude: event.route[0].lat, longitude: event.route[0].lng}" options="marker.options" events="marker.events" idkey="event.route[0].seq"> </ui-gmap-marker>
+                        <ui-gmap-marker class='marker-tooltip' ng-repeat="marker in markers" events="marker.events" click="marker.click" coords="marker.coords" options="marker.options" idkey="marker.id" control="marker.control">
+                            </ui-gmap-marker>
+                        <ui-gmap-window ng-repeat="marker in markers" coords="marker.coords" show='marker.window'>
+                            <div>{{marker.description}}</div>
+                        </ui-gmap-window>
                     </ui-gmap-google-map>
                 </div>
             </div>
