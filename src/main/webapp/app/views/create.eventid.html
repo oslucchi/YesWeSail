@@ -169,12 +169,40 @@
                             </li>
                         </ul>
 -->
+                        
+                        
+<!--
+                         <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
+
+                                <div dimmer on="hover" class="ui image">
+                                <div class="ui dimmer">
+                                <div class="content">
+                                  <div class="center">
+                                    <h2 class="ui inverted header">{{category.description}}</h2>
+                                  </div>
+                                </div>
+                              </div>
+                              <img  class="ui image"  ng-src="{{category.url}}">
+                                    </div>
+                        </a>
+-->
 
                             <div id="slick-demo" class="ui small images">
-                                <a href ng-repeat="image in images"><img class="item thumbnail-image" ng-src="{{image}}" alt="">
-                                    
-                                    <button ng-click="setImageAsDefault(image)" class="ui tiny icon button"> <i class="link star icon"></i></button>
+                                <a href ng-repeat="image in images">
+                                    <div dimmer on="hover" class="ui image">
+                                <div class="ui dimmer image-edit">
+                                <div class="content">
+                                  <div class="center">
+                                  <button ng-click="setImageAsDefault(image)" class="ui tiny icon button"> <i class="link star icon"></i></button>
                                     <button ng-click="deleteImage(image)" class="ui tiny icon button"> <i class="link trash outline icon"></i></button>
+                                  </div>
+                                </div>
+                              </div>
+                                    <img class="item thumbnail-image" ng-src="{{image}}" alt="">
+                                    </div>
+                                    
+                                    
+                                    
                                 
                                 
                                 </a>
@@ -338,7 +366,6 @@
                             <ui-gmap-marker ng-repeat="marker in markers" events="marker.events" click="marker.click" coords="marker.coords" options="marker.options" idkey="marker.id" control="marker.control">
                             </ui-gmap-marker>
                             
-                            <ui-gmap-polyline path='path' visible="true"></ui-gmap-polyline>
                         </ui-gmap-google-map>
                         
                         

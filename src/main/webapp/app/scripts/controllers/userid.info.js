@@ -34,7 +34,7 @@ angular.module('yeswesailApp')
                 
                 
 
-                $http.put(URLs.ddns + 'rest/users/'+$scope.currentUser.idUsers, $scope.user).then(function (res) {
+                $http.put(URLs.ddns + 'rest/users/'+$stateParams.userId, $scope.user).then(function (res) {
                     $scope.editMode = false;
                 	toastr.success($translate.instant('useridInfo.updateSuccess'));
                  }, function (err) {
@@ -61,7 +61,7 @@ angular.module('yeswesailApp')
                     $scope.docs = res.data.docs;
                     $scope.personalCountry = $scope.user.personalInfo.country;
                     $scope.billingCountry = $scope.user.billingInfo.country;
-                    $scope.user.birthday = $filter('date')(res.data.user.birthday, 'yyyy-MM-dd');
+                    $scope.user.birthday = $filter('date')(res.data.user.birthday, 'dd/MM/yyyy');
                 } else {
                     $scope.user = res.data;
                 }

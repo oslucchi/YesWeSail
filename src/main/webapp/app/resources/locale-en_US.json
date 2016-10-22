@@ -73,6 +73,7 @@
 	"global.password": "Password",
 	"global.total": "Total amount",
 	"global.reject": "Reject",
+	"global.button.remove": "Remove",
 
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",

@@ -47,7 +47,8 @@
     "global.shareOnSocial": "Mit Freunden teilen!",
     "global.insert": "Eingeben",
     "global.updateError": "Fehler während der Eingabe {{errorMsg}}",
-     
+    "global.button.remove": "Removen",
+    
     "admin.events.addPassenger.newUser": "Neues Mitglied?",
     "admin.events.addPassenger.addUser": "Passagier hinzufügen",
     

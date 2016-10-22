@@ -140,9 +140,13 @@
                 </h2>
                 <div class="ui divided items">
                     <div class="item">
-                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>
+                        <div id="slick-boat" class="ui small images">
+                                <a href ng-repeat="image in boat.images | limitTo: 1"><img class="item" ng-src="{{image}}" alt=""></a>
+                        </div>
+<!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
+                        
                         <div class="content"> <a class="header">{{boat.name}}</a>
-                            <div class="meta"> <span>{{boat.model}} - {{boat.year}}</span> </div>
+                            <div class="meta"> <span>{{boat.model}} - {{boat.year}} - {{boat.length}}ft</span> </div>
                             <div class="description">
                                 <table class="ui very basic table">
                                     <tbody>
@@ -180,14 +184,55 @@
                 </h2>
                 <div class="angular-google-map-container">
                     <ui-gmap-google-map ng-if="event.route" options='map.options' center='map.center' zoom='map.zoom'>
+<!--
                         <ui-gmap-marker class='marker-tooltip' ng-repeat="marker in markers" events="marker.events" click="marker.click" coords="marker.coords" options="marker.options" idkey="marker.id" control="marker.control">
+                            <ui-gmap-window>
+                                <div>{{marker.description}}</div>
+                            </ui-gmap-window>
                             </ui-gmap-marker>
-                        <ui-gmap-window ng-repeat="marker in markers" coords="marker.coords" show='marker.window'>
+                        
+-->
+                        
+                        <ui-gmap-markers class='marker-tooltip' models="markers" fit="true" coords="'coords'"  idkey="'id'" options="'options'" icon="'icon'">
+                            <ui-gmap-window>
+                                <div>{{marker.description}}</div>
+                            </ui-gmap-window>
+                            </ui-gmap-markers>
+<!--
+                        <ui-gmap-window ng-repeat="marker in markers" coords="marker.coords" options="windowOptions" show='marker.window'>
                             <div>{{marker.description}}</div>
                         </ui-gmap-window>
+-->
                     </ui-gmap-google-map>
                 </div>
             </div>
         </div>
+        
+        <div class="ui divider"></div>
+        <div class="row">
+            <div class="twelve wide column">
+        <h1>{{"main.explore" | translate}}</h1>
+            
+            
+    <div class="ui images category-image" >
+        <a href="#/events?categoryId={{groundEvent}}" ng-repeat="groundEvent in groundEvents track by $index">
+          
+            <div dimmer on="hover" class="ui image">
+            <div class="ui dimmer">
+            <div class="content">
+              <div class="center">
+                <h4 class="ui inverted header">{{groundEvent.title}}</h4>
+              </div>
+            </div>
+          </div>
+          <img class="ui image ground-event" ng-src="{{groundEvent.imageURL}}">
+                </div>
+    </a>
+    </div>
+            </div>
+
+            </div>
+        
+        
     </div>
 </div>

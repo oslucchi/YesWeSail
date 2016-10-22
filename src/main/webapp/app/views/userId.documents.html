@@ -1,13 +1,9 @@
 <div class="ui vertical  segment" ng-repeat="doc in docs">
 <div class="ui items">
   <div class="item">
-    <div class="image">
-        <div class="ui mini images">
-          <a href="{{image}}" target="_blank"  ng-repeat="image in doc.images"><img ng-src="{{image}}"></a>
-        </div>
-    </div>
+    
     <div class="content">
-      <a class="header">{{doc.name}}</a>
+      <a class="header" href="{{doc.images[0]}}" target="_blank">{{doc.name}}</a>
       <div class="meta">
         <span>{{"documents.number" | translate}}: {{doc.number}}</span>
       </div>

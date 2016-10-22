@@ -236,6 +236,10 @@ angular.module('yeswesailApp', [
         , templateUrl: 'views/admin.requests.html'
         , controller: 'AdminrequestsCtrl'
         , accessLevel: USER_ROLES.ADMIN
+    }).state('dynamicPage', {
+        url: "/dynamic/{pageRef}"
+        , templateUrl: 'views/dynamicPage.html'
+        , controller: 'DynamicPageCtrl'
     }).state('sailorRegistration', {
         url: "/sailor-registration"
         , templateUrl: 'views/sailor-registration.html'

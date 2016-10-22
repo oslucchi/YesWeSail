@@ -451,6 +451,15 @@ body.ngdialog-open { overflow: initial !important; }
     padding-top: 30px !important;
 }
 
+.ui.dimmer.image-edit{
+    height: 20% !important;
+    background: transparent !important;
+}
+
+.ground-event{
+    margin: 0 !important;
+}
+
 .cover-img{
 /*    width: 100vw;*/
     height: 400px;

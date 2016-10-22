@@ -30,6 +30,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
     $http.post(URLs.ddns + 'rest/events/details', {
         eventId: $stateParams.eventId
     }).then(function (res) {
+        $scope.groundEvents=res.data.groundEvents;
         $scope.event = res.data.event;
         $scope.event.title = res.data.event.title;
         $scope.shipOwner = res.data.shipOwner;
@@ -63,10 +64,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
                                             description: value.description,    
                                             options: { draggable: false,
                                                        icon: '/images/spotlight-poi-green.png'
-                                               },
-                                            click: function(marker){
-                                                 alert($scope.markers[marker.model.idKey].description)
-                                              }
+                                               }
                                     }
                         )
                 }else if (key>0){
@@ -78,15 +76,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
                                             },
                                             description: value.description,    
                                             options: { draggable: false
-                                               },
-                                            click: function(marker){
-                                                 alert(marker.description)
-                                            },
-                                                events:{
-                                                    mouseover: function(marker){
-                                                        
-                                                    }
-                                                }
+                                               }
                                     }
                         )
                 }else{
@@ -99,16 +89,22 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
                                             description: value.description,    
                                             options: { draggable: false,
                                                       icon: '/images/spotlight-poi-blue.png'
-                                               },
-                                            click: function(marker){
-                                                alert(marker.description)
-                                              }
+                                               }
+                       
                                     }
                         )
                 }
 
             });
-               
+               $scope.windowOptions={
+                   
+                   
+                   pixelOffset: {
+                                 width: 0,
+                                 height: -40
+                                }
+                                    
+               }
         
         
         $scope.map = {
@@ -128,6 +124,17 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
         });
         angular.element('#slick-demo').slickLightbox({
             src: 'src'
+            , itemSelector: '.item'
+        }); 
+        
+        angular.element('#slick-boat').slick({
+            slidesToShow:1
+            , slidesToScroll: 1
+        });    
+        
+        angular.element('#slick-boat').slickLightbox({
+            src: 'src',
+            images: $scope.boat.images
             , itemSelector: '.item'
         });
     }, function (err) {});
