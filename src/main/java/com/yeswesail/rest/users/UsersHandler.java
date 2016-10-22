@@ -506,12 +506,8 @@ public class UsersHandler {
 		log.debug("user id " + userId + " isadmin " + !Utils.userIsAdmin(token, languageId) +
 				  " email requested for change " + sd.getBasicProfile(token).getEmail() + 
 				  " email in json data " + jsonIn.email);
-		if (!Utils.userIsAdmin(token, languageId))
-		{
-			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
-		}
 		
-		if (jsonIn.email.compareTo(sd.getBasicProfile(token).getEmail()) != 0)
+		if (!Utils.userIsAdmin(token, languageId) && (jsonIn.email.compareTo(sd.getBasicProfile(token).getEmail()) != 0))
 		{
 			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "users.mailSpoofing");
 		}

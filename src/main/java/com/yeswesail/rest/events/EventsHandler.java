@@ -376,7 +376,41 @@ public class EventsHandler {
 
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
+	
+	private double distance(double lat1, double lon1, double lat2, double lon2, String unit) 
+	{
+		double theta = lon1 - lon2;
+		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + 
+					  Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+		dist = Math.acos(dist);
+		dist = rad2deg(dist);
+		dist = dist * 60 * 1.1515;
+		if (unit == "K") 
+		{
+			dist = dist * 1.609344;
+		}
+		else if (unit == "N")
+		{
+			dist = dist * 0.8684;
+		}
 
+		return (dist);
+	}
+
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts decimal degrees to radians						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	private double deg2rad(double deg) {
+		return (deg * Math.PI / 180.0);
+	}
+
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts radians to decimal degrees						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	private double rad2deg(double rad) {
+		return (rad * 180 / Math.PI);
+	}
+	
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -526,10 +560,11 @@ public class EventsHandler {
 			jsonResponse.put("shipOwner", "{}");
 		}
 
+		EventRoute[] r = null;
 		try
 		{
 			log.debug("Trying to get the route details for event " + event.getIdEvents());
-			EventRoute[] r = EventRoute.getRoute(conn, event.getIdEvents());
+			r = EventRoute.getRoute(conn, event.getIdEvents());
 			jsonResponse.put("route", r);
 		}
 		catch (Exception e) {
@@ -555,7 +590,43 @@ public class EventsHandler {
 			log.warn("Unable to get the required boat, exception (" + e.getMessage() + ")");
 			jsonResponse.put("boat", "{}");
 		}
-
+		
+		Events[] groundEventsAvailable = null;
+		try {
+			groundEventsAvailable = Events.findByFilter("WHERE eventType = 2", languageId);
+		} 
+		catch (Exception e) {
+			log.warn("Exception " + e.getMessage() + " populating ground events for event " + event.getIdEvents());
+		}
+		ArrayList<Events> groundEvents = new ArrayList<Events>();
+		if(groundEventsAvailable != null)
+		{
+			for(Events ev : groundEventsAvailable)
+			{
+				EventRoute start[] = null;
+				try {
+					start = EventRoute.getRoute(conn, ev.getIdEvents());
+					EventRoute er = null;
+					for (int i = 0; i < r.length; i++) 
+					{
+						er = r[i];
+						double dist = distance(new Double(er.getLat()), new Double(er.getLng()), 
+											   new Double(start[0].getLat()), new Double(start[0].getLng()), "K");
+						if (dist < prop.getMaxDistanceForEventsOnTheGround())
+						{
+							groundEvents.add(ev);
+							break;
+						}
+					}
+				} 
+				catch (Exception e) {
+					log.warn("Exception " + e.getMessage() + " getting routes for ground event " + ev.getIdEvents());
+				}
+			}
+		}
+		jsonResponse.put("groundEvents", groundEvents);
+			
+		DBInterface.disconnect(conn);
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity).build();
 	}

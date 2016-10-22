@@ -39,6 +39,7 @@ public class ApplicationProperties {
 	private ServletContext context;
 	private String adminEmail;
 	private int releaseTicketLocksAfter = 600;
+	private int maxDistanceForEventsOnTheGround = 5;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -97,7 +98,6 @@ public class ApplicationProperties {
 		paypalClientSecret = properties.getProperty("paypalClientSecret");
 
 		adminEmail = properties.getProperty("adminEmail");
-    	
     	try
     	{
     		variable = "sessionExpireTime";
@@ -106,6 +106,8 @@ public class ApplicationProperties {
     		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
     		variable = "releaseTicketLocksAfter";
     		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
+    		variable = "maxDistanceForEventsOnTheGroud";
+    		maxDistanceForEventsOnTheGround = Integer.parseInt(properties.getProperty("maxDistanceForEventsOnTheGround"));
     	}
     	catch(NumberFormatException e)
     	{
@@ -236,5 +238,9 @@ public class ApplicationProperties {
 
 	public String getPaypalClientSecret() {
 		return paypalClientSecret;
+	}
+
+	public int getMaxDistanceForEventsOnTheGround() {
+		return maxDistanceForEventsOnTheGround;
 	}	
 }
