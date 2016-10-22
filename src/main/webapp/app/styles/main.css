@@ -47,6 +47,10 @@ input:disabled{
     opacity: 1 !important;
 }
 
+.ui.dimmer{
+    background-color: rgba(33,133,208,0.5) !important;
+}
+
 .layered-paper {
     background: #eee;
     box-shadow:

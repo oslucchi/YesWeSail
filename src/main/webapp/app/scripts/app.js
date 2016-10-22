@@ -291,7 +291,24 @@ angular.module('yeswesailApp', [
             }, true);
         }
     };
-}).directive('countdown', [
+})
+    
+.directive('dimmer', function ($timeout) {
+    return {
+        restrict: "A"
+        , link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dimmer({
+                    on: attr.on,
+                    opacity: 0.5
+                })
+            }, 0);
+        }
+    };
+})
+    
+    
+    .directive('countdown', [
         'Util'
         , '$interval'
         , function (Util, $interval) {

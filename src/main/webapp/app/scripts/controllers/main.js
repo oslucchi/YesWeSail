@@ -54,4 +54,5 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
             });
         }
     }
+    
 });

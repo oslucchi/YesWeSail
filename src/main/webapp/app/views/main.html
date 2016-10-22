@@ -119,10 +119,20 @@
 <h1>{{"main.explore" | translate}}</h1>
 <div class="ui stackable three column grid">
 
-    <div class="ui fluid column bordered rounded images" ng-repeat="category in CATEGORIES track by $index">
+    <div class="ui fluid column category-image"  ng-repeat="category in CATEGORIES track by $index">
         <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
-            <img ng-src="{{category.url}}">
-        </a>
+          
+            <div dimmer on="hover" class="ui image">
+            <div class="ui dimmer">
+            <div class="content">
+              <div class="center">
+                <h2 class="ui inverted header">{{category.description}}</h2>
+              </div>
+            </div>
+          </div>
+          <img  class="ui image"  ng-src="{{category.url}}">
+                </div>
+    </a>
     </div>
 
 </div>
