@@ -73,7 +73,8 @@
 	"global.password": "Password",
 	"global.total": "Totale",
 	"global.reject": "Rifiuta",
-	"global.button.remove": "Rimuovi",     
+	"global.button.remove": "Rimuovi",
+    "global.leaveMessage": "Sono presenti modifiche non salvate, salvare?",
     
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",

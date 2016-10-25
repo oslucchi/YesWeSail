@@ -6,7 +6,7 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
+angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
     angular.element('.ui.anchor-menu').sticky({
         context: '#event-container'
         , offset: 60
@@ -26,10 +26,12 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                         if (!answer) {
                             event.preventDefault();
                         }else{
-                            
+                            $scope.saveEvent()
                         }
                     }
                 });
+    
+   
     
     $scope.selectedLanguage = LocaleService.getCurrentLocale();
     $scope.tempEvent = {};
@@ -472,18 +474,44 @@ function addComplexMarker(label){
             latitude: $scope.mapDetails.geometry.location.lat()
             , longitude: $scope.mapDetails.geometry.location.lng()
         };
-        $scope.route[0]={"description":null,"eventId":$scope.event.idEvents,"idEventRoute":60,"lat":$scope.mapDetails.geometry.location.lat(),"lng":$scope.mapDetails.geometry.location.lng(),"seq":0}
+        
+        
+        
+        
         $scope.map.center.latitude=$scope.mapDetails.geometry.location.lat()
         $scope.map.center.longitude=$scope.mapDetails.geometry.location.lng()
         
-        $scope.markers[0].coords = $scope.newLocation;
+        
         $scope.map.control.refresh($scope.newLocation);
-        $scope.tempEvent.route = [{
-            seq: 0
-            , description: 'No Description'
-            , lat: $scope.newLocation.latitude
-            , lng: $scope.newLocation.longitude
-            }];
+        
+        $scope.markers[0] = {
+                                            id: 0,
+                                            coords: $scope.newLocation,
+                                            description: 'Sailing point',    
+                                            options: {
+                                                draggable: true,
+                                                      icon: addComplexMarker($scope.markers.length).then(function(image){
+                                                          return image.url;
+                                                      })
+                                               },
+                                            click: function(marker){
+                                                var description= prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description); 
+                                                if(description){
+                                                    $scope.markers[marker.model.idKey].description = description;
+                                                }
+                                              },
+                                            events: {
+                                                rightclick: function(marker){
+
+                                                    $scope.markers.splice(marker.model.idKey, 1);
+
+                                                    angular.forEach($scope.markers, function(val, key){
+                                                        $scope.markers[key].id=key;
+                                                    })
+                                                }
+                                            }
+                                        };
+        
     };
     
     
@@ -493,6 +521,7 @@ function addComplexMarker(label){
                 if (!answer) {
                     event.preventDefault();
                 }else{
+                    $scope.saveEvent();
                     $scope.selectedLanguage = lang;
                     $scope.getEvent();
                     unsavedWork=false;

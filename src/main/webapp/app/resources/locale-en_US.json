@@ -74,6 +74,7 @@
 	"global.total": "Total amount",
 	"global.reject": "Reject",
 	"global.button.remove": "Remove",
+	"global.leaveMessage": "You have unsaved changes, save before exit?",
 
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",

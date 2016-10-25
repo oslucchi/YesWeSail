@@ -7,6 +7,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService, $anchorScroll, $location) {
+      $scope.noEventFound=false;
     angular.element('.ui.anchor-menu').sticky({
         context: '#event-container'
         , offset: 60
@@ -30,6 +31,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
     $http.post(URLs.ddns + 'rest/events/details', {
         eventId: $stateParams.eventId
     }).then(function (res) {
+        $scope.noEventFound=false;
         $scope.groundEvents=res.data.groundEvents;
         $scope.event = res.data.event;
         $scope.event.title = res.data.event.title;
@@ -137,7 +139,12 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
             images: $scope.boat.images
             , itemSelector: '.item'
         });
-    }, function (err) {});
+    }, function (err) {
+        
+        $scope.noEventFound=true;
+        
+        
+    });
     $scope.testTickets = [[{
             "available": 4
             , "booked": 0
