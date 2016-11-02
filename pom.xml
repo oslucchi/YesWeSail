@@ -180,6 +180,13 @@
 					        <directory>images/users</directory> 
 					        <targetPath>/images/users</targetPath>
 					      </resource> 
+						  <resource>
+						    <directory>images</directory>
+						    <includes>
+						      <include>**/default-icon.jpg</include>
+						    </includes>
+					        <targetPath>/images</targetPath>
+						  </resource>
 					      <resource> 
 					        <directory>src/main/webapp/dist</directory> 
 					        <targetPath>/</targetPath>

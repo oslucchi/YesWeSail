@@ -80,7 +80,7 @@ public class Maps {
 		{
 			EventTypes e = new EventTypes();
 			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
-					"WHERE languageId = " + languageId, EventTypes.class);
+					"WHERE b.languageId = " + languageId, EventTypes.class);
 		}
 		for(Object e : eventTypes)
 		{

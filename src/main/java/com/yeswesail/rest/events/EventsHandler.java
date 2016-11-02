@@ -324,7 +324,7 @@ public class EventsHandler {
 					"INSERT INTO EventTickets " +
 				    "  SELECT 0, " + idEvents + ", ticketType, available, " +
 				    "         booked, price, cabinRef, bookedTo " + 
-					"  FROM EventEventTickets " +
+					"  FROM EventTickets " +
 				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventTickets.executeStatement(conn, sql, true);
 			
