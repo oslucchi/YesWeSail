@@ -55,4 +55,16 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
         }
     }
     
+    var user={
+        mail: 'amarie.stefan@gmail.com',
+        name: 'Stefan',
+        surname: 'Amarie'
+    }
+    
+    $scope.subscribe=function(){
+        $http.post(URLs.ddns + 'rest/events/users/subscribe', {u: user, what: 'Subscribing'}).then(function(res){
+            console.log(res);
+        })
+    }
+    
 });
