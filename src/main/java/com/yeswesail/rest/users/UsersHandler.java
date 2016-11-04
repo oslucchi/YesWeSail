@@ -1,7 +1,12 @@
 package com.yeswesail.rest.users;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,6 +25,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.media.multipart.BodyPart;
@@ -27,7 +33,13 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.ecwid.maleorang.MailchimpClient;
+import com.ecwid.maleorang.MailchimpObject;
+import com.ecwid.maleorang.annotation.Field;
+import com.ecwid.maleorang.method.v3_0.members.EditMemberMethod;
+import com.ecwid.maleorang.method.v3_0.members.MemberInfo;
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -47,6 +59,7 @@ import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.AddressInfoJson;
 import com.yeswesail.rest.jsonInt.BoatsJson;
 import com.yeswesail.rest.jsonInt.ShipownerRequestJson;
+import com.yeswesail.rest.jsonInt.SubscribeJson;
 import com.yeswesail.rest.jsonInt.UsersJson;
 
 @Path("/users")
@@ -107,8 +120,129 @@ public class UsersHandler {
 		
 		return errMsg;
 	}
+	
 
+	public static class MergeVars extends MailchimpObject {
+	    @Field
+	    public String EMAIL, FNAME, LNAME;
 
+	    public MergeVars() { }
+
+	    public MergeVars(String email, String fname, String lname) {
+	        this.EMAIL = email;
+	        this.FNAME = fname;
+	        this.LNAME = lname;
+	    }
+	}
+
+	private void mailchimpSender(String apikey) throws IOException
+	{
+		String url = prop.getMailchimpURL() + "/lists/";
+		// Authentication PART
+
+		String name = "oslucchi";
+		// Mailchimp test env password "pUw5A1!@";
+		String password = apikey;     //Mailchimp API key
+		String authString = name + ":" + password;
+
+		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+		String authStringEnc = new String(authEncBytes);
+
+		URL urlConnector = new URL(url);
+		HttpURLConnection httpConnection = (HttpURLConnection) urlConnector.openConnection();
+		httpConnection.setRequestMethod("GET");
+		httpConnection.setDoOutput(true);
+		httpConnection.setDoInput(true);
+		httpConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+		httpConnection.setRequestProperty("Accept", "application/json");
+		httpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+
+		InputStream is1 = httpConnection.getInputStream();
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(is1, "utf-8"));
+
+		String line = null;
+		while ((line = br.readLine()) != null) 
+		{
+		    sb.append(line + "\n");
+        }
+		System.out.println(sb.toString());
+		br.close();	
+	}
+	@POST
+	@Path("/subscribe")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response subscribe(SubscribeJson jsonIn, @HeaderParam("Authorization") String token)
+	{
+	    SessionData session = SessionData.getInstance();
+		Users u = null;
+		int languageId = Constants.LNG_EN;
+		if (token != null)
+		{
+			languageId = session.getLanguage(token);
+			u = session.getBasicProfile(token);
+			if (u.getEmail().compareTo(jsonIn.u.email) != 0)
+			{
+				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "users.mailSpoofing"), true);
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(utils.jsonize())
+						.build();
+			}
+		}
+		else
+		{
+			u = new Users();
+			u.setEmail(jsonIn.u.email);
+			u.setName(jsonIn.u.name);
+			u.setSurname(jsonIn.u.surname);
+		}
+
+		switch(jsonIn.what.toUpperCase())
+		{
+		case "MAILCHIMP":
+			MailchimpClient client = new MailchimpClient(prop.getMailchimpAPIKEY());
+			EditMemberMethod.CreateOrUpdate method = 
+				new EditMemberMethod.CreateOrUpdate(prop.getMailchimpListId(), u.getEmail());
+			method.status = "subscribed";
+			method.merge_fields = new MailchimpObject();
+			method.merge_fields.mapping.put("FNAME", u.getName());
+			method.merge_fields.mapping.put("LNAME", u.getSurname());
+			MemberInfo member = null;
+			try
+			{
+				member = client.execute(method);
+			}
+			catch(Exception e)
+			{
+				log.error("Error trying to register " + jsonIn.u.email + " to mailchimp (Exception " + e.getMessage() + ")");
+				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(utils.jsonize())
+						.build();
+			}
+			finally
+			{
+				try 
+				{
+					client.close();
+				} 
+				catch (IOException e) {
+					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")");
+				}
+			}
+			log.debug("Member subscribed. Status " + member.status + ". Last update " + member.last_changed);
+			break;
+			
+		default:
+			break;
+		}
+
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
+	
+	
 	@POST
 	@Path("/basic")
 	@Produces(MediaType.APPLICATION_JSON)

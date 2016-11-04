@@ -40,6 +40,9 @@ public class ApplicationProperties {
 	private String adminEmail;
 	private int releaseTicketLocksAfter = 600;
 	private int maxDistanceForEventsOnTheGround = 5;
+	private String mailchimpURL = "";
+	private String mailchimpListId = "";
+	private String mailchimpAPIKEY = "";
 	
 	private static ApplicationProperties instance = null;
 	
@@ -98,6 +101,10 @@ public class ApplicationProperties {
 		paypalClientSecret = properties.getProperty("paypalClientSecret");
 
 		adminEmail = properties.getProperty("adminEmail");
+		mailchimpURL = properties.getProperty("mailchimpURL");
+		mailchimpListId = properties.getProperty("mailchimpListId");
+		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
+		
     	try
     	{
     		variable = "sessionExpireTime";
@@ -242,5 +249,18 @@ public class ApplicationProperties {
 
 	public int getMaxDistanceForEventsOnTheGround() {
 		return maxDistanceForEventsOnTheGround;
+	}
+
+	public String getMailchimpURL() {
+		return mailchimpURL;
+	}
+
+	public String getMailchimpListId() {
+		return mailchimpListId;
+	}
+
+	public String getMailchimpAPIKEY() {
+		return mailchimpAPIKEY;
 	}	
+	
 }
