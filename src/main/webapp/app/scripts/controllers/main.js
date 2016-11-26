@@ -6,7 +6,7 @@
  * # MainCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog) {
+angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog, toastr) {
     $scope.CATEGORIES = [];
     $scope.LOCATIONS = [];
     MAPS.getMap('LOCATIONS').then(function (res) {
@@ -55,16 +55,20 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
         }
     }
     
-    var user={
-        email: 'amarie.stefan@gmail.com',
-        name: 'Stefan',
-        surname: 'Amarie'
+    $scope.user={
+        email: '',
+        name: '',
+        surname: ''
     }
     
     $scope.subscribe=function(){
-        $http.post(URLs.ddns + 'rest/users/subscribe', {u: user, what: 'MAILCHIMP'}).then(function(res){
-            console.log(res);
-        })
+        if($scope.user.email){
+            $http.post(URLs.ddns + 'rest/users/subscribe', {u: $scope.user, what: 'MAILCHIMP'}).then(function(res){
+                toastr.success('Subscribed');
+            })
+        }else{
+            toastr.warning('Check email!');
+        }
     }
     
 });

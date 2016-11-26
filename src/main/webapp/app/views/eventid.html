@@ -143,9 +143,7 @@
                 </h2>
                 <div class="ui divided items">
                     <div class="item">
-                        <div id="slick-boat" class="ui small images">
-                                <a href ng-repeat="image in boat.images | limitTo: 1"><img class="item" ng-src="{{image}}" alt=""></a>
-                        </div>
+                       
 <!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
                         
                         <div class="content"> <a class="header">{{boat.name}}</a>
@@ -172,6 +170,11 @@
                                     </tbody>
                                 </table>
                             </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                         <div id="slick-boat" class="ui small images">
+                                <a href ng-repeat="image in boat.images | limitTo: 4"><img class="item" ng-src="{{image}}" alt=""></a>
                         </div>
                     </div>
                 </div>

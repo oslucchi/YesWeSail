@@ -1,5 +1,6 @@
-<div ng-style="{'background-image':'url('+event.imageUrl+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
-
+<div ng-mousedown="calculateBackgroundPosition()" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<!--<div class="ui button" ng-click="calculateBackgroundPosition('-10')">UP</div>-->
+<!--<div class="ui button" ng-click="calculateBackgroundPosition('10')">DOWN</div>-->
 
 </div>
 <!--
@@ -15,7 +16,7 @@
 
 
     <div class="ui container">
-<div class="ui anchor-menu sticky attached stackable menu">
+<div class="ui anchor-menu attached stackable menu">
         <a class="item">
             <i class="home icon"></i>{{"event.gallery" | translate}}
         </a>
@@ -268,9 +269,49 @@
                           </div>
                             </div>
                         </div>
+                        
+                           <div class="ui divided items">
+                    <div class="item">
+                       
+<!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
+                        
+                        <div class="content"> <a class="header">{{selectedBoat.name}}</a>
+                            <div class="meta"> <span>{{selectedBoat.model}} - {{selectedBoat.year}} - {{selectedBoat.length}}ft</span> </div>
+                            <div class="description">
+                                <table class="ui very basic table">
+                                    <tbody>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsWithBath" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsWithBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsNoBath" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsNoBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.sharedBathrooms" | translate}}</td>
+                                            <td>{{selectedBoat.sharedBathrooms}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.bunks" | translate}}</td>
+                                            <td>{{selectedBoat.bunks}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item">
+                         <div id="slick-boat" class="ui small images">
+                                <a href ng-repeat="image in selectedBoat.images | limitTo: 4"><img class="item" ng-src="{{image}}" alt=""></a>
+                        </div>
+                    </div>
+                </div>
+<!--
                         <div class="boats-container-selected-boat">
                             <img ng-src="{{selectedBoat.images[0]}}">
                         </div>
+-->
                     </div>
 
                     </div>
@@ -352,7 +393,7 @@
                                 {{"event.boardingPlace" | translate}}
                             </div>
                             <input ng-autocomplete ng-model="autocomplete" options="options" details="mapDetails" type="text" placeholder="Search...">
-                            <button ng-click="searchLocation()" class="ui button">{{"global.search" | translate}}</button>
+                            <button ng-click="searchLocation()" class="ui button">{{"global.setPosition" | translate}}</button>
                         </div>
 
 

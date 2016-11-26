@@ -4,7 +4,7 @@
 
         <div class="ui segment">
             <h2   class="ui icon header">
-          <span ngf-select="uploadProfilePic($files)" ngf-drop="" ng-model="files" ng-disabled="!isOwner || !isAdmin" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner || isAdmin}">
+          <span ngf-select="uploadProfilePic($files)" ngf-drop="" ng-model="files" ng-disabled="!isOwner && isAdmin" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
                 <img class="ui small image" ng-if="!!user.imageURL" ng-src="{{user.imageURL}}">
                 <img class="ui small image" ng-if="!!!user.imageURL" ng-src="images/default-icon.jpg">
                 <div class="change-image-message">{{"user.changeProfileImage" | translate}}</div>      

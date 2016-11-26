@@ -503,13 +503,17 @@ tr{
     background-color: white;
 }
 
+.not-approved{
+    background-color: orange !important;
+}
+
 .results{
    min-height: 100vh;
 }
 
 .admin-menu-container{
     height: calc(100vh - 100.2px);
-    width: 84px;
+/*    width: 84px;*/
     background-color: #1B1C1D;
     float: left;
 }
@@ -526,6 +530,10 @@ tr{
 
 .add-to-cart:hover{
     background-color: antiquewhite !important;
+}
+
+.anchor-menu{
+    margin-bottom: 20px !important;
 }
 
 .tickets-container{

@@ -5,6 +5,8 @@
     "main.bestOffers": "The best on the shelf",
     "main.explore": "Explore more",
     "main.whyUs": "Why YesWeSail",
+    "main.subscribeMessage": "Subscribe to our Newsletter to receive special offers!",
+    "main.subscribeButton": "Subscribe",
     "main.bestPriceGranted": "Best price granted",
     "main.bestPriceGrantedDesc": "The first early booking site to save on your next sailing vacations",
     "main.securedPayments": "Secured payments",
@@ -42,6 +44,7 @@
     "global.to": "To",
     "global.transactionId": "Transaction number",
     "global.search": "Search",
+    "global.setPosition": "Set Start Position",
     "global.selectFiles": "Select files to upload",
     "global.selectLocation": "Location",
     "global.selectCategory": "Type of vacation",
@@ -80,6 +83,9 @@
     "admin.events.addPassenger.addUser": "Add Passenger",
     
     "admin.events.clone.aggregated": "Aggregated events",
+    "admin.events.cloneEventHeader": "Clone Event",
+    "admin.events.removePassenger": "Remove Passenger",
+    "admin.events.addPassenger": "Add Passenger",
     
     "admin.events.success.update": "Event {{eventId}} updated",
     
@@ -243,6 +249,8 @@
 	"adminevents.gridCols.lastMinute": "LastMin",
 	"adminevents.gridCols.eventId": "Id",
 	"adminevents.gridCols.title": "Title",
+	"adminevents.gridCols.dateStart": "Date Start",
+	"adminevents.gridCols.dateEnd": "Date End",
 	"adminevents.gridCols.createdBy": "Created by",
 	"adminevents.gridCols.createdOn": "Created on",
 	"adminevents.gridCols.location": "Location",

@@ -3,7 +3,7 @@
 <table class="ui compact sortable selectable celled table">
   <thead>
     <tr>
-      <th>{{"adminusers.gridCols.select" | translate}}</th>
+<!--      <th>{{"adminusers.gridCols.select" | translate}}</th>-->
       <th  class="ui fitted center aligned">{{"adminusers.gridCols.actions" | translate}}</th>
       <th>{{"adminusers.gridCols.status" | translate}}</th>
       <th>{{"adminusers.gridCols.id" | translate}}</th>
@@ -17,16 +17,18 @@
     
   <tbody>
     <tr ng-class="{'error': user.status=='I', 'positive': user.status=='A', 'warning': user.status=='P'}" ng-repeat="user in users">
+<!--
         <td class="collapsing">
          <div class="ui fitted center aligned checkbox">
           <input type="checkbox" ng-model="selectedusers"> <label></label>
         </div>
       </td>
+-->
       <td class="collapsing">
         <div class="ui center aligned">
               <i ng-click="activate(user)" class="large green checkmark link icon"></i>
               <i ng-click="deactivate(user)" class="large red ban link icon"></i>
-              <i ui-sref="userId({userId: user.idUsers})" class="large grey edit link icon"></i>
+              <i ui-sref="userId.profile({userId: user.idUsers})" class="large grey edit link icon"></i>
         </div>
           
       </td>
@@ -55,12 +57,14 @@
   </tbody>
   <tfoot class="full-width">
     <tr>
+<!--
       <th><div class="ui small disabled button">
           {{"global.approveAll" | translate}}
         </div></th>
+-->
       <th colspan="9">
         <button ng-click="getusers()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
-        <button ng-disabled="true" ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminusers.gridCols.addUser" | translate}}</button>
+<!--        <button ng-disabled="true" ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminusers.gridCols.addUser" | translate}}</button>-->
       </th>
     </tr>
   </tfoot>

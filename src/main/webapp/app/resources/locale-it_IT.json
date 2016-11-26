@@ -5,6 +5,8 @@
     "main.bestOffers": "Le migliori proposte",
     "main.explore": "Esplora",
     "main.whyUs": "Perchè scegliere YesWeSail",
+    "main.subscribeMessage": "Unisciti alla nostra Newsletter per ricevere offerte e promozioni!",
+    "main.subscribeButton": "Aderisci",
     "main.bestPriceGranted": "Miglior prezzo garantito",
     "main.bestPriceGrantedDesc": "Nasce il primo sistema di early booking per risparmiare sulle vacanze in barca.",
     "main.securedPayments": "Pagamenti sicuri",
@@ -43,6 +45,7 @@
     "global.transactionId": "Transazione numero",
     "global.search": "Cerca",
     "global.selectFiles": "Seleziona i files",
+    "global.setPosition": "Imposta punto partenza",
     "global.selectLocation": "Localita'",
     "global.selectCategory": "Tipo di vacanza",
     "global.tickets": "Biglietti",
@@ -80,7 +83,9 @@
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
     
     "admin.events.clone.aggregated": "Eventi aggregati",
-    
+        "admin.events.cloneEventHeader": "Clona Evento",
+    "admin.events.removePassenger": "Rimuovi Passeggero",
+    "admin.events.addPassenger": "Aggiungi Passeggero",
     "admin.events.success.update": "Evento {{eventId}} aggiornato",
     
     "cart.suggestedEvents": "Eventi suggeriti",
@@ -244,6 +249,8 @@
 	"adminevents.gridCols.lastMinute": "LastMin",
 	"adminevents.gridCols.eventId": "Id",
 	"adminevents.gridCols.title": "Titolo",
+    "adminevents.gridCols.dateStart": "Data Inizio",
+	"adminevents.gridCols.dateEnd": "Data Fine",
 	"adminevents.gridCols.createdBy": "Creato da",
 	"adminevents.gridCols.createdOn": "Creato il",
 	"adminevents.gridCols.location": "Meta",

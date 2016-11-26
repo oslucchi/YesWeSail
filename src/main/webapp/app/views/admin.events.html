@@ -1,90 +1,83 @@
 <div class="admin-events-container">
- 
-<table class="ui compact sortable selectable celled  table">
-  <thead>
-    <tr>
-      <th>{{"adminevents.gridCols.select" | translate}}</th>
-      <th  class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
-      <th>{{"adminevents.gridCols.Status" | translate}}</th>
-      <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
-      <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
-      <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
-      <th>{{"adminevents.gridCols.eventId" | translate}}</th>
-      <th>{{"adminevents.gridCols.title" | translate}}</th>
-      <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
-      <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
-      <th>{{"adminevents.gridCols.location" | translate}}</th>
-     
-        
-    </tr>
-  </thead>
-    
-  <tbody>
-    <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
+    <table class="ui compact sortable selectable celled  table">
+        <thead>
+            <tr>
+                <!--      <th>{{"adminevents.gridCols.select" | translate}}</th>-->
+                <th class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
+                <th>{{"adminevents.gridCols.Status" | translate}}</th>
+                <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
+                <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
+                <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
+                <th>{{"adminevents.gridCols.eventId" | translate}}</th>
+                <th>{{"adminevents.gridCols.title" | translate}}</th>
+                <th>{{"adminevents.gridCols.dateStart" | translate}}</th>
+                <th>{{"adminevents.gridCols.dateEnd" | translate}}</th>
+                <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
+                <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
+                <th>{{"adminevents.gridCols.location" | translate}}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events | orderBy: 'idEvents'">
+                <!--
         <td class="collapsing">
          <div class="ui fitted center aligned checkbox">
           <input type="checkbox" ng-model="selectedEvents"> <label></label>
         </div>
       </td>
-      <td class="collapsing">
-        <div class="ui center aligned">
-              <i ng-click="activate(event)" class="large green checkmark link icon"></i>
-              <i ng-really-message="Are you sure?" ng-really-click="remove(event)" class="large red trash outline link icon"></i>
-              <i ng-click="deactivate(event)" class="large red ban link icon"></i>
-              <i ng-click="showClonePopup(event)" class="large grey copy link icon"></i>
-              <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i>
-              <i ng-click="showAddPassengerPopup(event.idEvents)" class="large grey add user link icon"></i>
-              <i ng-click="showRemovePassengerPopup(event.idEvents)" class="large grey remove user link icon"></i>
-        </div>
-          
-      </td>
-        <td class="collapsing">
-        <div class="ui center aligned">
-            <div ng-switch="event.status">
-              <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
-              <div ng-switch-when="I"><i class="large red remove icon"></i></div>
-              <div ng-switch-when="P"><i class="large yellow wait icon"></i></div>
-              <div ng-switch-default>
-               
-              </div>
-            </div>
-        </div>
-      </td>
-        <td class="collapsing">
-        <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="event.hotEvent" ng-change="updateHotEvent(event, event.hotEvent)" ng-checked="event.hotEvent"> <label></label>
-        </div>
-      </td>
-        <td class="collapsing">
-        <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="event.earlyBooking" ng-change="updateEarlyBooking(event, event.earlyBooking)" ng-checked="event.earlyBooking"> <label></label>
-        </div>
-      </td>
-        <td class="collapsing">
-        <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="event.lastMinute" ng-change="updateLastMinute(event, event.lastMinute)" ng-checked="event.lastMinute"> <label></label>
-        </div>
-      </td>
-      <td class="collapsing">{{event.idEvents}}</td>
-      <td class="collapsing">{{event.title}}</td>
-      <td class="collapsing">{{event.createdBy}}</td>
-      <td>{{event.createdOn | date}}</td>
-      <td>{{event.location}}</td>
-       
-    </tr>
-   
-  </tbody>
-  <tfoot class="full-width">
-    <tr>
+-->
+                <td class="collapsing">
+                    <div class="ui center aligned"> <i ng-click="activate(event)" class="large green checkmark link icon"></i> <i ng-really-message="Are you sure?" ng-really-click="remove(event)" class="large red trash outline link icon"></i> <i ng-click="deactivate(event)" class="large red ban link icon"></i> <i ng-click="showClonePopup(event)" class="large grey copy link icon"></i> <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i> <i ng-click="showAddPassengerPopup(event.idEvents)" class="large grey add user link icon"></i> <i ng-click="showRemovePassengerPopup(event.idEvents)" class="large grey remove user link icon"></i> </div>
+                </td>
+                <td class="collapsing">
+                    <div class="ui center aligned">
+                        <div ng-switch="event.status">
+                            <div ng-switch-when="A"><i class="large green checkmark icon"></i></div>
+                            <div ng-switch-when="I"><i class="large red remove icon"></i></div>
+                            <div ng-switch-when="P"><i class="large yellow wait icon"></i></div>
+                            <div ng-switch-default> </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="collapsing">
+                    <div class="ui fitted center aligned checkbox">
+                        <input type="checkbox" ng-model="event.hotEvent" ng-change="updateHotEvent(event, event.hotEvent)" ng-checked="event.hotEvent">
+                        <label></label>
+                    </div>
+                </td>
+                <td class="collapsing">
+                    <div class="ui fitted center aligned checkbox">
+                        <input type="checkbox" ng-model="event.earlyBooking" ng-change="updateEarlyBooking(event, event.earlyBooking)" ng-checked="event.earlyBooking">
+                        <label></label>
+                    </div>
+                </td>
+                <td class="collapsing">
+                    <div class="ui fitted center aligned checkbox">
+                        <input type="checkbox" ng-model="event.lastMinute" ng-change="updateLastMinute(event, event.lastMinute)" ng-checked="event.lastMinute">
+                        <label></label>
+                    </div>
+                </td>
+                <td class="collapsing">{{event.idEvents}}</td>
+                <td class="collapsing">{{event.title}}</td>
+                <td class="collapsing">{{event.dateStart | date}}</td>
+                <td class="collapsing">{{event.dateEnd | date}}</td>
+                <td class="collapsing">{{event.createdBy}}</td>
+                <td>{{event.createdOn | date}}</td>
+                <td>{{event.location}}</td>
+            </tr>
+        </tbody>
+        <tfoot class="full-width">
+            <tr>
+                <!--
       <th><div class="ui small disabled button">
           {{"global.approveAll" | translate}}
         </div></th>
-      <th colspan="9">
-        <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
-        <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminevents.addEvent" | translate}}</button>
-      </th>
-    </tr>
-  </tfoot>
-</table>
-
+-->
+                <th colspan="9">
+                    <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
+                    <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminevents.addEvent" | translate}}</button>
+                </th>
+            </tr>
+        </tfoot>
+    </table>
 </div>

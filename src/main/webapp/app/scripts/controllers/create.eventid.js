@@ -7,14 +7,14 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
-    angular.element('.ui.anchor-menu').sticky({
-        context: '#event-container'
-        , offset: 60
-    });
-    angular.element('.ui.book').sticky({
-        context: '#event-container'
-        , offset: 105
-    });
+//    angular.element('.ui.anchor-menu').sticky({
+//        context: '#event-container'
+//        , offset: 60
+//    });
+//    angular.element('.ui.book').sticky({
+//        context: '#event-container'
+//        , offset: 105
+//    });
     var bDisabled = false;
     $scope.tDisabled=false;
 
@@ -40,6 +40,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     $scope.getBoats = function (userId) {
         $http.get(URLs.ddns + 'rest/users/shipowners/' + userId + '/boats').then(function (res) {
             $scope.boats = res.data.boats;
+            if(!$scope.selectedBoat){
+                $scope.setSelectedBoat(res.data.boats[0]);
+                
+            }
         });
     };
     $scope.setSelectedBoat = function (boat) {
@@ -50,6 +54,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.selectedBoat = boat;
             $scope.maxTickets = maxTicketsForBoat(boat)
 //        }
+  
+    
     };
     $scope.getEvent = function () {
         $http.post(URLs.ddns + 'rest/events/details', {
@@ -77,9 +83,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.includes = res.data.includes;
             $scope.route=res.data.route;
             $scope.excludes = res.data.excludes;
-            $scope.setSelectedBoat(res.data.boat);
             $scope.description = res.data.description;
-            $scope.setSelectedBoat(res.data.boat);
+            if(res.data.boat.idBoats!==1){
+                $scope.setSelectedBoat(res.data.boat);
+            }
             if (res.data.boat.boatId != 1) {
                 bDisabled = true;
             }
@@ -292,8 +299,13 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     };
     $scope.getEvent();
     $scope.getNumber = function (num) {
-        return new Array(num);
-    }
+        if(num){
+            return new Array(num);
+        }else{
+            return;
+        }
+        }
+    
 
 function addComplexMarker(label){
     var canvas = document.createElement('canvas');
@@ -364,7 +376,7 @@ function addComplexMarker(label){
               imageURL: image}
                      ).then(function(res){
               toastr.success('Image set as default');
-              $scope.event.imageUrl=image;
+              $scope.event.imageURL=image;
           })
     };
     
@@ -467,6 +479,13 @@ function addComplexMarker(label){
             });
         }
     };
+//    var posY=0;
+//    $scope.calculateBackgroundPosition=function(howMuch){
+////        $scope.backgroundPositionY=curPosition
+//        posY=posY+howMuch;
+//         angular.element('.cover-img').css('background-position-y', posY+'px');
+//    }
+
     
     
     $scope.searchLocation = function () {
@@ -543,7 +562,24 @@ function addComplexMarker(label){
             src: 'src'
             , itemSelector: '.item'
         });
+     
     
+         angular.element('#slick-boat').slick({
+            slidesToShow:1
+            , slidesToScroll: 1
+        });    
+        $scope.$watch('selectedBoat', function(boat){
+            if(boat){
+                
+                
+                
+        angular.element('#slick-boat').slickLightbox({
+            src: 'src',
+            images: boat.images
+            , itemSelector: '.item'
+        });
+            }
+        })
     
 //     $scope.tempEvent.description = $scope.description;
 //        $scope.tempEvent.logistics = $scope.logistics;

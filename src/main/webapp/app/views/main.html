@@ -1,60 +1,33 @@
 <div class="main_search">
-<button class="ui blue button" ng-click="subscribe()">Subscribe</button>
     <div class="main_search_content">
         <div class="ui container">
-
             <h1 class="ui center aligned header main-title">{{"main.title" | translate}}</h1>
             <h2 class="ui center aligned header main-subtitle">{{"main.subtitle" | translate}}</h2>
-
             <div class="ui fluid three item stackable menu">
-
-                   <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
-                      <input type="hidden" name="language">
-                      <div class="default text">{{"global.selectLocation" | translate}}</div>
-                      <div class="menu">
-                          <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
-                          <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
-                      </div>
+                <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
+                    <input type="hidden" name="language">
+                    <div class="default text">{{"global.selectLocation" | translate}}</div>
+                    <div class="menu">
+                        <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
+                        <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
                     </div>
-
+                </div>
                 <div ng-if="categoriesLoaded" dropdown-search-selection ng-model="selectedCategory" class="ui selection dropdown item">
-                      <input type="hidden" name="language">
-                      <div class="default text">{{"global.selectCategory" | translate}}</div>
-                      <div class="menu">
-                          <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
-                          <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
-                      </div>
+                    <input type="hidden" name="language">
+                    <div class="default text">{{"global.selectCategory" | translate}}</div>
+                    <div class="menu">
+                        <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
+                        <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
                     </div>
-       
-                
-                
-                
-
-                <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a>
-
-            </div>
-
-
-
+                </div> <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a> </div>
         </div>
     </div>
-
 </div>
-
-
 <div class="ui container">
-
     <div class="featured_content_container">
         <div class="featured_content">
-
-
             <h1>{{"main.bestOffers" | translate}}</h1>
-            <div class="ui stackable four column grid">
-
-
-
-
-                <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
+            <div class="ui stackable four column grid"> <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
                     <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
             <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
             <div class="result card" >
@@ -83,131 +56,85 @@
                 </h2>
                 
                 <span>  {{singleEvent.location}}</span>
-                <br>
-                <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
-            </div>
-
-
+                <br> <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span> </div>
             <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
         </div>
     </div>
-
-
-
-
-
     </span>
-
-
-
-
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <h1>{{"main.explore" | translate}}</h1>
 <div class="ui stackable three column grid">
-
-    <div class="ui fluid column category-image"  ng-repeat="category in CATEGORIES track by $index">
+    <div class="ui fluid column category-image" ng-repeat="category in CATEGORIES track by $index">
         <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
-          
             <div dimmer on="hover" class="ui image">
-            <div class="ui dimmer">
-            <div class="content">
-              <div class="center">
-                <h2 class="ui inverted header">{{category.description}}</h2>
-              </div>
-            </div>
-          </div>
-          <img  class="ui image"  ng-src="{{category.url}}">
-                </div>
-    </a>
+                <div class="ui dimmer">
+                    <div class="content">
+                        <div class="center">
+                            <h2 class="ui inverted header">{{category.description}}</h2> </div>
+                    </div>
+                </div> <img class="ui image" ng-src="{{category.url}}"> </div>
+        </a>
     </div>
-
-</div>
-
-
 </div>
 </div>
 </div>
-
-
+</div>
 <div class="why_us">
-
     <h1 class="ui center aligned header">{{"main.whyUs" | translate}}</h1>
     <div class="ui container">
         <div class="ui three center aligned column stackable grid">
-                <div class="five wide column">
-                    <div class="ui  image">
-                        <img src="images/bestPrice.jpg">
-                    </div>
-                    <div class="middle aligned content">
-                        <h2 class="center aligned header">{{"main.bestPriceGranted" | translate}}</h2>
-                        <div class="description">
-                            {{"main.bestPriceGrantedDesc" | translate}}
-                        </div>
-
-                    </div>
+            <div class="five wide column">
+                <div class="ui  image"> <img src="images/bestPrice.jpg"> </div>
+                <div class="middle aligned content">
+                    <h2 class="center aligned header">{{"main.bestPriceGranted" | translate}}</h2>
+                    <div class="description"> {{"main.bestPriceGrantedDesc" | translate}} </div>
                 </div>
-                <div class="five wide column">
-                    <div class="item">
-                        <div class="ui image">
-                            <img src="images/securePayments.png">
-                        </div>
-                        <div class="middle aligned content">
-                            <h2 class="center aligned header">{{"main.securedPayments" | translate}}</h2>
-                            <div class="description">
-                                {{"main.securedPaymentsDesc" | translate}}
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-                <div class="five wide column">
-                    <div class="ui image">
-                        <img src="images/bestChoice.jpg">
-                    </div>
-                    <div class="middle aligned content">
-                        <h2 class="center aligned header">{{"main.personalizedService" | translate}}</h2>
-                        <div class="description">
-                        	{{"main.personalizedServiceDesc" | translate}}
-                        </div>
-
-                    </div>
-                </div>
-            
-            <div class="row center aligned">
             </div>
-            
+            <div class="five wide column">
+                <div class="item">
+                    <div class="ui image"> <img src="images/securePayments.png"> </div>
+                    <div class="middle aligned content">
+                        <h2 class="center aligned header">{{"main.securedPayments" | translate}}</h2>
+                        <div class="description"> {{"main.securedPaymentsDesc" | translate}} </div>
+                    </div>
+                </div>
+            </div>
+            <div class="five wide column">
+                <div class="ui image"> <img src="images/bestChoice.jpg"> </div>
+                <div class="middle aligned content">
+                    <h2 class="center aligned header">{{"main.personalizedService" | translate}}</h2>
+                    <div class="description"> {{"main.personalizedServiceDesc" | translate}} </div>
+                </div>
+            </div>
+            <div class="row center aligned"> </div>
             <div class="row center aligned">
                 <div class="sixteen wide column"><span class="ui large header"><a href="#/howitworks">{{"main.howItWorks" | translate}}</a></span></div>
+            </div>
+            <div class="row center aligned">
+                <div class="row center aligned"> </div>
+                <div class="sixteen wide column"><span class="ui large header"><span>{{"main.subscribeMessage" | translate}}</span></span></div>
+                <br>
+                <div class="ui form">
+                    <div class="three fields">
+                        <div class="field">
+                            <input ng-model="user.email" type="text" placeholder="Email"> </div>
+                        <div class="field">
+                            <input type="text" ng-model="user.name" placeholder="Name">
+                        </div> 
+                        <div class="field">
+                            <input type="text" ng-model="user.surname" placeholder="Last Name">
+                        </div>
+                        <div class="field">
+                            <button class="ui blue button" ng-click="subscribe()">{{"main.subscribeButton" | translate}}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <br>
         <br>
         <br>
-        <br>
-    </div>
-
-
-
-
-
-
-
-
-
+        <br> </div>
     <!--
     <div class="ui inverted vertical footer segment">
         <div class="ui center aligned container">
