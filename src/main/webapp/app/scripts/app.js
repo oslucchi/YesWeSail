@@ -119,19 +119,19 @@ angular.module('yeswesailApp', [
             });
         }
     };
-}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider) {
+}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider, LOCALES) {
     $translateProvider.useStaticFilesLoader({
         prefix: 'resources/locale-', // path to translations files
         suffix: '.json' // suffix, currently- extension of the translations
     });
-    if (navigator.language.indexOf('_') != -1) {
-        $translateProvider.preferredLanguage(navigator.language); // is applied on first load
+//    if (navigator.language.indexOf('_') != -1) {
+        $translateProvider.preferredLanguage(LOCALES.preferredLocale); // is applied on first load
         $httpProvider.defaults.headers.common['Language'] = navigator.language;
-    }
-    else {
-        $translateProvider.preferredLanguage(navigator.language.replace('-', '_')); // is applied on first load
-        $httpProvider.defaults.headers.common['Language'] = navigator.language.replace('-', '_');
-    }
+//    }
+//    else {
+//        $translateProvider.preferredLanguage(navigator.language.replace('-', '_')); // is applied on first load
+//        $httpProvider.defaults.headers.common['Language'] = navigator.language.replace('-', '_');
+//    }
     tmhDynamicLocaleProvider.localeLocationPattern('bower_components/angular-i18n/angular-locale_{{locale}}.js');
     // For any unmatched url, redirect to /
     $urlRouterProvider.otherwise("/");
