@@ -129,16 +129,18 @@ public class Events extends DBInterface implements Comparable<Events>
 			eventIds += sep + e.getIdEvents();
 			sep = ",";
 		}
+		String excludeClause = "";
 		if (eventIds.compareTo("") != 0)
 		{
-			whereClause = "AND        a.idEvents NOT IN (" + eventIds + ") " + whereClause;
-
+			excludeClause = "WHERE a.idEvents NOT IN (" + eventIds + ") ";
+			whereClause = " AND " + whereClause.substring(whereClause.indexOf("WHERE") + 6);
 		}
 		sql = "SELECT a.*, b.description AS `title` " +
 			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 			 	 "     ON a.idEvents = b.eventId AND " +
 			 	 "        b.languageId = " + Constants.getAlternativeLanguage(languageId)+ " AND " +
 				 "		  b.anchorZone = 0 " + 
+			 	 excludeClause + 
 			 	 whereClause;
 		log.trace("Adding events on alternative laguages via '" + sql + "'");
 		ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);

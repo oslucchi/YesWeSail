@@ -39,7 +39,7 @@ public class ApplicationProperties {
 	private ServletContext context;
 	private String adminEmail;
 	private int releaseTicketLocksAfter = 600;
-	private int maxDistanceForEventsOnTheGround = 5;
+	private Double maxDistanceForEventsOnTheGround = 5.0;
 	private String mailchimpURL = "";
 	private String mailchimpListId = "";
 	private String mailchimpAPIKEY = "";
@@ -113,8 +113,8 @@ public class ApplicationProperties {
     		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
     		variable = "releaseTicketLocksAfter";
     		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
-    		variable = "maxDistanceForEventsOnTheGroud";
-    		maxDistanceForEventsOnTheGround = Integer.parseInt(properties.getProperty("maxDistanceForEventsOnTheGround"));
+    		variable = "maxDistanceForEventsOnTheGround";
+    		maxDistanceForEventsOnTheGround = Double.parseDouble(properties.getProperty("maxDistanceForEventsOnTheGround"));
     	}
     	catch(NumberFormatException e)
     	{
@@ -247,7 +247,7 @@ public class ApplicationProperties {
 		return paypalClientSecret;
 	}
 
-	public int getMaxDistanceForEventsOnTheGround() {
+	public Double getMaxDistanceForEventsOnTheGround() {
 		return maxDistanceForEventsOnTheGround;
 	}
 

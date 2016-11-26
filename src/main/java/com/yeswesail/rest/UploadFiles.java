@@ -154,7 +154,11 @@ public class UploadFiles {
 			{
 				pos = fName.lastIndexOf("_") + 1;
 				fName = fName.substring(pos);
-				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
+				if (fName.indexOf('-') != -1)
+					fName = fName.substring(0, fName.indexOf('-'));
+				else
+					fName = fName.substring(0, fName.lastIndexOf("."));
+				a = Integer.parseInt(fName);
 				if (lastIndex < a)
 					lastIndex = a;
 			}

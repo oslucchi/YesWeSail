@@ -35,7 +35,7 @@ public class EventTicketsSold extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public static Users[] findParticipants(int eventId, int languageId) throws Exception
+	public static Users[] findParticipants(int eventId) throws Exception
 	{
 		String sql = "SELECT DISTINCT c.name, c.surname, c.idUsers, c.imageURL " +
 					 "FROM Users c INNER JOIN ( " +
@@ -55,7 +55,8 @@ public class EventTicketsSold extends DBInterface
 					 "FROM EventTicketsDescription c INNER JOIN ( " +
 					 "      EventTicketsSold a INNER JOIN EventTickets b ON " +
 					 "         a.eventTicketId = b.idEventTickets AND " +
-					 "         b.eventId = " + eventId + " " +
+					 "         b.eventId = " + eventId + " AND " +
+					 "          c.languageId = " + languageId + " " +
 					 "      ) ON " +
 					 "	 c.ticketType = b.ticketType";
 		@SuppressWarnings("unchecked")

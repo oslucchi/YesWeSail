@@ -1,12 +1,7 @@
 package com.yeswesail.rest.users;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,7 +20,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
-import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.glassfish.jersey.media.multipart.BodyPart;
@@ -40,6 +34,7 @@ import com.ecwid.maleorang.method.v3_0.members.EditMemberMethod;
 import com.ecwid.maleorang.method.v3_0.members.MemberInfo;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
+import com.yeswesail.rest.ImageHandler;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -135,40 +130,41 @@ public class UsersHandler {
 	    }
 	}
 
-	private void mailchimpSender(String apikey) throws IOException
-	{
-		String url = prop.getMailchimpURL() + "/lists/";
-		// Authentication PART
-
-		String name = "oslucchi";
-		// Mailchimp test env password "pUw5A1!@";
-		String password = apikey;     //Mailchimp API key
-		String authString = name + ":" + password;
-
-		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-		String authStringEnc = new String(authEncBytes);
-
-		URL urlConnector = new URL(url);
-		HttpURLConnection httpConnection = (HttpURLConnection) urlConnector.openConnection();
-		httpConnection.setRequestMethod("GET");
-		httpConnection.setDoOutput(true);
-		httpConnection.setDoInput(true);
-		httpConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-		httpConnection.setRequestProperty("Accept", "application/json");
-		httpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-
-		InputStream is1 = httpConnection.getInputStream();
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(is1, "utf-8"));
-
-		String line = null;
-		while ((line = br.readLine()) != null) 
-		{
-		    sb.append(line + "\n");
-        }
-		System.out.println(sb.toString());
-		br.close();	
-	}
+//	private void mailchimpSender(String apikey) throws IOException
+//	{
+//		String url = prop.getMailchimpURL() + "/lists/";
+//		// Authentication PART
+//
+//		String name = "oslucchi";
+//		// Mailchimp test env password "pUw5A1!@";
+//		String password = apikey;     //Mailchimp API key
+//		String authString = name + ":" + password;
+//
+//		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
+//		String authStringEnc = new String(authEncBytes);
+//
+//		URL urlConnector = new URL(url);
+//		HttpURLConnection httpConnection = (HttpURLConnection) urlConnector.openConnection();
+//		httpConnection.setRequestMethod("GET");
+//		httpConnection.setDoOutput(true);
+//		httpConnection.setDoInput(true);
+//		httpConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+//		httpConnection.setRequestProperty("Accept", "application/json");
+//		httpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
+//
+//		InputStream is1 = httpConnection.getInputStream();
+//		StringBuilder sb = new StringBuilder();
+//		BufferedReader br = new BufferedReader(new InputStreamReader(is1, "utf-8"));
+//
+//		String line = null;
+//		while ((line = br.readLine()) != null) 
+//		{
+//		    sb.append(line + "\n");
+//        }
+//		System.out.println(sb.toString());
+//		br.close();	
+//	}
+	
 	@POST
 	@Path("/subscribe")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -1008,6 +1004,14 @@ public class UsersHandler {
 		UploadFiles.moveFiles(destPath + "/" + token, destPath, 
 							  "bo_" + shipownerId + "_" + bo.getIdBoats() + "_", true);
 
+		// Create images thumbnail
+		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_";
+		ImageHandler imgHnd = new ImageHandler();
+		for(String image : UploadFiles.getExistingFilesPath(prefix, destPath))
+		{
+			imgHnd.scaleImages(image);
+		}
+
 		utils.addToJsonContainer("uploadedList", uploadedList, true);
 		if (rejectionMessage.size() != 0)
 		{
@@ -1103,11 +1107,59 @@ public class UsersHandler {
 
 		for(Boats boat : boats)
 		{
-			ArrayList<String> images = UploadFiles.getExistingFilesPath(
-											"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
-			images.addAll(UploadFiles.getExistingFilesPath(
-									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats"));
+			ArrayList<String> images = new ArrayList<>();
+			ArrayList<String> imagesSmall = new ArrayList<>();
+			ArrayList<String> imagesMedium = new ArrayList<>();
+			ArrayList<String> imagesLarge = new ArrayList<>();
+
+			ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPath(
+					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
+
+			for(String image : imagesTemp)
+			{
+				if (image.indexOf("small.jpg") != -1)
+				{
+					imagesSmall.add(image);
+				}
+				else if (image.indexOf("medium.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+				else if (image.indexOf("large.jpg") != -1)
+				{
+					imagesLarge.add(image);
+				}
+				else
+				{
+					images.add(image);
+				}
+			}
+			imagesTemp = UploadFiles.getExistingFilesPath(
+					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats");
+			for(String image : imagesTemp)
+			{
+				if (image.indexOf("small.jpg") != -1)
+				{
+					imagesSmall.add(image);
+				}
+				else if (image.indexOf("medium.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+				else if (image.indexOf("large.jpg") != -1)
+				{
+					imagesLarge.add(image);
+				}
+				else
+				{
+					images.add(image);
+				}
+			}
 			boat.setImages(images);
+			boat.setImagesSmall(imagesSmall);
+			boat.setImagesMedium(imagesMedium);
+			boat.setImagesLarge(imagesLarge);
+
 			boat.setDocs(
 					UploadFiles.getExistingFilesPath(
 							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));

@@ -36,6 +36,7 @@ import org.json.JSONObject;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
+import com.yeswesail.rest.ImageHandler;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -233,6 +234,27 @@ public class EventsHandler {
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
+		
+		for(Events event : eventsFiltered)
+		{
+			ArrayList<String> imagesTemp = 
+				UploadFiles.getExistingFilesPath(
+					"ev_" + event.getIdEvents() + "_0_medium" , "/images/events");
+			if (imagesTemp.isEmpty())
+			{
+				imagesTemp = 
+						UploadFiles.getExistingFilesPath(
+							"ev_" + event.getIdEvents() + "_0" , "/images/events");
+			}
+			if (imagesTemp.isEmpty())
+			{
+				event.setImageURL(prop.getWebHost() + "/images/events/" + "ev_" + event.getIdEvents() + "_0.jpg");
+			}
+			else
+			{
+				event.setImageURL(prop.getWebHost() + "/images/events/" + imagesTemp.get(0));
+			}
+		}
 
 		if (activeOnly)
 		{
@@ -279,6 +301,7 @@ public class EventsHandler {
 								  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		jsonIn.status = "A";
 		return handleSearch(jsonIn, languageId, true);
 	}
 	
@@ -481,7 +504,7 @@ public class EventsHandler {
 		Users[] participants = null;
 		try
 		{
-			participants = EventTicketsSold.findParticipants(event.getIdEvents(), languageId);
+			participants = EventTicketsSold.findParticipants(event.getIdEvents());
 			if (ticketsAvailable == 0)
 			{
 				jsonResponse.put("participantMessage", 
@@ -539,7 +562,31 @@ public class EventsHandler {
 			contextPath = null;
 			log.warn("Exception " + e.getMessage() + " retrieving context path");	
 		}
-		ArrayList<String> images = UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_",contextPath);
+		ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_", contextPath);
+
+		ArrayList<String> images = new ArrayList<>();
+		ArrayList<String> imagesSmall = new ArrayList<>();
+		ArrayList<String> imagesMedium = new ArrayList<>();
+		ArrayList<String> imagesLarge = new ArrayList<>();
+		for(String image : imagesTemp)
+		{
+			if (image.indexOf("small.jpg") != -1)
+			{
+				imagesSmall.add(image);
+			}
+			else if (image.indexOf("medium.jpg") != -1)
+			{
+				imagesMedium.add(image);
+			}
+			else if (image.indexOf("large.jpg") != -1)
+			{
+				imagesLarge.add(image);
+			}
+			else
+			{
+				images.add(image);
+			}
+		}
 		if (images.isEmpty())
 		{
 			images.add(event.getImageURL());
@@ -578,12 +625,48 @@ public class EventsHandler {
 			Boats b = new Boats(conn, event.getBoatId());
 			images = UploadFiles.getExistingFilesPath(
 						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
-			images.addAll(UploadFiles.getExistingFilesPath(
-						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats"));
+			
+			for(String image : images)
+			{
+				if (image.indexOf("small.jpg") != -1)
+				{
+					imagesSmall.add(image);
+				}
+				else if (image.indexOf("medium.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+				else if (image.indexOf("large.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+			}
+
+			ArrayList<String> imagesOther = UploadFiles.getExistingFilesPath("bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
+			
+			for(String image : imagesOther)
+			{
+				if (image.indexOf("small.jpg") != -1)
+				{
+					imagesSmall.add(image);
+				}
+				else if (image.indexOf("medium.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+				else if (image.indexOf("large.jpg") != -1)
+				{
+					imagesMedium.add(image);
+				}
+			}
+			images.addAll(imagesOther);
 			b.setImages(images);
 			b.setDocs(UploadFiles.getExistingFilesPath(
 					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
 
+			jsonResponse.put("imagesSmall", imagesSmall);
+			jsonResponse.put("imagesMedium", imagesMedium);
+			jsonResponse.put("imagesLarge", imagesLarge);
 			jsonResponse.put("boat", b);
 		}
 		catch (Exception e) {
@@ -971,6 +1054,7 @@ public class EventsHandler {
 				u.setConnectedVia("X");
 				u.setStatus("A");
 				u.setIsShipOwner(false);
+				u.setImageURL(prop.getWebHost() + "images/users/default-icon.png");
 				try
 				{
 					jsonIn.usersId = u.insertAndReturnId(conn, "idUsers", u);
@@ -1262,6 +1346,8 @@ public class EventsHandler {
 					e.update(conn, "idEvents");
 					break;
 				}
+				ImageHandler imgHnd = new ImageHandler();
+				imgHnd.scaleImages(image);
 			}
 		}
 		catch(Exception e)

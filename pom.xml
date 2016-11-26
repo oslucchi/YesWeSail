@@ -149,6 +149,11 @@
 			<artifactId>maleorang</artifactId>
     		<version>3.0-0.9.0</version>
 		</dependency>
+		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.8</version>
+		</dependency>
 	</dependencies>
 
 	<build>
