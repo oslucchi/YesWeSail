@@ -31,6 +31,7 @@ public class ApplicationProperties {
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
 	private boolean useCoars = false;
+	private boolean startReleaser = true;
 	private String braintreeMerchantId;
 	private String braintreePublicKey;
 	private String braintreePrivateKey;
@@ -94,6 +95,7 @@ public class ApplicationProperties {
     	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
     	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
 		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
+		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
 		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
 		braintreePublicKey = properties.getProperty("braintreePublicKey");
 		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
@@ -261,6 +263,10 @@ public class ApplicationProperties {
 
 	public String getMailchimpAPIKEY() {
 		return mailchimpAPIKEY;
+	}
+
+	public boolean isStartReleaser() {
+		return startReleaser;
 	}	
 	
 }

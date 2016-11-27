@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,6 +63,8 @@ import com.yeswesail.rest.jsonInt.TicketJson;
 public class EventsHandler {
 	@Context
 	private ServletContext context;
+	
+	final String[] imageSizeType = {"-large", "-medium", "-small"};
 
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
@@ -1293,8 +1296,14 @@ public class EventsHandler {
 		{
 			log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
 		}
+		String baseName = imageName.substring(0, imageName.indexOf(".jpg"));
 		File toRemove = new File(eventsPath + File.separator + imageName);
 		toRemove.delete();
+		for(String size : imageSizeType)
+		{
+			toRemove = new File(eventsPath + File.separator + baseName + size + ".jpg");
+			toRemove.delete();
+		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
@@ -1339,7 +1348,7 @@ public class EventsHandler {
 			conn = DBInterface.connect();
 			for(String image : images)
 			{
-				if (image.startsWith(prefix + "0"))
+				if (image.endsWith(prefix + "0.jpg"))
 				{
 					Events e = new Events(conn, eventId);
 					e.setImageURL(image);
@@ -1358,7 +1367,35 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
+		images = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		ArrayList<String> imagesSmall = new ArrayList<>();
+		ArrayList<String> imagesMedium = new ArrayList<>();
+		ArrayList<String> imagesLarge = new ArrayList<>();
+		Iterator<String> it = images.iterator();
+		while(it.hasNext())
+		{
+			String image = it.next();
+			if (image.indexOf("-small.jpg") != -1)
+			{
+				imagesSmall.add(image);
+				it.remove();
+			}
+			else if (image.indexOf("-medium.jpg") != -1)
+			{
+				imagesMedium.add(image);
+				it.remove();
+			}
+			else if (image.indexOf("-large.jpg") != -1)
+			{
+				imagesLarge.add(image);
+				it.remove();
+			}
+		}
+
 		jsonizer.addToJsonContainer("images", images, true);
+		jsonizer.addToJsonContainer("imagesSmall", imagesSmall, false);
+		jsonizer.addToJsonContainer("imagesMedium", imagesMedium, false);
+		jsonizer.addToJsonContainer("imagesLarge", imagesLarge, false);
 		
 		StatusType status = Response.Status.OK;
 		if (response.getStatusInfo() != Response.Status.OK)

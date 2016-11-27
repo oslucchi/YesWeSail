@@ -160,7 +160,7 @@ public class ReviewsHandler {
 	{
 		ArrayList<Object> results = null;
 		
-		DBConnection conn;
+		DBConnection conn = null;
 		try
 		{
 			conn = DBInterface.connect();
@@ -177,6 +177,10 @@ public class ReviewsHandler {
 		catch(Exception e)
 		{
 			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}

@@ -27,24 +27,16 @@ public class ImageHandler {
 	final Logger log = Logger.getLogger(this.getClass());
 	private String contextPath = null;
 
-	private int maxWidthSmall = 200;
-	private int maxWidthMedium = 500;
-	private int maxWidthLarge  = 1920;
-	private int maxHeigthSmall = 150;
-	private int maxHeigthMedium = 300;
-	private int maxHeigthLarge = 1080;
-	private int width = 150;
-	private int heigth = 112;
+	final private int maxWidthSmall = 200;
+	final private int maxWidthMedium = 500;
+	final private int maxWidthLarge  = 1920;
+	final private int maxHeigthSmall = 150;
+	final private int maxHeigthMedium = 300;
+	final private int maxHeigthLarge = 1080;
+	private Double width = 150.0;
+	private Double heigth = 112.0;
 
 	public ImageHandler() {
-//		try {
-//			contextPath = context.getResource("/").getPath();
-//		}
-//		catch (MalformedURLException e) 
-//		{
-//			contextPath = null;
-//			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-//		}
 		try 
 		{
 			contextPath = prop.getContext().getResource("/").getPath();
@@ -60,15 +52,15 @@ public class ImageHandler {
 			String imagePath = contextPath + File.separator + image.substring(image.indexOf("images"));
 			BufferedImage originalImage = ImageIO.read(new File(imagePath));
 			double ratio = originalImage.getHeight() / heigth;
-			width = (int) (originalImage.getWidth() / ratio);
+			width = originalImage.getWidth() / ratio;
 			int type = originalImage.getType() == 0? BufferedImage.TYPE_INT_ARGB : originalImage.getType();
 
 			String imageType = imagePath.substring(imagePath.lastIndexOf('.') + 1);
 			imageType = "jpg";
 			String tumbnailPath = imagePath.substring(0, imagePath.lastIndexOf('.') - 1) + "_tn." + imageType;
-			BufferedImage resizedImage = new BufferedImage(width, heigth, type);
+			BufferedImage resizedImage = new BufferedImage(width.intValue(), heigth.intValue(), type);
 			Graphics2D g = resizedImage.createGraphics();
-			g.drawImage(originalImage, 0, 0, width, heigth, null);
+			g.drawImage(originalImage, 0, 0, width.intValue(), heigth.intValue(), null);
 			g.dispose();
 			ImageIO.write(resizedImage, imageType, new File(tumbnailPath));
 		}
@@ -78,6 +70,10 @@ public class ImageHandler {
 	}
 
 	public void createThumbnail(String image){
+		if (image.endsWith("-large.jpg") || image.endsWith("-medium.jpg") || image.endsWith("-small.jpg"))
+		{
+			return;
+		}
 		String imagePath = null;
 		BufferedImage originalImage = null;
 		try{
@@ -88,11 +84,11 @@ public class ImageHandler {
 			log.warn("Exception " + e.getMessage() + " resizing image");
 		}
 		double ratio = originalImage.getHeight() / heigth;
-		width = (int) (originalImage.getWidth() / ratio);
+		width = originalImage.getWidth() / ratio;
 		String thumbnailPath = imagePath.substring(0, imagePath.lastIndexOf('.') - 1) + "_tn.jpg";
 		try {
 			Thumbnails.of(imagePath)
-			  .size(width, heigth) 
+			  .size(width.intValue(), heigth.intValue()) 
 			  .toFile(thumbnailPath);
 		} catch (IOException e) {
 			log.warn("Exception " + e.getMessage() + " resizing image");
@@ -115,12 +111,14 @@ public class ImageHandler {
 			}
 		}
 		
-		heigth = (int) (originalImage.getHeight() / ratio);
-		width = (int) (originalImage.getWidth() / ratio);
-		String outPath = imagePath.substring(0, imagePath.lastIndexOf('.') - 1) + suffix + ".jpg";
+		heigth = originalImage.getHeight() / ratio;
+		width = originalImage.getWidth() / ratio;
+		log.debug("Resizing from " + originalImage.getWidth() + "x" +
+				  originalImage.getHeight() + " to " + width.intValue() + "x" + heigth.intValue());
+		String outPath = imagePath.substring(0, imagePath.lastIndexOf('.')) + suffix + ".jpg";
 		try {
 			Thumbnails.of(imagePath)
-			  .size(width, heigth) 
+			  .size(width.intValue(), heigth.intValue()) 
 			  .toFile(outPath);
 		} catch (IOException e) {
 			log.warn("Exception " + e.getMessage() + " resizing image");
@@ -128,6 +126,10 @@ public class ImageHandler {
 	}
 
 	public void scaleImages(String image){
+		if (image.endsWith("-large.jpg") || image.endsWith("-medium.jpg") || image.endsWith("-small.jpg"))
+		{
+			return;
+		}
 		String imagePath = null;
 		BufferedImage originalImage = null;
 		try{
@@ -142,23 +144,4 @@ public class ImageHandler {
 		doScale(maxWidthMedium, maxHeigthMedium, originalImage, imagePath, "-medium");
 		doScale(maxWidthLarge, maxHeigthLarge, originalImage, imagePath, "-large");
 	}
-	/*
-	private static BufferedImage resizeImageWithHint(BufferedImage originalImage, int type){
-
-		BufferedImage resizedImage = new BufferedImage(width, heigth, type);
-		Graphics2D g = resizedImage.createGraphics();
-		g.drawImage(originalImage, 0, 0, width, heigth, null);
-		g.dispose();
-		g.setComposite(AlphaComposite.Src);
-
-		g.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
-				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		g.setRenderingHint(RenderingHints.KEY_RENDERING,
-				RenderingHints.VALUE_RENDER_QUALITY);
-		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_ON);
-
-		return resizedImage;
-	}
-	*/
 }

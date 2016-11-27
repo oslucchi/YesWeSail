@@ -80,7 +80,7 @@ public class TicketReleaser extends Thread {
     	
 		Date now;
 		int count = 0;
-		log.trace("Started");
+		log.trace("Ticket releaser Started");
     	try
     	{
     		conn = DBInterface.connect();
