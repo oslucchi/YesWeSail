@@ -782,6 +782,8 @@ public class EventsHandler {
 		{
 			event.setImageURL(jsonIn.imageURL);
 		}
+		event.setBackgroundOffsetX(jsonIn.backgroundOffsetX);
+		event.setBackgroundOffsetY(jsonIn.backgroundOffsetY);
 		return event;
 	}
 

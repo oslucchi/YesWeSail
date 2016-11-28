@@ -37,6 +37,10 @@ public class Events extends DBInterface implements Comparable<Events>
 	protected String aggregateKey;
 	protected int createdBy;
 	protected Date createdOn;
+	protected int languageId;
+	protected int backgroundOffsetX;
+	protected int backgroundOffsetY;
+
 	
 	private static ArrayList<Events> events;
 	
@@ -67,7 +71,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	public Events(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description AS `title` " +
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
 					 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
@@ -88,7 +92,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	public Events(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description AS `title` " +
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
 					 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
@@ -178,7 +182,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	
 	public static Events[] findHot(int languageId) throws Exception
 	{
-		String sql = "SELECT a.*, b.description AS `title` " +
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
@@ -221,7 +225,7 @@ public class Events extends DBInterface implements Comparable<Events>
 
 	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
 	{		
-		String sql = "SELECT a.*, b.description AS `title` " +
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
@@ -444,4 +448,29 @@ public class Events extends DBInterface implements Comparable<Events>
 	public int compareTo(Events o) {
 		return (int) (this.dateStart.getTime() - o.dateStart.getTime());
 	}
+
+	public int getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(int languageId) {
+		this.languageId = languageId;
+	}
+
+	public int getBackgroundOffsetX() {
+		return backgroundOffsetX;
+	}
+
+	public void setBackgroundOffsetX(int backgroundOffsetX) {
+		this.backgroundOffsetX = backgroundOffsetX;
+	}
+
+	public int getBackgroundOffsetY() {
+		return backgroundOffsetY;
+	}
+
+	public void setBackgroundOffsetY(int backgroundOffsetY) {
+		this.backgroundOffsetY = backgroundOffsetY;
+	}
+	
 }
