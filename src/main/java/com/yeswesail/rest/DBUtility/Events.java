@@ -139,10 +139,12 @@ public class Events extends DBInterface implements Comparable<Events>
 		getEventsListWithLanguageFallbackPolicy(String sql, String whereClause, int languageId) throws Exception
 	{
 		whereClause = whereClause.trim().toUpperCase().startsWith("WHERE") ?
-							whereClause.trim().substring(6) : whereClause;
+							whereClause.trim().substring(6) : whereClause.trim();
+		log.debug("Called with whereClause = '" + whereClause + "'");
 		String where = "WHERE " + 
-					   "      b.languageId = " + languageId + " AND " +
-					   whereClause;
+					   "      b.languageId = " + languageId + 
+					   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
+		log.debug("Primary query where set to '" + where + "'");
 
 		log.trace("Populate collection with sql '" + sql + where + "'");
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
@@ -158,9 +160,10 @@ public class Events extends DBInterface implements Comparable<Events>
 			eventIds = "a.idEvents NOT IN (" + eventIds + ") AND ";
 		}
 		where = "WHERE " + eventIds +
-				"      b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
-				whereClause;
-		log.trace("Adding events on alternative laguages via '" + sql + where + "'"); 
+				"      b.languageId = " + Constants.getAlternativeLanguage(languageId) +
+				   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
+		log.debug("Alternative query where set to '" + where + "'");
+		log.debug("Adding events on alternative laguages via '" + sql + where + "'"); 
 		ArrayList<Events> fallbackEvents = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
 		events.addAll(fallbackEvents);
 		for(Events event : events)
