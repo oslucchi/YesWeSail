@@ -421,7 +421,7 @@ public class UsersHandler {
 			for(Documents doc : docs)
 			{
 				doc.setImages(
-						UploadFiles.getExistingFilesPath("docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner"));
+						UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner"));
 			}
 			utils.addToJsonContainer("docs", docs, false);
 		}
@@ -570,17 +570,9 @@ public class UsersHandler {
 								parts, token, "/images/users", 
 								prefix, acceptableTypes, languageId, true);
 		
-		try {
-			contextPath = prop.getContext().getResource("/images/users").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-		}
 		Utils jsonizer = new Utils();
 
-		ArrayList<String> imagePath = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		ArrayList<String> imagePath = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/users");
 		jsonizer.addToJsonContainer("images", imagePath, true);
 		
 		StatusType status = Response.Status.OK;
@@ -1007,7 +999,7 @@ public class UsersHandler {
 		// Create images thumbnail
 		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_";
 		ImageHandler imgHnd = new ImageHandler();
-		for(String image : UploadFiles.getExistingFilesPath(prefix, destPath))
+		for(String image : UploadFiles.getExistingFilesPathAsURL(prefix, "/images/boats"))
 		{
 			imgHnd.scaleImages(image);
 		}
@@ -1059,13 +1051,13 @@ public class UsersHandler {
 		}
 		for(Boats boat : boats)
 		{
-			ArrayList<String> images = UploadFiles.getExistingFilesPath(
+			ArrayList<String> images = UploadFiles.getExistingFilesPathAsURL(
 											"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
-			images.addAll(UploadFiles.getExistingFilesPath(
+			images.addAll(UploadFiles.getExistingFilesPathAsURL(
 									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats"));
 			boat.setImages(images);
 			boat.setDocs(
-					UploadFiles.getExistingFilesPath(
+					UploadFiles.getExistingFilesPathAsURL(
 							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
 		}
 
@@ -1112,7 +1104,7 @@ public class UsersHandler {
 			ArrayList<String> imagesMedium = new ArrayList<>();
 			ArrayList<String> imagesLarge = new ArrayList<>();
 
-			ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPath(
+			ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPathAsURL(
 					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
 
 			for(String image : imagesTemp)
@@ -1134,7 +1126,7 @@ public class UsersHandler {
 					images.add(image);
 				}
 			}
-			imagesTemp = UploadFiles.getExistingFilesPath(
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
 					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats");
 			for(String image : imagesTemp)
 			{
@@ -1161,7 +1153,7 @@ public class UsersHandler {
 			boat.setImagesLarge(imagesLarge);
 
 			boat.setDocs(
-					UploadFiles.getExistingFilesPath(
+					UploadFiles.getExistingFilesPathAsURL(
 							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
 		}
 

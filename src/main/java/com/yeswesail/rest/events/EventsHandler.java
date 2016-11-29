@@ -34,6 +34,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.google.common.io.Files;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
@@ -241,12 +242,12 @@ public class EventsHandler {
 		for(Events event : eventsFiltered)
 		{
 			ArrayList<String> imagesTemp = 
-				UploadFiles.getExistingFilesPath(
+				UploadFiles.getExistingFilesPathAsURL(
 					"ev_" + event.getIdEvents() + "_0_medium" , "/images/events");
 			if (imagesTemp.isEmpty())
 			{
 				imagesTemp = 
-						UploadFiles.getExistingFilesPath(
+						UploadFiles.getExistingFilesPathAsURL(
 							"ev_" + event.getIdEvents() + "_0" , "/images/events");
 			}
 			if (imagesTemp.isEmpty())
@@ -355,6 +356,19 @@ public class EventsHandler {
 			EventTickets.executeStatement(conn, sql, true);
 			
 			DBInterface.TransactionCommit(conn);
+			log.debug("Copying image files");
+
+			String replace = "ev_"+ jsonIn.idEvents + "_";
+			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathAsURL(replace, "/images/events");
+			for(String source : imagesList)
+			{
+				File from = new File(source);
+				File to = new File(source.substring(0, source.indexOf(replace)) +
+								   "ev_" + idEvents + "_" + 
+								   source.substring(source.indexOf(replace) + replace.length()));
+				Files.copy(from, to);
+			}
+			log.debug("...done");
 		}
 		catch (Exception e) {
 			DBInterface.TransactionRollback(conn);
@@ -557,15 +571,7 @@ public class EventsHandler {
 			log.warn("Unable to populate descriptions (" + e.getMessage() + ")");
 		}
 
-		try {
-			contextPath = context.getResource("/images/events").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-		}
-		ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_", contextPath);
+		ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPathAsURL("ev_"+ event.getIdEvents() + "_", "/images/events");
 
 		ArrayList<String> images = new ArrayList<>();
 		ArrayList<String> imagesSmall = new ArrayList<>();
@@ -626,7 +632,7 @@ public class EventsHandler {
 		{
 			log.debug("querying the boat details for this event");
 			Boats b = new Boats(conn, event.getBoatId());
-			images = UploadFiles.getExistingFilesPath(
+			images = UploadFiles.getExistingFilesPathAsURL(
 						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
 			
 			for(String image : images)
@@ -645,7 +651,7 @@ public class EventsHandler {
 				}
 			}
 
-			ArrayList<String> imagesOther = UploadFiles.getExistingFilesPath("bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
+			ArrayList<String> imagesOther = UploadFiles.getExistingFilesPathAsURL("bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
 			
 			for(String image : imagesOther)
 			{
@@ -664,7 +670,7 @@ public class EventsHandler {
 			}
 			images.addAll(imagesOther);
 			b.setImages(images);
-			b.setDocs(UploadFiles.getExistingFilesPath(
+			b.setDocs(UploadFiles.getExistingFilesPathAsURL(
 					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
 
 			jsonResponse.put("imagesSmall", imagesSmall);
@@ -1012,6 +1018,16 @@ public class EventsHandler {
 			log.trace("Deleting Event");
 			ev.delete(conn, idEvents);
 			DBInterface.TransactionCommit(conn);
+			log.trace("Deleting Images");
+
+			String delete = "ev_"+ idEvents + "_";
+			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathAsURL(delete, "/images/events");
+			for(String source : imagesList)
+			{
+				File toDelete = new File(source);
+				toDelete.delete();
+			}
+
 		}
 		catch (Exception e) 
 		{
@@ -1333,17 +1349,9 @@ public class EventsHandler {
 								parts, token, "/images/events", 
 								prefix, acceptableTypes, languageId, false);
 		
-		try {
-			contextPath = context.getResource("/images/events").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-		}
 		Utils jsonizer = new Utils();
 
-		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		ArrayList<String> images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
 		DBConnection conn = null;
 		try
 		{
@@ -1369,7 +1377,7 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		images = UploadFiles.getExistingFilesPath(prefix, contextPath);
+		images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
 		ArrayList<String> imagesSmall = new ArrayList<>();
 		ArrayList<String> imagesMedium = new ArrayList<>();
 		ArrayList<String> imagesLarge = new ArrayList<>();

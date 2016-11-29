@@ -143,5 +143,6 @@ public class ImageHandler {
 		doScale(maxWidthSmall, maxHeigthSmall, originalImage, imagePath,"-small");
 		doScale(maxWidthMedium, maxHeigthMedium, originalImage, imagePath, "-medium");
 		doScale(maxWidthLarge, maxHeigthLarge, originalImage, imagePath, "-large");
+//		new File(imagePath).delete();
 	}
 }

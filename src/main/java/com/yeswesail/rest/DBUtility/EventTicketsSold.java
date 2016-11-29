@@ -55,10 +55,10 @@ public class EventTicketsSold extends DBInterface
 					 "FROM EventTicketsDescription c INNER JOIN ( " +
 					 "      EventTicketsSold a INNER JOIN EventTickets b ON " +
 					 "         a.eventTicketId = b.idEventTickets AND " +
-					 "         b.eventId = " + eventId + " AND " +
-					 "          c.languageId = " + languageId + " " +
+					 "         b.eventId = " + eventId + " " +
 					 "      ) ON " +
-					 "	 c.ticketType = b.ticketType";
+					 "	 c.ticketType = b.ticketType " +
+					 "WHERE c.languageId = " + languageId;
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
 			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);

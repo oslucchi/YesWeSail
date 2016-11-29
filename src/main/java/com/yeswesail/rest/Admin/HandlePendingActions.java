@@ -250,7 +250,7 @@ public class HandlePendingActions {
 			log.trace("Retrieving pending actions");
 			conn = DBInterface.connect();
 			u = new Users(conn, id);
-			docs = UploadFiles.getExistingFilesPath("docs_" + u.getIdUsers() + "_", "/images/shipowner");
+			docs = UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_", "/images/shipowner");
 			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 
