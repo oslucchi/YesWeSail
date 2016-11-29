@@ -239,27 +239,6 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		
-		for(Events event : eventsFiltered)
-		{
-			ArrayList<String> imagesTemp = 
-				UploadFiles.getExistingFilesPathAsURL(
-					"ev_" + event.getIdEvents() + "_0_medium" , "/images/events");
-			if (imagesTemp.isEmpty())
-			{
-				imagesTemp = 
-						UploadFiles.getExistingFilesPathAsURL(
-							"ev_" + event.getIdEvents() + "_0" , "/images/events");
-			}
-			if (imagesTemp.isEmpty())
-			{
-				event.setImageURL(prop.getWebHost() + "/images/events/" + "ev_" + event.getIdEvents() + "_0.jpg");
-			}
-			else
-			{
-				event.setImageURL(prop.getWebHost() + "/images/events/" + imagesTemp.get(0));
-			}
-		}
-
 		if (activeOnly)
 		{
 			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
