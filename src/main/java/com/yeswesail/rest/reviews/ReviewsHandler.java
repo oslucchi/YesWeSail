@@ -167,7 +167,7 @@ public class ReviewsHandler {
 			String sql = "SELECT AVG(rating), count(*) as population " +
 						 "FROM Reviews " +
 						 "WHERE reviewForId = " + userId + " AND " +
-						 "      status IN ('A', 'R')";
+						 "      status = 'A'";
 			results = DBInterface.executeAggregateStatement(conn, sql);
 			HashMap<String, Object> json = new HashMap<>();
 			json.put("rating", (Double) results.get(0));

@@ -340,6 +340,10 @@ public class EventsHandler {
 			ev = fillEvent(jsonIn, ev, languageId);
 			int idEvents = ev.insertAndReturnId(conn, "idEvents", ev);
 			ev.setIdEvents(idEvents);
+			ev.setImageURL(ev.getImageURL().replace(new Integer(ev.getIdEvents()).toString(), 
+													new Integer(idEvents).toString()));
+			ev.update(conn, "idEvents");
+			
 			String sql = 
 					"INSERT INTO EventDescription " +
 				    "  SELECT 0, languageId, " + idEvents + ", anchorZone, description" +
@@ -359,7 +363,7 @@ public class EventsHandler {
 			log.debug("Copying image files");
 
 			String replace = "ev_"+ jsonIn.idEvents + "_";
-			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathAsURL(replace, "/images/events");
+			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathOnLocalFilesystem(replace, "/images/events");
 			for(String source : imagesList)
 			{
 				File from = new File(source);
@@ -402,6 +406,7 @@ public class EventsHandler {
 		{
 			conn = DBInterface.connect();
 			event = new Events(conn, jsonIn.eventId);
+			jsonIn.imageURL = jsonIn.imageURL.replace("small", "large");
 			event.setImageURL(jsonIn.imageURL);
 			event.update(conn, "idEvents");
 		}

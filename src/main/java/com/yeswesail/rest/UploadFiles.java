@@ -106,8 +106,7 @@ public class UploadFiles {
         ArrayList<String> imageURLs = new ArrayList<>();
         for (String file : getFilesList(prefix, contextPath))
         {
-            imageURLs.add(contextPath + prefix + 
-    				(prefix.endsWith(File.separator) ? "" : File.separator) + file);
+            imageURLs.add(contextPath + file);
         }
         return(imageURLs);
 	}
