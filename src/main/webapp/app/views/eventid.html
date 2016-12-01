@@ -31,10 +31,12 @@
         <a class="item" ng-click="goToSection('optionals')"> <i class="mail icon"></i>{{"event.optionals" | translate}} </a>
     </div>
 </div>
-<div ng-if="noEventFound==false" id="event-container">
-    <div class="ui two column stackable container grid">
-        <div class="row header-container">
-            <div class="twelve wide column">
+<div ng-show="noEventFound==false" class="ui container" id="event-container">
+    <div class="ui basic horizontal segments">
+
+        
+        <div class="ui basic segment">
+        <div class="ui basic segment header-container">
                 <div class="ui grid">
                     <div class="twelve wide column">
                         <div class="ui items">
@@ -51,29 +53,15 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="four wide column computer-only">
-                <div class="ui book sticky">
-                    <tickets global-tickets="event.tickets"></tickets>
-                    <div class="ui segment">
-                        <p>{{"global.shareOnSocial" | translate}}</p>
-                        <button class="ui blue icon button"> <i class="facebook icon"></i> </button>
-                        <button class="ui teal icon button"> <i class="twitter icon"></i> </button>
-                        <button class="ui red icon button"> <i class="google plus icon"></i> </button>
-                        <button class="ui icon button"> <i class="linkify icon"></i> </button>
-                    </div>
-                </div>
-            </div>
+     
         </div>
         <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
+        <div class="ui basic segment">
                 <div ng-bind-html="event.description"></div>
-            </div>
         </div>
         <div class="ui divider" id="gallery"></div>
-        <div class="row">
-            <div class="twelve wide column">
+        
+            <div class="ui basic segment">
                 <!--
                 <ul rn-carousel-auto-slide rn-carousel class="image">
                     <li ng-repeat="image in event.images">
@@ -84,13 +72,13 @@
                 </ul>
 -->
                 <div id="slick-demo" class="ui small images">
-                        <a href ng-repeat="image in event.images"><img class="item" ng-src="{{image}}" alt=""></a>
+                        <a href ng-repeat="image in imagesSmall"><img class="item" ng-src="{{image}}" alt=""></a>
                 </div>
             </div>
-        </div>
+        
         <div class="ui divider" id="partecipants"></div>
-        <div class="row">
-            <div class="twelve wide column">
+
+            <div class="ui basic segment">
                 <h2 class="ui left aligned header">
   <i class="users icon"></i>
   {{"event.participants" | translate}}
@@ -104,39 +92,38 @@
                     </a>
                 </div>
             </div>
-        </div>
+
         <div class="ui divider" id="logistics"></div>
-        <div class="row">
-            <div class="twelve wide column">
+
+            <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   {{"event.logistics" | translate}}
                 </h2>
                 <div ng-bind-html="event.logistics.description"></div>
             </div>
-        </div>
+
         <div class="ui divider" id="package"></div>
-        <div class="row">
-            <div class="twelve wide column">
+
+            <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   {{"event.package" | translate}}
                 </h2>
                 <div ng-bind-html="event.includes.description"></div>
             </div>
-        </div>
-        <div class="row" id="optionals">
-            <div class="twelve wide column">
+        <div class="ui basic segment" id="optionals">
+           
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   {{"event.optionals" | translate}}
                 </h2>
                 <div ng-bind-html="event.excludes.description"></div>
-            </div>
+        
         </div>
         <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
+
+            <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
                 {{"event.theBoat" | translate}}
@@ -179,11 +166,11 @@
                     </div>
                 </div>
             </div>
-        </div>
+
         <div class="ui divider"></div>
         <tickets class="mobile-only" global-tickets="event.tickets"></tickets>
-        <div class="row" id="location">
-            <div class="twelve wide column">
+        <div class="ui basic segment" id="location">
+
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
                 {{"event.location" | translate}}
@@ -211,12 +198,12 @@
 -->
                     </ui-gmap-google-map>
                 </div>
-            </div>
+      
         </div>
         
         <div class="ui divider"></div>
-        <div class="row">
-            <div class="twelve wide column">
+  
+            <div class="ui basic segment">
         <h1>{{"main.explore" | translate}}</h1>
             
             
@@ -236,9 +223,25 @@
     </a>
     </div>
             </div>
-
             </div>
+            <div class="ui basic segment">
+                <div class="tickets-sticky ui sticky">
+                <div class="book">
+                    <tickets global-tickets="event.tickets"></tickets>
+                    <div class="ui segment">
+                        <p>{{"global.shareOnSocial" | translate}}</p>
+                        <button class="ui blue icon button"> <i class="facebook icon"></i> </button>
+                        <button class="ui teal icon button"> <i class="twitter icon"></i> </button>
+                        <button class="ui red icon button"> <i class="google plus icon"></i> </button>
+                        <button class="ui icon button"> <i class="linkify icon"></i> </button>
+                    </div>
+                    </div>
+            </div>
+        </div>
+            </div>
+
+      
         
-        
-    </div>
+  
+  
 </div>

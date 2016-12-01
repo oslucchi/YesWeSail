@@ -77,8 +77,9 @@
 	"global.total": "Totale",
 	"global.reject": "Rifiuta",
 	"global.button.remove": "Rimuovi",
+	"global.send": "Invia",
     "global.leaveMessage": "Sono presenti modifiche non salvate, salvare?",
-    
+       "global.confirm.eventChanges": "Attenzione! Prima che l'evento sia visible agli utenti, le modidiche dovranno essere approvate dagli amministratori. Procedere?",
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
     

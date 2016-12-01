@@ -48,7 +48,9 @@
     "global.insert": "Eingeben",
     "global.updateError": "Fehler während der Eingabe {{errorMsg}}",
     "global.button.remove": "Removen",
+	"global.send": "Senden",
     "global.leaveMessage": "Du has unsaven changen, saven beforen exiten?",
+       "global.confirm.eventChanges": "Attention! Before the event can be available to the users, all the changes must first be approved by the administrators. Do you wish to proceed?",
     
     "admin.events.addPassenger.newUser": "Neues Mitglied?",
     "admin.events.addPassenger.addUser": "Passagier hinzufügen",

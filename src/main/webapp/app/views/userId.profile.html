@@ -28,6 +28,6 @@
         <div class="field">
             <div class="ui new star rating" data-rating="3"></div>
         </div>
-        <div class="ui blue labeled icon button" ng-click="addReview(tempReview)"> <i class="icon edit"></i> {{"user.addReview" | translate}} </div>
+        <div class="ui blue labeled icon button" ng-class="{'disabled': !tempReview.review}" ng-click="addReview(tempReview)"> <i class="icon edit"></i> {{"user.addReview" | translate}} </div>
     </form>
 </div>

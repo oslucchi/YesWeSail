@@ -68,6 +68,12 @@ input:disabled{
     padding: 30px;
 }
 
+#stickyContext{
+    display: block;
+    width: auto;
+    height: auto;
+}
+
 .header_menu_navigation > a{
     font-size: 18px;
     padding-top:28.5px;
@@ -99,6 +105,21 @@ input:disabled{
 }
 .main_search_content{
   
+}
+
+
+.ui.basic.horizontal.segments{
+    border: none !important;
+}
+
+.ui.basic.horizontal.segments > .segment{
+    border-left: none !important;
+    max-width: 810px;
+}
+.tickets-sticky{
+    position: fixed;
+    max-width: 300px;
+    
 }
 
 .main_search_content > div{
@@ -538,7 +559,8 @@ tr{
 
 .tickets-container{
     background-color: white;
-    padding: 50px;
+    padding: 5px;
+    padding-top: 0;
 }
 
 /*menu customization*/

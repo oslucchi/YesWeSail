@@ -8,14 +8,13 @@
  */
 angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService, $anchorScroll, $location) {
       $scope.noEventFound=false;
-    angular.element('.ui.anchor-menu').sticky({
-        context: '#event-container'
-        , offset: 60
-    });
-    angular.element('.ui.book').sticky({
-        context: '#event-container'
-        , offset: 105
-    });
+//    angular.element('.ui.anchor-menu').sticky({
+//        context: '#event-container'
+//        , offset: 60
+//    });
+
+
+    
     $scope.getRating = function (userId) {
         $http.get(URLs.ddns + 'rest/reviews/' + userId + '/rating').then(function (res) {
             $scope.reputation = {
@@ -31,12 +30,21 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
     $http.post(URLs.ddns + 'rest/events/details', {
         eventId: $stateParams.eventId
     }).then(function (res) {
+        
+                   angular.element('.tickets-sticky.ui.sticky').sticky({
+          context: '#event-container'
+                , offset: 60
+                , observeChanges: true
+    });
         $scope.noEventFound=false;
         $scope.groundEvents=res.data.groundEvents;
         $scope.event = res.data.event;
         $scope.event.title = res.data.event.title;
         $scope.shipOwner = res.data.shipOwner;
         $scope.event.images = res.data.images;
+        $scope.imagesSmall=res.data.imagesSmall;
+        $scope.imagesMedium=res.data.imagesMedium;
+        $scope.imagesLarge=res.data.imagesLarge;
         $scope.event.tickets = res.data.tickets;
         $scope.boat = res.data.boat;
         $scope.markers=[];
@@ -126,6 +134,7 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
         });
         angular.element('#slick-demo').slickLightbox({
             src: 'src'
+            , images: $scope.imagesLarge
             , itemSelector: '.item'
         }); 
         
@@ -139,6 +148,9 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
             images: $scope.boat.images
             , itemSelector: '.item'
         });
+        
+//                   angular.element('.tickets-sticky.ui.sticky').sticky('refresh');
+     
     }, function (err) {
         
         $scope.noEventFound=true;

@@ -34,7 +34,7 @@ angular.module('yeswesailApp').directive('tickets', function ($http, URLs, toast
             };
             scope.confirmAddToCart = function (tickets, cabinType) {
                 AuthService.isAuthenticated().then(function (res) {
-                    if (res=='false') {
+                    if (!res) {
                         $rootScope.$broadcast('LoginRequired', $state);
                         return;
                     }

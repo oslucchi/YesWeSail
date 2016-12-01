@@ -77,8 +77,9 @@
 	"global.total": "Total amount",
 	"global.reject": "Reject",
 	"global.button.remove": "Remove",
+	"global.send": "Send",
 	"global.leaveMessage": "You have unsaved changes, save before exit?",
-
+    "global.confirm.eventChanges": "Attention! Before the event can be available to the users, all the changes must first be approved by the administrators. Do you wish to proceed?",
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",
     
