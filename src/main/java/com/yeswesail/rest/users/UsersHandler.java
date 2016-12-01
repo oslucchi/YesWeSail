@@ -34,7 +34,6 @@ import com.ecwid.maleorang.method.v3_0.members.EditMemberMethod;
 import com.ecwid.maleorang.method.v3_0.members.MemberInfo;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
-import com.yeswesail.rest.ImageHandler;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -420,8 +419,14 @@ public class UsersHandler {
 		{
 			for(Documents doc : docs)
 			{
-				doc.setImages(
-						UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner"));
+				ArrayList<ArrayList<String>> docImagesTemp = UploadFiles.getExistingFilesPathAsURL(
+								"docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner");
+				ArrayList<String> docImages = new ArrayList<>();
+				docImages.addAll(docImagesTemp.get(UploadFiles.ORIGINAL));
+				docImages.addAll(docImagesTemp.get(UploadFiles.SMALL));
+				docImages.addAll(docImagesTemp.get(UploadFiles.MEDIUM));
+				docImages.addAll(docImagesTemp.get(UploadFiles.LARGE));
+				doc.setImages(docImages);
 			}
 			utils.addToJsonContainer("docs", docs, false);
 		}
@@ -572,7 +577,7 @@ public class UsersHandler {
 		
 		Utils jsonizer = new Utils();
 
-		ArrayList<String> imagePath = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/users");
+		ArrayList<String> imagePath = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/users").get(UploadFiles.LARGE);
 		jsonizer.addToJsonContainer("images", imagePath, true);
 		
 		StatusType status = Response.Status.OK;
@@ -996,13 +1001,13 @@ public class UsersHandler {
 		UploadFiles.moveFiles(destPath + "/" + token, destPath, 
 							  "bo_" + shipownerId + "_" + bo.getIdBoats() + "_", true);
 
-		// Create images thumbnail
-		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_";
-		ImageHandler imgHnd = new ImageHandler();
-		for(String image : UploadFiles.getExistingFilesPathAsURL(prefix, "/images/boats"))
-		{
-			imgHnd.scaleImages(image);
-		}
+//		// Create images thumbnail
+//		prefix = "bo_" + shipownerId + "_" + bo.getIdBoats() + "_";
+//		ImageHandler imgHnd = new ImageHandler();
+//		for(String image : UploadFiles.getExistingFilesPathAsURL(prefix, "/images/boats"))
+//		{
+//			imgHnd.scaleImages(image);
+//		}
 
 		utils.addToJsonContainer("uploadedList", uploadedList, true);
 		if (rejectionMessage.size() != 0)
@@ -1052,13 +1057,13 @@ public class UsersHandler {
 		for(Boats boat : boats)
 		{
 			ArrayList<String> images = UploadFiles.getExistingFilesPathAsURL(
-											"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
+							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats").get(UploadFiles.LARGE);
 			images.addAll(UploadFiles.getExistingFilesPathAsURL(
-									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats"));
+									"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats").get(UploadFiles.LARGE));
 			boat.setImages(images);
 			boat.setDocs(
 					UploadFiles.getExistingFilesPathAsURL(
-							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
+							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats").get(UploadFiles.LARGE));
 		}
 
 		utils.addToJsonContainer("boats", boats, true);
@@ -1099,54 +1104,25 @@ public class UsersHandler {
 
 		for(Boats boat : boats)
 		{
+			ArrayList<ArrayList<String>> imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
 			ArrayList<String> images = new ArrayList<>();
 			ArrayList<String> imagesSmall = new ArrayList<>();
 			ArrayList<String> imagesMedium = new ArrayList<>();
 			ArrayList<String> imagesLarge = new ArrayList<>();
 
-			ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPathAsURL(
-					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
 
-			for(String image : imagesTemp)
-			{
-				if (image.indexOf("small.jpg") != -1)
-				{
-					imagesSmall.add(image);
-				}
-				else if (image.indexOf("medium.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-				else if (image.indexOf("large.jpg") != -1)
-				{
-					imagesLarge.add(image);
-				}
-				else
-				{
-					images.add(image);
-				}
-			}
 			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
 					"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_bp_", "/images/boats");
-			for(String image : imagesTemp)
-			{
-				if (image.indexOf("small.jpg") != -1)
-				{
-					imagesSmall.add(image);
-				}
-				else if (image.indexOf("medium.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-				else if (image.indexOf("large.jpg") != -1)
-				{
-					imagesLarge.add(image);
-				}
-				else
-				{
-					images.add(image);
-				}
-			}
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
+
 			boat.setImages(images);
 			boat.setImagesSmall(imagesSmall);
 			boat.setImagesMedium(imagesMedium);
@@ -1154,7 +1130,7 @@ public class UsersHandler {
 
 			boat.setDocs(
 					UploadFiles.getExistingFilesPathAsURL(
-							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats"));
+							"bo_" + boat.getOwnerId() + "_" + boat.getIdBoats() + "_doc_", "/images/boats").get(UploadFiles.LARGE));
 		}
 
 		utils.addToJsonContainer("boats", boats, true);
