@@ -8,7 +8,7 @@
 </div>
 -->
 <h2 ng-if="noEventFound==true" class="ui icon center aligned header"><i class="settings icon"></i><div class="content">404 - Event not found<div class="sub header">The requested event was not found or has not been approved yet</div></div></h2>
-<div ng-if="noEventFound==false" ng-style="{'background-image':'url('+event.images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img"> </div>
+<div ng-if="noEventFound==false" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img"> </div>
 <!--
 <div class="ui six item bottom attached menu">
     <a class="active item">Gallery</a>

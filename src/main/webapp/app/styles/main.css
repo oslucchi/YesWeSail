@@ -116,6 +116,14 @@ input:disabled{
     border-left: none !important;
     max-width: 810px;
 }
+
+@media (min-width:1200px){
+ 
+.ui.basic.horizontal.segments > .segment{
+    min-width: 810px;
+}   
+}
+
 .tickets-sticky{
     position: fixed;
     max-width: 300px;

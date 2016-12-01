@@ -71,10 +71,13 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.event.dateEnd = $filter('date')(res.data.event.dateEnd, 'yyyy-MM-dd');
             $scope.shipOwner = res.data.shipOwner;
             $scope.images = res.data.images;
+            posY = res.data.event.backgroundOffsetY;
+            angular.element('.cover-img').css('background-position-y', posY + 'px');
             $scope.imagesSmall = res.data.imagesSmall;
             $scope.imagesMedium = res.data.imagesMedium;
             $scope.imagesLarge = res.data.imagesLarge;
             $scope.tickets = res.data.tickets;
+            $scope.selectedLanguage='it_IT';
             $scope.participants = res.data.participants;
             $scope.logistics = res.data.logistics;
             $scope.includes = res.data.includes;
@@ -355,7 +358,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             , imageURL: image
         }).then(function (res) {
             toastr.success('Image set as default');
-            $scope.event.imageURL = image;
+            $scope.event.imageURL = image.replace('small', 'large');
         })
     };
     $scope.tempTickets = [
@@ -398,6 +401,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.tempEvent.dateEnd = $scope.event.dateEnd;
             $scope.tempEvent.title = $scope.event.title;
             $scope.tempEvent.description = $scope.description;
+            $scope.tempEvent.backgroundOffsetY=posY;
             $scope.tempEvent.logistics = $scope.logistics;
             $scope.tempEvent.includes = $scope.includes;
             $scope.tempEvent.excludes = $scope.excludes;
@@ -441,7 +445,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 }
             }).then(function (response) {
                 $timeout(function () {
-                    $scope.images = response.data.images;
+                    $scope.imagesSmall = response.data.imagesSmall;
                     $scope.progress = null;
                 });
             }, function (response) {
@@ -456,12 +460,17 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             });
         }
     };
-    //    var posY=0;
-    //    $scope.calculateBackgroundPosition=function(howMuch){
-    ////        $scope.backgroundPositionY=curPosition
-    //        posY=posY+howMuch;
-    //         angular.element('.cover-img').css('background-position-y', posY+'px');
-    //    }
+    var posY;
+    $scope.calculateBackgroundPositionUp = function (howMuch) {
+        //        $scope.backgroundPositionY=curPosition
+        posY = posY - howMuch;
+        angular.element('.cover-img').css('background-position-y', posY + 'px');
+    }
+    $scope.calculateBackgroundPositionDown = function (howMuch) {
+        //        $scope.backgroundPositionY=curPosition
+            posY = posY + howMuch;
+            angular.element('.cover-img').css('background-position-y', posY + 'px');
+    }
     $scope.searchLocation = function () {
         $scope.newLocation = {
             latitude: $scope.mapDetails.geometry.location.lat()
