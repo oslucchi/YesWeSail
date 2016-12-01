@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -18,6 +20,11 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.BodyPart;
 
 public class UploadFiles {
+	public final static int ORIGINAL = 0;
+	public final static int SMALL = 1;
+	public final static int MEDIUM = 2;
+	public final static int LARGE = 3;
+	
 	final static Logger log = Logger.getLogger(UploadFiles.class);
 	final static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
@@ -88,14 +95,33 @@ public class UploadFiles {
         return(fileList);
 	}
 
-	public static ArrayList<String> getExistingFilesPathAsURL(String prefix, String root)
+	public static ArrayList<ArrayList<String>> getExistingFilesPathAsURL(String prefix, String root)
 	{
 		String contextPath = getContextPath(root);
+		ArrayList<ArrayList<String>> imageURLs = new ArrayList<>();
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
 
-		ArrayList<String> imageURLs = new ArrayList<>();
         for (String file : getFilesList(prefix, contextPath))
         {
-            imageURLs.add(prop.getWebHost() + root + File.separator + file);
+			if (file.indexOf("-small.jpg") != -1)
+			{
+	            imageURLs.get(SMALL).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else if (file.indexOf("-medium.jpg") != -1)
+			{
+	            imageURLs.get(MEDIUM).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else if (file.indexOf("-large.jpg") != -1)
+			{
+	            imageURLs.get(LARGE).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else
+			{
+	            imageURLs.get(ORIGINAL).add(prop.getWebHost() + root + File.separator + file);
+			}
         }
         return(imageURLs);
 	}
@@ -129,14 +155,40 @@ public class UploadFiles {
 		ArrayList<String> uploaded = new ArrayList<String>();
 		
 		OutputStream out;
+		ImageHandler imgHnd = new ImageHandler();
+		SimpleDateFormat format = new SimpleDateFormat("yyMMddHHmmss");
+		String now = format.format(new Date());
 		try {
 			String extension = part.getContentDisposition().getFileName()
 									.substring(part.getContentDisposition().getFileName().lastIndexOf("."));
-			out = new FileOutputStream(new File(tempDir + prefix + index + extension));
+			File original = new File(tempDir + prefix + index + extension);
+			out = new FileOutputStream(original);
 			out.write(buf);
 			out.flush();
 			out.close();
-			uploaded.add(prefix + index + extension);
+			switch(extension.toUpperCase())
+			{
+			case ".JPG":
+			case ".JPEG":
+			case ".PNG":
+				imgHnd.scaleImages(tempDir + prefix + index + extension);
+				uploaded.add(prefix + index + "-small" + extension);
+				uploaded.add(prefix + index + "-medium" + extension);
+				uploaded.add(prefix + index + "-large" + extension);
+				try
+				{
+					Files.move(original.toPath(), Paths.get(contextPath + "/originals/" + prefix + "-" + now + extension),
+							   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+				}
+				catch(Exception e)
+				{
+					log.warn("Exception " + e.getMessage() + " moving " + original.getPath() + 
+							 "to " + root + "/images/originals/" + prefix + "-" + now  + extension);
+				}
+				break;
+			default:
+				uploaded.add(original.getPath());
+			}
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -165,7 +217,10 @@ public class UploadFiles {
 
 	private static int startUploafFromIndex(String destPath, String prefix, boolean overwrite)
 	{
-		ArrayList<String> images = UploadFiles.getExistingFilesPathAsURL(prefix, destPath);
+		ArrayList<ArrayList<String>> allImages = UploadFiles.getExistingFilesPathAsURL(prefix, destPath);
+		ArrayList<String> images = new ArrayList<>();
+		images.addAll(allImages.get(ORIGINAL));
+		images.addAll(allImages.get(SMALL));
 		int lastIndex = -1;
 		if (!overwrite)
 		{

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -38,7 +38,6 @@ import com.google.common.io.Files;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
-import com.yeswesail.rest.ImageHandler;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -555,31 +554,13 @@ public class EventsHandler {
 			log.warn("Unable to populate descriptions (" + e.getMessage() + ")");
 		}
 
-		ArrayList<String> imagesTemp = UploadFiles.getExistingFilesPathAsURL("ev_"+ event.getIdEvents() + "_", "/images/events");
+		ArrayList<ArrayList<String>> imagesTemp = UploadFiles.getExistingFilesPathAsURL("ev_"+ event.getIdEvents() + "_", "/images/events");
 
-		ArrayList<String> images = new ArrayList<>();
-		ArrayList<String> imagesSmall = new ArrayList<>();
-		ArrayList<String> imagesMedium = new ArrayList<>();
-		ArrayList<String> imagesLarge = new ArrayList<>();
-		for(String image : imagesTemp)
-		{
-			if (image.indexOf("small.jpg") != -1)
-			{
-				imagesSmall.add(image);
-			}
-			else if (image.indexOf("medium.jpg") != -1)
-			{
-				imagesMedium.add(image);
-			}
-			else if (image.indexOf("large.jpg") != -1)
-			{
-				imagesLarge.add(image);
-			}
-			else
-			{
-				images.add(image);
-			}
-		}
+		ArrayList<String> images = imagesTemp.get(UploadFiles.ORIGINAL);
+		ArrayList<String> imagesSmall = imagesTemp.get(UploadFiles.SMALL);
+		ArrayList<String> imagesMedium = imagesTemp.get(UploadFiles.MEDIUM);
+		ArrayList<String> imagesLarge = imagesTemp.get(UploadFiles.LARGE);
+
 		if (images.isEmpty())
 		{
 			images.add(event.getImageURL());
@@ -616,46 +597,29 @@ public class EventsHandler {
 		{
 			log.debug("querying the boat details for this event");
 			Boats b = new Boats(conn, event.getBoatId());
-			images = UploadFiles.getExistingFilesPathAsURL(
-						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
-			
-			for(String image : images)
-			{
-				if (image.indexOf("small.jpg") != -1)
-				{
-					imagesSmall.add(image);
-				}
-				else if (image.indexOf("medium.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-				else if (image.indexOf("large.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-			}
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+								"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
 
-			ArrayList<String> imagesOther = UploadFiles.getExistingFilesPathAsURL("bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+								"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
 			
-			for(String image : imagesOther)
-			{
-				if (image.indexOf("small.jpg") != -1)
-				{
-					imagesSmall.add(image);
-				}
-				else if (image.indexOf("medium.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-				else if (image.indexOf("large.jpg") != -1)
-				{
-					imagesMedium.add(image);
-				}
-			}
-			images.addAll(imagesOther);
 			b.setImages(images);
-			b.setDocs(UploadFiles.getExistingFilesPathAsURL(
-					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats");
+			ArrayList<String> docs = new ArrayList<>();
+			docs.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			docs.addAll(imagesTemp.get(UploadFiles.SMALL));
+			docs.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			docs.addAll(imagesTemp.get(UploadFiles.LARGE));
+			b.setDocs(docs);
 
 			jsonResponse.put("imagesSmall", imagesSmall);
 			jsonResponse.put("imagesMedium", imagesMedium);
@@ -1005,13 +969,15 @@ public class EventsHandler {
 			log.trace("Deleting Images");
 
 			String delete = "ev_"+ idEvents + "_";
-			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathAsURL(delete, "/images/events");
-			for(String source : imagesList)
+			ArrayList<ArrayList<String>> imagesList= UploadFiles.getExistingFilesPathAsURL(delete, "/images/events");
+			for(ArrayList<String> sourceList : imagesList)
 			{
-				File toDelete = new File(source);
-				toDelete.delete();
+				for(String source : sourceList)
+				{
+					File toDelete = new File(source);
+					toDelete.delete();
+				}
 			}
-
 		}
 		catch (Exception e) 
 		{
@@ -1335,61 +1301,12 @@ public class EventsHandler {
 		
 		Utils jsonizer = new Utils();
 
-		ArrayList<String> images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
-		DBConnection conn = null;
-		try
-		{
-			conn = DBInterface.connect();
-			for(String image : images)
-			{
-				if (image.endsWith(prefix + "0.jpg"))
-				{
-					Events e = new Events(conn, eventId);
-					e.setImageURL(image);
-					e.update(conn, "idEvents");
-					break;
-				}
-				ImageHandler imgHnd = new ImageHandler();
-				imgHnd.scaleImages(image);
-			}
-		}
-		catch(Exception e)
-		{
-			log.warn("Unable to update main image for event " + eventId + ". Exception " + e.getMessage());
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
-		ArrayList<String> imagesSmall = new ArrayList<>();
-		ArrayList<String> imagesMedium = new ArrayList<>();
-		ArrayList<String> imagesLarge = new ArrayList<>();
-		Iterator<String> it = images.iterator();
-		while(it.hasNext())
-		{
-			String image = it.next();
-			if (image.indexOf("-small.jpg") != -1)
-			{
-				imagesSmall.add(image);
-				it.remove();
-			}
-			else if (image.indexOf("-medium.jpg") != -1)
-			{
-				imagesMedium.add(image);
-				it.remove();
-			}
-			else if (image.indexOf("-large.jpg") != -1)
-			{
-				imagesLarge.add(image);
-				it.remove();
-			}
-		}
+		ArrayList<ArrayList<String>> images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
 
-		jsonizer.addToJsonContainer("images", images, true);
-		jsonizer.addToJsonContainer("imagesSmall", imagesSmall, false);
-		jsonizer.addToJsonContainer("imagesMedium", imagesMedium, false);
-		jsonizer.addToJsonContainer("imagesLarge", imagesLarge, false);
+		jsonizer.addToJsonContainer("images", images.get(UploadFiles.ORIGINAL), true);
+		jsonizer.addToJsonContainer("imagesSmall", images.get(UploadFiles.SMALL), false);
+		jsonizer.addToJsonContainer("imagesMedium", images.get(UploadFiles.MEDIUM), false);
+		jsonizer.addToJsonContainer("imagesLarge", images.get(UploadFiles.LARGE), false);
 		
 		StatusType status = Response.Status.OK;
 		if (response.getStatusInfo() != Response.Status.OK)
