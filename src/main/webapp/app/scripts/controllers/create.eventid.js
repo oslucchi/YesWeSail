@@ -77,7 +77,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.imagesMedium = res.data.imagesMedium;
             $scope.imagesLarge = res.data.imagesLarge;
             $scope.tickets = res.data.tickets;
-            $scope.selectedLanguage='it_IT';
+            $scope.selectedLanguage=res.data.event.locale;
             $scope.participants = res.data.participants;
             $scope.logistics = res.data.logistics;
             $scope.includes = res.data.includes;
