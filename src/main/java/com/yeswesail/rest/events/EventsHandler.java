@@ -129,6 +129,7 @@ public class EventsHandler {
 		int i;
 		for(Events e : events)
 		{
+			e.setImageURL(e.getImageURL().replace("large", "medium"));
 			for(i = 0; i < hotList.size(); i++)
 			{
 				if ((hotList.get(i) != null) && (e.getAggregateKey() != null) && 
@@ -232,15 +233,22 @@ public class EventsHandler {
 		{
 			eventsFiltered = new ArrayList<Events>(Arrays.asList(events));
 		}
+		
 		// No record found. return an empty object
 		if (eventsFiltered.size() == 0)
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
-		
 		if (activeOnly)
 		{
 			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
+			for(ArrayList<Events> listItem : eventsList)
+			{
+				for(Events e : listItem)
+				{
+					e.setImageURL(e.getImageURL().replace("large", "medium"));
+				}
+			}
 			if (jh.jasonize(eventsList, languageId) != Response.Status.OK)
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
@@ -249,12 +257,15 @@ public class EventsHandler {
 		}
 		else
 		{
+			for(Events e : eventsFiltered)
+			{
+				e.setImageURL(e.getImageURL().replace("large", "medium"));
+			}
 			if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(jh.json).build();
 			}
-
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
@@ -457,6 +468,10 @@ public class EventsHandler {
 			{
 				event = new Events(conn, jsonIn.eventId, languageId);
 			}
+			// Make sure the imageURL is set to large regardless of what is the DB
+			event.setImageURL(event.getImageURL()
+									.replace("small", "large")
+									.replace("medium", "large"));
 		}
 		catch (Exception e) 
 		{
@@ -1264,9 +1279,10 @@ public class EventsHandler {
 		{
 			log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
 		}
-		String baseName = imageName.substring(0, imageName.indexOf(".jpg"));
-		File toRemove = new File(eventsPath + File.separator + imageName);
-		toRemove.delete();
+		String baseName = imageName.substring(0, imageName.indexOf("-"));
+//		File toRemove = new File(eventsPath + File.separator + imageName);
+//		toRemove.delete();
+		File toRemove = null;
 		for(String size : imageSizeType)
 		{
 			toRemove = new File(eventsPath + File.separator + baseName + size + ".jpg");

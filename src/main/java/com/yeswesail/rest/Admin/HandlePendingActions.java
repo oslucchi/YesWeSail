@@ -250,11 +250,7 @@ public class HandlePendingActions {
 			log.trace("Retrieving pending actions");
 			conn = DBInterface.connect();
 			u = new Users(conn, id);
-			ArrayList<ArrayList<String>> allDocs = UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_", "/images/shipowner");
-			docs.addAll(allDocs.get(UploadFiles.ORIGINAL));
-			docs.addAll(allDocs.get(UploadFiles.SMALL));
-			docs.addAll(allDocs.get(UploadFiles.MEDIUM));
-			docs.addAll(allDocs.get(UploadFiles.LARGE));
+			docs = UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_", "/images/shipowner").get(UploadFiles.LARGE);
 			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 

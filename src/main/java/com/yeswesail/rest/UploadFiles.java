@@ -177,7 +177,7 @@ public class UploadFiles {
 				uploaded.add(prefix + index + "-large" + extension);
 				try
 				{
-					Files.move(original.toPath(), Paths.get(contextPath + "/originals/" + prefix + "-" + now + extension),
+					Files.move(original.toPath(), Paths.get(contextPath + "/originals/" + prefix + index + "-" + now + extension),
 							   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 				}
 				catch(Exception e)

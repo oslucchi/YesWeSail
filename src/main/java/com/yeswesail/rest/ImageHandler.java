@@ -27,12 +27,12 @@ public class ImageHandler {
 	final Logger log = Logger.getLogger(this.getClass());
 	private String contextPath = null;
 
-	final private int maxWidthSmall = 200;
-	final private int maxWidthMedium = 500;
-	final private int maxWidthLarge  = 1920;
-	final private int maxHeigthSmall = 150;
-	final private int maxHeigthMedium = 300;
-	final private int maxHeigthLarge = 1080;
+	final private double maxWidthSmall = 200;
+	final private double maxWidthMedium = 500;
+	final private double maxWidthLarge  = 1920;
+	final private double maxHeigthSmall = 150;
+	final private double maxHeigthMedium = 300;
+	final private double maxHeigthLarge = 1080;
 	private Double width = 150.0;
 	private Double heigth = 112.0;
 
@@ -95,24 +95,25 @@ public class ImageHandler {
 		}
 	}
 
-	private void doScale(int maxW, int maxH, BufferedImage originalImage, String imagePath, String suffix)
+	private void doScale(double maxW, double maxH, BufferedImage originalImage, String imagePath, String suffix)
 	{
 		double ratio = 1.0;
-		if ((originalImage.getHeight() > maxH) || 
-				(originalImage.getWidth() > maxW))
+		double oHeight = new Double(originalImage.getHeight());
+		double oWidth = new Double(originalImage.getWidth());
+		if ((oHeight > maxH) || (oWidth > maxW))
 		{
-			if (originalImage.getHeight()/maxH > originalImage.getWidth()/maxW)
+			if (oHeight/maxH > oWidth/maxW)
 			{
-				ratio = originalImage.getHeight() / maxH;
+				ratio =  oHeight / maxH;
 			}
 			else
 			{
-				ratio = originalImage.getWidth() / maxW;
+				ratio = oWidth / maxW;
 			}
 		}
 		
-		heigth = originalImage.getHeight() / ratio;
-		width = originalImage.getWidth() / ratio;
+		heigth = oHeight / ratio;
+		width = oWidth / ratio;
 		log.debug("Resizing from " + originalImage.getWidth() + "x" +
 				  originalImage.getHeight() + " to " + width.intValue() + "x" + heigth.intValue());
 		String outPath = imagePath.substring(0, imagePath.lastIndexOf('.')) + suffix + ".jpg";

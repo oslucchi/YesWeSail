@@ -38,6 +38,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	protected int createdBy;
 	protected Date createdOn;
 	protected int languageId;
+	protected String locale;
 	protected int backgroundOffsetX;
 	protected int backgroundOffsetY;
 
@@ -134,6 +135,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		{
 			setImageURL(prop.getWebHost() + "/" + getImageURL());
 		}
+		setLocale(Constants.getLocale(languageId));
 		events = new ArrayList<Events>();
 		events.add(this);
 	}
@@ -176,6 +178,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			{
 				event.setImageURL(prop.getWebHost() + "/" + event.getImageURL());
 			}
+			event.setLocale(Constants.getLocale(languageId));
 		}
 		return(events);
 	}
@@ -202,6 +205,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			if (e.minPrice != 0)
 			{
 				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
+				e.setLocale(Constants.getLocale(languageId));
 				retList.add(e);
 			}
 			if ((prop.getMaxNumHotOffers() != 0) && (retList.size() == prop.getMaxNumHotOffers()))
@@ -235,6 +239,10 @@ public class Events extends DBInterface implements Comparable<Events>
 			return null;
 		getTicketMaxAndMin(events);
 		
+		for(Events event : events)
+		{
+			event.setLocale(Constants.getLocale(languageId));
+		}
 		Collections.sort(events);
 		return(events.toArray(new Events[events.size()]));
 	}
@@ -471,6 +479,14 @@ public class Events extends DBInterface implements Comparable<Events>
 
 	public void setBackgroundOffsetY(int backgroundOffsetY) {
 		this.backgroundOffsetY = backgroundOffsetY;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
 	}
 	
 }

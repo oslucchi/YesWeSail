@@ -128,41 +128,6 @@ public class UsersHandler {
 	        this.LNAME = lname;
 	    }
 	}
-
-//	private void mailchimpSender(String apikey) throws IOException
-//	{
-//		String url = prop.getMailchimpURL() + "/lists/";
-//		// Authentication PART
-//
-//		String name = "oslucchi";
-//		// Mailchimp test env password "pUw5A1!@";
-//		String password = apikey;     //Mailchimp API key
-//		String authString = name + ":" + password;
-//
-//		byte[] authEncBytes = Base64.encodeBase64(authString.getBytes());
-//		String authStringEnc = new String(authEncBytes);
-//
-//		URL urlConnector = new URL(url);
-//		HttpURLConnection httpConnection = (HttpURLConnection) urlConnector.openConnection();
-//		httpConnection.setRequestMethod("GET");
-//		httpConnection.setDoOutput(true);
-//		httpConnection.setDoInput(true);
-//		httpConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-//		httpConnection.setRequestProperty("Accept", "application/json");
-//		httpConnection.setRequestProperty("Authorization", "Basic " + authStringEnc);
-//
-//		InputStream is1 = httpConnection.getInputStream();
-//		StringBuilder sb = new StringBuilder();
-//		BufferedReader br = new BufferedReader(new InputStreamReader(is1, "utf-8"));
-//
-//		String line = null;
-//		while ((line = br.readLine()) != null) 
-//		{
-//		    sb.append(line + "\n");
-//        }
-//		System.out.println(sb.toString());
-//		br.close();	
-//	}
 	
 	@POST
 	@Path("/subscribe")
@@ -419,14 +384,11 @@ public class UsersHandler {
 		{
 			for(Documents doc : docs)
 			{
-				ArrayList<ArrayList<String>> docImagesTemp = UploadFiles.getExistingFilesPathAsURL(
-								"docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + "_", "/images/shipowner");
-				ArrayList<String> docImages = new ArrayList<>();
-				docImages.addAll(docImagesTemp.get(UploadFiles.ORIGINAL));
-				docImages.addAll(docImagesTemp.get(UploadFiles.SMALL));
-				docImages.addAll(docImagesTemp.get(UploadFiles.MEDIUM));
-				docImages.addAll(docImagesTemp.get(UploadFiles.LARGE));
-				doc.setImages(docImages);
+				doc.setImages(UploadFiles
+									.getExistingFilesPathAsURL(
+											"docs_" + u.getIdUsers() + "_" + doc.getIdDocuments() + 
+											"_", "/images/shipowner")
+									.get(UploadFiles.LARGE));
 			}
 			utils.addToJsonContainer("docs", docs, false);
 		}
