@@ -6,7 +6,7 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, URLs, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
+angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, $state, URLs, AuthService, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
     //    angular.element('.ui.anchor-menu').sticky({
     //        context: '#event-container'
     //        , offset: 60
@@ -19,6 +19,15 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     $scope.tDisabled = false;
     $scope.minDate = new Date();
     var unsavedWork = false;
+    
+      AuthService.isAuthenticated().then(function (res) {
+                    if (!res) {
+                        $rootScope.$broadcast('LoginRequired', $state);
+                        $state.go('main');
+                        return;
+                    }
+                }, function (err) {})
+    
     $scope.$on('$stateChangeStart', function (event, next, current) {
         if (unsavedWork) {
             var answer = confirm($translate.instant('global.leaveMessage'));

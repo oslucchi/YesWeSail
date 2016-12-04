@@ -6,14 +6,28 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, CartService, $anchorScroll, $location) {
+angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http, URLs, $stateParams, $state, AuthService, $rootScope, CartService, $anchorScroll, $location) {
       $scope.noEventFound=false;
 //    angular.element('.ui.anchor-menu').sticky({
 //        context: '#event-container'
 //        , offset: 60
 //    });
 
+$scope.goToProfile=function(userId){
+    
+         AuthService.isAuthenticated().then(function (res) {
+                    if (!res) {
+                        $rootScope.$broadcast('LoginRequired', $state);
+                        return;
+                    }
+                    else {
+                        $state.go('userId.profile', {userId: userId});
 
+                    }
+                }, function (err) {})
+    
+    
+}
     
     $scope.getRating = function (userId) {
         $http.get(URLs.ddns + 'rest/reviews/' + userId + '/rating').then(function (res) {

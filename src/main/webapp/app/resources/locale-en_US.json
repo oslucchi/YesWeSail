@@ -29,6 +29,7 @@
     
     "global.availableDatesHeader": "Date available for the selected event",
 	"global.approve": "Approve",
+	"global.changeLanguage": "Do you confirm the change of language?",
 	"global.approveAll": "Approve all",
 	"global.refresh": "Refresh",
     "global.cancel": "Abort",

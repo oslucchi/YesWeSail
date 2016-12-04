@@ -41,7 +41,7 @@
                     <div class="twelve wide column">
                         <div class="ui items">
                             <div class="item">
-                                <div class="shipOwner image" ui-sref="userId.profile({userId: shipOwner.idUsers})"> <img ng-src="{{shipOwner.imageURL}}">
+                                <div class="shipOwner image" ng-click="goToProfile(shipOwner.idUsers)"> <img ng-src="{{shipOwner.imageURL}}">
                                     <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
                                     <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback </div>
                                 <div class="content"> <a class="header">{{event.title}}</a>
