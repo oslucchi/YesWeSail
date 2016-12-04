@@ -296,6 +296,11 @@
     "cartTemplate.gridsCol.timeLeft": "Time to complete",
     
 
+    
+    "howItWorks.usagePolicy": "Usage Policy",
+    "howItWorks.clientPolicy": "Customer Policy", 
+    "howItWorks.shipownerPolicy": "Shipowner Policy", 
+    
 	"footer.company": "Company",
 	"footer.aboutUs": "About us",
 	"footer.howItWorks": "How it works",

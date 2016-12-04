@@ -535,6 +535,9 @@ tr{
 .not-approved{
     background-color: orange !important;
 }
+.rejected{
+    background-color: red !important;
+}
 
 .results{
    min-height: 100vh;

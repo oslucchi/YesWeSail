@@ -296,6 +296,10 @@
     "cartTemplate.gridsCol.timeLeft": "Tempo per l'acquisto",
     
 
+    
+    "howItWorks.usagePolicy": "Policy di utilizzo", 
+    "howItWorks.clientPolicy": "Policy per il cliente", 
+    "howItWorks.shipownerPolicy": "Policy per l'armatore", 
 	"footer.company": "Società",
 	"footer.aboutUs": "Chi siamo",
 	"footer.howItWorks": "Come funziona",
