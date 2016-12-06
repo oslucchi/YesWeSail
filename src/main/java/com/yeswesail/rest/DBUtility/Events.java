@@ -135,7 +135,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		{
 			setImageURL(prop.getWebHost() + "/" + getImageURL());
 		}
-		setLocale(Constants.getLocale(languageId));
+		setLocale(Constants.getLocale(this.getLanguageId()));
 		events = new ArrayList<Events>();
 		events.add(this);
 	}
@@ -178,7 +178,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			{
 				event.setImageURL(prop.getWebHost() + "/" + event.getImageURL());
 			}
-			event.setLocale(Constants.getLocale(languageId));
+			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
 		return(events);
 	}
@@ -205,7 +205,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			if (e.minPrice != 0)
 			{
 				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
-				e.setLocale(Constants.getLocale(languageId));
+				e.setLocale(Constants.getLocale(e.getLanguageId()));
 				retList.add(e);
 			}
 			if ((prop.getMaxNumHotOffers() != 0) && (retList.size() == prop.getMaxNumHotOffers()))
@@ -241,7 +241,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		
 		for(Events event : events)
 		{
-			event.setLocale(Constants.getLocale(languageId));
+			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
 		Collections.sort(events);
 		return(events.toArray(new Events[events.size()]));
