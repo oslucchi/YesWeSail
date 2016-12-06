@@ -35,6 +35,37 @@ angular.module('yeswesailApp').controller('UseridProfileCtrl', function ($scope,
             });
         })
     }
+    
+        $scope.$watch('currentUser.idUsers', function(dataLoaded) {
+          if (dataLoaded) {
+              if($stateParams.userId == $scope.currentUser.idUsers){
+                  $scope.isOwner=true;
+              }
+               $scope.isAdmin=Session.isAdmin($scope.currentUser.roleId);
+          }
+        });
+       
+    $scope.uploadProfilePic=function(pic){
+             Upload.upload({
+                url: URLs.ddns + 'rest/users/' + $scope.currentUser.idUsers + '/profilePic',
+                data: {
+                    picture: pic
+                }
+            }).then(function (response) {
+            	toastr.success('Image set');
+                 $scope.user.imageURL=response.data.images[0]+ '?decache=' + Math.random();;
+            }, function (response) {
+
+            }, function (evt) {
+                $scope.progress =
+                    Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
+                $('#file-upload-progress').progress({
+                    percent: $scope.progress
+                });
+
+            });
+    }
+    
     $scope.tempReview = {
         rating: 0
         , review: ''

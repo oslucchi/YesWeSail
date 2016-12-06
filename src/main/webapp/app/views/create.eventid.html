@@ -1,4 +1,4 @@
-<div ng-mousedown="calculateBackgroundPosition()" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-show="event.imageURL" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
 <div class="ui button" ng-click="calculateBackgroundPositionUp(30)">UP</div>
 <div class="ui button" ng-click="calculateBackgroundPositionDown(30)">DOWN</div>
 
@@ -14,29 +14,27 @@
 </div>
 -->
 
-
-    <div class="ui container">
 <div class="ui anchor-menu attached stackable menu">
+<div class="ui container">
         <a class="item">
-            <i class="home icon"></i>{{"event.gallery" | translate}}
+           {{"event.gallery" | translate}}
         </a>
         <a class="item">
-            <i class="grid layout icon"></i>{{"event.participants" | translate}}
+           {{"event.participants" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.logistics" | translate}}
+            {{"event.logistics" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.location" | translate}}
+           {{"event.location" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.package" | translate}}
+            {{"event.package" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.optionals" | translate}}
+            {{"event.optionals" | translate}}
         </a>
         <div class="right menu">
-        
           <div class="ui language dropdown item" dropdown action="hide">
     {{selectedLanguage.substring(0, 2).toUpperCase()}}
     <i class="dropdown icon"></i>
@@ -57,7 +55,10 @@
             </div>
 
     </div>
-</div>
+    </div>
+
+
+
 
 
 
@@ -335,35 +336,35 @@
                     <tr>
                       <td>{{"event.bunks" | translate}}</td>
                       <td ng-repeat="number in getNumber(selectedBoat.bunks) track by $index">
-                         <button ng-disabled="tDisabled" ng-if="!!!tickets[0][$index].price" ng-click="addTicket(0, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[0][$index].price" class="ui fluid input ticket-price">
-                          <input ng-model="tickets[0][$index].price" type="text">
+                         <button ng-disabled="tDisabled" ng-if="!!!tempTickets[0][$index].price" ng-click="addTicket(0, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[0][$index].price" class="ui fluid input ticket-price">
+                          <input ng-model="tempTickets[0][$index].price" type="text">
                         </div>
                       </td>
                     </tr>
                     <tr>
                       <td>{{"event.cabinsNoBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsNoBathroom*2) track by $index">
-                            <button ng-disabled="tDisabled" ng-if="!!!tickets[1][$index].price" ng-click="addTicket(1, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[1][$index].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[1][$index].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[1][$index].price" ng-click="addTicket(1, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[1][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[1][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
                       <tr>
                       <td>{{"event.cabinsWithBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsWithBathroom*2) track by $index">
-                            <button ng-disabled="tDisabled" ng-if="!!!tickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[2][$index].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[2][$index].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[2][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[2][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
                       <tr>
                       <td>{{"event.wholeBoat" | translate}}</td>
                         <td>
-                            <div ng-if="!!tickets[3][0].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[3][0].price" type="text">
+                            <div ng-if="!!tempTickets[3][0].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[3][0].price" type="text">
                             </div>
                         </td>
                     </tr>
@@ -420,5 +421,6 @@
             </div>
           
         </div>
+
 
  

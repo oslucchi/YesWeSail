@@ -139,14 +139,14 @@ Starting at {{event.minPrice}}€
             <div class="result card">
                 
                 <div class="contents">
-                    <img ng-src="{{singleEvent.imageURL}}">
+                    <img ng-src="{{singleEvent.imageURL}}" fallback-src="images/defaultEvent.png">
                     
                 </div>
                 
                 
                 
             </div>
-            <div class="ui huge blue ribbon label">
+            <div class="ui medium blue ribbon label">
                          {{'global.from'|translate}} {{singleEvent.minPrice}}€
                         <p ng-if="multipleEvents.length>1" class="mini-dates">{{"global.otherDates" | translate}}</p>
                 </div>
@@ -157,7 +157,7 @@ Starting at {{event.minPrice}}€
                         <img src="images/early-booking.png">
                     </div>
      <div class="event-details">
-                <h2  style="color: white !important;" class="ui medium header">
+                <h2  style="color: white !important;" class="ui small header">
                 {{singleEvent.title}}
                 
               

@@ -69,6 +69,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 , 'Language': $scope.selectedLanguage
             }
         }).then(function (res) {
+            
+            $("#cover-img").css('background-image', 'url("'+res.data.event.imageURL+'")')
             $scope.event = res.data.event;
             if (res.data.event.dateStart == -3600000) {
                 $scope.event.dateStart = $scope.minDate;
@@ -102,56 +104,60 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             else {
                 bDisabled = false;
             }
+            
+          
+            
             if (res.data.tickets.length > 0) {
+                $scope.tempTickets=res.data.tickets;
                 $scope.tDisabled = true;
             }
             else {
-                $scope.tickets = [
-        [{
-                        "available": 1
-                        , "booked": 0
-                        , "bookedTo": null
-                        , "cabinRef": null
-                        , "description": ""
-                        , "eventId": $stateParams.eventId
-                        , "idEventTickets": 0
-                        , "price": 100
-                        , "ticketType": 1
-        }]
-                          , [{
-                        "available": 1
-                        , "booked": 0
-                        , "bookedTo": null
-                        , "cabinRef": null
-                        , "description": ""
-                        , "eventId": $stateParams.eventId
-                        , "idEventTickets": 0
-                        , "price": 100
-                        , "ticketType": 2
-        }]
-                          , [{
-                        "available": 1
-                        , "booked": 0
-                        , "bookedTo": null
-                        , "cabinRef": null
-                        , "description": ""
-                        , "eventId": $stateParams.eventId
-                        , "idEventTickets": 0
-                        , "price": 100
-                        , "ticketType": 3
-        }]
-                          , [{
-                        "available": 1
-                        , "booked": 0
-                        , "bookedTo": null
-                        , "cabinRef": null
-                        , "description": ""
-                        , "eventId": $stateParams.eventId
-                        , "idEventTickets": 0
-                        , "price": 100
-                        , "ticketType": 5
-        }]
-    ]
+                  $scope.tempTickets = [
+//            [{
+//                            "available": 1
+//                            , "booked": 0
+//                            , "bookedTo": null
+//                            , "cabinRef": null
+//                            , "description": ""
+//                            , "eventId": $stateParams.eventId
+//                            , "idEventTickets": 0
+//                            , "price": 100
+//                            , "ticketType": 1
+//            }]
+//                              , [{
+//                            "available": 1
+//                            , "booked": 0
+//                            , "bookedTo": null
+//                            , "cabinRef": null
+//                            , "description": ""
+//                            , "eventId": $stateParams.eventId
+//                            , "idEventTickets": 0
+//                            , "price": 100
+//                            , "ticketType": 2
+//            }]
+//                              , [{
+//                            "available": 1
+//                            , "booked": 0
+//                            , "bookedTo": null
+//                            , "cabinRef": null
+//                            , "description": ""
+//                            , "eventId": $stateParams.eventId
+//                            , "idEventTickets": 0
+//                            , "price": 100
+//                            , "ticketType": 3
+//            }]
+//                              , [{
+//                            "available": 1
+//                            , "booked": 0
+//                            , "bookedTo": null
+//                            , "cabinRef": null
+//                            , "description": ""
+//                            , "eventId": $stateParams.eventId
+//                            , "idEventTickets": 0
+//                            , "price": 100
+//                            , "ticketType": 5
+//            }]
+        ]
                 $scope.tDisabled = false;
             }
             $scope.newLocation = {
@@ -349,7 +355,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         return max;
     }
     $scope.addTicket = function (row, col) {
-        $scope.tickets[row][col] = {
+        $scope.tempTickets[row]=$scope.tempTickets[row] || [];
+        $scope.tempTickets[row][col] = {
             "available": 1
             , "booked": 0
             , "bookedTo": null
@@ -370,27 +377,27 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.event.imageURL = image.replace('small', 'large');
         })
     };
-    $scope.tempTickets = [
-                          [
-            {
-                "eventId": 2
-                , "price": 70
-                , "ticketType": 1
-                            }
-            , {
-                "eventId": 2
-                , "price": 150
-                , "ticketType": 1
-                            }
-                          ]
-                          , [
-            {
-                "eventId": 2
-                , "price": 120
-                , "ticketType": 2
-                            }
-                          ]
-                        ];
+//    $scope.tempTickets = [
+//                          [
+//            {
+//                "eventId": 2
+//                , "price": 70
+//                , "ticketType": 1
+//                            }
+//            , {
+//                "eventId": 2
+//                , "price": 150
+//                , "ticketType": 1
+//                            }
+//                          ]
+//                          , [
+//            {
+//                "eventId": 2
+//                , "price": 120
+//                , "ticketType": 2
+//                            }
+//                          ]
+//                        ];
     // $scope.tempTickets[0][0]
     $scope.updateTickets = function (ticketTypeIndex, priceIndex, value) {
         $scope.tempTickets[ticketTypeIndex][priceIndex].price = value;
@@ -419,7 +426,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.tempEvent.route = [];
             $scope.tempEvent.participants = $scope.participants;
             $scope.tempEvent.labels = [];
-            $scope.tempEvent.tickets = $scope.tickets;
+            $scope.tempEvent.tickets = $scope.tempTickets;
             $scope.tempEvent.boatId = $scope.selectedBoat.idBoats;
             angular.forEach($scope.markers, function (val, key) {
                 $scope.tempEvent.route.push({
@@ -570,8 +577,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         return true;
     }
     $scope.$watchCollection('[event, event.location, event.dateStart, event.dateEvent, event.title, description, logistics, includes, excludes, route, participants, tickets, seletedBoat]', function (newVal, oldVal, scope) {
-        console.log(newVal, oldVal);
-        if (newVal != oldVal && !isArrayContentUndefined(oldVal)) {
+        if (newVal != oldVal && !isArrayContentUndefined(oldVal) && newVal[0].languageId === oldVal[0].languageId) {
             unsavedWork = true;
         }
     })

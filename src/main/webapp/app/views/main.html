@@ -32,7 +32,7 @@
             <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
             <div class="result card" >
                 <div class="contents">
-                    <img ng-src="{{singleEvent.imageURL}}">
+                    <img ng-src="{{singleEvent.imageURL}}" fallback-src="images/defaultEvent.png">
                     
                 </div>
                 

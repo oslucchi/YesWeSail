@@ -1,3 +1,42 @@
+   <div class="ui basic segment">
+            <h2   class="ui middle aligned icon header">
+          <span ngf-select="uploadProfilePic($files)" ngf-drop="" ng-model="files" ng-disabled="!isOwner && isAdmin" ngf-drag-over-class="dragOver" ng-class="{'image-select': isOwner}">
+                <img class="ui small image middle aligned" ng-if="!!user.imageURL" ng-src="{{user.imageURL}}">
+                <img class="ui small image middle aligned" ng-if="!!!user.imageURL" ng-src="images/default-icon.jpg">
+                <div class="change-image-message">{{"user.changeProfileImage" | translate}}</div>      
+            </span>
+          <div class="content">
+            {{user.name}} {{user.surname}}
+              <div class="ui divider"></div>
+            <div ng-if="user.isShipOwner" class="sub header"><div class="ui large blue label">{{"user.shipOwner" | translate}}</div></div>
+              
+                            
+          </div>
+                
+        </h2>
+            <div class="reputation ui star rating"></div> {{reputation.populationSize}} {{"user.feedback" | translate}}
+            <div ng-if="isOwner || isAdmin" class="ui divider"></div>
+<!--
+              <button ng-if="isOwner || isAdmin" class="ui button" ng-class="{'blue': !editMode, 'green': editMode}" ng-click="editMode ? saveChanges() : enterEditMode()">
+            <span ng-if="!editMode">Edit Profile</span><span ng-if="editMode">Save Profile</span> 
+        </button>
+-->
+<!--            <div class="ui divider"></div>-->
+            <div class="ui icon buttons">
+                <a ng-if="user.facebook" href="https://www.facebook.com/{{user.facebook}}" target="_blank" class="ui blue button"><i class="facebook icon"></i></a>
+                <a ng-if="user.twitter" href="https://www.twitter.com/{{user.twitter}}" class="ui blue button"><i class="twitter icon"></i></a>
+                <a ng-if="user.google" href="https://www.google.com/{{user.google}}" class="ui red button"><i class="google icon"></i></a>
+                <a ng-if="user.email" href="mailTo:{{user.email}}" class="ui button"><i class="mail icon"></i></a>
+            </div>
+            <div class="ui divider"></div>
+            <!--            ng-if="!!user.languagesSpoken"-->
+            <span ng-if="user.languagesSpoken">
+            <h3>{{"user.spokenLanguages" | translate}}</h3>
+            <i ng-repeat="language in user.languagesSpoken.split(',')" class="{{language}} flag"></i>
+            </span>
+        </div>
+
+
 <h3 class="ui dividing header">{{"userid.profile.aboutMe" | translate}}</h3>
 <div class="ui basic segment">
     <p ng-if="!isOwner">{{user.about}}</p>

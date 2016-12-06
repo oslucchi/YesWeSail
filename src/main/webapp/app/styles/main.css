@@ -42,6 +42,10 @@ body {
     
 }
 
+.ui.dimmer{
+    z-index: 10 !important;
+}
+
 input:disabled{
     color: black !important;
     opacity: 1 !important;
@@ -347,7 +351,7 @@ body.ngdialog-open { overflow: initial !important; }
 }
 
 
-@media screen and (max-width: 600px) {
+@media screen and (max-width: 768px) {
   .computer-only {
     visibility: hidden;
     clear: both;
@@ -358,7 +362,9 @@ body.ngdialog-open { overflow: initial !important; }
   }
 }
 
-@media screen and (min-width: 600px) {
+
+
+@media screen and (min-width: 769px) {
   .mobile-only {
     visibility: hidden;
     clear: both;
@@ -656,7 +662,7 @@ footer{
     color: white;
     cursor: pointer;
     display: none;
-    width: 80%;
+    width: 100%;
 }
 
 .ui.dropdown > .text > img, .ui.dropdown > .text > .image, .ui.dropdown .menu > .item > .image, .ui.dropdown .menu > .item > img {

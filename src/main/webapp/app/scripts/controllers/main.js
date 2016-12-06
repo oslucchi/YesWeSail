@@ -30,6 +30,7 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
     $scope.hotEvents = null;
     $http.post(URLs.ddns + 'rest/events/hotEvents').then(function (res) {
             $scope.hotEvents = res.data;
+        
         }, function (err) {})
 
     $scope.showAvailableDatesForEvents = function (events) {

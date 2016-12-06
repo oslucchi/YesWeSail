@@ -8,7 +8,7 @@
 </div>
 -->
 <h2 ng-if="noEventFound==true" class="ui icon center aligned header"><i class="settings icon"></i><div class="content">404 - Event not found<div class="sub header">The requested event was not found or has not been approved yet</div></div></h2>
-<div ng-if="noEventFound==false" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="computer-only cover-img"> </div>
+<div ng-if="noEventFound==false" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img"> </div>
 <!--
 <div class="ui six item bottom attached menu">
     <a class="active item">Gallery</a>
@@ -21,8 +21,9 @@
 -->
 
 
-<div ng-if="noEventFound==false" class="ui container computer-only index-fix">
-    <div class="ui anchor-menu sticky attached stackable menu">
+<div ng-if="noEventFound==false" class="index-fix">
+    <div class="ui anchor-menu  attached stackable menu">
+<div class="ui container">
         <a class="item" ng-click="goToSection('gallery')"> <i class="home icon"></i>{{"event.gallery" | translate}} </a>
         <a class="item" ng-click="goToSection('partecipants')"> <i class="grid layout icon"></i>{{"event.participants" | translate}} </a>
         <a class="item" ng-click="goToSection('logistics')"> <i class="mail icon"></i>{{"event.logistics" | translate}} </a>
@@ -30,15 +31,15 @@
         <a class="item" ng-click="goToSection('package')"> <i class="mail icon"></i>{{"event.package" | translate}} </a>
         <a class="item" ng-click="goToSection('optionals')"> <i class="mail icon"></i>{{"event.optionals" | translate}} </a>
     </div>
+    </div>
 </div>
+
 <div ng-show="noEventFound==false" class="ui container" id="event-container">
     <div class="ui basic horizontal segments">
 
         
         <div class="ui basic segment">
-        <div class="ui basic segment header-container">
-                <div class="ui grid">
-                    <div class="twelve wide column">
+        <div class="header-container">
                         <div class="ui items">
                             <div class="item">
                                 <div class="shipOwner image" ng-click="goToProfile(shipOwner.idUsers)"> <img ng-src="{{shipOwner.imageURL}}">
@@ -51,8 +52,6 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
      
         </div>
         <div class="ui divider"></div>
@@ -71,9 +70,9 @@
                     </li>
                 </ul>
 -->
-                <div id="slick-demo" class="ui small images">
+                <div id="slick-demo" class="ui small images computer-only">
                         <a href ng-repeat="image in imagesSmall"><img class="item" ng-src="{{image}}" alt=""></a>
-                </div>
+                </div> 
             </div>
         
         <div class="ui divider" id="partecipants"></div>
@@ -224,7 +223,7 @@
     </div>
             </div>
             </div>
-            <div class="ui basic segment">
+            <div class="ui basic segment computer-only">
                 <div class="tickets-sticky ui sticky">
                 <div class="book">
                     <tickets global-tickets="event.tickets"></tickets>

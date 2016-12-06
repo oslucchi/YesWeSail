@@ -60,6 +60,7 @@ $scope.goToProfile=function(userId){
         $scope.imagesMedium=res.data.imagesMedium;
         $scope.imagesLarge=res.data.imagesLarge;
         $scope.event.tickets = res.data.tickets;
+        angular.element('.cover-img').css('background-position-y', res.data.event.backgroundOffsetY + 'px');
         $scope.boat = res.data.boat;
         $scope.markers=[];
         if (!!res.data.participantMessage) {
