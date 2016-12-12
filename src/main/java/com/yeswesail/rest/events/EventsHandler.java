@@ -499,8 +499,10 @@ public class EventsHandler {
 				if (allTickets[i].getTicketType() != ticketType)
 				{
 					ticketType = allTickets[i].getTicketType();
-					index++;
-					tickets.add(new ArrayList<EventTickets>());
+					for(;index < ticketType - 1; index++)
+					{
+						tickets.add(new ArrayList<EventTickets>());
+					}
 				}
 				if (allTickets[i].getAvailable() - allTickets[i].getBooked() > 0)
 				{
@@ -1125,9 +1127,10 @@ public class EventsHandler {
 	{
 		EventTickets et = null;
 		EventTickets[] eventTickets = EventTickets.findByEventId(eventId, Constants.LNG_IT);
-//		ArrayList<EventTickets> ticketsToDel = new ArrayList<>();
 		for(int y = 0; y < jsonIn.length; y++)
 		{
+			if (jsonIn[y] == null)
+				continue;
 			for(TicketJson t : jsonIn[y])
 			{
 				et = null;
@@ -1154,22 +1157,8 @@ public class EventsHandler {
 				{
 					et.setPrice(t.price);
 					et.update(conn, "idEventTickets");
-//					ticketsToDel.add(et);
 				}
 			}
-//			if (!ticketsToDel.isEmpty())
-//			{
-//				String sql = "DELETE FROM EventTickets " +
-//						 	 "WHERE idEventTickets IN (";
-//				String sep = "";
-//				for(int i = 0; i < ticketsToDel.size(); i++)
-//				{
-//					sql += sep + ticketsToDel.get(i).getIdEventTickets();
-//					sep = ",";
-//				}
-//				sql += ")";
-//				EventTickets.executeStatement(conn, sql, false);
-//			}
 		}
 	}
 	

@@ -104,6 +104,7 @@
 	"event.boardingPlace": "Boarding location",
     "event.sharedBathrooms": "Shared baths",
     "event.wholeBoat": "Whole boat",
+    "event.cabinsVIP": "Master cabin",
     "event.gallery": "Images",
     "event.participants": "Participants",
 	"event.logistics": "Details",
@@ -308,6 +309,7 @@
 	"footer.legals": "Legals",
 	"footer.termsAndConditions": "Terms and conditions",
 	"footer.occasionalRent": "Occasional rent",
+	"footer.communityRules": "Community rules",
 
 	"invalidemail.completeData": "Check and fill the missing data",
 	"invalidemail.lackOfData": "In order for us to proceed, we need you to complete data not returned us by Facebook.",

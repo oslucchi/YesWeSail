@@ -3,17 +3,6 @@
 <div class="ui button" ng-click="calculateBackgroundPositionDown(30)">DOWN</div>
 
 </div>
-<!--
-<div class="ui six item bottom attached menu">
-    <a class="active item">Gallery</a>
-    <a class="item">Partecipants</a>
-    <a class="item">Logistics</a>
-    <a class="item">Place</a>
-    <a class="item">Packages</a>
-    <a class="item">Optionals</a>
-</div>
--->
-
 <div class="ui anchor-menu attached stackable menu">
 <div class="ui container">
         <a class="item">
@@ -282,8 +271,8 @@
                                 <table class="ui very basic table">
                                     <tbody>
                                         <tr class="non-clickable">
-                                            <td>{{"event.cabinsWithBath" | translate}}</td>
-                                            <td>{{selectedBoat.cabinsWithBathroom}}</td>
+                                            <td>{{"event.bunks" | translate}}</td>
+                                            <td>{{selectedBoat.bunks}}</td>
                                         </tr>
                                         <tr class="non-clickable">
                                             <td>{{"event.cabinsNoBath" | translate}}</td>
@@ -294,8 +283,12 @@
                                             <td>{{selectedBoat.sharedBathrooms}}</td>
                                         </tr>
                                         <tr class="non-clickable">
-                                            <td>{{"event.bunks" | translate}}</td>
-                                            <td>{{selectedBoat.bunks}}</td>
+                                            <td>{{"event.cabinsWithBath" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsWithBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsVIP" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsVIP}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -308,11 +301,6 @@
                         </div>
                     </div>
                 </div>
-<!--
-                        <div class="boats-container-selected-boat">
-                            <img ng-src="{{selectedBoat.images[0]}}">
-                        </div>
--->
                     </div>
 
                     </div>
@@ -360,11 +348,21 @@
                             </div>
                         </td>
                     </tr>
-                      <tr>
+                    <tr>
+                      <td>{{"event.cabinsVIP" | translate}}</td>
+                        <td ng-repeat="number in getNumber(selectedBoat.cabinsVIP*2) track by $index">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[3][$index].price" ng-click="addTicket(3, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[3][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[3][$index].price" type="text">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                       <td>{{"event.wholeBoat" | translate}}</td>
                         <td>
-                            <div ng-if="!!tempTickets[3][0].price" class="ui fluid input ticket-price">
-                              <input ng-model="tempTickets[3][0].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[4][0].price" ng-click="addTicket(4, 0)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[4][0].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[4][0].price" type="text">
                             </div>
                         </td>
                     </tr>

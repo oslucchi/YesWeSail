@@ -103,6 +103,7 @@
 	"event.boardingPlace": "Luogo di imbarco",
     "event.sharedBathrooms": "Bagni condivisi",
     "event.wholeBoat": "Tutta la barca",
+    "event.cabinsVIP": "Cabina armatoriale",
     "event.gallery": "Immagini",
     "event.participants": "Partecipanti",
 	"event.logistics": "Dettagli",
@@ -300,6 +301,7 @@
     "howItWorks.usagePolicy": "Policy di utilizzo", 
     "howItWorks.clientPolicy": "Policy per il cliente", 
     "howItWorks.shipownerPolicy": "Policy per l'armatore", 
+    
 	"footer.company": "Società",
 	"footer.aboutUs": "Chi siamo",
 	"footer.howItWorks": "Come funziona",
@@ -307,6 +309,7 @@
 	"footer.legals": "Note legali",
 	"footer.termsAndConditions": "Termini e condizioni",
 	"footer.occasionalRent": "Noleggio occasionale",
+	"footer.communityRules": "Guida per la community",
 
 	"invalidemail.completeData": "Controlla e completa i tuoi dati",
 	"invalidemail.lackOfData": "Per poter proseguire con la registrazione abbiamo bisogno che completi i seguenti dati non forniti da Facebook.",

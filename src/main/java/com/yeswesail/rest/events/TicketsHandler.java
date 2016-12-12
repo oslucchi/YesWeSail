@@ -129,8 +129,6 @@ public class TicketsHandler {
 					EventTickets[] tickets = EventTickets.findByEventId(t.eventId, languageId);
 					for (EventTickets item : tickets)
 					{
-//						if (item.getTicketType() == EventTickets.WHOLE_BOAT)
-//							continue;
 						while(item.getBooked() != item.getAvailable())
 						{
 							item.bookATicket();
