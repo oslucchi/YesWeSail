@@ -204,7 +204,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		{
 			if (e.minPrice != 0)
 			{
-				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
+				e.setImageURL(e.getImageURL());
 				e.setLocale(Constants.getLocale(e.getLanguageId()));
 				retList.add(e);
 			}

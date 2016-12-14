@@ -227,7 +227,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                         , description: value.description
                         , options: {
                             draggable: true
-                            , icon: '/images/spotlight-poi-green.png'
+                            , icon: 'images/spotlight-poi-green.png'
                         }
                         , click: function (marker) {
                             var description = prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description);
@@ -282,7 +282,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                         , description: value.description
                         , options: {
                             draggable: true
-                            , icon: '/images/spotlight-poi-blue.png'
+                            , icon: 'images/spotlight-poi-blue.png'
                         }
                         , click: function (marker) {
                             var description = prompt($translate.instant('global.enterDescription'), $scope.markers[marker.key].description);
@@ -322,7 +322,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         var canvas = document.createElement('canvas');
         var context = canvas.getContext("2d");
         var imageObj = new Image();
-        imageObj.src = "/images/map-marker.png";
+        imageObj.src = "images/map-marker.png";
         return $q(function (resolve, reject) {
             imageObj.onload = function () {
                 context.drawImage(imageObj, 0, 0);

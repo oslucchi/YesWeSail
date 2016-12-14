@@ -51,7 +51,7 @@
 <div class="ui comments">
     <h3 class="ui dividing header">{{"user.reviews" | translate}}</h3> <span ng-if="!!!reviews">{{"user.noReviewsSubmitted" | translate}}</span>
     <div class="comment" ng-repeat="review in reviews" ng-class="{'not-approved': review.status=='P', 'rejected': review.status=='R'}">
-        <a class="avatar"> <img ng-if="!!review.reviewerURL" ng-src="{{review.reviewerURL}}"> <img ng-if="!!!review.reviewerURL" src="/images/default-icon.jpg"> </a>
+        <a class="avatar"> <img ng-if="!!review.reviewerURL" ng-src="{{review.reviewerURL}}"> <img ng-if="!!!review.reviewerURL" src="images/default-icon.jpg"> </a>
         <div class="content"> <a href="#/users/{{review.reviewerId}}" class="author">{{review.reviewerName}} {{review.reviewerSurname}}</a>
             <div class="metadata"> <span class="date">{{review.created | date: 'EEEE, MMMM d, y h:mm:ss a'}}</span>
                 <div class="rating"> <i class="star icon"></i> {{review.rating}} {{"user.reviewStars" | translate}} </div>

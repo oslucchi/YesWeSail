@@ -88,7 +88,7 @@ $scope.goToProfile=function(userId){
                                             },
                                             description: value.description,    
                                             options: { draggable: false,
-                                                       icon: '/images/spotlight-poi-green.png'
+                                                       icon: 'images/spotlight-poi-green.png'
                                                }
                                     }
                         )
@@ -113,7 +113,7 @@ $scope.goToProfile=function(userId){
                                             },
                                             description: value.description,    
                                             options: { draggable: false,
-                                                      icon: '/images/spotlight-poi-blue.png'
+                                                      icon: 'images/spotlight-poi-blue.png'
                                                }
                        
                                     }
