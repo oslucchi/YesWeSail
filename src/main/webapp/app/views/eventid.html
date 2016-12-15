@@ -19,47 +19,48 @@
     <a class="item">Optionals</a>
 </div>
 -->
-
-
 <div ng-if="noEventFound==false" class="index-fix">
-    <div class="ui anchor-menu  attached stackable menu">
-<div class="ui container">
-        <a class="item" ng-click="goToSection('gallery')"> <i class="home icon"></i>{{"event.gallery" | translate}} </a>
-        <a class="item" ng-click="goToSection('partecipants')"> <i class="grid layout icon"></i>{{"event.participants" | translate}} </a>
-        <a class="item" ng-click="goToSection('logistics')"> <i class="mail icon"></i>{{"event.logistics" | translate}} </a>
-        <a class="item" ng-click="goToSection('location')"> <i class="mail icon"></i>{{"event.location" | translate}} </a>
-        <a class="item" ng-click="goToSection('package')"> <i class="mail icon"></i>{{"event.package" | translate}} </a>
-        <a class="item" ng-click="goToSection('optionals')"> <i class="mail icon"></i>{{"event.optionals" | translate}} </a>
-    </div>
+    <div class="ui anchor-menu attached stackable menu">
+        <div class="ui container">
+            <a class="item" ng-click="goToSection('gallery')"> <i class="home icon"></i>{{"event.gallery" | translate}} </a>
+            <a class="item" ng-click="goToSection('partecipants')"> <i class="grid layout icon"></i>{{"event.participants" | translate}} </a>
+            <a class="item" ng-click="goToSection('logistics')"> <i class="mail icon"></i>{{"event.logistics" | translate}} </a>
+            <a class="item" ng-click="goToSection('location')"> <i class="mail icon"></i>{{"event.location" | translate}} </a>
+            <a class="item" ng-click="goToSection('package')"> <i class="mail icon"></i>{{"event.package" | translate}} </a>
+            <a class="item" ng-click="goToSection('optionals')"> <i class="mail icon"></i>{{"event.optionals" | translate}} </a>
+        </div>
     </div>
 </div>
-
 <div ng-show="noEventFound==false" class="ui container" id="event-container">
     <div class="ui basic horizontal segments">
-
-        
         <div class="ui basic segment">
-        <div class="header-container">
-                        <div class="ui items">
-                            <div class="item">
-                                <div class="shipOwner image" ng-click="goToProfile(shipOwner.idUsers)"> <img ng-src="{{shipOwner.imageURL}}">
-                                    <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
-                                    <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback </div>
-                                <div class="content"> <a class="header">{{event.title}}</a>
-                                    <div class="meta"> <span>{{event.location}}</span> </div>
-                                    <div class="extra"> {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}} </div>
-                                    <div class="description"> </div>
-                                </div>
-                            </div>
+            <div class="header-container">
+                <div class="ui link items">
+                    <div class="item">
+                        <div class="content"> <a class="header">{{event.title}}</a>
+                            <div class="meta"> <span>{{event.location}}</span> </div>
+                            <div class="extra"> {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}} </div>
+                            <div class="description"> </div>
                         </div>
-     
-        </div>
-        <div class="ui divider"></div>
-        <div class="ui basic segment">
+                    </div>
+                    <div class="item" ng-click="goToProfile(shipOwner.idUsers)">
+                        <div class="shipOwner" > <img ng-src="{{shipOwner.imageURL}}">
+                            
+                        </div>
+                             <div class="content">
+                                <h4 class="ui center aligned header">{{shipOwner.name}} {{shipOwner.surname}}</h4>
+                                 <div class="description">
+                                    <div class="reputation ui star rating"></div> {{reputation.populationSize}} feedback 
+                                 </div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ui divider"></div>
+            <div class="ui basic segment">
                 <div ng-bind-html="event.description"></div>
-        </div>
-        <div class="ui divider" id="gallery"></div>
-        
+            </div>
+            <div class="ui divider" id="gallery"></div>
             <div class="ui basic segment">
                 <!--
                 <ul rn-carousel-auto-slide rn-carousel class="image">
@@ -71,12 +72,10 @@
                 </ul>
 -->
                 <div id="slick-demo" class="ui small images computer-only">
-                        <a href ng-repeat="image in imagesSmall"><img class="item" ng-src="{{image}}" alt=""></a>
-                </div> 
+                    <a href ng-repeat="image in imagesSmall"><img class="item" ng-src="{{image}}" alt=""></a>
+                </div>
             </div>
-        
-        <div class="ui divider" id="partecipants"></div>
-
+            <div class="ui divider" id="partecipants"></div>
             <div class="ui basic segment">
                 <h2 class="ui left aligned header">
   <i class="users icon"></i>
@@ -91,9 +90,7 @@
                     </a>
                 </div>
             </div>
-
-        <div class="ui divider" id="logistics"></div>
-
+            <div class="ui divider" id="logistics"></div>
             <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
@@ -101,9 +98,7 @@
                 </h2>
                 <div ng-bind-html="event.logistics.description"></div>
             </div>
-
-        <div class="ui divider" id="package"></div>
-
+            <div class="ui divider" id="package"></div>
             <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
@@ -111,17 +106,14 @@
                 </h2>
                 <div ng-bind-html="event.includes.description"></div>
             </div>
-        <div class="ui basic segment" id="optionals">
-           
+            <div class="ui basic segment" id="optionals">
                 <h2 class="ui left aligned header">
                   <i class="users icon"></i>
                   {{"event.optionals" | translate}}
                 </h2>
                 <div ng-bind-html="event.excludes.description"></div>
-        
-        </div>
-        <div class="ui divider"></div>
-
+            </div>
+            <div class="ui divider"></div>
             <div class="ui basic segment">
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
@@ -129,9 +121,7 @@
                 </h2>
                 <div class="ui divided items">
                     <div class="item">
-                       
-<!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
-                        
+                        <!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
                         <div class="content"> <a class="header">{{boat.name}}</a>
                             <div class="meta"> <span>{{boat.model}} - {{boat.year}} - {{boat.length}}ft</span> </div>
                             <div class="description">
@@ -159,17 +149,15 @@
                         </div>
                     </div>
                     <div class="item">
-                         <div id="slick-boat" class="ui small images">
-                                <a href ng-repeat="image in boat.images | limitTo: 4"><img class="item" ng-src="{{image}}" alt=""></a>
+                        <div id="slick-boat" class="ui small images">
+                            <a href ng-repeat="image in boat.images | limitTo: 4"><img class="item" ng-src="{{image}}" alt=""></a>
                         </div>
                     </div>
                 </div>
             </div>
-
-        <div class="ui divider"></div>
-        <tickets class="mobile-only" global-tickets="event.tickets"></tickets>
-        <div class="ui basic segment" id="location">
-
+            <div class="ui divider"></div>
+            <tickets class="mobile-only" global-tickets="event.tickets"></tickets>
+            <div class="ui basic segment" id="location">
                 <h2 class="ui left aligned header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
                 {{"event.location" | translate}}
@@ -180,51 +168,39 @@
                             <ui-gmap-window>
                                 <div>{{marker.description}}</div>
                             </ui-gmap-window>
-                            </ui-gmap-marker>
-                        
-                        
-<!--
+                        </ui-gmap-marker>
+                        <!--
                         <ui-gmap-markers class='marker-tooltip' models="markers" fit="true" coords="'coords'"  idkey="'id'" options="'options'" icon="'icon'">
                             <ui-gmap-window>
                                 <div>{{marker.description}}</div>
                             </ui-gmap-window>
                             </ui-gmap-markers>
 -->
-<!--
+                        <!--
                         <ui-gmap-window ng-repeat="marker in markers" coords="marker.coords" options="windowOptions" show='marker.window'>
                             <div>{{marker.description}}</div>
                         </ui-gmap-window>
--->
-                    </ui-gmap-google-map>
+--></ui-gmap-google-map>
                 </div>
-      
-        </div>
-        
-        <div class="ui divider"></div>
-  
+            </div>
+            <div class="ui divider"></div>
             <div class="ui basic segment">
-        <h1>{{"main.explore" | translate}}</h1>
-            
-            
-    <div class="ui images category-image" >
-        <a href="#/events/{{groundEvent.idEvents}}" ng-repeat="groundEvent in groundEvents track by $index">
-          
-            <div dimmer on="hover" class="ui image">
-            <div class="ui dimmer">
-            <div class="content">
-              <div class="center">
-                <h4 class="ui inverted header">{{groundEvent.title}}</h4>
-              </div>
-            </div>
-          </div>
-          <img class="ui image ground-event" ng-src="{{groundEvent.imageURL}}">
+                <h1>{{"main.explore" | translate}}</h1>
+                <div class="ui images category-image">
+                    <a href="#/events/{{groundEvent.idEvents}}" ng-repeat="groundEvent in groundEvents track by $index">
+                        <div dimmer on="hover" class="ui image">
+                            <div class="ui dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <h4 class="ui inverted header">{{groundEvent.title}}</h4> </div>
+                                </div>
+                            </div> <img class="ui image ground-event" ng-src="{{groundEvent.imageURL}}"> </div>
+                    </a>
                 </div>
-    </a>
-    </div>
             </div>
-            </div>
-            <div class="ui basic segment computer-only">
-                <div class="tickets-sticky ui sticky">
+        </div>
+        <div class="ui basic segment computer-only">
+            <div class="tickets-sticky ui sticky">
                 <div class="book">
                     <tickets global-tickets="event.tickets"></tickets>
                     <div class="ui segment">
@@ -234,13 +210,8 @@
                         <button class="ui red icon button"> <i class="google plus icon"></i> </button>
                         <button class="ui icon button"> <i class="linkify icon"></i> </button>
                     </div>
-                    </div>
+                </div>
             </div>
         </div>
-            </div>
-
-      
-        
-  
-  
+    </div>
 </div>
