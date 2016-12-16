@@ -372,8 +372,10 @@ body.ngdialog-open {
         padding-right: 0px !important;
     }
     #event-container, #main-content{
+/*
         margin: 1px !important;
         margin-right: 1px !important;
+*/
     }
     
 }
@@ -560,9 +562,11 @@ tr {
     cursor: pointer;
 }
 
+/*
 .add-to-cart:hover {
     background-color: antiquewhite !important;
 }
+*/
 
 .anchor-menu {
     margin-bottom: 20px !important;
