@@ -50,8 +50,7 @@
 
 </div>
 -->
-    <div ng-if="total>0" class="ui right aligned segment">
-        <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2> </div>
+
     <div ng-if="bookedEvents==0" class="ui center aligned segment">
         <h2 class="ui header">{{"cartTemplate.noTicketsInCart" | translate}}</h2> </div>
     <div class="ui segment" ng-repeat="event in bookedEvents">
@@ -88,6 +87,8 @@
             </tbody>
         </table>
     </div>
+        <div ng-if="total>0" class="ui right aligned segment">
+        <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2> </div>
     <button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button right floated"> <i class="remove icon"></i>{{"cartTemplate.emptyCart" | translate}}</button>
     <button ng-if="paymentProceeded && total>0" class="ui icon blue button right floated" ng-click="checkout()"><i class="paypal icon"></i>Pay with PayPal</button>
 </div>

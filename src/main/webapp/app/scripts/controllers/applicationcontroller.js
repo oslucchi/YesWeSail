@@ -34,7 +34,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
     $scope.callbackTimer={
         finished: function(){
              $timeout(CartService.getAllItems, 5000);
-             $scope.cartExpires = data;
+             $scope.cartExpires = null;
         }
     }
     
