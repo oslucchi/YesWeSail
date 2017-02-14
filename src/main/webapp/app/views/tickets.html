@@ -1,5 +1,5 @@
 <div class="tickets-container">
-    <div class="ui info message" ng-class="{'hidden': globalTickets[0].length>0}"> {{"tickets.soldout" | translate}} </div>
+    <div class="ui info message" ng-class="{'hidden': unsold(globalTickets) > 0}"> {{"tickets.soldout" | translate}} </div>
 <!--
     <table ng-if="globalTickets[0].length>0" class="ui very basic celled table computer-only">
         <thead>
