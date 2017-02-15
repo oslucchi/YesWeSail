@@ -129,6 +129,11 @@ public class EventsHandler {
 		int i;
 		for(Events e : events)
 		{
+			if ((prop.getMaxNumHotOffers() != 0) &&
+				(hotList.size() >= prop.getMaxNumHotOffers()))
+			{
+				break;
+			}
 			e.setImageURL(e.getImageURL().replace("large", "medium"));
 			for(i = 0; i < hotList.size(); i++)
 			{
@@ -140,7 +145,7 @@ public class EventsHandler {
 					break;
 				}
 			}
-			if ((hotList.size() < prop.getMaxNumHotOffers()) && (i == hotList.size()))
+			if (i == hotList.size())
 			{
 				ArrayList<Events> item = new ArrayList<>();
 				item.add(e);
@@ -347,6 +352,13 @@ public class EventsHandler {
 					"  FROM EventTickets " +
 				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventTickets.executeStatement(conn, sql, true);
+			
+			sql = 
+					"INSERT INTO EventRoute " +
+				    "  SELECT 0, " + idEvents + ", lat, lng, description, seq " +
+					"  FROM EventRoute " +
+				    "  WHERE eventId = " + jsonIn.idEvents;
+			EventRoute.executeStatement(conn, sql, true);
 			
 			DBInterface.TransactionCommit(conn);
 			log.debug("Copying image files");

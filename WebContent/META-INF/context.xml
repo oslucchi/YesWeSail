@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context docBase="YesWeSail" path="/YesWeSail" reloadable="true" source="org.eclipse.jst.jee.server:YesWeSail">
+	<Resources allowLinking="true" />
 	<Resource auth="Container" driverClassName="com.mysql.jdbc.Driver" 
 				maxTotal="10000" maxIdle="1000" 
 				removeAbandonedOnBorrow="true" removeAbandonedTimeout="60" logAbandoned="true"

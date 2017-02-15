@@ -166,6 +166,7 @@
 						<warSourceDirectory>WebContent</warSourceDirectory>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					    <webResources> 
+<!-- 
 					      <resource> 
 					        <directory>images/application</directory> 
 					        <targetPath>/images/application</targetPath>
@@ -197,6 +198,7 @@
 						    </includes>
 					        <targetPath>/images</targetPath>
 						  </resource>
+-->
 					      <resource> 
 					        <directory>src/main/webapp/dist</directory> 
 					        <targetPath>/</targetPath>
