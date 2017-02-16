@@ -570,7 +570,7 @@ public class Auth {
 			ua.delete(conn, ua.getIdUsersAuth());
 		}
 		catch (Exception e) {
-			return Utils.jsonizeResponse(Response.Status.NOT_FOUND, e, language, "auth.tokenNotFound");
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.tokenNotFound");
 		}
 		finally
 		{
