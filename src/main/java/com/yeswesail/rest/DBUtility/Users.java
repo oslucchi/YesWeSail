@@ -48,7 +48,7 @@ public class Users extends DBInterface
 		idColName = "idUsers";
 	}
 
-	public Users() throws Exception
+	public Users()
 	{
 		setNames();
 	}

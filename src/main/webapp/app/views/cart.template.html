@@ -1,15 +1,9 @@
-<div class="tickets-container"> 
-
-    
-<!--
+<div class="tickets-container">
+    <!--
 <button ng-if="paymentProceeded && total>0" ng-class="{'loading': inProgress }" ng-click="requestToken()" class="ui button">
     <i class="money icon"></i>{{"cartTemplate.proceed" | translate}}</button>
 -->
-         <button ng-if="paymentProceeded && total>0" class="ui icon blue button" ng-click="checkout()"><i class="paypal icon"></i>Pay with PayPal</button>
-<button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button">
-    <i class="remove icon"></i>{{"cartTemplate.emptyCart" | translate}}</button>
-    
-<!--
+    <!--
  <div ng-if="!paymentProceeded" ng-class="{'loading': status.paying}" class="ui center aligned segment">
   <div id="paypal-container"></div>
   <div class="ui horizontal divider">
@@ -56,66 +50,45 @@
 
 </div>
 -->
-     <div ng-if="total>0"  class="ui right aligned segment">
-          
-        <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2>
-    </div>
-        <div ng-if="bookedEvents==0" class="ui center aligned segment">
-          
-        <h2 class="ui header">{{"cartTemplate.noTicketsInCart" | translate}}</h2>
-    </div>
-    
-    
-   <div class="ui segment" ng-repeat="event in bookedEvents">
-           
-    <div ng-if="paying" class="ui active inverted dimmer">
-    <div class="ui text loader">Loading</div>
-  </div>
-     <div class="ui header">{{event.title}}
-        <div class="ui sub header">{{event.location}}</div>
-        <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
-       
-       </div>
-    
-       <table class="ui very basic  celled table">
-      <thead>
-        <tr>
-            <th ng-if="paymentProceeded" class="">{{"cartTemplate.gridsCol.selected" | translate}}</th>
-            <th class="">{{"cartTemplate.gridsCol.ticket" | translate}}</th>
-            <th class="">{{"cartTemplate.gridsCol.price" | translate}}</th>
-            <th class="">{{"cartTemplate.gridsCol.timeLeft" | translate}}</th>
-      </tr></thead>
-      <tbody>
-    <tr ng-repeat="ticket in event.tickets track by $index">
-        
-        
-        <td ng-if="paymentProceeded" class="collapsing"><div class="ui fitted center aligned checkbox">
-          <input ng-change="recalculateTotal()" type="checkbox" ng-model="ticket.toBuy"> <label></label>
-        </div></td>
-        <td>{{ticket.ticketDescription}} </td>
-        <td>{{ticket.price}}€</td>
-        <td><timer finish-callback="callbackTimer.finished()" end-time="ticket.lockTime">{{minutes}} m, {{seconds}} s</timer></td>
-       
 
-    </tr>
-    
-  </tbody>
-    
-    
-    
-</table>
-    
+    <div ng-if="bookedEvents==0" class="ui center aligned segment">
+        <h2 class="ui header">{{"cartTemplate.noTicketsInCart" | translate}}</h2> </div>
+    <div class="ui segment" ng-repeat="event in bookedEvents">
+        <div ng-if="paying" class="ui active inverted dimmer">
+            <div class="ui text loader">Loading</div>
+        </div>
+        <div class="ui header">{{event.title}}
+            <div class="ui sub header">{{event.location}}</div>
+            <div class="ui sub header">{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
+        </div>
+        <table class="ui very basic  celled table">
+            <thead>
+                <tr>
+                    <th ng-if="paymentProceeded" class="">{{"cartTemplate.gridsCol.selected" | translate}}</th>
+                    <th class="">{{"cartTemplate.gridsCol.ticket" | translate}}</th>
+                    <th class="">{{"cartTemplate.gridsCol.price" | translate}}</th>
+                    <th class="">{{"cartTemplate.gridsCol.timeLeft" | translate}}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="ticket in event.tickets track by $index">
+                    <td ng-if="paymentProceeded" class="collapsing">
+                        <div class="ui fitted center aligned checkbox">
+                            <input ng-change="recalculateTotal()" type="checkbox" ng-model="ticket.toBuy">
+                            <label></label>
+                        </div>
+                    </td>
+                    <td>{{ticket.ticketDescription}} </td>
+                    <td>{{ticket.price}}€</td>
+                    <td>
+                        <timer finish-callback="callbackTimer.finished()" end-time="ticket.lockTime">{{minutes}} m, {{seconds}} s</timer>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
-   
-   
-    
-    
-    
-
-    
-    
-    
-    
-  
-    
+        <div ng-if="total>0" class="ui right aligned segment">
+        <h2 class="ui header">{{"global.total" | translate}}: {{total}}€</h2> </div>
+    <button ng-if="paymentProceeded && total>0" ng-click="emptyCart()" class="ui button right floated"> <i class="remove icon"></i>{{"cartTemplate.emptyCart" | translate}}</button>
+    <button ng-if="paymentProceeded && total>0" class="ui icon blue button right floated" ng-click="checkout()"><i class="paypal icon"></i>Pay with PayPal</button>
 </div>

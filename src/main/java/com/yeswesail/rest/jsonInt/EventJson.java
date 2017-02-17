@@ -28,4 +28,6 @@ public class EventJson {
 	public TicketJson[][] tickets;
 	public boolean activeOnly;
 	public EventRouteJson[] route;
+	public int backgroundOffsetX;
+	public int backgroundOffsetY;
 }

@@ -37,6 +37,11 @@ public class Events extends DBInterface implements Comparable<Events>
 	protected String aggregateKey;
 	protected int createdBy;
 	protected Date createdOn;
+	protected int languageId;
+	protected String locale;
+	protected int backgroundOffsetX;
+	protected int backgroundOffsetY;
+
 	
 	private static ArrayList<Events> events;
 	
@@ -67,104 +72,140 @@ public class Events extends DBInterface implements Comparable<Events>
 	public Events(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description AS `title` " +
-				 "FROM Events AS a INNER JOIN EventDescription AS b " +
-				 "     ON a.idEvents = b.eventId AND " +
-			 	 "        b.languageId = " + languageId + " AND " +
-				 "		  b.anchorZone = 0 " +
-				 "WHERE idEvents = " + id + " AND " +
-				 "      status = 'A'";
-		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
+					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
+					 "     ON a.idEvents = b.eventId AND " +
+					 "		  b.anchorZone = 0 ";
+				 
+		String whereClause = 
+					 "WHERE idEvents = " + id + " AND " +
+			 	 	 "      b.languageId = " + languageId + " AND " +
+				 	 "      status = 'A'";
+
+		String fallbackWhereClause = 
+					 "WHERE idEvents = " + id + " AND " +
+				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
+				 	 "      status = 'A'";
+		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
+		getTicketMaxAndMin(events);
+	}
+
+	public Events(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
+	{
+		setNames();
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
+					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
+					 "     ON a.idEvents = b.eventId AND " +
+					 "		  b.anchorZone = 0 ";
+				 
+		String whereClause = 
+					 "WHERE idEvents = " + id + " AND " +
+			 	 	 "      b.languageId = " + languageId;
+
+		String fallbackWhereClause = 
+					 "WHERE idEvents = " + id + " AND " +
+				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId);
+		if (activeOnly)
+		{			
+			whereClause += " AND status = 'A'";
+			fallbackWhereClause += " AND status = 'A'";
 		}
-		events = new ArrayList<Events>();
-		events.add(this);
+		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
 		getTicketMaxAndMin(events);
 	}
 	
-	public Events(DBConnection conn, int id, int languageId, boolean onlyActive) throws Exception
+	private void getSingleEventWithLanguageFallbackPolicy(
+		DBConnection conn, String sql, String whereClause, String fallbackWhereClause
+				) throws Exception
 	{
-		setNames();
-		String sql = "SELECT a.*, b.description AS `title` " +
-				 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
-				 "     ON a.idEvents = b.eventId AND " +
-				 "        b.languageId = " + languageId + " AND " +
-				 "		  b.anchorZone = 0 " + 
-				 "WHERE idEvents = " + id;
-		if (onlyActive)
-		{			
-			sql += " AND status = 'A'";
+		try
+		{
+			this.populateObject(conn, sql + whereClause, this);
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") != 0)
+			{
+				throw e;
+			}
+			this.populateObject(conn, sql + fallbackWhereClause, this);
 		}
 		
-		this.populateObject(conn, sql, this);
 		if (!getImageURL().startsWith("http"))
 		{
 			setImageURL(prop.getWebHost() + "/" + getImageURL());
 		}
+		setLocale(Constants.getLocale(this.getLanguageId()));
 		events = new ArrayList<Events>();
 		events.add(this);
-		getTicketMaxAndMin(events);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private static ArrayList<Events> retrieveEvents(String whereClause, int languageId) throws Exception
+	private static ArrayList<Events> 
+		getEventsListWithLanguageFallbackPolicy(String sql, String whereClause, int languageId) throws Exception
 	{
-		String sql = "SELECT a.*, b.description AS `title` " +
-			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-			 	 "     ON a.idEvents = b.eventId AND " +
-			 	 "        b.languageId = " + languageId + " AND " +
-				 "		  b.anchorZone = 0 " + 
-			 	 whereClause;
-		log.trace("Populate collection with sql '" + sql + "'");
-		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-				
-		// Getting other events not having the description in the current language for which 
-		// the description is available in the alternative language
+		whereClause = whereClause.trim().toUpperCase().startsWith("WHERE") ?
+							whereClause.trim().substring(6) : whereClause.trim();
+		log.debug("Called with whereClause = '" + whereClause + "'");
+		String where = "WHERE " + 
+					   "      b.languageId = " + languageId + 
+					   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
+		log.debug("Primary query where set to '" + where + "'");
+
+		log.trace("Populate collection with sql '" + sql + where + "'");
+		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
 		String sep = "";
 		String eventIds = "";
-		for(Events e : events)
+		if (!events.isEmpty())
 		{
-			eventIds += sep + e.getIdEvents();
-			sep = ",";
+			for(Events e : events)
+			{
+				eventIds += sep + e.getIdEvents();
+				sep = ",";
+			}
+			eventIds = "a.idEvents NOT IN (" + eventIds + ") AND ";
 		}
-		if (eventIds.compareTo("") != 0)
+		where = "WHERE " + eventIds +
+				"      b.languageId = " + Constants.getAlternativeLanguage(languageId) +
+				   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
+		log.debug("Alternative query where set to '" + where + "'");
+		log.debug("Adding events on alternative laguages via '" + sql + where + "'"); 
+		ArrayList<Events> fallbackEvents = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
+		events.addAll(fallbackEvents);
+		for(Events event : events)
 		{
-			whereClause = "AND        a.idEvents NOT IN (" + eventIds + ") " + whereClause;
-
+			if (!event.getImageURL().startsWith("http"))
+			{
+				event.setImageURL(prop.getWebHost() + "/" + event.getImageURL());
+			}
+			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
-		sql = "SELECT a.*, b.description AS `title` " +
-			 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
-			 	 "     ON a.idEvents = b.eventId AND " +
-			 	 "        b.languageId = " + Constants.getAlternativeLanguage(languageId)+ " AND " +
-				 "		  b.anchorZone = 0 " + 
-			 	 whereClause;
-		log.trace("Adding events on alternative laguages via '" + sql + "'");
-		ArrayList<Events> eventsIT = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
-		events.addAll(eventsIT);
-		
-		return events;
+		return(events);
 	}
-
+	
 	public static Events[] findHot(int languageId) throws Exception
 	{
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
+				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 	 "     ON a.idEvents = b.eventId AND " +
+					 "		  b.anchorZone = 0 ";
 		String whereClause = "WHERE   a.status = 'A' AND " +
 							 "        a.dateStart > NOW() AND " +
 							 "        a.hotEvent = 1 " +
 						 	 "ORDER BY dateStart ";
-		events = retrieveEvents(whereClause, languageId);
 		
-		log.trace("Done. There are " + events.size() + " elemets");
-		log.trace("Get tickets for the event");
+		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(sql, whereClause, languageId);
+		log.trace("Events retrieved. There are " + events.size() + " elemets");
 		getTicketMaxAndMin(events);
+		log.trace("Get tickets for the event");
 		
 		ArrayList<Events> retList = new ArrayList<Events>();
 		for(Events e : events)
 		{
 			if (e.minPrice != 0)
 			{
-				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
+				e.setImageURL(e.getImageURL());
+				e.setLocale(Constants.getLocale(e.getLanguageId()));
 				retList.add(e);
 			}
 			if ((prop.getMaxNumHotOffers() != 0) && (retList.size() == prop.getMaxNumHotOffers()))
@@ -177,6 +218,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			return null;
 		
 		return(retList.toArray(new Events[retList.size()]));
+		
 	}
 
 	public static Events[] findHot(String token) throws Exception
@@ -187,18 +229,20 @@ public class Events extends DBInterface implements Comparable<Events>
 
 	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
 	{		
-		events = retrieveEvents(whereClause, languageId);
+		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
+				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
+				 	 "     ON a.idEvents = b.eventId AND " +
+					 "		  b.anchorZone = 0 ";
+		
+		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(sql, whereClause, languageId);
 		if (events.size() == 0)
 			return null;
-		for(Events e : events)
-		{
-			if (!e.getImageURL().startsWith("http"))
-			{
-				e.setImageURL(prop.getWebHost() + "/" + e.getImageURL());
-			}
-		}
 		getTicketMaxAndMin(events);
 		
+		for(Events event : events)
+		{
+			event.setLocale(Constants.getLocale(event.getLanguageId()));
+		}
 		Collections.sort(events);
 		return(events.toArray(new Events[events.size()]));
 	}
@@ -412,4 +456,37 @@ public class Events extends DBInterface implements Comparable<Events>
 	public int compareTo(Events o) {
 		return (int) (this.dateStart.getTime() - o.dateStart.getTime());
 	}
+
+	public int getLanguageId() {
+		return languageId;
+	}
+
+	public void setLanguageId(int languageId) {
+		this.languageId = languageId;
+	}
+
+	public int getBackgroundOffsetX() {
+		return backgroundOffsetX;
+	}
+
+	public void setBackgroundOffsetX(int backgroundOffsetX) {
+		this.backgroundOffsetX = backgroundOffsetX;
+	}
+
+	public int getBackgroundOffsetY() {
+		return backgroundOffsetY;
+	}
+
+	public void setBackgroundOffsetY(int backgroundOffsetY) {
+		this.backgroundOffsetY = backgroundOffsetY;
+	}
+
+	public String getLocale() {
+		return locale;
+	}
+
+	public void setLocale(String locale) {
+		this.locale = locale;
+	}
+	
 }

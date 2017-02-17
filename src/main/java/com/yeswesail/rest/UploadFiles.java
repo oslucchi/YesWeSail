@@ -8,7 +8,9 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.core.Response;
@@ -18,6 +20,11 @@ import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.BodyPart;
 
 public class UploadFiles {
+	public final static int ORIGINAL = 0;
+	public final static int SMALL = 1;
+	public final static int MEDIUM = 2;
+	public final static int LARGE = 3;
+	
 	final static Logger log = Logger.getLogger(UploadFiles.class);
 	final static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
@@ -25,10 +32,11 @@ public class UploadFiles {
 	public static boolean moveFiles(String fromPath, String toPath, String prefix, boolean overwrite)
 	{
 		boolean errorMoving = false;
+		String contexToPath = getContextPath(toPath);
     	if (overwrite)
     	{
     		// Remove all file with the given prefix from the destination directory
-    		File toDir = new File(toPath);
+    		File toDir = new File(contexToPath);
     		if(toDir.isDirectory()) 
     		{
     		    File[] dirContent = toDir.listFiles();
@@ -40,7 +48,8 @@ public class UploadFiles {
     		}
     	}
     	
-		File srcDir = new File(fromPath);
+		String contexFromPath = getContextPath(fromPath);
+		File srcDir = new File(contexFromPath);
 		if(srcDir.isDirectory()) 
 		{
 		    File[] dirContent = srcDir.listFiles();
@@ -49,7 +58,7 @@ public class UploadFiles {
 			    for(int i = 0; i < dirContent.length; i++) 
 			    {
 			    	Files.move(Paths.get(dirContent[i].getPath()), 
-			    			   Paths.get(toPath + File.separator + dirContent[i].getName()), 
+			    			   Paths.get(contexToPath + dirContent[i].getName()), 
 			    			   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 			    }
 				FileUtils.deleteDirectory(srcDir);
@@ -62,38 +71,78 @@ public class UploadFiles {
 		return errorMoving;
 	}
 
-	public static ArrayList<String> getExistingFilesPath(String prefix, String path)
+	private static String getContextPath(String root)
 	{
-		String contextPath = "";
 		try {
-			contextPath = prop.getContext().getResource("/").getPath();
+			return(prop.getContext().getResource(root).getPath());
 		} 
 		catch (MalformedURLException e) {
-			// TODO Error handling
+			return "";
 		}
-		
-		if (!path.startsWith(contextPath))
-		{
-			path = contextPath + File.separator + path;
-		}
+	}
+	private static ArrayList<String> getFilesList(String prefix, String path)
+	{
 		File directory = new File(path);
         File[] fList = directory.listFiles();
-        ArrayList<String> imageURLs = new ArrayList<>();
+        ArrayList<String> fileList = new ArrayList<>();
         for (File file : fList)
         {
             if (!file.isFile() || (!file.getName().startsWith(prefix)))
             	continue;
             
-            imageURLs.add(prop.getWebHost() + file.getPath().substring(file.getPath().indexOf("/images/")));
+            fileList.add(file.getPath().substring(file.getPath().lastIndexOf("/") + 1));
+        }
+        return(fileList);
+	}
+
+	public static ArrayList<ArrayList<String>> getExistingFilesPathAsURL(String prefix, String root)
+	{
+		String contextPath = getContextPath(root);
+		ArrayList<ArrayList<String>> imageURLs = new ArrayList<>();
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
+		imageURLs.add(new ArrayList<String>());
+
+        for (String file : getFilesList(prefix, contextPath))
+        {
+			if (file.indexOf("-small.jpg") != -1)
+			{
+	            imageURLs.get(SMALL).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else if (file.indexOf("-medium.jpg") != -1)
+			{
+	            imageURLs.get(MEDIUM).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else if (file.indexOf("-large.jpg") != -1)
+			{
+	            imageURLs.get(LARGE).add(prop.getWebHost() + root + File.separator + file);
+			}
+			else
+			{
+	            imageURLs.get(ORIGINAL).add(prop.getWebHost() + root + File.separator + file);
+			}
         }
         return(imageURLs);
 	}
 
-	private static ArrayList<String> uploadFiles(BodyPart part, String destPath, 
+	public static ArrayList<String> getExistingFilesPathOnLocalFilesystem(String prefix, String root)
+	{
+		String contextPath = getContextPath(root);
+        ArrayList<String> imageURLs = new ArrayList<>();
+        for (String file : getFilesList(prefix, contextPath))
+        {
+            imageURLs.add(contextPath + file);
+        }
+        return(imageURLs);
+	}
+
+	private static ArrayList<String> uploadFiles(BodyPart part, String root, 
 							   String prefix, String token, int index)
 	{
+		String contextPath = getContextPath(root);
 		byte[] buf = part.getEntityAs(byte[].class);
-		String tempDir = destPath + File.separator + token + File.separator;
+		String tempDir = contextPath + token + File.separator;
 		try 
 		{
 			Files.createDirectories(Paths.get(tempDir));
@@ -106,14 +155,40 @@ public class UploadFiles {
 		ArrayList<String> uploaded = new ArrayList<String>();
 		
 		OutputStream out;
+		ImageHandler imgHnd = new ImageHandler();
+		SimpleDateFormat format = new SimpleDateFormat("yyMMddHHmmss");
+		String now = format.format(new Date());
 		try {
 			String extension = part.getContentDisposition().getFileName()
 									.substring(part.getContentDisposition().getFileName().lastIndexOf("."));
-			out = new FileOutputStream(new File(tempDir + prefix + index + extension));
+			File original = new File(tempDir + prefix + index + extension);
+			out = new FileOutputStream(original);
 			out.write(buf);
 			out.flush();
 			out.close();
-			uploaded.add(prefix + index + extension);
+			switch(extension.toUpperCase())
+			{
+			case ".JPG":
+			case ".JPEG":
+			case ".PNG":
+				imgHnd.scaleImages(tempDir + prefix + index + extension);
+				uploaded.add(prefix + index + "-small" + extension);
+				uploaded.add(prefix + index + "-medium" + extension);
+				uploaded.add(prefix + index + "-large" + extension);
+				try
+				{
+					Files.move(original.toPath(), Paths.get(contextPath + "/originals/" + prefix + index + "-" + now + extension),
+							   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+				}
+				catch(Exception e)
+				{
+					log.warn("Exception " + e.getMessage() + " moving " + original.getPath() + 
+							 "to " + root + "/images/originals/" + prefix + "-" + now  + extension);
+				}
+				break;
+			default:
+				uploaded.add(original.getPath());
+			}
 		} 
 		catch (FileNotFoundException e) 
 		{
@@ -142,7 +217,10 @@ public class UploadFiles {
 
 	private static int startUploafFromIndex(String destPath, String prefix, boolean overwrite)
 	{
-		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, destPath);
+		ArrayList<ArrayList<String>> allImages = UploadFiles.getExistingFilesPathAsURL(prefix, destPath);
+		ArrayList<String> images = new ArrayList<>();
+		images.addAll(allImages.get(ORIGINAL));
+		images.addAll(allImages.get(SMALL));
 		int lastIndex = -1;
 		if (!overwrite)
 		{
@@ -154,7 +232,11 @@ public class UploadFiles {
 			{
 				pos = fName.lastIndexOf("_") + 1;
 				fName = fName.substring(pos);
-				a = Integer.parseInt(fName.substring(0, fName.lastIndexOf(".")));
+				if (fName.indexOf('-') != -1)
+					fName = fName.substring(0, fName.indexOf('-'));
+				else
+					fName = fName.substring(0, fName.lastIndexOf("."));
+				a = Integer.parseInt(fName);
 				if (lastIndex < a)
 					lastIndex = a;
 			}
@@ -244,19 +326,7 @@ public class UploadFiles {
 								int languageId,
 								boolean overwrite)
 	{
-		// getting destination path from context
-		String destPath = null;
-		try 
-		{
-			destPath = prop.getContext().getResource(resource).getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
- 			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, languageId, "generic.uploadFileFormatError");
-		}
-
-		int lastIndex = startUploafFromIndex(destPath, prefix, overwrite);
+		int lastIndex = startUploafFromIndex(resource, prefix, overwrite);
 
 		ArrayList<String> rejected = new ArrayList<>();
 		// uploading the files into temp dir
@@ -264,7 +334,7 @@ public class UploadFiles {
 		{
 			if(isAcceptable(acceptableTypes, part.getMediaType().getType() + "/" + part.getMediaType().getSubtype()))
 			{
-				UploadFiles.uploadFiles(part, destPath, prefix, token, lastIndex++);
+				UploadFiles.uploadFiles(part, resource, prefix, token, lastIndex++);
 			}
 			else if (part.getMediaType().getType().compareTo("text") != 0)
 			{
@@ -273,7 +343,7 @@ public class UploadFiles {
 		}
 		
 		// moving to the final destination
-		UploadFiles.moveFiles(destPath + File.separator + token, destPath, prefix, false);
+		UploadFiles.moveFiles(resource + File.separator + token, resource, prefix, false);
 
 		if (rejected.size() != 0)
 		{

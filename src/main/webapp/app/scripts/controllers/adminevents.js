@@ -9,10 +9,15 @@
  */
 angular.module('yeswesailApp')
     .controller('AdmineventsCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate) {
-        $scope.getEvents = function () {
+    $scope.getEvents = function () {
             $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function (res) {
                 $scope.events = res.data;
-               
+                $('table').tablesort();    
+                // Sort by dates in YYYY-MM-DD format
+                $('thead th.date').data('sortBy', function(th, td, tablesort) {
+                    return new Date(td.text());
+                });
+                
             });
         };
 
@@ -41,7 +46,7 @@ angular.module('yeswesailApp')
                 $scope.events.splice($scope.events.indexOf(event), 1);
 
             }, function (err) {
-            	toastr.error($translate.instant('admin.eventDeleteFailure'));
+            	toastr.error(err.data.error);
             });
         }
         $scope.clone = function (event) {

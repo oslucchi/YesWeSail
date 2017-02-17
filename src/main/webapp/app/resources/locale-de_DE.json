@@ -47,7 +47,11 @@
     "global.shareOnSocial": "Mit Freunden teilen!",
     "global.insert": "Eingeben",
     "global.updateError": "Fehler während der Eingabe {{errorMsg}}",
-     
+    "global.button.remove": "Removen",
+	"global.send": "Senden",
+    "global.leaveMessage": "Du has unsaven changen, saven beforen exiten?",
+       "global.confirm.eventChanges": "Attention! Before the event can be available to the users, all the changes must first be approved by the administrators. Do you wish to proceed?",
+    
     "admin.events.addPassenger.newUser": "Neues Mitglied?",
     "admin.events.addPassenger.addUser": "Passagier hinzufügen",
     
@@ -104,7 +108,9 @@
     "userid.boats.addBoat.year": "Baujahr",
     "userid.boats.addBoat.plate": "Kennzeichen",
     "userid.boats.addBoat.length": "Länge",
-    "userid.boats.addBoat.engine": "Antrieb",
+    "userid.boats.addBoat.propulsion.sail": "Sail",
+    "userid.boats.addBoat.propulsion.engine": "Engine",
+    "userid.boats.addBoat.propulsion": "Engine type",
     "userid.boats.addBoat.documents": "Bootsdokumente",
     "userid.boats.addBoat.insurance": "Versicherung",
     "userid.boats.addBoat.sailingCertification": "Bootspapiere",

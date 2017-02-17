@@ -5,6 +5,8 @@
     "main.bestOffers": "Le migliori proposte",
     "main.explore": "Esplora",
     "main.whyUs": "Perchè scegliere YesWeSail",
+    "main.subscribeMessage": "Unisciti alla nostra Newsletter per ricevere offerte e promozioni!",
+    "main.subscribeButton": "Aderisci",
     "main.bestPriceGranted": "Miglior prezzo garantito",
     "main.bestPriceGrantedDesc": "Nasce il primo sistema di early booking per risparmiare sulle vacanze in barca.",
     "main.securedPayments": "Pagamenti sicuri",
@@ -27,6 +29,7 @@
     
     "global.availableDatesHeader": "Date disponibili per l'evento selezionato",
 	"global.approve": "Approva",
+    "global.changeLanguage": "Confermi il cambiamento di lingua?",
 	"global.approveAll": "Approva tutti",
 	"global.refresh": "Aggiorna",
     "global.cancel": "Abbandona",
@@ -43,6 +46,7 @@
     "global.transactionId": "Transazione numero",
     "global.search": "Cerca",
     "global.selectFiles": "Seleziona i files",
+    "global.setPosition": "Imposta punto partenza",
     "global.selectLocation": "Localita'",
     "global.selectCategory": "Tipo di vacanza",
     "global.tickets": "Biglietti",
@@ -73,12 +77,17 @@
 	"global.password": "Password",
 	"global.total": "Totale",
 	"global.reject": "Rifiuta",
-	     
+	"global.button.remove": "Rimuovi",
+	"global.send": "Invia",
+    "global.leaveMessage": "Sono presenti modifiche non salvate, salvare?",
+       "global.confirm.eventChanges": "Attenzione! Prima che l'evento sia visible agli utenti, le modidiche dovranno essere approvate dagli amministratori. Procedere?",
     "admin.events.addPassenger.newUser": "Nuovo utente?",
     "admin.events.addPassenger.addUser": "Aggiungi passeggero",
     
     "admin.events.clone.aggregated": "Eventi aggregati",
-    
+        "admin.events.cloneEventHeader": "Clona Evento",
+    "admin.events.removePassenger": "Rimuovi Passeggero",
+    "admin.events.addPassenger": "Aggiungi Passeggero",
     "admin.events.success.update": "Evento {{eventId}} aggiornato",
     
     "cart.suggestedEvents": "Eventi suggeriti",
@@ -94,6 +103,7 @@
 	"event.boardingPlace": "Luogo di imbarco",
     "event.sharedBathrooms": "Bagni condivisi",
     "event.wholeBoat": "Tutta la barca",
+    "event.cabinsVIP": "Cabina armatoriale",
     "event.gallery": "Immagini",
     "event.participants": "Partecipanti",
 	"event.logistics": "Dettagli",
@@ -131,7 +141,9 @@
     "userid.boats.addBoat.year": "Anno",
     "userid.boats.addBoat.plate": "Targa",
     "userid.boats.addBoat.length": "Lunghezza",
-    "userid.boats.addBoat.engine": "Vela/Motore",
+    "userid.boats.addBoat.propulsion.sail": "Vela",
+    "userid.boats.addBoat.propulsion.engine": "Motore",
+    "userid.boats.addBoat.propulsion": "Propulsione",
     "userid.boats.addBoat.documents": "Documenti",
     "userid.boats.addBoat.insurance": "Assicurazione",
     "userid.boats.addBoat.sailingCertification": "Certificato di navigazione",
@@ -240,6 +252,8 @@
 	"adminevents.gridCols.lastMinute": "LastMin",
 	"adminevents.gridCols.eventId": "Id",
 	"adminevents.gridCols.title": "Titolo",
+    "adminevents.gridCols.dateStart": "Data Inizio",
+	"adminevents.gridCols.dateEnd": "Data Fine",
 	"adminevents.gridCols.createdBy": "Creato da",
 	"adminevents.gridCols.createdOn": "Creato il",
 	"adminevents.gridCols.location": "Meta",
@@ -283,6 +297,11 @@
     "cartTemplate.gridsCol.timeLeft": "Tempo per l'acquisto",
     
 
+    
+    "howItWorks.usagePolicy": "Policy di utilizzo", 
+    "howItWorks.clientPolicy": "Policy per il cliente", 
+    "howItWorks.shipownerPolicy": "Policy per l'armatore", 
+    
 	"footer.company": "Società",
 	"footer.aboutUs": "Chi siamo",
 	"footer.howItWorks": "Come funziona",
@@ -290,6 +309,7 @@
 	"footer.legals": "Note legali",
 	"footer.termsAndConditions": "Termini e condizioni",
 	"footer.occasionalRent": "Noleggio occasionale",
+	"footer.communityRules": "Guida per la community",
 
 	"invalidemail.completeData": "Controlla e completa i tuoi dati",
 	"invalidemail.lackOfData": "Per poter proseguire con la registrazione abbiamo bisogno che completi i seguenti dati non forniti da Facebook.",

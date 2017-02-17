@@ -5,6 +5,8 @@
     "main.bestOffers": "The best on the shelf",
     "main.explore": "Explore more",
     "main.whyUs": "Why YesWeSail",
+    "main.subscribeMessage": "Subscribe to our Newsletter to receive special offers!",
+    "main.subscribeButton": "Subscribe",
     "main.bestPriceGranted": "Best price granted",
     "main.bestPriceGrantedDesc": "The first early booking site to save on your next sailing vacations",
     "main.securedPayments": "Secured payments",
@@ -27,6 +29,7 @@
     
     "global.availableDatesHeader": "Date available for the selected event",
 	"global.approve": "Approve",
+	"global.changeLanguage": "Do you confirm the change of language?",
 	"global.approveAll": "Approve all",
 	"global.refresh": "Refresh",
     "global.cancel": "Abort",
@@ -42,6 +45,7 @@
     "global.to": "To",
     "global.transactionId": "Transaction number",
     "global.search": "Search",
+    "global.setPosition": "Set Start Position",
     "global.selectFiles": "Select files to upload",
     "global.selectLocation": "Location",
     "global.selectCategory": "Type of vacation",
@@ -73,11 +77,17 @@
 	"global.password": "Password",
 	"global.total": "Total amount",
 	"global.reject": "Reject",
-
+	"global.button.remove": "Remove",
+	"global.send": "Send",
+	"global.leaveMessage": "You have unsaved changes, save before exit?",
+    "global.confirm.eventChanges": "Attention! Before the event can be available to the users, all the changes must first be approved by the administrators. Do you wish to proceed?",
     "admin.events.addPassenger.newUser": "New user?",
     "admin.events.addPassenger.addUser": "Add Passenger",
     
     "admin.events.clone.aggregated": "Aggregated events",
+    "admin.events.cloneEventHeader": "Clone Event",
+    "admin.events.removePassenger": "Remove Passenger",
+    "admin.events.addPassenger": "Add Passenger",
     
     "admin.events.success.update": "Event {{eventId}} updated",
     
@@ -94,6 +104,7 @@
 	"event.boardingPlace": "Boarding location",
     "event.sharedBathrooms": "Shared baths",
     "event.wholeBoat": "Whole boat",
+    "event.cabinsVIP": "Master cabin",
     "event.gallery": "Images",
     "event.participants": "Participants",
 	"event.logistics": "Details",
@@ -131,7 +142,9 @@
     "userid.boats.addBoat.year": "Year",
     "userid.boats.addBoat.plate": "Plate",
     "userid.boats.addBoat.length": "Length",
-    "userid.boats.addBoat.engine": "Engine type (V-Sailing/M-Engine)",
+    "userid.boats.addBoat.propulsion.sail": "Sail",
+    "userid.boats.addBoat.propulsion.engine": "Engine",
+    "userid.boats.addBoat.propulsion": "Propulsion",
     "userid.boats.addBoat.documents": "Documents",
     "userid.boats.addBoat.insurance": "Insurance",
     "userid.boats.addBoat.sailingCertification": "Sailing certificate",
@@ -239,6 +252,8 @@
 	"adminevents.gridCols.lastMinute": "LastMin",
 	"adminevents.gridCols.eventId": "Id",
 	"adminevents.gridCols.title": "Title",
+	"adminevents.gridCols.dateStart": "Date Start",
+	"adminevents.gridCols.dateEnd": "Date End",
 	"adminevents.gridCols.createdBy": "Created by",
 	"adminevents.gridCols.createdOn": "Created on",
 	"adminevents.gridCols.location": "Location",
@@ -282,6 +297,11 @@
     "cartTemplate.gridsCol.timeLeft": "Time to complete",
     
 
+    
+    "howItWorks.usagePolicy": "Usage Policy",
+    "howItWorks.clientPolicy": "Customer Policy", 
+    "howItWorks.shipownerPolicy": "Shipowner Policy", 
+    
 	"footer.company": "Company",
 	"footer.aboutUs": "About us",
 	"footer.howItWorks": "How it works",
@@ -289,6 +309,7 @@
 	"footer.legals": "Legals",
 	"footer.termsAndConditions": "Terms and conditions",
 	"footer.occasionalRent": "Occasional rent",
+	"footer.communityRules": "Community rules",
 
 	"invalidemail.completeData": "Check and fill the missing data",
 	"invalidemail.lackOfData": "In order for us to proceed, we need you to complete data not returned us by Facebook.",

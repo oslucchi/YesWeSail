@@ -31,6 +31,7 @@ public class ApplicationProperties {
 	private int sessionExpireTime = 0;
 	private int maxNumHotOffers = 4;
 	private boolean useCoars = false;
+	private boolean startReleaser = true;
 	private String braintreeMerchantId;
 	private String braintreePublicKey;
 	private String braintreePrivateKey;
@@ -39,6 +40,10 @@ public class ApplicationProperties {
 	private ServletContext context;
 	private String adminEmail;
 	private int releaseTicketLocksAfter = 600;
+	private Double maxDistanceForEventsOnTheGround = 5.0;
+	private String mailchimpURL = "";
+	private String mailchimpListId = "";
+	private String mailchimpAPIKEY = "";
 	
 	private static ApplicationProperties instance = null;
 	
@@ -90,6 +95,7 @@ public class ApplicationProperties {
     	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
     	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
 		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
+		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
 		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
 		braintreePublicKey = properties.getProperty("braintreePublicKey");
 		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
@@ -97,7 +103,10 @@ public class ApplicationProperties {
 		paypalClientSecret = properties.getProperty("paypalClientSecret");
 
 		adminEmail = properties.getProperty("adminEmail");
-    	
+		mailchimpURL = properties.getProperty("mailchimpURL");
+		mailchimpListId = properties.getProperty("mailchimpListId");
+		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
+		
     	try
     	{
     		variable = "sessionExpireTime";
@@ -106,6 +115,8 @@ public class ApplicationProperties {
     		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
     		variable = "releaseTicketLocksAfter";
     		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
+    		variable = "maxDistanceForEventsOnTheGround";
+    		maxDistanceForEventsOnTheGround = Double.parseDouble(properties.getProperty("maxDistanceForEventsOnTheGround"));
     	}
     	catch(NumberFormatException e)
     	{
@@ -236,5 +247,26 @@ public class ApplicationProperties {
 
 	public String getPaypalClientSecret() {
 		return paypalClientSecret;
+	}
+
+	public Double getMaxDistanceForEventsOnTheGround() {
+		return maxDistanceForEventsOnTheGround;
+	}
+
+	public String getMailchimpURL() {
+		return mailchimpURL;
+	}
+
+	public String getMailchimpListId() {
+		return mailchimpListId;
+	}
+
+	public String getMailchimpAPIKEY() {
+		return mailchimpAPIKEY;
+	}
+
+	public boolean isStartReleaser() {
+		return startReleaser;
 	}	
+	
 }

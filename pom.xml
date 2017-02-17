@@ -75,7 +75,7 @@
 		<dependency>
 	        <groupId>org.apache.httpcomponents</groupId>
 	        <artifactId>httpclient</artifactId>
-	        <version>4.1.1</version>
+	        <version>4.5.2</version>
 	    </dependency>
 	    
 		<dependency>
@@ -144,6 +144,16 @@
 		    <artifactId>rest-api-sdk</artifactId>
 		    <version>LATEST</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ecwid</groupId>
+			<artifactId>maleorang</artifactId>
+    		<version>3.0-0.9.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>net.coobird</groupId>
+		    <artifactId>thumbnailator</artifactId>
+		    <version>0.4.8</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -156,6 +166,39 @@
 						<warSourceDirectory>WebContent</warSourceDirectory>
 						<failOnMissingWebXml>false</failOnMissingWebXml>
 					    <webResources> 
+<!-- 
+					      <resource> 
+					        <directory>images/application</directory> 
+					        <targetPath>/images/application</targetPath>
+					      </resource> 
+					      <resource> 
+					        <directory>images/avatars</directory> 
+					        <targetPath>/images/avatars</targetPath>
+					      </resource> 
+					      <resource> 
+					        <directory>images/boats</directory> 
+					        <targetPath>/images/boats</targetPath>
+					      </resource> 
+					      <resource> 
+					        <directory>images/events</directory> 
+					        <targetPath>/images/events</targetPath>
+					      </resource> 
+					      <resource> 
+					        <directory>images/shipowner</directory> 
+					        <targetPath>/images/shipowner</targetPath>
+					      </resource> 
+					      <resource> 
+					        <directory>images/users</directory> 
+					        <targetPath>/images/users</targetPath>
+					      </resource> 
+						  <resource>
+						    <directory>images</directory>
+						    <includes>
+						      <include>**/default-icon.jpg</include>
+						    </includes>
+					        <targetPath>/images</targetPath>
+						  </resource>
+-->
 					      <resource> 
 					        <directory>src/main/webapp/dist</directory> 
 					        <targetPath>/</targetPath>
@@ -163,10 +206,6 @@
 					      <resource> 
 					        <directory>src/main/webapp/bower_components/semantic/dist/themes</directory> 
 					        <targetPath>/styles/themes</targetPath>
-					      </resource> 
-					      <resource> 
-					        <directory>images</directory> 
-					        <targetPath>/images</targetPath>
 					      </resource> 
 					    </webResources> 
 	
@@ -184,6 +223,19 @@
 						<target>1.7</target>
 					</configuration>
 				</plugin>
+
+  <plugin>
+    <artifactId>maven-clean-plugin</artifactId>
+    <version>3.0.0</version>
+    <configuration>
+      <filesets>
+        <fileset>
+          <directory>src/main/webapp/dist</directory>
+        </fileset>
+      </filesets>
+    </configuration>
+  </plugin>
+
 <!-- 
 			    <plugin>
 				  <artifactId>maven-clean-plugin</artifactId>
@@ -205,8 +257,8 @@
 				    </execution>
 				  </executions>
 				</plugin>
- -->				
-
+ -->  
+ 
 				<plugin>
 	  		      <groupId>org.codehaus.mojo</groupId>
 			      <artifactId>exec-maven-plugin</artifactId>

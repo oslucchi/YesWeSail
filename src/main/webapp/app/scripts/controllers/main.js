@@ -6,7 +6,7 @@
  * # MainCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog) {
+angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog, toastr) {
     $scope.CATEGORIES = [];
     $scope.LOCATIONS = [];
     MAPS.getMap('LOCATIONS').then(function (res) {
@@ -30,6 +30,7 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
     $scope.hotEvents = null;
     $http.post(URLs.ddns + 'rest/events/hotEvents').then(function (res) {
             $scope.hotEvents = res.data;
+        
         }, function (err) {})
 
     $scope.showAvailableDatesForEvents = function (events) {
@@ -54,4 +55,24 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
             });
         }
     }
+    
+    $scope.user={
+        email: '',
+        name: '',
+        surname: ''
+    }
+    
+    $scope.subscribe=function(){
+        
+        if($scope.user.email){
+            $http.post(URLs.ddns + 'rest/users/subscribe', {u: $scope.user, what: 'MAILCHIMP'}).then(function(res){
+                toastr.success('Subscribed');
+            }, function(err){
+                toastr.error('Error while subscribing!');
+            })
+        }else{
+            toastr.warning('Check email!');
+        }
+    }
+    
 });

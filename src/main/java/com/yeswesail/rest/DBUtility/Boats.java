@@ -20,11 +20,16 @@ public class Boats extends DBInterface
 	protected int cabinsNoBathroom;
 	protected int sharedBathrooms;
 	protected int bunks;
+	protected int wholeBoat = 1;
+	protected int cabinsVIP;
 	protected String insurance;
 	protected String securityCertification;
 	protected String RTFLicense;
 	protected ArrayList<String> docs;
 	protected ArrayList<String> images;
+	protected ArrayList<String> imagesSmall;
+	protected ArrayList<String> imagesMedium;
+	protected ArrayList<String> imagesLarge;
 
 	private static ArrayList<Boats> boats;
 
@@ -198,4 +203,41 @@ public class Boats extends DBInterface
 	public void setDocs(ArrayList<String> docs) {
 		this.docs = docs;
 	}
+
+	public ArrayList<String> getImagesSmall() {
+		return imagesSmall;
+	}
+
+	public void setImagesSmall(ArrayList<String> imagesSmall) {
+		this.imagesSmall = imagesSmall;
+	}
+
+	public ArrayList<String> getImagesMedium() {
+		return imagesMedium;
+	}
+
+	public void setImagesMedium(ArrayList<String> imagesMedium) {
+		this.imagesMedium = imagesMedium;
+	}
+
+	public ArrayList<String> getImagesLarge() {
+		return imagesLarge;
+	}
+
+	public void setImagesLarge(ArrayList<String> imagesLarge) {
+		this.imagesLarge = imagesLarge;
+	}
+
+	public int getCabinsVIP() {
+		return cabinsVIP;
+	}
+
+	public void setCabinsVIP(int cabinsVIP) {
+		this.cabinsVIP = cabinsVIP;
+	}
+
+	public int getWholeBoat() {
+		return wholeBoat;
+	}
+	
 }

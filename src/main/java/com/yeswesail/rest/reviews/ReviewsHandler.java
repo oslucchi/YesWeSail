@@ -160,14 +160,14 @@ public class ReviewsHandler {
 	{
 		ArrayList<Object> results = null;
 		
-		DBConnection conn;
+		DBConnection conn = null;
 		try
 		{
 			conn = DBInterface.connect();
 			String sql = "SELECT AVG(rating), count(*) as population " +
 						 "FROM Reviews " +
 						 "WHERE reviewForId = " + userId + " AND " +
-						 "      status IN ('A', 'R')";
+						 "      status = 'A'";
 			results = DBInterface.executeAggregateStatement(conn, sql);
 			HashMap<String, Object> json = new HashMap<>();
 			json.put("rating", (Double) results.get(0));
@@ -177,6 +177,10 @@ public class ReviewsHandler {
 		catch(Exception e)
 		{
 			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}

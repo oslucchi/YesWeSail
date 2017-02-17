@@ -1,0 +1,48 @@
+
+
+<div class="ui container">
+    <div class="ui form">
+        <div class="five fields">
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Title
+                    </div>
+                    <input type="text" ng-model="dynamicPage.uRLReference"> 
+                </div>  
+            </div> 
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Date created
+                    </div>
+                    <input type="text" ng-model="dynamicPage.createdOn"> 
+                </div>  
+            </div> 
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Language
+                    </div>
+                    <input type="text" ng-model="dynamicPage.language"> 
+                </div>  
+            </div>
+            <div class="field">
+                <div class="ui labeled input">
+                    <div class="ui label">
+                        Status
+                    </div>
+                    <input type="text" ng-model="dynamicPage.status"> 
+                </div>  
+            </div>
+            <div class="field">
+                <div ng-click="savePage(dynamicPage)" class="ui blue button">
+                    Save
+                </div>  
+            </div>
+        </div>
+    </div>
+    
+        <div text-angular ng-model="dynamicPage.innerHTML"></div>
+    
+</div>

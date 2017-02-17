@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.UUID;
 
@@ -33,6 +34,7 @@ import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.google.common.io.Files;
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
@@ -61,6 +63,8 @@ import com.yeswesail.rest.jsonInt.TicketJson;
 public class EventsHandler {
 	@Context
 	private ServletContext context;
+	
+	final String[] imageSizeType = {"-large", "-medium", "-small"};
 
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
@@ -125,6 +129,12 @@ public class EventsHandler {
 		int i;
 		for(Events e : events)
 		{
+			if ((prop.getMaxNumHotOffers() != 0) &&
+				(hotList.size() >= prop.getMaxNumHotOffers()))
+			{
+				break;
+			}
+			e.setImageURL(e.getImageURL().replace("large", "medium"));
 			for(i = 0; i < hotList.size(); i++)
 			{
 				if ((hotList.get(i) != null) && (e.getAggregateKey() != null) && 
@@ -135,7 +145,7 @@ public class EventsHandler {
 					break;
 				}
 			}
-			if ((hotList.size() < prop.getMaxNumHotOffers()) && (i == hotList.size()))
+			if (i == hotList.size())
 			{
 				ArrayList<Events> item = new ArrayList<>();
 				item.add(e);
@@ -228,15 +238,22 @@ public class EventsHandler {
 		{
 			eventsFiltered = new ArrayList<Events>(Arrays.asList(events));
 		}
+		
 		// No record found. return an empty object
 		if (eventsFiltered.size() == 0)
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
-
 		if (activeOnly)
 		{
 			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
+			for(ArrayList<Events> listItem : eventsList)
+			{
+				for(Events e : listItem)
+				{
+					e.setImageURL(e.getImageURL().replace("large", "medium"));
+				}
+			}
 			if (jh.jasonize(eventsList, languageId) != Response.Status.OK)
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
@@ -245,12 +262,15 @@ public class EventsHandler {
 		}
 		else
 		{
+			for(Events e : eventsFiltered)
+			{
+				e.setImageURL(e.getImageURL().replace("large", "medium"));
+			}
 			if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
 			{
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(jh.json).build();
 			}
-
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
@@ -279,6 +299,7 @@ public class EventsHandler {
 								  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		jsonIn.status = "A";
 		return handleSearch(jsonIn, languageId, true);
 	}
 	
@@ -289,6 +310,13 @@ public class EventsHandler {
 	public Response eventClone(EventJson jsonIn, @HeaderParam("Language") String language)
 	{
 		int languageId = Utils.setLanguageId(language);
+
+		// Check dates. return error in case of null.
+		if ((jsonIn.dateStart == null) || (jsonIn.dateEnd == null))
+		{
+			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
+										 languageId, "events.clone.badDates");
+		}
 
 		Events ev = null;
 		DBConnection conn = null;
@@ -311,8 +339,17 @@ public class EventsHandler {
 				}
 			}
 			ev = fillEvent(jsonIn, ev, languageId);
+			ev.setCreatedOn(new Date());
 			int idEvents = ev.insertAndReturnId(conn, "idEvents", ev);
 			ev.setIdEvents(idEvents);
+			ev.setEarlyBooking(false);
+			ev.setHotEvent(false);
+			ev.setLastMinute(false);
+			ev.setStatus("P");
+			ev.setImageURL(ev.getImageURL().replace(new Integer(ev.getIdEvents()).toString(), 
+													new Integer(idEvents).toString()));
+			ev.update(conn, "idEvents");
+			
 			String sql = 
 					"INSERT INTO EventDescription " +
 				    "  SELECT 0, languageId, " + idEvents + ", anchorZone, description" +
@@ -323,12 +360,32 @@ public class EventsHandler {
 			sql = 
 					"INSERT INTO EventTickets " +
 				    "  SELECT 0, " + idEvents + ", ticketType, available, " +
-				    "         booked, price, cabinRef, bookedTo " + 
-					"  FROM EventEventTickets " +
+				    "         0, price, cabinRef, '' " + 
+					"  FROM EventTickets " +
 				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventTickets.executeStatement(conn, sql, true);
 			
+			sql = 
+					"INSERT INTO EventRoute " +
+				    "  SELECT 0, " + idEvents + ", lat, lng, description, seq " +
+					"  FROM EventRoute " +
+				    "  WHERE eventId = " + jsonIn.idEvents;
+			EventRoute.executeStatement(conn, sql, true);
+			
 			DBInterface.TransactionCommit(conn);
+			log.debug("Copying image files");
+
+			String replace = "ev_"+ jsonIn.idEvents + "_";
+			ArrayList<String> imagesList= UploadFiles.getExistingFilesPathOnLocalFilesystem(replace, "/images/events");
+			for(String source : imagesList)
+			{
+				File from = new File(source);
+				File to = new File(source.substring(0, source.indexOf(replace)) +
+								   "ev_" + idEvents + "_" + 
+								   source.substring(source.indexOf(replace) + replace.length()));
+				Files.copy(from, to);
+			}
+			log.debug("...done");
 		}
 		catch (Exception e) {
 			DBInterface.TransactionRollback(conn);
@@ -347,6 +404,71 @@ public class EventsHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 
+
+	@POST
+	@Path("/images/default")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response changeEventImageURL(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		Events event = null;
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();
+			event = new Events(conn, jsonIn.eventId);
+			jsonIn.imageURL = jsonIn.imageURL.replace("small", "large");
+			event.setImageURL(jsonIn.imageURL);
+			event.update(conn, "idEvents");
+		}
+		catch (Exception e) 
+		{
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+	
+	private double distance(double lat1, double lon1, double lat2, double lon2, String unit) 
+	{
+		double theta = lon1 - lon2;
+		double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + 
+					  Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
+		dist = Math.acos(dist);
+		dist = rad2deg(dist);
+		dist = dist * 60 * 1.1515;
+		if (unit == "K") 
+		{
+			dist = dist * 1.609344;
+		}
+		else if (unit == "N")
+		{
+			dist = dist * 0.8684;
+		}
+
+		return (dist);
+	}
+
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts decimal degrees to radians						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	private double deg2rad(double deg) {
+		return (deg * Math.PI / 180.0);
+	}
+
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	/*::	This function converts radians to decimal degrees						 :*/
+	/*:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::*/
+	private double rad2deg(double rad) {
+		return (rad * 180 / Math.PI);
+	}
+	
 	@POST
 	@Path("/details")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -370,6 +492,10 @@ public class EventsHandler {
 			{
 				event = new Events(conn, jsonIn.eventId, languageId);
 			}
+			// Make sure the imageURL is set to large regardless of what is the DB
+			event.setImageURL(event.getImageURL()
+									.replace("small", "large")
+									.replace("medium", "large"));
 		}
 		catch (Exception e) 
 		{
@@ -397,8 +523,10 @@ public class EventsHandler {
 				if (allTickets[i].getTicketType() != ticketType)
 				{
 					ticketType = allTickets[i].getTicketType();
-					index++;
-					tickets.add(new ArrayList<EventTickets>());
+					for(;index < ticketType - 1; index++)
+					{
+						tickets.add(new ArrayList<EventTickets>());
+					}
 				}
 				if (allTickets[i].getAvailable() - allTickets[i].getBooked() > 0)
 				{
@@ -417,7 +545,7 @@ public class EventsHandler {
 		Users[] participants = null;
 		try
 		{
-			participants = EventTicketsSold.findParticipants(event.getIdEvents(), languageId);
+			participants = EventTicketsSold.findParticipants(event.getIdEvents());
 			if (ticketsAvailable == 0)
 			{
 				jsonResponse.put("participantMessage", 
@@ -467,15 +595,13 @@ public class EventsHandler {
 			log.warn("Unable to populate descriptions (" + e.getMessage() + ")");
 		}
 
-		try {
-			contextPath = context.getResource("/images/events").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-		}
-		ArrayList<String> images = UploadFiles.getExistingFilesPath("ev_"+ event.getIdEvents() + "_",contextPath);
+		ArrayList<ArrayList<String>> imagesTemp = UploadFiles.getExistingFilesPathAsURL("ev_"+ event.getIdEvents() + "_", "/images/events");
+
+		ArrayList<String> images = imagesTemp.get(UploadFiles.ORIGINAL);
+		ArrayList<String> imagesSmall = imagesTemp.get(UploadFiles.SMALL);
+		ArrayList<String> imagesMedium = imagesTemp.get(UploadFiles.MEDIUM);
+		ArrayList<String> imagesLarge = imagesTemp.get(UploadFiles.LARGE);
+
 		if (images.isEmpty())
 		{
 			images.add(event.getImageURL());
@@ -496,10 +622,11 @@ public class EventsHandler {
 			jsonResponse.put("shipOwner", "{}");
 		}
 
+		EventRoute[] r = null;
 		try
 		{
 			log.debug("Trying to get the route details for event " + event.getIdEvents());
-			EventRoute[] r = EventRoute.getRoute(conn, event.getIdEvents());
+			r = EventRoute.getRoute(conn, event.getIdEvents());
 			jsonResponse.put("route", r);
 		}
 		catch (Exception e) {
@@ -511,21 +638,76 @@ public class EventsHandler {
 		{
 			log.debug("querying the boat details for this event");
 			Boats b = new Boats(conn, event.getBoatId());
-			images = UploadFiles.getExistingFilesPath(
-						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
-			images.addAll(UploadFiles.getExistingFilesPath(
-						"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats"));
-			b.setImages(images);
-			b.setDocs(UploadFiles.getExistingFilesPath(
-					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats"));
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+								"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_img_", "/images/boats");
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
 
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+								"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_bp_", "/images/boats");
+			images.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			imagesSmall.addAll(imagesTemp.get(UploadFiles.SMALL));
+			imagesMedium.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			imagesLarge.addAll(imagesTemp.get(UploadFiles.LARGE));
+			
+			b.setImages(images);
+			imagesTemp = UploadFiles.getExistingFilesPathAsURL(
+					"bo_" + b.getOwnerId() + "_" + b.getIdBoats() + "_doc_", "/images/boats");
+			ArrayList<String> docs = new ArrayList<>();
+			docs.addAll(imagesTemp.get(UploadFiles.ORIGINAL));
+			docs.addAll(imagesTemp.get(UploadFiles.SMALL));
+			docs.addAll(imagesTemp.get(UploadFiles.MEDIUM));
+			docs.addAll(imagesTemp.get(UploadFiles.LARGE));
+			b.setDocs(docs);
+
+			jsonResponse.put("imagesSmall", imagesSmall);
+			jsonResponse.put("imagesMedium", imagesMedium);
+			jsonResponse.put("imagesLarge", imagesLarge);
 			jsonResponse.put("boat", b);
 		}
 		catch (Exception e) {
 			log.warn("Unable to get the required boat, exception (" + e.getMessage() + ")");
 			jsonResponse.put("boat", "{}");
 		}
-
+		
+		Events[] groundEventsAvailable = null;
+		try {
+			groundEventsAvailable = Events.findByFilter("WHERE eventType = 2", languageId);
+		} 
+		catch (Exception e) {
+			log.warn("Exception " + e.getMessage() + " populating ground events for event " + event.getIdEvents());
+		}
+		ArrayList<Events> groundEvents = new ArrayList<Events>();
+		if(groundEventsAvailable != null)
+		{
+			for(Events ev : groundEventsAvailable)
+			{
+				EventRoute start[] = null;
+				try {
+					start = EventRoute.getRoute(conn, ev.getIdEvents());
+					EventRoute er = null;
+					for (int i = 0; i < r.length; i++) 
+					{
+						er = r[i];
+						double dist = distance(new Double(er.getLat()), new Double(er.getLng()), 
+											   new Double(start[0].getLat()), new Double(start[0].getLng()), "K");
+						if (dist < prop.getMaxDistanceForEventsOnTheGround())
+						{
+							groundEvents.add(ev);
+							break;
+						}
+					}
+				} 
+				catch (Exception e) {
+					log.warn("Exception " + e.getMessage() + " getting routes for ground event " + ev.getIdEvents());
+				}
+			}
+		}
+		jsonResponse.put("groundEvents", groundEvents);
+			
+		DBInterface.disconnect(conn);
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity).build();
 	}
@@ -533,9 +715,12 @@ public class EventsHandler {
 	private Events fillEvent(EventJson jsonIn, Events event, int languageId)
 	{
 		event.setCategoryId(jsonIn.categoryId);
-		if (jsonIn.dateStart == null)
+		if (jsonIn.dateStart == null) 
 		{
 			jsonIn.dateStart = "1970-01-01";
+		}
+		if (jsonIn.dateEnd == null)
+		{
 			jsonIn.dateEnd = "1970-01-01";
 		}
 		try
@@ -595,6 +780,8 @@ public class EventsHandler {
 		{
 			event.setImageURL(jsonIn.imageURL);
 		}
+		event.setBackgroundOffsetX(jsonIn.backgroundOffsetX);
+		event.setBackgroundOffsetY(jsonIn.backgroundOffsetY);
 		return event;
 	}
 
@@ -823,6 +1010,18 @@ public class EventsHandler {
 			log.trace("Deleting Event");
 			ev.delete(conn, idEvents);
 			DBInterface.TransactionCommit(conn);
+			log.trace("Deleting Images");
+
+			String delete = "ev_"+ idEvents + "_";
+			ArrayList<ArrayList<String>> imagesList= UploadFiles.getExistingFilesPathAsURL(delete, "/images/events");
+			for(ArrayList<String> sourceList : imagesList)
+			{
+				for(String source : sourceList)
+				{
+					File toDelete = new File(source);
+					toDelete.delete();
+				}
+			}
 		}
 		catch (Exception e) 
 		{
@@ -870,6 +1069,7 @@ public class EventsHandler {
 				u.setConnectedVia("X");
 				u.setStatus("A");
 				u.setIsShipOwner(false);
+				u.setImageURL(prop.getWebHost() + "images/users/default-icon.png");
 				try
 				{
 					jsonIn.usersId = u.insertAndReturnId(conn, "idUsers", u);
@@ -954,9 +1154,10 @@ public class EventsHandler {
 	{
 		EventTickets et = null;
 		EventTickets[] eventTickets = EventTickets.findByEventId(eventId, Constants.LNG_IT);
-//		ArrayList<EventTickets> ticketsToDel = new ArrayList<>();
 		for(int y = 0; y < jsonIn.length; y++)
 		{
+			if (jsonIn[y] == null)
+				continue;
 			for(TicketJson t : jsonIn[y])
 			{
 				et = null;
@@ -983,22 +1184,8 @@ public class EventsHandler {
 				{
 					et.setPrice(t.price);
 					et.update(conn, "idEventTickets");
-//					ticketsToDel.add(et);
 				}
 			}
-//			if (!ticketsToDel.isEmpty())
-//			{
-//				String sql = "DELETE FROM EventTickets " +
-//						 	 "WHERE idEventTickets IN (";
-//				String sep = "";
-//				for(int i = 0; i < ticketsToDel.size(); i++)
-//				{
-//					sql += sep + ticketsToDel.get(i).getIdEventTickets();
-//					sep = ",";
-//				}
-//				sql += ")";
-//				EventTickets.executeStatement(conn, sql, false);
-//			}
 		}
 	}
 	
@@ -1108,8 +1295,15 @@ public class EventsHandler {
 		{
 			log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
 		}
-		File toRemove = new File(eventsPath + File.separator + imageName);
-		toRemove.delete();
+		String baseName = imageName.substring(0, imageName.indexOf("-"));
+//		File toRemove = new File(eventsPath + File.separator + imageName);
+//		toRemove.delete();
+		File toRemove = null;
+		for(String size : imageSizeType)
+		{
+			toRemove = new File(eventsPath + File.separator + baseName + size + ".jpg");
+			toRemove.delete();
+		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
@@ -1137,41 +1331,14 @@ public class EventsHandler {
 								parts, token, "/images/events", 
 								prefix, acceptableTypes, languageId, false);
 		
-		try {
-			contextPath = context.getResource("/images/events").getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			contextPath = null;
-			log.warn("Exception " + e.getMessage() + " retrieving context path");	
-		}
 		Utils jsonizer = new Utils();
 
-		ArrayList<String> images = UploadFiles.getExistingFilesPath(prefix, contextPath);
-		DBConnection conn = null;
-		try
-		{
-			conn = DBInterface.connect();
-			for(String image : images)
-			{
-				if (image.startsWith(prefix + "0"))
-				{
-					Events e = new Events(conn, eventId);
-					e.setImageURL(image);
-					e.update(conn, "idEvents");
-					break;
-				}
-			}
-		}
-		catch(Exception e)
-		{
-			log.warn("Unable to update main image for event " + eventId + ". Exception " + e.getMessage());
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		jsonizer.addToJsonContainer("images", images, true);
+		ArrayList<ArrayList<String>> images = UploadFiles.getExistingFilesPathAsURL(prefix, "/images/events");
+
+		jsonizer.addToJsonContainer("images", images.get(UploadFiles.ORIGINAL), true);
+		jsonizer.addToJsonContainer("imagesSmall", images.get(UploadFiles.SMALL), false);
+		jsonizer.addToJsonContainer("imagesMedium", images.get(UploadFiles.MEDIUM), false);
+		jsonizer.addToJsonContainer("imagesLarge", images.get(UploadFiles.LARGE), false);
 		
 		StatusType status = Response.Status.OK;
 		if (response.getStatusInfo() != Response.Status.OK)

@@ -1,47 +1,36 @@
-<div ng-style="{'background-image':'url('+images[0]+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
-
+<div ng-show="event.imageURL" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div class="ui button" ng-click="calculateBackgroundPositionUp(30)">UP</div>
+<div class="ui button" ng-click="calculateBackgroundPositionDown(30)">DOWN</div>
 
 </div>
-<!--
-<div class="ui six item bottom attached menu">
-    <a class="active item">Gallery</a>
-    <a class="item">Partecipants</a>
-    <a class="item">Logistics</a>
-    <a class="item">Place</a>
-    <a class="item">Packages</a>
-    <a class="item">Optionals</a>
-</div>
--->
-
-
-    <div class="ui container">
-<div class="ui anchor-menu sticky attached stackable menu">
+<div class="ui anchor-menu attached stackable menu">
+<div class="ui container">
         <a class="item">
-            <i class="home icon"></i>{{"event.gallery" | translate}}
+           {{"event.gallery" | translate}}
         </a>
         <a class="item">
-            <i class="grid layout icon"></i>{{"event.participants" | translate}}
+           {{"event.participants" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.logistics" | translate}}
+            {{"event.logistics" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.location" | translate}}
+           {{"event.location" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.package" | translate}}
+            {{"event.package" | translate}}
         </a>
         <a class="item">
-            <i class="mail icon"></i>{{"event.optionals" | translate}}
+            {{"event.optionals" | translate}}
         </a>
         <div class="right menu">
-        
-          <div class="ui language dropdown item" action="activate">
-    {{selectedLanguage}}
+          <div class="ui language dropdown item" dropdown action="hide">
+    {{selectedLanguage.substring(0, 2).toUpperCase()}}
     <i class="dropdown icon"></i>
         <div class="menu">
-            <div class="item" ng-click="setLanguage('it_IT')" data-value="IT">IT</div>
-            <div class="item" ng-click="setLanguage('en_US')" data-value="EN">EN</div>
+            <div class="item" ng-click="setLanguage('it_IT')" data-value="it_IT">IT</div>
+            <div class="item" ng-click="setLanguage('en_US')" data-value="en_US">EN</div>
+            <div class="item" ng-click="setLanguage('de_DE')" data-value="de_DE">DE</div>
         </div>
   </div>
         <a ng-click="saveEvent()" class="item">    
@@ -55,7 +44,10 @@
             </div>
 
     </div>
-</div>
+    </div>
+
+
+
 
 
 
@@ -74,35 +66,38 @@
                                 <div class="content">
 
 
-                                    <a class="header">
-                                        <div click-to-edit="event.title"></div>
+                                    <a class="header title-edit">
+                                        <div class="ui labeled fluid input">
+                                           <div class="ui label">{{'global.title' | translate}}</div>
+                                            <input type="text" ng-model="event.title">
+                                        </div>
+                                        
+<!--                                        <div click-to-edit="event.title"></div>-->
                                     </a>
 
                                     <div class="meta">
-                                        <div click-to-edit="event.location"></div>
+                                        <div class="ui labeled input">
+                                            <div class="ui label">{{'event.location' | translate}}</div>
+                                            <input type="text" ng-model="event.location">
+                                        </div>
+<!--                                        <div click-to-edit="event.location"></div>-->
                                     </div>
                                     <div class="extra">
-                                        <div class="ui input">
+                                        <div class="ui labeled input">
+                                                <div class="ui label">{{'global.from' | translate}}</div>
                                             <datepicker date-set="{{event.dateStart.toString()}}" date-min-limit="{{minDate.toString()}}" date-format="yyyy-MM-dd">
-
                                                 <input type="text" name="dateFrom"  ng-model="event.dateStart" placeholder='{{"global.from" | translate}}'>
 
                                             </datepicker>
                                         </div>
 
-                                        <div class="ui input">
+                                        <div class="ui labeled input">
+                                                <div class="ui label">{{'global.to' | translate}}</div>
                                             <datepicker  date-set="{{event.dateEnd.toString()}}" date-min-limit="{{event.dateStart.toString()}}" date-format="yyyy-MM-dd">
-
                                                 <input type="text" date-min-limit="{{event.dateStart.toString()}}" name="dateTo" ng-model="event.dateEnd" placeholder='{{"global.to" | translate}}'>
 
                                             </datepicker>
-                                            <div class="ui input">
-
-
-                                            </div>
-                                            <div class="description">
-
-                                            </div>
+                                    
 
 
                                         </div>
@@ -154,6 +149,7 @@
 
                         </div>
 
+<!--
                         <ul rn-carousel-auto-slide rn-carousel class="image">
                             <li ng-repeat="image in images">
                                 <div ng-style="{'background-image':'url('+image+')'}" style="background-repeat:no-repeat; background-size: cover;" class="image-slide">
@@ -163,7 +159,48 @@
 
                             </li>
                         </ul>
+-->
+                        
+                        
+<!--
+                         <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
 
+                                <div dimmer on="hover" class="ui image">
+                                <div class="ui dimmer">
+                                <div class="content">
+                                  <div class="center">
+                                    <h2 class="ui inverted header">{{category.description}}</h2>
+                                  </div>
+                                </div>
+                              </div>
+                              <img  class="ui image"  ng-src="{{category.url}}">
+                                    </div>
+                        </a>
+-->
+
+                            <div id="slick-demo" class="ui small images">
+                                <a href ng-repeat="image in imagesSmall">
+                                    <div dimmer on="hover" class="ui image">
+                                <div class="ui dimmer image-edit">
+                                <div class="content">
+                                  <div class="center">
+                                  <button ng-click="setImageAsDefault(image)" class="ui tiny icon button"> <i class="link star icon"></i></button>
+                                    <button ng-click="deleteImage(image)" class="ui tiny icon button"> <i class="link trash outline icon"></i></button>
+                                  </div>
+                                </div>
+                              </div>
+                                    <img class="item thumbnail-image" ng-src="{{image}}" alt="">
+                                    </div>
+                                    
+                                    
+                                    
+                                
+                                
+                                </a>
+                        </div>
+                        
+                        
+                        
 
                     </div>
                 </div>
@@ -222,9 +259,48 @@
                           </div>
                             </div>
                         </div>
-                        <div class="boats-container-selected-boat">
-                            <img ng-src="{{selectedBoat.images[0]}}">
+                        
+                           <div class="ui divided items">
+                    <div class="item">
+                       
+<!--                        <div class="ui large image"> <img ng-src="{{boat.images[0]}}"> </div>-->
+                        
+                        <div class="content"> <a class="header">{{selectedBoat.name}}</a>
+                            <div class="meta"> <span>{{selectedBoat.model}} - {{selectedBoat.year}} - {{selectedBoat.length}}ft</span> </div>
+                            <div class="description">
+                                <table class="ui very basic table">
+                                    <tbody>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.bunks" | translate}}</td>
+                                            <td>{{selectedBoat.bunks}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsNoBath" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsNoBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.sharedBathrooms" | translate}}</td>
+                                            <td>{{selectedBoat.sharedBathrooms}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsWithBath" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsWithBathroom}}</td>
+                                        </tr>
+                                        <tr class="non-clickable">
+                                            <td>{{"event.cabinsVIP" | translate}}</td>
+                                            <td>{{selectedBoat.cabinsVIP}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
+                    </div>
+                    <div class="item">
+                         <div id="slick-boat" class="ui small images">
+                                <a href ng-repeat="image in selectedBoat.images | limitTo: 4"><img class="item" ng-src="{{image}}" alt=""></a>
+                        </div>
+                    </div>
+                </div>
                     </div>
 
                     </div>
@@ -248,35 +324,45 @@
                     <tr>
                       <td>{{"event.bunks" | translate}}</td>
                       <td ng-repeat="number in getNumber(selectedBoat.bunks) track by $index">
-                         <button ng-disabled="tDisabled" ng-if="!!!tickets[0][$index].price" ng-click="addTicket(0, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[0][$index].price" class="ui fluid input ticket-price">
-                          <input ng-model="tickets[0][$index].price" type="text">
+                         <button ng-disabled="tDisabled" ng-if="!!!tempTickets[0][$index].price" ng-click="addTicket(0, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[0][$index].price" class="ui fluid input ticket-price">
+                          <input ng-model="tempTickets[0][$index].price" type="text">
                         </div>
                       </td>
                     </tr>
                     <tr>
                       <td>{{"event.cabinsNoBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsNoBathroom*2) track by $index">
-                            <button ng-disabled="tDisabled" ng-if="!!!tickets[1][$index].price" ng-click="addTicket(1, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[1][$index].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[1][$index].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[1][$index].price" ng-click="addTicket(1, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[1][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[1][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
                       <tr>
                       <td>{{"event.cabinsWithBath" | translate}}</td>
                         <td ng-repeat="number in getNumber(selectedBoat.cabinsWithBathroom*2) track by $index">
-                            <button ng-disabled="tDisabled" ng-if="!!!tickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
-                            <div ng-if="!!tickets[2][$index].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[2][$index].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[2][$index].price" ng-click="addTicket(2, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[2][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[2][$index].price" type="text">
                             </div>
                         </td>
                     </tr>
-                      <tr>
+                    <tr>
+                      <td>{{"event.cabinsVIP" | translate}}</td>
+                        <td ng-repeat="number in getNumber(selectedBoat.cabinsVIP*2) track by $index">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[3][$index].price" ng-click="addTicket(3, $index)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[3][$index].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[3][$index].price" type="text">
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
                       <td>{{"event.wholeBoat" | translate}}</td>
                         <td>
-                            <div ng-if="!!tickets[3][0].price" class="ui fluid input ticket-price">
-                              <input ng-model="tickets[3][0].price" type="text">
+                            <button ng-disabled="tDisabled" ng-if="!!!tempTickets[4][0].price" ng-click="addTicket(4, 0)" class="ui icon blue button"><i class="plus icon"></i></button>
+                            <div ng-if="!!tempTickets[4][0].price" class="ui fluid input ticket-price">
+                              <input ng-model="tempTickets[4][0].price" type="text">
                             </div>
                         </td>
                     </tr>
@@ -306,7 +392,7 @@
                                 {{"event.boardingPlace" | translate}}
                             </div>
                             <input ng-autocomplete ng-model="autocomplete" options="options" details="mapDetails" type="text" placeholder="Search...">
-                            <button ng-click="searchLocation()" class="ui button">{{"global.search" | translate}}</button>
+                            <button ng-click="searchLocation()" class="ui button">{{"global.setPosition" | translate}}</button>
                         </div>
 
 
@@ -316,10 +402,12 @@
                 </div>
                 <div class="ui segment">
                     <div class="angular-google-map-container">
-                        <ui-gmap-google-map refresh="refresh" events="map.events" options='map.options' center='map.center' zoom='map.zoom' control='map.control'>
-                        <ui-gmap-marker ng-repeat="marker in markers" fit="true"  coords="marker.coords"  idkey="marker.id" control="marker.control">
+                        <ui-gmap-google-map ng-if="route" refresh="refresh" events="map.events" options='map.options' center='map.center' zoom='map.zoom' control='map.control'>
+                            <ui-gmap-marker ng-repeat="marker in markers" events="marker.events" click="marker.click" coords="marker.coords" options="marker.options" idkey="marker.id" control="marker.control">
                             </ui-gmap-marker>
+                            
                         </ui-gmap-google-map>
+                        
                         
                          
                     </div>
@@ -331,5 +419,6 @@
             </div>
           
         </div>
+
 
  

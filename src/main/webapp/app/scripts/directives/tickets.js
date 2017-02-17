@@ -32,9 +32,19 @@ angular.module('yeswesailApp').directive('tickets', function ($http, URLs, toast
                 });
                 return sum;
             };
+            scope.unsold = function (tickets) {
+                var sum = 0;
+                angular.forEach(tickets, function(ticketType, key)
+	        		{
+	                    angular.forEach(ticketType, function (value, key) {
+	                        sum += (value.available - value.booked);
+	                    });
+	        		});
+                return sum;
+            };
             scope.confirmAddToCart = function (tickets, cabinType) {
                 AuthService.isAuthenticated().then(function (res) {
-                    if (res=='false') {
+                    if (!res) {
                         $rootScope.$broadcast('LoginRequired', $state);
                         return;
                     }

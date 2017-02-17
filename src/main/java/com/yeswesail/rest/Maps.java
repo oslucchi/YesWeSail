@@ -80,7 +80,7 @@ public class Maps {
 		{
 			EventTypes e = new EventTypes();
 			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
-					"WHERE languageId = " + languageId, EventTypes.class);
+					"WHERE b.languageId = " + languageId, EventTypes.class);
 		}
 		for(Object e : eventTypes)
 		{
@@ -113,7 +113,8 @@ public class Maps {
 			Events e = new Events();
 			events = (ArrayList<Events>) e.populateCollectionOfDistinctsOnCondition(
 					"WHERE dateEnd > '" + sdf.format(new Date()) + "' AND " +
-					"      location != 'TBD'", "location" , Events.class);
+					"      location != 'TBD' AND " +
+					"      status = 'A'", "location" , Events.class);
 		}
 		for(Events e : events)
 		{

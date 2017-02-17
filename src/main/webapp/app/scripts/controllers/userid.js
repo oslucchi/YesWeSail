@@ -79,27 +79,7 @@ angular.module('yeswesailApp')
     
     
     $('.ui.checkbox').checkbox();
-    
-    $scope.uploadProfilePic=function(pic){
-             Upload.upload({
-                url: URLs.ddns + 'rest/users/' + $scope.currentUser.idUsers + '/profilePic',
-                data: {
-                    picture: pic
-                }
-            }).then(function (response) {
-            	toastr.success('Image set');
-                 $scope.user.imageURL=response.data.images[0]+ '?decache=' + Math.random();;
-            }, function (response) {
-
-            }, function (evt) {
-                $scope.progress =
-                    Math.min(100, parseInt(100.0 * evt.loaded / evt.total));
-                $('#file-upload-progress').progress({
-                    percent: $scope.progress
-                });
-
-            });
-    }
+ 
 
 
     });
