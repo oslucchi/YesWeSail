@@ -311,6 +311,13 @@ public class EventsHandler {
 	{
 		int languageId = Utils.setLanguageId(language);
 
+		// Check dates. return error in case of null.
+		if ((jsonIn.dateStart == null) || (jsonIn.dateEnd == null))
+		{
+			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
+										 languageId, "events.clone.badDates");
+		}
+
 		Events ev = null;
 		DBConnection conn = null;
 		try 
@@ -332,8 +339,13 @@ public class EventsHandler {
 				}
 			}
 			ev = fillEvent(jsonIn, ev, languageId);
+			ev.setCreatedOn(new Date());
 			int idEvents = ev.insertAndReturnId(conn, "idEvents", ev);
 			ev.setIdEvents(idEvents);
+			ev.setEarlyBooking(false);
+			ev.setHotEvent(false);
+			ev.setLastMinute(false);
+			ev.setStatus("P");
 			ev.setImageURL(ev.getImageURL().replace(new Integer(ev.getIdEvents()).toString(), 
 													new Integer(idEvents).toString()));
 			ev.update(conn, "idEvents");
@@ -348,7 +360,7 @@ public class EventsHandler {
 			sql = 
 					"INSERT INTO EventTickets " +
 				    "  SELECT 0, " + idEvents + ", ticketType, available, " +
-				    "         booked, price, cabinRef, bookedTo " + 
+				    "         0, price, cabinRef, '' " + 
 					"  FROM EventTickets " +
 				    "  WHERE eventId = " + jsonIn.idEvents;
 			EventTickets.executeStatement(conn, sql, true);
@@ -703,9 +715,12 @@ public class EventsHandler {
 	private Events fillEvent(EventJson jsonIn, Events event, int languageId)
 	{
 		event.setCategoryId(jsonIn.categoryId);
-		if (jsonIn.dateStart == null)
+		if (jsonIn.dateStart == null) 
 		{
 			jsonIn.dateStart = "1970-01-01";
+		}
+		if (jsonIn.dateEnd == null)
+		{
 			jsonIn.dateEnd = "1970-01-01";
 		}
 		try
