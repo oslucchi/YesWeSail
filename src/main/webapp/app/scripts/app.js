@@ -29,6 +29,7 @@ angular.module('yeswesailApp', [
     , 'gridster'
     , 'datePicker'
     , 'timer'
+    , 'angularMoment'
   ]).constant('AUTH_EVENTS', {
     loginSuccess: 'auth-login-success'
     , loginFailed: 'auth-login-failed'
@@ -119,7 +120,7 @@ angular.module('yeswesailApp', [
             });
         }
     };
-}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider, LOCALES) {
+}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider, LOCALES, uiGmapGoogleMapApiProvider) {
     $translateProvider.useStaticFilesLoader({
         prefix: 'resources/locale-', // path to translations files
         suffix: '.json' // suffix, currently- extension of the translations
@@ -258,6 +259,12 @@ angular.module('yeswesailApp', [
         , templateUrl: 'views/register.success.html'
         , controller: 'RegisterSuccessCtrl'
     });
+      uiGmapGoogleMapApiProvider.configure({
+        key: 'AIzaSyBI8drPiFdG42WrCKu8M3S7jYCTCQRvyF8'
+      });
+    
+    
+    
 }).run(function ($http, $rootScope, $state, AuthService) {
     //    $http.defaults.headers.common['Language'] = 'IT';
     //    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){

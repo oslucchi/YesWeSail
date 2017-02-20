@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('AdminCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate) {
+    .controller('AdminCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate, moment) {
 
         $scope.badges = {
             numberEvents: 0,
@@ -79,15 +79,15 @@ angular.module('yeswesailApp')
         }
         $scope.clone = function (event) {
 
-            event.dateStart = new Date(event.dateStart);
-            event.dateEnd = new Date(event.dateEnd);
-            event.dateStart = $filter('date')(event.dateStart, 'yyyy-MM-dd');
-            event.dateEnd = $filter('date')(event.dateEnd, 'yyyy-MM-dd');
+            event.dateStart = moment(event.dateStart, 'DD MMM YYYY').format('YYYY-MM-DD');
+            event.dateEnd = moment(event.dateEnd, 'DD MMM YYYY').format('YYYY-MM-DD');
+//            event.dateStart = $filter('date')(event.dateStart, 'yyyy-MM-dd');
+//            event.dateEnd = $filter('date')(event.dateEnd, 'yyyy-MM-dd');
 
             $http.post(URLs.ddns + 'rest/events/clone', event).then(function (res) {
                	toastr.success($translate.instant('admin.eventDuplicateSuccess'), 
                				   {
-               					 eventId: event.IdEvents,
+               					 eventId: event.idEvents,
                					 newEventId: res.data.idEvents
                				   });
                 $scope.closeModals();

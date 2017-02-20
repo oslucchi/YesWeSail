@@ -209,7 +209,7 @@
     "admin.eventDectivatingFailure": "Error deactivating the event",
     "admin.eventDeleteSuccess": "The event has been successfully deleted",
     "admin.eventDeleteFailure": "Error deleting the event",
-    "admin.eventDuplicateSuccess": "Event {{event.idEvents}} succesfully duplicated! New ID {{res.data.idEvents}}",
+    "admin.eventDuplicateSuccess": "Event {{eventId}} succesfully duplicated! New ID {{newEventId}}",
     "admin.eventDuplicateFailure": "Error duplicating the event",
 	"admin.eventUpdateFailure": "Error updating the event",
 

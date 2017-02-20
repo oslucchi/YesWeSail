@@ -6,7 +6,7 @@
  * # EventsEventidCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, $state, URLs, AuthService, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q) {
+angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $http, $rootScope, $state, URLs, AuthService, $stateParams, Upload, $timeout, $filter, toastr, $translate, uiGmapIsReady, LocaleService, $q, moment) {
     //    angular.element('.ui.anchor-menu').sticky({
     //        context: '#event-container'
     //        , offset: 60
@@ -413,8 +413,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.tempEvent.idEvents = $scope.event.idEvents;
             $scope.tempEvent.shipOwnerId = $scope.shipOwner.idUsers;
             $scope.tempEvent.eventType = $scope.event.eventType;
-            $scope.tempEvent.dateStart = $scope.event.dateStart;
-            $scope.tempEvent.dateEnd = $scope.event.dateEnd;
+            $scope.tempEvent.dateStart = moment($scope.event.dateStart, 'DD MMM YYYY').format('YYYY-MM-DD');
+            $scope.tempEvent.dateEnd = moment($scope.event.dateEnd, 'DD MMM YYYY').format('YYYY-MM-DD');
+//            $scope.tempEvent.dateStart = $scope.event.dateStart;
+//            $scope.tempEvent.dateEnd = $scope.event.dateEnd;
             $scope.tempEvent.title = $scope.event.title;
             $scope.tempEvent.description = $scope.description;
             $scope.tempEvent.backgroundOffsetY=posY;

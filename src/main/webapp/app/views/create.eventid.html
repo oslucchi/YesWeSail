@@ -85,7 +85,7 @@
                                     <div class="extra">
                                         <div class="ui labeled input">
                                                 <div class="ui label">{{'global.from' | translate}}</div>
-                                            <datepicker date-set="{{event.dateStart.toString()}}" date-min-limit="{{minDate.toString()}}" date-format="yyyy-MM-dd">
+                                            <datepicker date-set="{{event.dateStart.toString()}}" date-min-limit="{{minDate.toString()}}" date-format="dd MMM yyyy">
                                                 <input type="text" name="dateFrom"  ng-model="event.dateStart" placeholder='{{"global.from" | translate}}'>
 
                                             </datepicker>
@@ -93,7 +93,7 @@
 
                                         <div class="ui labeled input">
                                                 <div class="ui label">{{'global.to' | translate}}</div>
-                                            <datepicker  date-set="{{event.dateEnd.toString()}}" date-min-limit="{{event.dateStart.toString()}}" date-format="yyyy-MM-dd">
+                                            <datepicker  date-set="{{event.dateEnd.toString()}}" date-min-limit="{{event.dateStart.toString()}}" date-format="dd MMM yyyy">
                                                 <input type="text" date-min-limit="{{event.dateStart.toString()}}" name="dateTo" ng-model="event.dateEnd" placeholder='{{"global.to" | translate}}'>
 
                                             </datepicker>
