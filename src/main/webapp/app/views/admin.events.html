@@ -4,21 +4,22 @@
             <tr>
                 <!--      <th>{{"adminevents.gridCols.select" | translate}}</th>-->
                 <th class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
-                <th>{{"adminevents.gridCols.Status" | translate}}</th>
-                <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
-                <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
-                <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
-                <th>{{"adminevents.gridCols.eventId" | translate}}</th>
-                <th>{{"adminevents.gridCols.title" | translate}}</th>
-                <th class="date">{{"adminevents.gridCols.dateStart" | translate}}</th>
-                <th class="date">{{"adminevents.gridCols.dateEnd" | translate}}</th>
-                <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
-                <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
-                <th>{{"adminevents.gridCols.location" | translate}}</th>
+                <th ng-click="sortBy('status')">{{"adminevents.gridCols.Status" | translate}}</th>
+                <th ng-click="sortBy('hotEvents')">{{"adminevents.gridCols.hotEvents" | translate}}</th>
+                <th ng-click="sortBy('earlyBooking')">{{"adminevents.gridCols.earlyBooking" | translate}}</th>
+                <th ng-click="sortBy('lastMinute')">{{"adminevents.gridCols.lastMinute" | translate}}</th>
+                <th ng-click="sortBy('idEvents')" class="id">{{"adminevents.gridCols.eventId" | translate}}</th>
+                <th ng-click="sortBy('title')">{{"adminevents.gridCols.title" | translate}}</th>
+                <th ng-click="sortBy('dateStart')" class="date">{{"adminevents.gridCols.dateStart" | translate}}</th>
+                <th ng-click="sortBy('dateEnd')" class="date">{{"adminevents.gridCols.dateEnd" | translate}}</th>
+                <th ng-click="sortBy('createdBy')">{{"adminevents.gridCols.createdBy" | translate}}</th>
+                <th ng-click="sortBy('createdOn')">{{"adminevents.gridCols.createdOn" | translate}}</th>
+                <th ng-click="sortBy('location')">{{"adminevents.gridCols.location" | translate}}</th>
+                <th ng-click="sortBy('shipOwnerId')">{{"user.shipOwner" | translate}}</th>
             </tr>
         </thead>
         <tbody>
-            <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events | orderBy: 'idEvents'">
+            <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
                 <!--
         <td class="collapsing">
          <div class="ui fitted center aligned checkbox">
@@ -64,6 +65,7 @@
                 <td class="collapsing">{{event.createdBy}}</td>
                 <td>{{event.createdOn | date}}</td>
                 <td>{{event.location}}</td>
+                <td>{{shipOwners[event.shipOwnerId].name}} {{shipOwners[event.shipOwnerId].surname}}</td>
             </tr>
         </tbody>
         <tfoot class="full-width">
