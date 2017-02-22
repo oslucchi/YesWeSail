@@ -391,6 +391,16 @@ public class UsersHandler {
 									.get(UploadFiles.LARGE));
 			}
 			utils.addToJsonContainer("docs", docs, false);
+			Events[] eventList = null;
+			try 
+			{
+				eventList = Events.findByFilter("shipOwnerId = " + u.getIdUsers(), languageId);
+				utils.addToJsonContainer("events", eventList, false);				
+			} 
+			catch (Exception e) 
+			{
+				log.debug("Exception " + e.getMessage() + " retrieving events for shipowner " + u.getIdUsers());
+			}
 		}
 		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 	}
