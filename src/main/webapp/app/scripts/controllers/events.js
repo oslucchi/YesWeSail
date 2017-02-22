@@ -34,7 +34,8 @@ angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, 
     body.activeOnly = true;
     var getEvents = function () {
         $http.post(URLs.ddns + 'rest/events/search/actives', body).then(function (res) {
-            $scope.events = res.data;
+            $scope.events = res.data.events;
+            $scope.shipOwners = res.data.shipowners;
             if (res.data[0] == null) {
              
             }
