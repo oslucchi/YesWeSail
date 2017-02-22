@@ -17,8 +17,8 @@ angular.module('yeswesailApp')
         };
 
         $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function (res) {
-            $scope.badges.numberEvents = 0;
-            angular.forEach(res.data, function (value, key) {
+        	$scope.badges.numberEvents = 0;
+            angular.forEach(res.data.events, function (value, key) {
                 if (value.status == 'P') {
                     $scope.badges.numberEvents++;
                 }

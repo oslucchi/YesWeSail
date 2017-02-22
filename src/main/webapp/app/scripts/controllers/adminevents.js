@@ -11,14 +11,14 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
         $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function (res) {
             $scope.events = res.data.events;
             $scope.shipOwners = res.data.shipowners;
-                            $('table').tablesort();    
-                            // Sort by dates in YYYY-MM-DD format
-                            $('thead th.date').data('sortBy', function(th, td, tablesort) {
-                                return new Date(td.text());
-                            });
-                            $('thead th.id').data('sortBy', function(th, td, tablesort) {
-                                return Number(td.text());
-                            });
+            $('table').tablesort();    
+            // Sort by dates in YYYY-MM-DD format
+            $('thead th.date').data('sortBy', function(th, td, tablesort) {
+                return new Date(td.text());
+            });
+            $('thead th.id').data('sortBy', function(th, td, tablesort) {
+                return Number(td.text());
+            });
         });
     };
 //    $scope.sortVar1 = 'createdOn'
