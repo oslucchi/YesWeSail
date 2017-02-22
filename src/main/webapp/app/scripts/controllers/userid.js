@@ -45,6 +45,7 @@ angular.module('yeswesailApp')
                 if(!!res.data.docs){
                     $scope.user = res.data.user;
                     $scope.docs = res.data.docs;
+                    $scope.userEvents=res.data.events;
                 }else{
                     $scope.user=res.data;
                 }

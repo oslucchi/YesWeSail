@@ -123,8 +123,8 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
     };
     $scope.showClonePopup = function (event) {
         $scope.tempCloneEvent = event;
-        $scope.tempCloneEvent.dateStart = $filter('date')($scope.tempCloneEvent.dateStart, 'dd MMM yyyy')
-        $scope.tempCloneEvent.dateEnd = $filter('date')($scope.tempCloneEvent.dateEnd, 'dd MMM yyyy')
+        $scope.tempCloneEvent.dateStart = $filter('date')($scope.tempCloneEvent.dateStart, 'yyyy/MM/dd')
+        $scope.tempCloneEvent.dateEnd = $filter('date')($scope.tempCloneEvent.dateEnd, 'yyyy/MM/dd')
         $scope.tempCloneEvent.aggregateKey = false;
         ngDialog.open({
             template: 'views/admin.events.clone.html'

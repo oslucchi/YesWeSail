@@ -413,8 +413,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.tempEvent.idEvents = $scope.event.idEvents;
             $scope.tempEvent.shipOwnerId = $scope.shipOwner.idUsers;
             $scope.tempEvent.eventType = $scope.event.eventType;
-            $scope.tempEvent.dateStart = moment($scope.event.dateStart, 'DD MMM YYYY').format('YYYY-MM-DD');
-            $scope.tempEvent.dateEnd = moment($scope.event.dateEnd, 'DD MMM YYYY').format('YYYY-MM-DD');
+            $scope.tempEvent.dateStart = moment($scope.event.dateStart, 'YYYY/MM/DD').format('YYYY-MM-DD');
+            $scope.tempEvent.dateEnd = moment($scope.event.dateEnd, 'YYYY/MM/DD').format('YYYY-MM-DD');
 //            $scope.tempEvent.dateStart = $scope.event.dateStart;
 //            $scope.tempEvent.dateEnd = $scope.event.dateEnd;
             $scope.tempEvent.title = $scope.event.title;
