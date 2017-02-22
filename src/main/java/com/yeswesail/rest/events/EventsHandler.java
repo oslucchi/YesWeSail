@@ -73,6 +73,77 @@ public class EventsHandler {
 	JsonHandler jh = new JsonHandler();
 	String contextPath = null;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+/*
+	@POST
+	@Path("/hotEvents")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response hotEvents(EventJson jsonIn, @HeaderParam("Language") String language)
+	{
+		/*
+		 * TODO 
+		 * define search criteria. 
+		 * For now next 4 expiring with no preference criteria.
+		 * It might be smart to present the one with only few tickets remaining. it just need to change the query
+		 */
+/*
+		int languageId = Utils.setLanguageId(language);
+
+		Events[] hot = null;
+		try 
+		{
+			log.trace("Getting hot events via findHot method");
+			hot = Events.findHot(Constants.getLanguageCode(language));
+			log.trace("Retrieval completed");
+		}
+		catch (Exception e) 
+		{
+			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		// No record found. return an empty object
+		if (hot == null)
+		{
+			log.trace("No record found");
+			return Response.status(Response.Status.OK).entity("{}").build();
+		}
+		
+		ArrayList<ArrayList<Events>> hotList = organizeEvents(hot);
+		
+		if (jh.jasonize(hotList, language) != Response.Status.OK)
+		{
+			log.error("Error '" + jh.json + "' jsonizing the hot event object");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(jh.json).build();
+		}
+		
+		HashMap<Integer, Users> shipownerList = new HashMap<>();
+		for(ArrayList<Events> listItem : hotList)
+		{
+			for(Events e : listItem)
+			{
+				try 
+				{
+					shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()));
+				}
+				catch (Exception e1)
+				{
+					log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
+							  e.getShipOwnerId());
+				}
+			}
+		}
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("events", hotList);
+		jsonResponse.put("shipowners", shipownerList);
+		
+		Genson genson = new Genson();
+		String entity = genson.serialize(jsonResponse);
+
+
+		return Response.status(Response.Status.OK).entity(entity).build();
+	}
+*/
 	
 	@POST
 	@Path("/hotEvents")
@@ -117,6 +188,7 @@ public class EventsHandler {
 		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
+
 
 	private ArrayList<ArrayList<Events>> organizeEvents(ArrayList<Events> events) 
 	{
@@ -244,6 +316,8 @@ public class EventsHandler {
 		{
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
+		Object list = null;
+		HashMap<Integer, Users> shipownerList = new HashMap<>();
 		if (activeOnly)
 		{
 			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
@@ -252,27 +326,47 @@ public class EventsHandler {
 				for(Events e : listItem)
 				{
 					e.setImageURL(e.getImageURL().replace("large", "medium"));
+					try 
+					{
+						shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
+					}
+					catch (Exception e1)
+					{
+						log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
+								  e.getShipOwnerId());
+					}
 				}
 			}
-			if (jh.jasonize(eventsList, languageId) != Response.Status.OK)
-			{
-				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(jh.json).build();
-			}
+			list = eventsList;
 		}
 		else
 		{
 			for(Events e : eventsFiltered)
 			{
 				e.setImageURL(e.getImageURL().replace("large", "medium"));
+				try 
+				{
+					if (!shipownerList.containsKey(e.getShipOwnerId()))
+					{
+						shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
+					}
+				}
+				catch (Exception e1)
+				{
+					log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
+							  e.getShipOwnerId());
+				}
 			}
-			if (jh.jasonize(eventsFiltered, languageId) != Response.Status.OK)
-			{
-				return Response.status(Response.Status.UNAUTHORIZED)
-						.entity(jh.json).build();
-			}
+			list = eventsFiltered;
 		}
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("events", list);
+		jsonResponse.put("shipowners", shipownerList);
+		
+		Genson genson = new Genson();
+		String entity = genson.serialize(jsonResponse);
+
+		return Response.status(Response.Status.OK).entity(entity).build();
 	}
 
 	@POST
