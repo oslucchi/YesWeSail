@@ -72,6 +72,20 @@ public class Users extends DBInterface
 		findByEmail(conn, email);
 	}
 
+	public Users(int shipOwnerId) throws Exception 
+	{
+		DBConnection conn = new DBConnection();
+		setNames();
+		String sql = "SELECT * " +
+					 "FROM " + tableName + " " +
+					 "WHERE " + idColName + " = " + shipOwnerId;
+		this.populateObject(conn, sql, this);
+		if (!getImageURL().startsWith("http"))
+		{
+			setImageURL(prop.getWebHost() + "/" + getImageURL());
+		}
+	}
+
 	public void findByEmail(DBConnection conn, String email) throws Exception
 	{
 		String sql = "SELECT * " +
@@ -348,4 +362,12 @@ public class Users extends DBInterface
 		this.personalInfo = personalInfo;
 	}
 	
+	public Users wipe()
+	{
+		this.setFacebook("");
+		this.setEmail("");
+		this.setGoogle("");
+		this.setTwitter("");
+		return this;
+	}
 }

@@ -60,8 +60,12 @@ public class Auth {
 			u.setRoleId(Roles.TRAVELLER);
 			u.setIdUsers(u.insertAndReturnId(conn, "idUsers", u));
 			PasswordHandler pw = new PasswordHandler();
-			pw.userPassword(conn, u.getIdUsers());
-			pw.updatePassword(conn, false);
+			if (jsonIn.password != null)
+			{
+				pw.setIdUsers(u.getIdUsers());
+				pw.setPassword(jsonIn.password);
+				pw.updatePassword(conn, false);
+			}
 			DBInterface.TransactionCommit(conn);
 		}
 		catch (Exception e) {
