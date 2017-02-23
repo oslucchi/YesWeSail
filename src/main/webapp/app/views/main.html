@@ -27,10 +27,15 @@
     <div class="featured_content_container">
         <div class="featured_content">
             <h1>{{"main.bestOffers" | translate}}</h1>
-            <div class="ui stackable three column grid"> <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
+            <div class="ui stackable three cards"> 
+                
+<!--
+                
+                <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
                     <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
             <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
             <div class="result card" >
+               
                 <div class="contents">
                     <img ng-src="{{singleEvent.imageURL}}" fallback-src="images/defaultEvent.png">
                     
@@ -61,6 +66,28 @@
         </div>
     </div>
     </span>
+                
+--> 
+                <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">
+                  <div class="content" style="height: 50px; padding: 10px;">
+                    <div class="right floated meta">{{'global.from'|translate}} {{multipleEvents[0].minPrice}}€</div>
+                     {{multipleEvents[0].title}}
+                  </div>
+                  <div class="image">
+                      <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover; height: 267px;"></div>
+                  </div>
+                  <div class="content">
+                    <span class="right floated">
+                      <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
+                    </span>
+<!--
+                    <i class="star icon"></i>
+                    3 stars
+-->
+                  </div>
+              
+                </div>
+                
 </div>
 <h1>{{"main.explore" | translate}}</h1>
 <div class="ui stackable three column grid">

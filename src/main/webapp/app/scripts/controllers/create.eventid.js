@@ -160,10 +160,20 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         ]
                 $scope.tDisabled = false;
             }
+            
+            if(res.data.route){
+                
             $scope.newLocation = {
                 latitude: res.data.route[0].lat
                 , longitude: res.data.route[0].lng
             };
+            }else{
+            $scope.newLocation = {
+                latitude: 0
+                , longitude:0
+            };
+                
+            }
             $scope.maxTickets = maxTicketsForBoat(res.data.boat);
             $scope.map = {
                 center: {
