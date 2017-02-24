@@ -27,9 +27,8 @@
     <div class="featured_content_container">
         <div class="featured_content">
             <h1>{{"main.bestOffers" | translate}}</h1>
-            <div class="ui stackable three cards"> 
-                
-<!--
+            <div class="ui stackable three cards">
+                <!--
                 
                 <span ng-repeat="multipleEvents in hotEvents track by $index" class="column result-cards">
                     <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
@@ -67,44 +66,50 @@
     </div>
     </span>
                 
---> 
-                <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">
-                  <div class="content" style="height: 50px; padding: 10px;">
-                    <div class="right floated meta">{{'global.from'|translate}} {{multipleEvents[0].minPrice}}€</div>
-                     {{multipleEvents[0].title}}
-                  </div>
-                  <div class="image">
-                      <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover; height: 267px;"></div>
-                  </div>
-                  <div class="content">
-                    <span class="right floated">
-                      <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
-                    </span>
-<!--
-                    <i class="star icon"></i>
-                    3 stars
 -->
-                  </div>
-              
-                </div>
-                
-</div>
-<h1>{{"main.explore" | translate}}</h1>
-<div class="ui stackable three column grid">
-    <div class="ui fluid column category-image" ng-repeat="category in CATEGORIES track by $index">
-        <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
-            <div dimmer on="hover" class="ui image">
-                <div class="ui dimmer">
-                    <div class="content">
-                        <div class="center">
-                            <h2 class="ui inverted header">{{category.description}}</h2> </div>
+                <div ng-class="{'shake-slow shake-constant shake-constant--hover': multipleEvents[0].lastMinute}" class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">
+                    <div class="content" style="height: 50px; padding: 5px; font-weight: 900;
+    font-size: 16px;">
+                        <div class="right floated meta">
+                            <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
+                        </div> {{multipleEvents[0].title}} </div>
+                    <div class="image">
+                        <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;">   <div ng-if="multipleEvents[0].lastMinute" class="last-minute-stamp">
+                            <img src="images/lastMinute.png">
+                                </div>
+                        <div ng-if="multipleEvents[0].earlyBooking" class="early-booking-stamp">
+                                    <img src="images/earlyBooking.png">
+                                </div>
+                        </div>
                     </div>
-                </div> <img class="ui image" ng-src="{{category.url}}"> </div>
-        </a>
+                    <div class="content"> <span class="right floated">
+                        <p ng-hide="multipleEvents.length>1"><i class="calendar icon"></i> {{multipleEvents[0].dateStart | date:'dd MMM'}} - {{multipleEvents[0].dateEnd | date:'dd MMM'}}</p>
+                        <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
+                         <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
+                        <i ui-sref="admin" class="circular facebook icon"></i>
+                        <i class="circular google icon"></i>
+                        <i class="circular mail icon"></i>
+                    
+                    </div>
+                 
+                </div>
+            </div>
+            <h1>{{"main.explore" | translate}}</h1>
+            <div class="ui stackable three column grid">
+                <div class="ui fluid column category-image" ng-repeat="category in CATEGORIES track by $index">
+                    <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
+                        <div dimmer on="hover" class="ui image">
+                            <div class="ui dimmer">
+                                <div class="content">
+                                    <div class="center">
+                                        <h2 class="ui inverted header">{{category.description}}</h2> </div>
+                                </div>
+                            </div> <img class="ui image" ng-src="{{category.url}}"> </div>
+                    </a>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
-</div>
-</div>
 </div>
 <div class="why_us">
     <h1 class="ui center aligned header">{{"main.whyUs" | translate}}</h1>
@@ -139,18 +144,17 @@
             </div>
             <div class="row center aligned">
                 <div class="row center aligned"> </div>
-                <div class="sixteen wide column"><span class="ui large header"><span>{{"main.subscribeMessage" | translate}}</span></span></div>
+                <div class="sixteen wide column"><span class="ui large header"><span>{{"main.subscribeMessage" | translate}}</span></span>
+                </div>
                 <br>
                 <div class="ui form">
                     <div class="three fields">
                         <div class="field">
                             <input ng-model="user.email" type="text" placeholder="Email"> </div>
                         <div class="field">
-                            <input type="text" ng-model="user.name" placeholder="Name">
-                        </div> 
+                            <input type="text" ng-model="user.name" placeholder="Name"> </div>
                         <div class="field">
-                            <input type="text" ng-model="user.surname" placeholder="Last Name">
-                        </div>
+                            <input type="text" ng-model="user.surname" placeholder="Last Name"> </div>
                         <div class="field">
                             <button class="ui blue button" ng-click="subscribe()">{{"main.subscribeButton" | translate}}</button>
                         </div>
