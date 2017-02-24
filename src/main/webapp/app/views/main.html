@@ -67,7 +67,8 @@
     </span>
                 
 -->
-                <div ng-class="{'shake-slow shake-constant shake-constant--hover': multipleEvents[0].lastMinute}" class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">
+<!--                <div ng-class="{'shake shake-constant shake-constant--hover': multipleEvents[0].lastMinute}" class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">-->
+                <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in hotEvents track by $index">
                     <div class="content" style="height: 50px; padding: 5px; font-weight: 900;
     font-size: 16px;">
                         <div class="right floated meta">
