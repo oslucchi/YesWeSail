@@ -532,6 +532,16 @@ public class UsersHandler {
 						   @PathParam("userId") int userId)
     {
 		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) &&
+			(sd.getBasicProfile(token).getIdUsers() != userId))
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(utils.jsonize())
+					.build();
+		}
+
 		List<BodyPart> parts = form.getBodyParts();
 		
 		String[] acceptableTypes = {
@@ -575,9 +585,13 @@ public class UsersHandler {
 		{
 			conn = DBInterface.connect();
 			u = new Users(conn, userId);
-			u.setImageURL(imagePath.get(0));
+			String imgPath = imagePath.get(0);
+			if (imgPath.startsWith(prop.getWebHost()))
+			{
+				imgPath = imagePath.get(0).substring(prop.getWebHost().length() + 1);
+			}
+			u.setImageURL(imgPath);
 			u.update(conn, "idUsers");
-			SessionData sd = SessionData.getInstance();
 			sd.addUser(u.getIdUsers(), languageId);;
 		}
 		catch(Exception e)
@@ -854,8 +868,15 @@ public class UsersHandler {
 
 	{
 		int languageId = Utils.setLanguageId(language);
-		// int shipownerId = 2;
-		// Getting sailorInfo JSON object
+		SessionData sd = SessionData.getInstance();
+		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) &&
+			(sd.getBasicProfile(token).getIdUsers() != shipownerId))
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(utils.jsonize())
+					.build();
+		}
 		List<BodyPart> parts = form.getBodyParts();
 		BoatsJson boat = new BoatsJson();
 		for(BodyPart part : parts)
@@ -1002,6 +1023,15 @@ public class UsersHandler {
 
 	{
 		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) &&
+			(sd.getBasicProfile(token).getIdUsers() != shipownerId))
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(utils.jsonize())
+					.build();
+		}
 
 		DBConnection conn = null;
 		Boats bo = null;

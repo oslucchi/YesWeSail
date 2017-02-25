@@ -243,13 +243,17 @@ public class UploadFiles {
 		}
 		else
 		{
-			File directory = new File(destPath);
+			String contextPath = getContextPath(destPath);
+			File directory = new File(contextPath);
 	        File[] fList = directory.listFiles();
-	        for (File file : fList)
+	        if (fList != null)
 	        {
-	            if (!file.isFile() || (!file.getName().startsWith(prefix)))
-	            	continue;
-	            file.delete();
+		        for (File file : fList)
+		        {
+		            if (!file.isFile() || (!file.getName().startsWith(prefix)))
+		            	continue;
+		            file.delete();
+		        }
 	        }
 		}
 		lastIndex++;

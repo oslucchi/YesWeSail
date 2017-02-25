@@ -60,10 +60,6 @@ public class Users extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 	}
 
 	public Users(DBConnection conn, String email) throws Exception
@@ -80,10 +76,6 @@ public class Users extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + shipOwnerId;
 		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 	}
 
 	public void findByEmail(DBConnection conn, String email) throws Exception
@@ -92,10 +84,6 @@ public class Users extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE email = '" + email + "'";
 		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 	}
 
 	public void findByFacebookID(DBConnection conn, String id) throws Exception
@@ -104,26 +92,15 @@ public class Users extends DBInterface
 					 "FROM Users " +
 					 "WHERE facebook = '" + id + "'";
 		this.populateObject(conn, sql, this);
-		if ((getImageURL() != null) && !getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 	}
 
 	@SuppressWarnings("unchecked")
 	public static ArrayList<Users> findUsersbyRole(int role) throws Exception
 	{
-		String sql = "SELECT name, surname, idUsers, imageURL " +
+		String sql = "SELECT name, surname, idUsers, imageURL, email, status " +
 				 "FROM Users " +
 				 "WHERE roleId = " + role;
 		ArrayList<Users> retList = (ArrayList<Users>) populateCollection(sql, Users.class);
-		for(Users u : retList)
-		{
-			if ((u.imageURL != null) && !u.getImageURL().startsWith("http"))
-			{
-				u.setImageURL(prop.getWebHost() + "/" + u.getImageURL());
-			}
-		}
 		return retList;
 	}
 	
@@ -280,9 +257,13 @@ public class Users extends DBInterface
 		{
 			return (prop.getWebHost() + "/images/users/default_icon.png");
 		}
-		else
+		else if (imageURL.startsWith("http"))
 		{
 			return imageURL;
+		}
+		else
+		{
+			return prop.getWebHost() + "/" + imageURL;
 		}
 	}
 

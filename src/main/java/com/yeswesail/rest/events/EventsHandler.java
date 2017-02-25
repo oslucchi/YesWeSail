@@ -224,7 +224,12 @@ public class EventsHandler {
 				hotList.add(item);
 			}
 		}
-		return hotList;
+		ArrayList<ArrayList<Events>> sorted = new ArrayList<>();
+		for(ArrayList<Events> listItem : hotList)
+		{
+			sorted.add(Events.sort(listItem));
+		}
+		return sorted;
 	}
 
 	private String buildWhereCondition(EventJson jsonIn)
@@ -1008,8 +1013,14 @@ public class EventsHandler {
 	private Response eventHandler(EventJson jsonIn, String language, String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		if ((jsonIn.route == null) || (jsonIn.route.length == 0))
+		{
+			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, languageId, "events.missingRoutes");
+		}
+
 		DBConnection conn = null;
 		Events event = null;
+		
 		try
 		{
 			conn = DBInterface.TransactionStart();
@@ -1017,11 +1028,8 @@ public class EventsHandler {
 									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonIn.idEvents = jsonIn.eventId = event.getIdEvents();
 			
-			if ((jsonIn.route != null) && (jsonIn.route.length != 0))
-			{
-				handleInsertUpdateRoute(jsonIn, languageId, conn);
-			}
-
+			handleInsertUpdateRoute(jsonIn, languageId, conn);
+		
 			if ((jsonIn.description != null) || (jsonIn.logistics != null) ||
 				(jsonIn.includes != null) || (jsonIn.excludes != null))
 			{
@@ -1163,7 +1171,7 @@ public class EventsHandler {
 				u.setConnectedVia("X");
 				u.setStatus("A");
 				u.setIsShipOwner(false);
-				u.setImageURL(prop.getWebHost() + "images/users/default-icon.png");
+				u.setImageURL("images/users/default-icon.png");
 				try
 				{
 					jsonIn.usersId = u.insertAndReturnId(conn, "idUsers", u);

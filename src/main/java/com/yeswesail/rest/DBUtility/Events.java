@@ -1,7 +1,9 @@
 package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 
 import org.apache.log4j.Logger;
@@ -63,10 +65,6 @@ public class Events extends DBInterface implements Comparable<Events>
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 	}
 	
 	public Events(DBConnection conn, int id, int languageId) throws Exception
@@ -131,13 +129,31 @@ public class Events extends DBInterface implements Comparable<Events>
 			this.populateObject(conn, sql + fallbackWhereClause, this);
 		}
 		
-		if (!getImageURL().startsWith("http"))
-		{
-			setImageURL(prop.getWebHost() + "/" + getImageURL());
-		}
 		setLocale(Constants.getLocale(this.getLanguageId()));
 		events = new ArrayList<Events>();
 		events.add(this);
+	}
+	
+	public static ArrayList<Events> sort(ArrayList<Events> unsorted)
+	{
+		Collections.sort(unsorted, new Comparator<Events>() {
+	        @Override 
+	        public int compare(Events e1, Events e2) {
+	            return (int) (e1.dateStart.getTime() - e2.dateStart.getTime()); // Ascending
+	        }
+	    });
+		return unsorted;
+	}
+
+	public static Events[] sort(Events[] unsorted)
+	{
+	    Arrays.sort(unsorted, new Comparator<Events>() {
+	        @Override 
+	        public int compare(Events e1, Events e2) {
+	            return (int) (e1.dateStart.getTime() - e2.dateStart.getTime()); // Ascending
+	        }
+	    });
+		return unsorted;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -174,13 +190,9 @@ public class Events extends DBInterface implements Comparable<Events>
 		events.addAll(fallbackEvents);
 		for(Events event : events)
 		{
-			if (!event.getImageURL().startsWith("http"))
-			{
-				event.setImageURL(prop.getWebHost() + "/" + event.getImageURL());
-			}
 			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
-		return(events);
+		return(sort(events));
 	}
 	
 	public static Events[] findHot(int languageId) throws Exception
@@ -204,7 +216,6 @@ public class Events extends DBInterface implements Comparable<Events>
 		{
 			if (e.minPrice != 0)
 			{
-				e.setImageURL(e.getImageURL());
 				e.setLocale(Constants.getLocale(e.getLanguageId()));
 				retList.add(e);
 			}
@@ -244,7 +255,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
 		Collections.sort(events);
-		return(events.toArray(new Events[events.size()]));
+		return(sort(events.toArray(new Events[events.size()])));
 	}
 
 	public static Events[] findByFilter(String whereClause, String token) throws Exception
@@ -333,7 +344,18 @@ public class Events extends DBInterface implements Comparable<Events>
 	}
 
 	public String getImageURL() {
-		return imageURL;
+		if (imageURL == null)
+		{
+			return prop.getWebHost() + "/" + "defaultEvent.png";
+		}
+		else if (imageURL.startsWith("http"))
+		{
+			return imageURL;
+		}
+		else
+		{
+			return prop.getWebHost() + "/" + imageURL;
+		}
 	}
 
 	public void setImageURL(String imageURL) {
