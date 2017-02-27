@@ -35,9 +35,9 @@
 <!--    <div class="ui basic horizontal segments">-->
         <div class="ui basic segment">
             <div class="header-container">
-                <div class="ui link items">
+                <div class="ui items">
                     <div class="item">
-                        <div class="content"> <a class="header">{{event.title}}</a>
+                        <div class="content"> <span class="header">{{event.title}}</span>
                             <div class="meta"> <span>{{event.location}}</span> </div>
                             <div class="extra"> {{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}} </div>
                             <div class="description"> </div>
@@ -77,7 +77,7 @@
             </div>
             <div class="ui divider" id="partecipants"></div>
             <div class="ui basic segment">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
   <i class="users icon"></i>
   {{"event.participants" | translate}}
 </h2>
@@ -92,7 +92,7 @@
             </div>
             <div class="ui divider" id="logistics"></div>
                     
-            <h2 class="ui left aligned header">
+            <h2 class="ui left aligned header event-header">
   <i class="ticket icon"></i>
   {{"global.tickets" | translate}}
 </h2>
@@ -101,7 +101,7 @@
             
             <div class="ui divider" id="logistics"></div>
             <div class="ui basic segment">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
                   <i class="users icon"></i>
                   {{"event.logistics" | translate}}
                 </h2>
@@ -109,14 +109,14 @@
             </div>
             <div class="ui divider" id="package"></div>
             <div class="ui basic segment">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
                   <i class="users icon"></i>
                   {{"event.package" | translate}}
                 </h2>
                 <div ng-bind-html="event.includes.description"></div>
             </div>
             <div class="ui basic segment" id="optionals">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
                   <i class="users icon"></i>
                   {{"event.optionals" | translate}}
                 </h2>
@@ -124,7 +124,7 @@
             </div>
             <div class="ui divider"></div>
             <div class="ui basic segment">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
                 {{"event.theBoat" | translate}}
                 </h2>
@@ -172,7 +172,7 @@
             
             
             <div class="ui basic segment" id="location">
-                <h2 class="ui left aligned header">
+                <h2 class="ui left aligned header event-header">
                     <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
                 {{"event.location" | translate}}
                 </h2>

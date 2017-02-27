@@ -26,6 +26,7 @@
 <div class="ui container" id="main-content">
     <div class="featured_content_container">
         <div class="featured_content">
+
             <h1>{{"main.bestOffers" | translate}}</h1>
             <div class="ui stackable three cards">
                 <!--
@@ -87,7 +88,8 @@
                         <p ng-hide="multipleEvents.length>1"><i class="calendar icon"></i> {{multipleEvents[0].dateStart | date:'dd MMM'}} - {{multipleEvents[0].dateEnd | date:'dd MMM'}}</p>
                         <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
                          <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
-                        <i ui-sref="admin" class="circular facebook icon"></i>
+                                 
+                        <i class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="720kb AngularJS Socialshare" socialshare-hashtags="angularjs, angular-socialshare" socialshare-url="http://test.yeswesail.com/#/events/multipleEvents[0].idEvents"></i>
                         <i class="circular google icon"></i>
                         <i class="circular mail icon"></i>
                     

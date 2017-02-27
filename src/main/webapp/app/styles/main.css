@@ -32,6 +32,9 @@ body {
     width: 100%;
     background-color: #0099CB;
 }
+.event-header{
+    color: #2185d0 !important;   
+}
 
 .header_menu_navigation {
     right: 0px;

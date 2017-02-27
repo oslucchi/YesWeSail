@@ -30,6 +30,7 @@ angular.module('yeswesailApp', [
     , 'datePicker'
     , 'timer'
     , 'angularMoment'
+    , '720kb.socialshare'
   ]).constant('AUTH_EVENTS', {
     loginSuccess: 'auth-login-success'
     , loginFailed: 'auth-login-failed'

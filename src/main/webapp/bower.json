@@ -39,7 +39,8 @@
     "slick-lightbox": "^0.2.1",
     "owl.carousel": "^2.1.6",
     "jquery-tablesort": "^0.0.11",
-    "angular-moment": "^1.0.1"
+    "angular-moment": "^1.0.1",
+    "angular-socialshare": "angularjs-socialshare#^2.3.7"
   },
   "devDependencies": {
     "angular-mocks": "1.4.0"
