@@ -201,7 +201,7 @@
             <div ng-show="groundEvents.length>0" class="ui basic segment">
                 <h1>{{"main.explore" | translate}}</h1>
                 <div class="ui images category-image">
-                    <a href="#/events/{{groundEvent.idEvents}}" ng-repeat="groundEvent in groundEvents track by $index">
+                    <a href="/events/{{groundEvent.idEvents}}" ng-repeat="groundEvent in groundEvents track by $index">
                         <div dimmer on="hover" class="ui image">
                             <div class="ui dimmer">
                                 <div class="content">

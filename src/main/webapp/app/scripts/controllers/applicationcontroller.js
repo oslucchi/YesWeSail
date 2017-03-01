@@ -93,7 +93,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
         AuthService.logout().then(function () {
             $rootScope.$broadcast(AUTH_EVENTS.logoutSuccess);
             $scope.setCurrentUser(null);
-            $location.path('#/');
+            $location.path('/');
         }, function () {
             $rootScope.$broadcast(AUTH_EVENTS.logoutFail);
         });

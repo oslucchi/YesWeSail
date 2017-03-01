@@ -20,12 +20,12 @@ angular.module('yeswesailApp')
             AuthService.login(credentials).then(function (res) {
                 $http.defaults.headers.common['Authorization'] = res.token;
                 if (res.user.roleId == USER_ROLES.ADMIN && !!!$scope.previousState) {
-                    $window.location.href = '#/admin/events?token=' + res.token;
+                    $window.location.href = '/admin/events?token=' + res.token;
                 } else if (!!$scope.previousState) {
                     $state.go($scope.previousState.current.name,{eventId: $scope.previousState.params.eventId});
                     $scope.previousState=null;
                 } else {
-                    $window.location.href = '#/?token=' + res.token;
+                    $window.location.href = '/?token=' + res.token;
                 }
 
                 $scope.setCurrentUser(res.user);

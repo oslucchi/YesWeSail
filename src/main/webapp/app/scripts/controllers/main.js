@@ -42,6 +42,9 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
             , scope: $scope
         });
     };
+    $scope.preventD=function(e){
+        e.stopPropagation();
+    }
     $scope.closeModals = function () {
         ngDialog.closeAll();
     };

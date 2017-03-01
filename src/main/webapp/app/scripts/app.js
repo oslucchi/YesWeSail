@@ -123,7 +123,12 @@ angular.module('yeswesailApp', [
             });
         }
     };
-}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider, LOCALES, uiGmapGoogleMapApiProvider) {
+}).config(function ($stateProvider, $urlRouterProvider, $translateProvider, tmhDynamicLocaleProvider, USER_ROLES, $httpProvider, LOCALES, uiGmapGoogleMapApiProvider, $locationProvider) {
+    
+    // use the HTML5 History API
+        $locationProvider.html5Mode(true);
+    
+    
     $translateProvider.useStaticFilesLoader({
         prefix: 'resources/locale-', // path to translations files
         suffix: '.json' // suffix, currently- extension of the translations

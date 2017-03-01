@@ -16,9 +16,9 @@ angular.module('yeswesailApp')
         $http.get(URLs.ddns + 'rest/auth/confirmUser/FB/'+token+'?email='+$scope.correctEmail).then(function(res){
                $http.defaults.headers.common['Authorization'] = res.data.token;
                 if (res.data.user.roleId == USER_ROLES.ADMIN) {
-                    $window.location.href = '#/admin/events?token=' + res.data.token;
+                    $window.location.href = '/admin/events?token=' + res.data.token;
                 } else {
-                    $window.location.href = '#/?token=' + res.data.token;
+                    $window.location.href = '/?token=' + res.data.token;
                 }
 
                 $scope.setCurrentUser(res.data.user);
@@ -40,9 +40,9 @@ angular.module('yeswesailApp')
         $http.get(URLs.ddns + 'rest/auth/confirmUser/FB/'+token+'?email='+$scope.correctEmail+'&password='+$scope.correctPassword).then(function(res){
             $http.defaults.headers.common['Authorization'] = res.data.token;
                 if (res.data.user.roleId == USER_ROLES.ADMIN) {
-                    $window.location.href = '#/admin/events?token=' + res.data.token;
+                    $window.location.href = '/admin/events?token=' + res.data.token;
                 } else {
-                    $window.location.href = '#/?token=' + res.data.token;
+                    $window.location.href = '/?token=' + res.data.token;
                 }
 
                 $scope.setCurrentUser(res.data.user);

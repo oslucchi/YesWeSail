@@ -19,7 +19,7 @@
                         <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
                         <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
                     </div>
-                </div> <a href="#/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a> </div>
+                </div> <a href="/events?location={{selectedLocation}}&categoryId={{selectedCategory}}" class="item">{{"global.search" | translate}}</a> </div>
         </div>
     </div>
 </div>
@@ -89,8 +89,8 @@
                         <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
                          <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
                                  
-                        <i class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="720kb AngularJS Socialshare" socialshare-hashtags="angularjs, angular-socialshare" socialshare-url="http://test.yeswesail.com/#/events/multipleEvents[0].idEvents"></i>
-                        <i class="circular google icon"></i>
+                        <i ng-click="preventD($event)" class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{multipleEvents[0].title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="http://172.16.1.89:9000/events/{{multipleEvents[0].idEvents}}"></i>
+<!--                        <i class="circular google icon"></i>-->
                         <i class="circular mail icon"></i>
                     
                     </div>
@@ -100,7 +100,7 @@
             <h1>{{"main.explore" | translate}}</h1>
             <div class="ui stackable three column grid">
                 <div class="ui fluid column category-image" ng-repeat="category in CATEGORIES track by $index">
-                    <a href="#/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
+                    <a href="/events?categoryId={{category.categoryId}}" ng-if="!!category.url">
                         <div dimmer on="hover" class="ui image">
                             <div class="ui dimmer">
                                 <div class="content">
@@ -143,7 +143,7 @@
             </div>
             <div class="row center aligned"> </div>
             <div class="row center aligned">
-                <div class="sixteen wide column"><span class="ui large header"><a href="#/howitworks">{{"main.howItWorks" | translate}}</a></span></div>
+                <div class="sixteen wide column"><span class="ui large header"><a href="/howitworks">{{"main.howItWorks" | translate}}</a></span></div>
             </div>
             <div class="row center aligned">
                 <div class="row center aligned"> </div>
@@ -179,9 +179,9 @@
                 <div class="three wide column">
                     <h4 class="ui inverted header">Società</h4>
                     <div class="ui inverted link list">
-                        <a href="#" class="item">Chi siamo</a>
-                        <a href="#/howitworks" class="item">Come funziona</a>
-                        <a href="#" class="item">Contatti</a>
+                        <a href="/" class="item">Chi siamo</a>
+                        <a href="/howitworks" class="item">Come funziona</a>
+                        <a href="/" class="item">Contatti</a>
 
                     </div>
                 </div>

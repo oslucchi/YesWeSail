@@ -89,7 +89,7 @@ angular.module('yeswesailApp')
                     $window.location.href = res.data.approval_url;    
                     return res;
                 }, function(err){
-                    $window.location.href = '#/cart/error?responseCode='+err.data.error;    
+                    $window.location.href = '/cart/error?responseCode='+err.data.error;    
                 });
         };
 

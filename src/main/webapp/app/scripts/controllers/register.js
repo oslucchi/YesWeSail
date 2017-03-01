@@ -23,7 +23,7 @@ angular.module('yeswesailApp')
                 $rootScope.$broadcast(AUTH_EVENTS.registerSuccess);
                 ngDialog.closeAll();
                 $rootScope.responseMessage=res.data.responseMessage;
-                 $window.location.href = '#/register-success'; 
+                 $window.location.href = '/register-success'; 
             }, function(res) {
                 if (res.data.error == undefined)
             	{
