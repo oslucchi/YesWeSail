@@ -1461,4 +1461,73 @@ public class EventsHandler {
 		String jsonResponse = jsonizer.jsonize();
 		return Response.status(status).entity(jsonResponse).build();
     }
+	
+	@PUT
+    @Path("/{eventId}/makeHot")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+    public Response makeHot(EventJson jsonIn,
+    						@HeaderParam("Authorization") String token,
+						    @HeaderParam("Language") String language,
+						    @PathParam("eventId") int eventId)
+    {
+		log.debug("Setting event " + eventId + " hot flag");
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		try
+		{
+			log.debug("value from json " + jsonIn.hotEvent);
+			conn = DBInterface.TransactionStart();
+			Events event = new Events(conn, eventId);
+			event.setHotEvent(jsonIn.hotEvent);
+			event.update(conn, "idEvents");
+			DBInterface.TransactionCommit(conn);
+			log.debug("done");
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("{}").build();
+    }
+
+	@PUT
+    @Path("/{eventId}/makeEarlyBooking")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+    public Response makeEarlyBooking(EventJson jsonIn,
+    						@HeaderParam("Authorization") String token,
+						    @HeaderParam("Language") String language,
+						    @PathParam("eventId") int eventId)
+    {
+		log.debug("Setting event " + eventId + " earlyBooking flag");
+		int languageId = Utils.setLanguageId(language);
+		DBConnection conn = null;
+		try
+		{
+			log.debug("value from json " + jsonIn.earlyBooking);
+			conn = DBInterface.TransactionStart();
+			Events event = new Events(conn, eventId);
+			event.setEarlyBooking(jsonIn.earlyBooking);
+			event.update(conn, "idEvents");
+			DBInterface.TransactionCommit(conn);
+			log.debug("done");
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("{}").build();
+    }
+
 }
