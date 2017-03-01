@@ -19,6 +19,9 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
             $('thead th.id').data('sortBy', function(th, td, tablesort) {
                 return Number(td.text());
             });
+            
+         
+            
         });
     };
 //    $scope.sortVar1 = 'createdOn'

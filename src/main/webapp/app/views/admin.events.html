@@ -1,8 +1,28 @@
 <div class="admin-events-container">
-    <table class="ui compact sortable selectable celled  table">
+    <table id="eventsTable" class="ui compact sortable selectable celled  table">
         <thead>
+<!--
             <tr>
-                <!--      <th>{{"adminevents.gridCols.select" | translate}}</th>-->
+                <th class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
+                <th>{{"adminevents.gridCols.Status" | translate}}</th>
+                <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
+                <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
+                <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
+                <th accesskey=""class="id">{{"adminevents.gridCols.eventId" | translate}}</th>
+                <th>{{"adminevents.gridCols.title" | translate}}</th>
+                <th class="date">{{"adminevents.gridCols.dateStart" | translate}}</th>
+                <th class="date">{{"adminevents.gridCols.dateEnd" | translate}}</th>
+                <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
+                <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
+                <th>{{"adminevents.gridCols.location" | translate}}</th>
+                <th>{{"user.shipOwner" | translate}}</th>
+            </tr>
+-->
+
+            
+            
+            
+            <tr>
                 <th class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
                 <th ng-click="sortBy('status')">{{"adminevents.gridCols.Status" | translate}}</th>
                 <th ng-click="sortBy('hotEvents')">{{"adminevents.gridCols.hotEvents" | translate}}</th>
@@ -17,6 +37,7 @@
                 <th ng-click="sortBy('location')">{{"adminevents.gridCols.location" | translate}}</th>
                 <th ng-click="sortBy('shipOwnerId')">{{"user.shipOwner" | translate}}</th>
             </tr>
+
         </thead>
         <tbody>
             <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">

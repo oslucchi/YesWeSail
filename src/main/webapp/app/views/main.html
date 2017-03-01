@@ -89,9 +89,9 @@
                         <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
                          <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
                                  
-                        <i ng-click="preventD($event)" class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{multipleEvents[0].title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="http://172.16.1.89:9000/events/{{multipleEvents[0].idEvents}}"></i>
+                        <i ng-click="preventD($event)" class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{multipleEvents[0].title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="{{url}}events/{{multipleEvents[0].idEvents}}"></i>
 <!--                        <i class="circular google icon"></i>-->
-                        <i class="circular mail icon"></i>
+                        <i class="circular mail icon" ng-click="email({{multipleEvents[0]}}, $event)"></i>
                     
                     </div>
                  

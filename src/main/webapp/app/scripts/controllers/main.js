@@ -6,9 +6,10 @@
  * # MainCtrl
  * Controller of the yeswesailApp
  */
-angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog, toastr) {
+angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, URLs, MAPS, lodash, $state, ngDialog, toastr, $translate) {
     $scope.CATEGORIES = [];
     $scope.LOCATIONS = [];
+    $scope.url=URLs.ddns;
     MAPS.getMap('LOCATIONS').then(function (res) {
         if (!!res.status) {
             $scope.LOCATIONS = [];
@@ -44,6 +45,10 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
     };
     $scope.preventD=function(e){
         e.stopPropagation();
+    }
+    $scope.email=function(obj, e){
+        e.stopPropagation();
+        location.href= 'mailto:?subject='+obj.title+'&body='+$translate.instant('global.emailMessage')+'%0D%0A'+URLs.ddns+'events/'+obj.idEvents;
     }
     $scope.closeModals = function () {
         ngDialog.closeAll();
