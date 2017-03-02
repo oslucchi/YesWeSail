@@ -382,7 +382,7 @@ public class FacebookHandler implements Serializable
 			try 
 			{
 				// No exception hence the user is already registered. Set the token and redirect to the login page
-				uri = prop.getRedirectWebHost() + "/" + prop.getRedirectOnLogin() + 
+				uri = prop.getWebHost() + "/" + prop.getRedirectOnLogin() + 
 					  "?token=" + ua.getToken() + "&invalidEmail=" + (u.isAFakeEmail() ? "true" : "false");
 				log.debug("User '" + u.getEmail() + "' already registered. Returning a valid token");
 				log.debug("Redirect to '" + uri + "'");

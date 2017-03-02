@@ -15,8 +15,7 @@
 	<res-type>javax.sql.DataSource</res-type>
 	<res-auth>Container</res-auth>
   </resource-ref>
-<!-- 
- -->
+
   <filter>
 	<filter-name>CORS</filter-name>
 	<filter-class>com.yeswesail.rest.CORSFilter</filter-class>
@@ -26,9 +25,18 @@
     <url-pattern>/rest/*</url-pattern>
   </filter-mapping>
 
-	<listener>
-	    <listener-class>com.yeswesail.rest.YesWeSail</listener-class>
-	</listener>
+  <filter>
+	<filter-name>URLFilter</filter-name>
+	<filter-class>com.yeswesail.rest.URLFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>URLFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>com.yeswesail.rest.YesWeSail</listener-class>
+  </listener>
 
   <servlet>
     <servlet-name>YesWeSail</servlet-name>
@@ -45,8 +53,9 @@
   </servlet>
   <servlet-mapping>
     <servlet-name>YesWeSail</servlet-name>
-    <url-pattern>/rest/*</url-pattern>
+    <url-pattern>/restcall/*</url-pattern>
   </servlet-mapping>
+  
   <servlet>
     <servlet-name>CORSFilter</servlet-name>
     <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -57,6 +66,19 @@
 	<init-param>
 		<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
 		<param-value>com.yeswesail.rest.CORSFilter</param-value>
+	</init-param>
+  </servlet>
+
+  <servlet>
+    <servlet-name>URLFilter</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>com.yeswesail.rest</param-value>
+    </init-param>
+	<init-param>
+		<param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
+		<param-value>com.yeswesail.rest.URLFilter</param-value>
 	</init-param>
   </servlet>
 </web-app>

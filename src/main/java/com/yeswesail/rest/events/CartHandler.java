@@ -1,7 +1,6 @@
 package com.yeswesail.rest.events;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
@@ -15,7 +14,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -25,12 +23,6 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
-import com.braintreegateway.BraintreeGateway;
-import com.braintreegateway.Environment;
-import com.braintreegateway.Result;
-import com.braintreegateway.Transaction;
-import com.braintreegateway.TransactionRequest;
-import com.braintreegateway.ValidationError;
 import com.paypal.api.payments.Amount;
 import com.paypal.api.payments.Links;
 import com.paypal.api.payments.Payer;
@@ -39,7 +31,6 @@ import com.paypal.api.payments.PaymentExecution;
 import com.paypal.api.payments.RedirectUrls;
 import com.paypal.base.rest.APIContext;
 import com.paypal.base.rest.PayPalRESTException;
-
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
@@ -55,15 +46,12 @@ import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.TicketsInCart;
 import com.yeswesail.rest.DBUtility.TicketsInCart.Tickets;
-import com.yeswesail.rest.jsonInt.CartJson;
-import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/cart")
 public class CartHandler {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 	JsonHandler jh = new JsonHandler();
-	static private BraintreeGateway gateway = null;
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -304,65 +292,6 @@ public class CartHandler {
 		}
         return returnVal;
 	}
-	
-	private void getBTGateway()
-	{
-		if (gateway == null)
-		{
-			gateway = new BraintreeGateway(Environment.SANDBOX, 
-										   prop.getBraintreeMerchantId(), 
-										   prop.getBraintreePublicKey(), 
-										   prop.getBraintreePrivateKey());
-		}
-	}
-
-	@POST
-	@Path("generateToken")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response generateToken(CartJson[] ticketList, @HeaderParam("Language") String language)
-	{
-		int languageId = Utils.setLanguageId(language);
-		getBTGateway();
-		DBConnection conn = null;
-		try
-		{
-			conn = DBInterface.TransactionStart();
-			for(CartJson ticketListItem : ticketList)
-			{
-				for(TicketJson ticket : ticketListItem.tickets)
-				{
-					TicketLocks t = new TicketLocks(conn, ticket.idTicketLocks);
-					if (!ticket.toBuy)
-					{
-						EventTickets et = new EventTickets(conn, t.getEventTicketId());
-						et.releaseATicket();
-						et.update(conn, "idEventTickets");
-						t.delete(conn, t.getIdTicketLocks());
-					}
-				}
-			}
-			DBInterface.TransactionCommit(conn);
-		}
-		catch(Exception e)
-		{
-			DBInterface.TransactionRollback(conn);
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		
-		String token = gateway.clientToken().generate();
-		if (jh.jasonize(token, languageId) != Response.Status.OK)
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-		
-		return Response.status(Response.Status.OK).entity(jh.json).build();
-	}
 
 	private void processTicketsPaid(DBConnection conn, TicketLocks[] tickets, String transactionId) 
 			throws Exception
@@ -398,119 +327,7 @@ public class CartHandler {
 		return amount;
 	}
 
-	private Response payViaBraintree(DBConnection conn, String nonce, String method,  
-					int amount, int userId, int languageId, TicketLocks[] tickets)
-	{
-		Utils jsonizer = new Utils();
-
-		if ((method.toUpperCase().compareTo("CC") != 0) &&
-			    (method.toUpperCase().compareTo("PP") != 0))
-		{
-			jsonizer.addToJsonContainer("responseCode", "Bad method request", true);
-			return Response
-					.status(Response.Status.BAD_REQUEST)
-					.entity(jsonizer.jsonize())
-					.build();
-		}
-
-		getBTGateway();
-		
-		TransactionRequest request = new TransactionRequest()
-			    .amount(new BigDecimal(amount))
-			    .paymentMethodNonce(nonce)
-			    .options()
-			    .submitForSettlement(true)
-			    .done();
-		Result<Transaction> result = gateway.transaction().sale(request);
-
-
-		try
-		{
-			if (result.isSuccess()) 
-	        {
-		        Transaction transaction = result.getTarget();
-		        log.trace("Payment completed. Transaction id " + transaction.getId());
-		        processTicketsPaid(conn, tickets, transaction.getId());
-				DBInterface.TransactionCommit(conn);
-		        
-				if (method.toUpperCase().compareTo("PP") == 0)
-				{
-					jsonizer.addToJsonContainer("transactionId", transaction.getId(), true);
-					return Response
-							.status(Response.Status.OK)
-							.entity(jsonizer.jsonize())
-							.build();
-				}
-				else
-				{
-					URI location = new URI(prop.getWebHost() + "/#/cart/success?transactionId=" + transaction.getId());
-					return Response.seeOther(location).build();
-				}
-	        }
-	        else if (result.getTransaction() != null) 
-	        {
-				DBInterface.TransactionRollback(conn);
-	            Transaction transaction = result.getTransaction();
-	            String errorMsg = "Transaction rejected. Status: " + transaction.getStatus() + 
-	            				  " Code: " + transaction.getProcessorResponseCode() + 
-	            				  " Text: " + transaction.getProcessorResponseText(); 
-	            log.warn(errorMsg);
-				if (method.toUpperCase().compareTo("PP") == 0)
-				{
-					jsonizer.addToJsonContainer("responseCode", transaction.getProcessorResponseCode(), true);
-					return Response
-							.status(Response.Status.FORBIDDEN)
-							.entity(jsonizer.jsonize())
-							.build();
-				}
-				else
-				{
-		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
-		            		URLEncoder.encode(transaction.getProcessorResponseCode(),"UTF-8");
-					URI location = new URI(url);
-					return Response.seeOther(location).build();
-				}
-	        }
-	        else 
-	        {
-				DBInterface.TransactionRollback(conn);
-	        	String multipleErrors = "Multiple errors occurred during transaction:<br>";
-	            for (ValidationError error : result.getErrors().getAllDeepValidationErrors())
-	            {
-	            	multipleErrors += "Attribute: " + error.getAttribute() +
-			            			  "  Code: " + error.getCode() + 
-			            			  "  Message: " + error.getMessage();
-	            	multipleErrors += "\n";
-	            }
-	            log.warn(multipleErrors);
-				if (method.toUpperCase().compareTo("PP") == 0)
-				{
-					jsonizer.addToJsonContainer("responseCode", result.getMessage(), true);
-					return Response
-							.status(Response.Status.FORBIDDEN)
-							.entity(jsonizer.jsonize())
-							.build();
-				}
-				else
-				{
-		            String url = prop.getWebHost() + "/#/cart/error?responseCode=" + 
-	            			 result.getErrors().getAllDeepValidationErrors().get(0).getCode();
-					URI location = new URI(url);
-					return Response.seeOther(location).build();
-				}
-	        }
-		}
-		catch(Exception e)
-		{
-			DBInterface.TransactionRollback(conn);
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-	}
-
+	
 	private Response payViaPaypal(DBConnection conn, int amount, int userId, 
 								  int languageId, TicketLocks[] tickets)
 	{
@@ -605,14 +422,7 @@ public class CartHandler {
 			DBInterface.disconnect(conn);
 		}
 
-		if (nonce.equalsIgnoreCase("null"))
-		{
-			return payViaPaypal(conn, amount, userId, languageId, tickets);
-		}
-		else
-		{
-			return payViaBraintree(conn, nonce, method, amount, userId, languageId, tickets);
-		}
+		return payViaPaypal(conn, amount, userId, languageId, tickets);
 	}
 	
 }

@@ -9,41 +9,37 @@ import javax.servlet.ServletContext;
 import org.apache.log4j.Logger;
 
 public class ApplicationProperties {
-	private String dbUser = "";
-	private String dbPasswd = "";
-	private String dbHost = "";
-	private String dbName = "";
+	// site specific
+	private String webHome = "";
+	private String redirectRegistrationCompleted = "";
+	private String redirectHome	= "";
+	private String redirectOnLogin = "";
+	private int sessionExpireTime = 0;
+	private int maxNumHotOffers = 4;
+	private String defaultLang = "";
+	private String noAuthorizationRequired = "";
+	private String noAuthorizationRequiredRoot = "";
+	private boolean useCoars = false;
+	private Double maxDistanceForEventsOnTheGround = 5.0;
+
+	// package properties
 	private String mailSmtpHost = "";
 	private String mailFrom = "";
 	private String mailUser = "";
 	private String mailPassword = "";
 	private String webHost = "";
-	private String webHome = "";
-	private String redirectRegistrationCompleted = "";
-	private String redirectHome	= "";
-	private String redirectOnLogin = "";
+	private boolean startReleaser = true;
+	private int releaseTicketLocksAfter = 600;
+	private String adminEmail;
 	private String fbApplicationId = "";
 	private String fbApplicationSecret = "";
-	private String redirectWebHost = "";
-	private String defaultLang = "";
-	private String noAuthorizationRequired = "";
-	private String noAuthorizationRequiredRoot = "";
-	private int sessionExpireTime = 0;
-	private int maxNumHotOffers = 4;
-	private boolean useCoars = false;
-	private boolean startReleaser = true;
-	private String braintreeMerchantId;
-	private String braintreePublicKey;
-	private String braintreePrivateKey;
 	private String paypalClientId;
 	private String paypalClientSecret;
-	private ServletContext context;
-	private String adminEmail;
-	private int releaseTicketLocksAfter = 600;
-	private Double maxDistanceForEventsOnTheGround = 5.0;
 	private String mailchimpURL = "";
 	private String mailchimpListId = "";
 	private String mailchimpAPIKEY = "";
+
+	private ServletContext context;
 	
 	private static ApplicationProperties instance = null;
 	
@@ -75,46 +71,21 @@ public class ApplicationProperties {
 			e.printStackTrace();
     		return;
 		}
-       	dbUser = properties.getProperty("dbUser");
-    	dbPasswd = properties.getProperty("dbPasswd");
-    	dbHost = properties.getProperty("dbHost");
-    	dbName = properties.getProperty("dbName");
-    	mailSmtpHost = properties.getProperty("mailSmtpHost");
-    	mailFrom = properties.getProperty("mailFrom");
-    	mailUser = properties.getProperty("mailUser");
-    	mailPassword = properties.getProperty("mailPassword");
-    	webHost = properties.getProperty("webHost");
+    	
     	webHome = properties.getProperty("webHome");
     	redirectRegistrationCompleted = properties.getProperty("redirectRegistrationCompleted");
     	redirectHome = properties.getProperty("redirectHome");
     	redirectOnLogin = properties.getProperty("redirectOnLogin");
-    	fbApplicationId = properties.getProperty("fbApplicationId");
-    	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
-    	redirectWebHost  = properties.getProperty("redirectWebHost");
     	defaultLang = properties.getProperty("defaultLang");
     	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
     	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
 		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
-		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
-		braintreeMerchantId = properties.getProperty("braintreeMerchantId");
-		braintreePublicKey = properties.getProperty("braintreePublicKey");
-		braintreePrivateKey = properties.getProperty("braintreePrivateKey");
-		paypalClientId = properties.getProperty("paypalClientId");
-		paypalClientSecret = properties.getProperty("paypalClientSecret");
-
-		adminEmail = properties.getProperty("adminEmail");
-		mailchimpURL = properties.getProperty("mailchimpURL");
-		mailchimpListId = properties.getProperty("mailchimpListId");
-		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
-		
     	try
     	{
     		variable = "sessionExpireTime";
     		sessionExpireTime = Integer.parseInt(properties.getProperty("sessionExpireTime"));
     		variable = "maxNumHotOffers";
     		maxNumHotOffers = Integer.parseInt(properties.getProperty("maxNumHotOffers"));
-    		variable = "releaseTicketLocksAfter";
-    		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
     		variable = "maxDistanceForEventsOnTheGround";
     		maxDistanceForEventsOnTheGround = Double.parseDouble(properties.getProperty("maxDistanceForEventsOnTheGround"));
     	}
@@ -123,22 +94,45 @@ public class ApplicationProperties {
     		log.error("The format for the variable '" + variable + "' is incorrect (" +
     					 properties.getProperty("sessionExpireTime") + ")");
     	}
-	}
 
-	public String getDbUser() {
-		return dbUser;
-	}
-
-	public String getDbPasswd() {
-		return dbPasswd;
-	}
-
-	public String getDbHost() {
-		return dbHost;
-	}
-
-	public String getDbName() {
-		return dbName;
+    	String envConf = System.getProperty("envConf");
+    	try 
+    	{
+    		properties = new Properties();
+        	InputStream in = ApplicationProperties.class.getResourceAsStream(
+        							"/site." + (envConf == null ? "dev" : envConf) + ".properties");        	
+			properties.load(in);
+	    	in.close();
+		}
+    	catch (IOException e) 
+    	{
+			e.printStackTrace();
+    		return;
+		}
+    	mailSmtpHost = properties.getProperty("mailSmtpHost");
+    	mailFrom = properties.getProperty("mailFrom");
+    	mailUser = properties.getProperty("mailUser");
+    	mailPassword = properties.getProperty("mailPassword");
+    	webHost = properties.getProperty("webHost");
+		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
+		adminEmail = properties.getProperty("adminEmail");
+    	fbApplicationId = properties.getProperty("fbApplicationId");
+    	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
+		paypalClientId = properties.getProperty("paypalClientId");
+		paypalClientSecret = properties.getProperty("paypalClientSecret");
+		mailchimpURL = properties.getProperty("mailchimpURL");
+		mailchimpListId = properties.getProperty("mailchimpListId");
+		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
+    	try
+    	{
+    		variable = "releaseTicketLocksAfter";
+    		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
+    	}
+    	catch(NumberFormatException e)
+    	{
+    		log.error("The format for the variable '" + variable + "' is incorrect (" +
+    					 properties.getProperty("sessionExpireTime") + ")");
+    	}		
 	}
 
 	public String getMailSmtpHost() {
@@ -193,10 +187,6 @@ public class ApplicationProperties {
 		return fbApplicationSecret;
 	}
 
-	public String getRedirectWebHost() {
-		return redirectWebHost;
-	}
-
 	public String getDefaultLang() {
 		return defaultLang;
 	}
@@ -211,18 +201,6 @@ public class ApplicationProperties {
 
 	public String getNoAuthorizationRequiredRoot() {
 		return noAuthorizationRequiredRoot;
-	}
-
-	public String getBraintreeMerchantId() {
-		return braintreeMerchantId;
-	}
-
-	public String getBraintreePublicKey() {
-		return braintreePublicKey;
-	}
-
-	public String getBraintreePrivateKey() {
-		return braintreePrivateKey;
 	}
 
 	public ServletContext getContext() {

@@ -986,6 +986,7 @@ public class EventsHandler {
 	private void handleInsertUpdateRoute(EventJson jsonIn, int languageId, DBConnection conn) throws Exception // 0 Insert - 1 Update
 	{
 		EventRoute er =  new EventRoute();
+
 		try
 		{
 			er.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId);
@@ -1013,10 +1014,6 @@ public class EventsHandler {
 	private Response eventHandler(EventJson jsonIn, String language, String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		if ((jsonIn.route == null) || (jsonIn.route.length == 0))
-		{
-			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, languageId, "events.missingRoutes");
-		}
 
 		DBConnection conn = null;
 		Events event = null;
@@ -1027,8 +1024,31 @@ public class EventsHandler {
 			event = handleInsertUpdate(jsonIn, conn, 
 									   SessionData.getInstance().getBasicProfile(token).getIdUsers(), languageId);
 			jsonIn.idEvents = jsonIn.eventId = event.getIdEvents();
-			
-			handleInsertUpdateRoute(jsonIn, languageId, conn);
+			@SuppressWarnings("unchecked")
+			ArrayList<EventRoute> erList = 
+					(ArrayList<EventRoute>) EventRoute.populateCollection(
+													"SELECT *  FROM EventRoute " +
+													"WHERE eventId = " + jsonIn.eventId, 
+													EventRoute.class);
+			if (erList.size() == 0)
+			{
+				if ((jsonIn.route == null) || (jsonIn.route.length == 0))
+				{
+					return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, languageId, "events.missingRoutes");
+				}
+				else
+				{
+					handleInsertUpdateRoute(jsonIn, languageId, conn);
+				}
+			}
+			else 
+			{
+				if (jsonIn.route != null)
+				{
+					handleInsertUpdateRoute(jsonIn, languageId, conn);
+				}
+			}
+
 		
 			if ((jsonIn.description != null) || (jsonIn.logistics != null) ||
 				(jsonIn.includes != null) || (jsonIn.excludes != null))
@@ -1083,6 +1103,10 @@ public class EventsHandler {
 								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		DBConnection conn = null;
 		Events ev = null;
 		
@@ -1300,6 +1324,10 @@ public class EventsHandler {
 							   @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 
 		DBConnection conn = null;
 		try
@@ -1325,9 +1353,15 @@ public class EventsHandler {
 	@Path("/updateTicket")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response updateTicket(TicketJson jsonIn, @HeaderParam("Language") String language)
+	public Response updateTicket(TicketJson jsonIn, 
+								  @HeaderParam("Language") String language,
+								  @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 
 		EventTickets et = null;
 		DBConnection conn = null;
@@ -1361,9 +1395,15 @@ public class EventsHandler {
 	@Path("/deleteTicket")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response deleteTickets(TicketJson jsonIn, @HeaderParam("Language") String language)
+	public Response deleteTickets(TicketJson jsonIn, 
+								  @HeaderParam("Language") String language,
+								  @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		DBConnection conn = null;
 		try
 		{
@@ -1473,12 +1513,17 @@ public class EventsHandler {
     {
 		log.debug("Setting event " + eventId + " hot flag");
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		DBConnection conn = null;
+		Events event = null;
 		try
 		{
 			log.debug("value from json " + jsonIn.hotEvent);
 			conn = DBInterface.TransactionStart();
-			Events event = new Events(conn, eventId);
+			event = new Events(conn, eventId);
 			event.setHotEvent(jsonIn.hotEvent);
 			event.update(conn, "idEvents");
 			DBInterface.TransactionCommit(conn);
@@ -1493,7 +1538,10 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("{}").build();
+
+		Utils jsonizer = new Utils();
+		jsonizer.addToJsonContainer("event", event, true);
+		return Response.status(Response.Status.OK).entity(jsonizer.jsonize()).build();
     }
 
 	@PUT
@@ -1507,12 +1555,17 @@ public class EventsHandler {
     {
 		log.debug("Setting event " + eventId + " earlyBooking flag");
 		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
 		DBConnection conn = null;
+		Events event = null;
 		try
 		{
 			log.debug("value from json " + jsonIn.earlyBooking);
 			conn = DBInterface.TransactionStart();
-			Events event = new Events(conn, eventId);
+			event = new Events(conn, eventId);
 			event.setEarlyBooking(jsonIn.earlyBooking);
 			event.update(conn, "idEvents");
 			DBInterface.TransactionCommit(conn);
@@ -1527,7 +1580,93 @@ public class EventsHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("{}").build();
+		Utils jsonizer = new Utils();
+		jsonizer.addToJsonContainer("event", event, true);
+		return Response.status(Response.Status.OK).entity(jsonizer.jsonize()).build();
+    }
+
+
+	@PUT
+    @Path("/{eventId}/makeLastMinute")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+    public Response makeLastMinute(EventJson jsonIn,
+    						@HeaderParam("Authorization") String token,
+						    @HeaderParam("Language") String language,
+						    @PathParam("eventId") int eventId)
+    {
+		log.debug("Setting event " + eventId + " lastMinute flag");
+		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
+		DBConnection conn = null;
+		Events event = null;
+		try
+		{
+			log.debug("value from json " + jsonIn.lastMinute);
+			conn = DBInterface.TransactionStart();
+			event = new Events(conn, eventId);
+			event.setLastMinute(jsonIn.lastMinute);
+			event.update(conn, "idEvents");
+			DBInterface.TransactionCommit(conn);
+			log.debug("done");
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils jsonizer = new Utils();
+		jsonizer.addToJsonContainer("event", event, true);
+		return Response.status(Response.Status.OK).entity(jsonizer.jsonize()).build();
+    }
+
+	@PUT
+    @Path("/{eventId}/changeStatus")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+    public Response changeStatus(EventJson jsonIn,
+    						@HeaderParam("Authorization") String token,
+						    @HeaderParam("Language") String language,
+						    @PathParam("eventId") int eventId)
+    {
+		log.debug("Setting event " + eventId + " status flag");
+		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
+		
+		DBConnection conn = null;
+		Events event = null;
+		try
+		{
+			log.debug("value from json " + jsonIn.status);
+			conn = DBInterface.TransactionStart();
+			event = new Events(conn, eventId);
+			event.setStatus(jsonIn.status);
+			event.update(conn, "idEvents");
+			DBInterface.TransactionCommit(conn);
+			log.debug("done");
+		}
+		catch (Exception e) 
+		{
+			DBInterface.TransactionRollback(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils jsonizer = new Utils();
+		jsonizer.addToJsonContainer("event", event, true);
+		return Response.status(Response.Status.OK).entity(jsonizer.jsonize()).build();
     }
 
 }
