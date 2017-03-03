@@ -36,6 +36,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
+import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
@@ -52,6 +53,7 @@ import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 import com.yeswesail.rest.jsonInt.AddressInfoJson;
 import com.yeswesail.rest.jsonInt.BoatsJson;
+import com.yeswesail.rest.jsonInt.Contactsjson;
 import com.yeswesail.rest.jsonInt.ShipownerRequestJson;
 import com.yeswesail.rest.jsonInt.SubscribeJson;
 import com.yeswesail.rest.jsonInt.UsersJson;
@@ -1139,4 +1141,40 @@ public class UsersHandler {
 				String jsonResponse = utils.jsonize();
 		return Response.status(Response.Status.OK).entity(jsonResponse).build();
 	}
+
+
+	@POST
+	@Path("/contacts")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response contacs(Contactsjson jsonIn,
+							 @HeaderParam("Authorization") String token,
+							 @HeaderParam("Language") String language)
+
+	{
+		int languageId = Utils.setLanguageId(language);
+
+		DBConnection conn = null;
+		try 
+		{
+			conn = DBInterface.connect();			
+			Mailer.sendMail(jsonIn.email, prop.getContactsMailTo(), null, 
+							jsonIn.subject, jsonIn.message, null);
+		}
+		catch (Exception e) 
+		{
+			log.error("Exception '" + e.getMessage() + "' on insert");
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
 }

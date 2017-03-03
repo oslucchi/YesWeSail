@@ -27,6 +27,7 @@ public class ApplicationProperties {
 	private String mailFrom = "";
 	private String mailUser = "";
 	private String mailPassword = "";
+	private String contactsMailTo = "";
 	private String webHost = "";
 	private boolean startReleaser = true;
 	private int releaseTicketLocksAfter = 600;
@@ -113,6 +114,7 @@ public class ApplicationProperties {
     	mailFrom = properties.getProperty("mailFrom");
     	mailUser = properties.getProperty("mailUser");
     	mailPassword = properties.getProperty("mailPassword");
+    	contactsMailTo = properties.getProperty("contactsMailTo");
     	webHost = properties.getProperty("webHost");
 		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
 		adminEmail = properties.getProperty("adminEmail");
@@ -245,6 +247,9 @@ public class ApplicationProperties {
 
 	public boolean isStartReleaser() {
 		return startReleaser;
-	}	
-	
+	}
+
+	public String getContactsMailTo() {
+		return contactsMailTo;
+	}		
 }

@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMultipart;
 public class Mailer {
 	private static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
-	public static void sendMail(String to, String cc, String subject, String body, String imagePath) 
+	public static void sendMail(String from, String to, String cc, String subject, String body, String imagePath) 
 			throws AddressException, MessagingException
 	{
 		Properties properties = System.getProperties();
@@ -33,36 +33,45 @@ public class Mailer {
 		Session session = Session.getDefaultInstance(properties, auth);
 		session.setDebug(true);
 		MimeMessage message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(prop.getMailFrom()));
+		message.setFrom(new InternetAddress(from));
 		message.addRecipient(Message.RecipientType.TO, new InternetAddress(to));
 		if (cc != null)
 			message.addRecipient(Message.RecipientType.BCC, new InternetAddress(cc));
 		message.setSubject(subject);
 
         MimeMultipart multipart = new MimeMultipart("related");
-
+    	
         // first part  (the html)
         BodyPart messageBodyPart = new MimeBodyPart();
         messageBodyPart.setContent(body, "text/html");
 
         // add it
         multipart.addBodyPart(messageBodyPart);
+        if (imagePath != null)
+        {
         
-        // second part (the image)
-        messageBodyPart = new MimeBodyPart();
-                
-        DataSource fds = new FileDataSource(imagePath);
-        messageBodyPart.setDataHandler(new DataHandler(fds));
-        messageBodyPart.setHeader("Content-ID","<image>");
-
-        // add it
-        multipart.addBodyPart(messageBodyPart);
-
+	        // second part (the image)
+	        messageBodyPart = new MimeBodyPart();
+	                
+	        DataSource fds = new FileDataSource(imagePath);
+	        messageBodyPart.setDataHandler(new DataHandler(fds));
+	        messageBodyPart.setHeader("Content-ID","<image>");
+	
+	        // add it
+	        multipart.addBodyPart(messageBodyPart);
+	
+        }
         // put everything together
         message.setContent(multipart);
 
 		// Send message
 		Transport.send(message);
+	}
+
+	public static void sendMail(String to, String cc, String subject, String body, String imagePath) 
+			throws AddressException, MessagingException
+	{
+		sendMail(prop.getMailFrom(), to, cc, subject, body, imagePath);
 	}
 	
 	public static void sendMail(String to, String subject, String body, String imagePath) 
