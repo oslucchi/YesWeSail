@@ -52,7 +52,7 @@ public class DBConnection
 			ds = (DataSource) envCtx.lookup("jdbc/YesWeSail");
 			conn = ds.getConnection();
 			st = conn.createStatement();
-			log.debug("Creted connection (" + conn + ") and statement (" + st + ")");
+			// log.debug("Creted connection (" + conn + ") and statement (" + st + ")");
 			st.executeQuery("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
 		}
 		catch (SQLException e) 
@@ -77,7 +77,7 @@ public class DBConnection
     
 	protected void finalize() 
 	{
-		log.debug("Closing resources");
+		// log.debug("Closing resources");
 		try 
 		{
 			ds = null;
@@ -118,12 +118,12 @@ public class DBConnection
 				(queryType.compareTo("COMMIT") == 0) ||
 				(queryType.compareTo("ROLLBACK") == 0))
 			{
-				log.debug("exec straigth query. statement is ("  + st + "). SQL '" + sql + "'");
+				// log.debug("exec straigth query. statement is ("  + st + "). SQL '" + sql + "'");
 				st.execute(sql);
 			}
 			else
 			{
-				log.debug("building a new recordset ("  + st + "). SQL '" + sql + "'");
+				// log.debug("building a new recordset ("  + st + "). SQL '" + sql + "'");
 				rs = st.executeQuery(sql);
 				rsm = rs.getMetaData();
 			}
