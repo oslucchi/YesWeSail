@@ -66,7 +66,7 @@ Starting at {{event.minPrice}}€
 -->
 
 
-        <div class="ui stackable three column grid">
+<!--        <div class="ui stackable three column grid">-->
             <!--
         <div class="column result-cards">
             
@@ -131,6 +131,7 @@ Starting at {{event.minPrice}}€
             <ship-owner ship-owner-id="event.shipOwnerId"></ship-owner>
         </div>
 -->
+<!--
 
             <span ng-repeat="multipleEvents in events track by $index" class="column result-cards">
         <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
@@ -173,6 +174,40 @@ Starting at {{event.minPrice}}€
 
 </div>
 </span>
+-->
+                        <div class="ui stackable doubling three cards">
+
+            
+                       <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in events track by $index">
+                    <div class="content" style="height: 50px; padding: 5px; font-weight: 900;
+    font-size: 16px;">
+                        <div class="right floated meta">
+                            <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
+                        </div> {{multipleEvents[0].title}} </div>
+                    <div class="image">
+                        <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;">   <div ng-if="multipleEvents[0].lastMinute" class="last-minute-stamp">
+                            <img src="images/lastMinute.png">
+                                </div>
+                        <div ng-if="multipleEvents[0].earlyBooking" class="early-booking-stamp">
+                                    <img src="images/earlyBooking.png">
+                                </div>
+                        </div>
+                    </div>
+                    <div class="content"> <span class="right floated">
+                        <p ng-hide="multipleEvents.length>1"><i class="calendar icon"></i> {{multipleEvents[0].dateStart | date:'dd MMM'}} - {{multipleEvents[0].dateEnd | date:'dd MMM'}}</p>
+                        <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
+                         <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
+                                 
+                        <i ng-click="preventD($event)" class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{multipleEvents[0].title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="{{url}}events/{{multipleEvents[0].idEvents}}"></i>
+<!--                        <i class="circular google icon"></i>-->
+                        <i class="circular mail icon" ng-click="email({{multipleEvents[0]}}, $event)"></i>
+                    
+                    </div>
+                 
+                </div>
+            
+            
+            
 </div>
 
 <div class="ui inverted dimmer">

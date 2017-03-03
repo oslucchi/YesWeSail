@@ -19,7 +19,7 @@ module.exports = function (grunt) {
     cdnify: 'grunt-google-cdn',
     configureProxies: 'grunt-connect-proxy'
   });
-
+    var modRewrite = require('connect-modrewrite');
   // Configurable paths for the application
   var appConfig = {
     app: require('./bower.json').appPath || 'app',
@@ -91,6 +91,7 @@ module.exports = function (grunt) {
           open: true,
           middleware: function (connect) {
             return [proxySnippet,
+             modRewrite(['^[^\\.]*$ /index.html [L]']),
               connect.static('.tmp'),
               connect().use(
                 '/bower_components',

@@ -193,13 +193,13 @@ ship-owner {
     cursor: pointer;
 }
 
-@media only screen and (max-width: 767px) {
+@media only screen and (max-width: 768px) {
     .card-event-image {
-        height: 461px;
+        height: 261px;
     }
 }
 
-@media only screen and (min-width: 767px) {
+@media only screen and (min-width: 768px) {
     .card-event-image {
         height: 267px;
     }

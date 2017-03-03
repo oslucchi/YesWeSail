@@ -23,7 +23,7 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
         $scope.cartQty = data;
     });
     
-    
+    $scope.url=URLs.ddns;
 	$scope.cartExpires = null;
     $scope.$watch(function () {
     	return CartService.cartExpires;
@@ -37,7 +37,13 @@ angular.module('yeswesailApp').controller('ApplicationCtrl', function ($translat
              $scope.cartExpires = null;
         }
     }
-    
+      $scope.preventD=function(e){
+        e.stopPropagation();
+    }
+    $scope.email=function(obj, e){
+        e.stopPropagation();
+        location.href= 'mailto:?subject='+obj.title+'&body='+$translate.instant('global.emailMessage')+'%0D%0A'+URLs.ddns+'events/'+obj.idEvents;
+    }
     $scope.currentUser = null;
     $scope.setCurrentUser = function (user) {
         $rootScope.currentUser = user;

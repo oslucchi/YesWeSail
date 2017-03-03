@@ -53,18 +53,18 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
     $scope.getEvents();
     $scope.activate = function (event) {
         event.status = 'A';
-        $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
+        $http.put(URLs.ddns + 'rest/events/' + event.idEvents+'/changeStatus', {status: event.status}).then(function (res) {
             toastr.success($translate.instant('admin.eventActivatingSuccess'));
         }, function (err) {
-            toastr.error($translate.instant('admin.eventActivatingFailure'));
+             toastr.error(err.data.error);
         });
     }
     $scope.deactivate = function (event) {
         event.status = 'P';
-        $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
+        $http.put(URLs.ddns + 'rest/events/' + event.idEvents+'/changeStatus', {status: event.status}).then(function (res) {
             toastr.success($translate.instant('admin.eventDectivatingSuccess'));
         }, function (err) {
-            toastr.error($translate.instant('admin.eventDectivatingFailure'));
+            toastr.error(err.data.error);
         });
     }
     $scope.remove = function (event) {
@@ -93,35 +93,35 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
     };
     $scope.updateEarlyBooking = function (event, state) {
         event.earlyBooking = state;
-        $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
+        $http.put(URLs.ddns + 'rest/events/' + event.idEvents+'/makeEarlyBooking', {earlyBooking: state}).then(function (res) {
             toastr.success($translate.instant('admin.events.success.update', {
                 eventId: event.idEvents
             }));
         }, function (err) {
             event.earlyBooking = !state;
-            toastr.error($translate.instant('admin.eventUpdateFailure'));
+            toastr.error(err.data.error);
         });
     };
     $scope.updateHotEvent = function (event, state) {
         event.hotEvent = state;
-        $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
+        $http.put(URLs.ddns + 'rest/events/' + event.idEvents+'/makeHot', {hotEvent: state}).then(function (res) {
             toastr.success($translate.instant('admin.events.success.update', {
                 eventId: event.idEvents
             }));
         }, function (err) {
             event.earlyBooking = !state;
-            toastr.error($translate.instant('admin.eventUpdateFailure'));
+             toastr.error(err.data.error);
         });
     };
     $scope.updateLastMinute = function (event, state) {
         event.lastMinute = state;
-        $http.put(URLs.ddns + 'rest/events/' + event.idEvents, event).then(function (res) {
+        $http.put(URLs.ddns + 'rest/events/' + event.idEvents+'/makeLastMinute', {lastMinute: state}).then(function (res) {
             toastr.success($translate.instant('admin.events.success.update', {
                 eventId: event.idEvents
             }));
         }, function (err) {
             event.lastMinute = !state;
-            toastr.error($translate.instant('admin.eventUpdateFailure'));
+             toastr.error(err.data.error);
         });
     };
     $scope.showClonePopup = function (event) {

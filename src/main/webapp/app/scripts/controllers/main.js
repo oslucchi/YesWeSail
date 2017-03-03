@@ -79,7 +79,7 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
                 toastr.error('Error while subscribing!');
             })
         }else{
-            toastr.warning('Check email!');
+            toastr.warning($translate.instant('global.emailMissing'));
         }
     }
     

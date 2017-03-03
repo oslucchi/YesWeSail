@@ -36,6 +36,7 @@
     "global.create": "Crea",
     "global.description": "Descrizione",
     "global.emailMessage": "Ciao! Dai un occhio a questa vacanza!",
+    "global.emailMissing": "Inserire un indirizzo email valido!",
     "global.error": "Errore",
     "global.from": "Da",
     "global.guide": "Guida",
