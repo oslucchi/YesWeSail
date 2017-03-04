@@ -37,6 +37,11 @@ angular.module('yeswesailApp').controller('EventidCtrl', function ($scope, $http
             }).rating('disable');
         });
     };
+//     $scope.email=function(obj, e){
+//        e.stopPropagation();
+//        location.href= 'mailto:?subject='+obj.title+'&body='+$translate.instant('global.emailMessage')+'%0D%0A'+URLs.ddns+'events/'+obj.idEvents;
+//    }
+    
     $http.post(URLs.ddns + 'rest/events/details', {
         eventId: $stateParams.eventId
     }).then(function (res) {

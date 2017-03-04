@@ -8,6 +8,6 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('RegisterSuccessCtrl', function ($scope, $rootScope) {
-        $scope.responseMessage=$rootScope.responseMessage;
+    .controller('RegisterSuccessCtrl', function ($scope, $rootScope, $state) {
+        $scope.responseMessage=$state.params.response;
     });

@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $window, URLs) {
+    .controller('RegisterCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $window, URLs, toastr) {
         $scope.credentials = {
             username: '',
             password: '',
@@ -22,8 +22,8 @@ angular.module('yeswesailApp')
             AuthService.register(credentials).then(function (res) {
                 $rootScope.$broadcast(AUTH_EVENTS.registerSuccess);
                 ngDialog.closeAll();
-                $rootScope.responseMessage=res.data.responseMessage;
-                 $window.location.href = '/register-success'; 
+                toastr.success(res.data.responseMessage);
+                
             }, function(res) {
                 if (res.data.error == undefined)
             	{

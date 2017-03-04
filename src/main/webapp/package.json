@@ -41,6 +41,7 @@
     "test": "grunt test"
   },
   "dependencies": {
+    "connect-modrewrite": "^0.10.1",
     "grunt-connect-proxy": "^0.2.0",
     "jasmine": "^2.4.1",
     "phantomjs-prebuilt": "^2.1.7"
