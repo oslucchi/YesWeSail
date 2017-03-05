@@ -1,225 +1,88 @@
 <div class="ui container">
-    <div class="search_content">
-
-        <div class="ui three stackable column grid">
-
-            <div class="three wide column">
-                
-                   <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
-                      <input type="hidden" name="language">
-                      <div class="default text">{{"global.selectLocation" | translate}}</div>
-                      <div class="menu">
-                          <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
-                          <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
-                      </div>
-                    </div>
-
+    <br />
+    <h2 class="ui center aligned icon header">
+  <div class="content">
+   Contacts
+ 
+      </div>
+</h2>
+    <br />
+    <br />
+    <br />
+    <div class="ui two columns grid stackable ">
+    
+     
+    
+        <div class="column"><h4 class="ui icon header">
+  <i class="small call icon"></i>
+  <div class="content">
+   Give us a call
+    <div class="sub header">Use one of the following informations to get in touch with us
+      </div>
+      </div>
+</h4>
+            <table class="ui selectable very basic table">
+  
+  <tbody>
+    <tr>
+      <td><i class="call icon"></i> Phone</td>
+      <td>+39 0212345649</td>
+    </tr>
+    <tr>
+      <td><i class="mobile icon"></i>Mobile</td>
+      <td>+39 3895369222</td>
+    </tr>
+    <tr>
+      <td><i class="mail icon"></i>Email</td>
+      <td>info@yeswesail.com</td>
+    </tr>
+  </tbody>
+</table>
             </div>
-            <div class="three wide column">
-                
-                <div ng-if="categoriesLoaded" dropdown-search-selection ng-model="selectedCategory" class="ui selection dropdown item">
-                      <input type="hidden" name="language">
-                      <div class="default text">{{"global.selectCategory" | translate}}</div>
-                      <div class="menu">
-                          <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
-                          <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
-                      </div>
-                    </div>
-            </div>
-
-
-            <div class="two wide column"> 
-                <a ng-click="search()" class="ui blue button">{{"global.search" | translate}}</a></div>
-
-        </div>
-    </div>
-
-
-
-
-
-    <div class="ui basic segment results">
-        
-        <!--
-                        <div class="ui four stackable cards">
-            <div ng-repeat="event in events" class="ui card">
-              <div class="content">
-                  
-                <div class="right floated"><h4></h4></div>
-                    
-                  <a href="/events/{{event.idEvents}}">{{event.description}}</a>
-                  
-              </div>
-              <div class="image">
-                <img ng-src="{{event.imageURL}}">
-              </div>
-             
-                 <div class="content">
-
-Starting at {{event.minPrice}}€
-                      <div>{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</div>
-                </div>
-          
-            
-            </div>
-        </div>
--->
-
-
-<!--        <div class="ui stackable three column grid">-->
-            <!--
-        <div class="column result-cards">
-            
-            <div class="result card">
-                
-                <div class="contents">
-                    <img ng-src="{{event.imageURL}}">
-                    
-                </div>
-                
-                
-                
-            </div>
-            <div class="ui huge blue ribbon label">
-                        {{event.minPrice}}€
-                </div>
-            <div class="last-minute-stamp">
-                        <img src="images/last-minute.png">
-                    </div>
-            <div class="early-booking-stamp">
-                        <img src="images/early-booking.png">
-                    </div>
-
-            <ship-owner></ship-owner>
-        </div>
--->
-
-
-
-            <!--
-<div ui-sref="event({eventId: event.idEvents})" ng-class="{'layered-paper':!!event.aggregateKey, 'non-layered-paper': !!!event.aggregateKey}" class="column result-cards" ng-repeat="event in events">
-            
-            <div class="result card">
-                
-                <div class="contents">
-                    <img ng-src="{{event.imageURL}}">
-                    
-                </div>
-                
-                
-                
-            </div>
-            <div class="ui huge blue ribbon label">
-                        {{event.minPrice}}€
-                </div>
-            <div ng-if="event.lastMinute" class="last-minute-stamp">
-                        <img src="images/last-minute.png">
-                    </div>
-            <div ng-if="event.earlyBooking" class="early-booking-stamp">
-                        <img src="images/early-booking.png">
-                    </div>
-     <div class="event-details">
-                <h2  style="color: white !important;" class="ui medium header">
-                {{event.title}}
-                
-              
-                </h2>
-                
-                <span>  {{event.location}}</span><br>
-                <span>{{event.dateStart | date:'dd MMM'}} - {{event.dateEnd | date:'dd MMM'}}</span>
-                </div>
-            <ship-owner ship-owner-id="event.shipOwnerId"></ship-owner>
-        </div>
--->
+    <div class="column">
 <!--
-
-            <span ng-repeat="multipleEvents in events track by $index" class="column result-cards">
-        <div ng-click="processEventClick(multipleEvents)" ng-repeat="singleEvent in multipleEvents | limitTo:1 track by $index">
-            <div ng-class="{'piled-event':multipleEvents.length>1, 'non-piled-event': multipleEvents.length<2}">
-            
-            <div class="result card">
-                
-                <div class="contents">
-                    <img ng-src="{{singleEvent.imageURL}}" fallback-src="images/defaultEvent.png">
-                    
-                </div>
-                
-                
-                
-            </div>
-            <div class="ui medium blue ribbon label">
-                         {{'global.from'|translate}} {{singleEvent.minPrice}}€
-                        <p ng-if="multipleEvents.length>1" class="mini-dates">{{"global.otherDates" | translate}}</p>
-                </div>
-            <div ng-if="singleEvent.lastMinute" class="last-minute-stamp">
-                        <img src="images/last-minute.png">
-                    </div>
-            <div ng-if="singleEvent.earlyBooking" class="early-booking-stamp">
-                        <img src="images/early-booking.png">
-                    </div>
-     <div class="event-details">
-                <h2  style="color: white !important;" class="ui small header">
-                {{singleEvent.title}}
-                
-              
-                </h2>
-                
-                <span>  {{singleEvent.location}}</span>
-            <br>
-            <span>{{singleEvent.dateStart | date:'dd MMM'}} - {{singleEvent.dateEnd | date:'dd MMM'}}</span>
-        </div>
-        <ship-owner ship-owner-id="singleEvent.shipOwnerId"></ship-owner>
-    </div>
-
-
-</div>
-</span>
+        <h4 class="ui icon header">
+  <i class="mail icon"></i>
+  <div class="content">
+    Send us a message
+    <div class="sub header">Don't like calling? Send us a message!</div>
+  </div>
+</h4>
 -->
-                        <div class="ui stackable doubling three cards">
-
-            
-                       <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in events track by $index">
-                    <div class="content" style="height: 50px; padding: 5px; font-weight: 900;
-    font-size: 16px;">
-                        <div class="right floated meta">
-                            <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
-                        </div> {{multipleEvents[0].title}} </div>
-                    <div class="image">
-                        <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;">   <div ng-if="multipleEvents[0].lastMinute" class="last-minute-stamp">
-                            <img src="images/lastMinute.png">
-                                </div>
-                        <div ng-if="multipleEvents[0].earlyBooking" class="early-booking-stamp">
-                                    <img src="images/earlyBooking.png">
-                                </div>
-                        </div>
-                    </div>
-                    <div class="content"> <span class="right floated">
-                        <p ng-hide="multipleEvents.length>1"><i class="calendar icon"></i> {{multipleEvents[0].dateStart | date:'dd MMM'}} - {{multipleEvents[0].dateEnd | date:'dd MMM'}}</p>
-                        <p ng-if="multipleEvents.length>1"><i class="calendar icon"></i>{{"global.otherDates" | translate}}</p>
-                         <span> <i class="marker icon"></i>{{multipleEvents[0].location}}</span> </span> <span>{{'global.from'|translate}} <span class="card-event-price">{{multipleEvents[0].minPrice}}€</span></span><br><br>
-                                 
-                        <i ng-click="preventD($event)" class="circular facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{multipleEvents[0].title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="{{url}}events/{{multipleEvents[0].idEvents}}"></i>
-<!--                        <i class="circular google icon"></i>-->
-                        <i class="circular mail icon" ng-click="email({{multipleEvents[0]}}, $event)"></i>
-                    
-                    </div>
-                 
-                </div>
-            
-            
-            
-</div>
-
-<div class="ui inverted dimmer">
-    <div class="content">
-        <div class="center">
-            <h4 class="ui icon header">
-          <i class="warning big sign icon"></i>
-          {{"global.noResults" | translate}}
-        </h4>
-        </div>
+        <h4 class="ui icon header">
+  <i class="small mail icon"></i>
+  <div class="content">
+   Send us a message
+    <div class="sub header">Don't like calling? Send us a message and we'll respond as soon as possible to help you.
+      </div>
+      </div>
+</h4>
+        <form class="ui form" name="contactsForm" novalidate ng-submit="contactsForm.$valid && sendEmail(email)">
+            {{loginform.$valid}}
+          <div class="field" ng-class="{'error': contactsForm.name.$invalid && contactsForm.name.$dirty}">
+            <label>Name</label>
+            <input type="text" name="name" required ng-model="email.name" placeholder="Name">
+          </div>
+          <div class="field" ng-class="{'error': contactsForm.email.$invalid && contactsForm.email.$dirty}">
+            <label>Email</label>
+            <input type="text" required name="email" required placeholder="Email" ng-model="email.email">
+          </div>
+          <div class="field" ng-class="{'error': contactsForm.subject.$invalid && contactsForm.subject.$dirty}">
+            <label>Subject</label>
+            <input type="text" name="subject" required placeholder="Subject" ng-model="email.subject" >
     </div>
-</div>
-</div>
-
+          <div class="field" ng-class="{'error': contactsForm.message.$invalid && contactsForm.message.$dirty}">
+            <label>Message</label>
+            <textarea placeholder="Message" required ng-model="email.message" name="message"></textarea>
+          </div>
+<!--
+            <div class="ui negative message" ng-class="{'hidden': contactsForm.$valid}">
+              <div class="header">
+                Please check the required fields
+              </div>
+              </div>
+-->
+          <input class="ui button" type="submit" value="Send">
+        </form>
+    </div>
 </div>

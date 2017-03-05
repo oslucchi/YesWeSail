@@ -198,6 +198,10 @@ angular.module('yeswesailApp', [
         , templateUrl: 'views/userId.events.html'
         , controller: 'UseridCtrl'
         , accessLevel: USER_ROLES.TRAVELLER
+    }).state('contacts', {
+        url: "/contacts"
+        , templateUrl: 'views/contacts.html'
+        , controller: 'ContactsCtrl'
     }).state('events', {
         url: "/events?location&categoryId"
         , templateUrl: 'views/events.html'

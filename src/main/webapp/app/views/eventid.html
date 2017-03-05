@@ -33,6 +33,10 @@
 </div>
 <div ng-show="noEventFound==false" class="ui container" id="event-container">
 <!--    <div class="ui basic horizontal segments">-->
+            <i ng-click="preventD($event)" class="circular link blue inverted large facebook icon" socialshare socialshare-provider="facebook" socialshare-text="{{event.title}}" socialshare-hashtags="yws, yeswesail" socialshare-url="{{url}}events/{{event.idEvents}}"></i>
+<!--                        <i class="circular google icon"></i>-->
+                        <i class="circular link blue inverted large mail icon" ng-click="email(event, $event)"></i>
+                    
         <div class="ui basic segment">
             <div class="header-container">
                 <div class="ui items">
@@ -55,7 +59,8 @@
                             </div>
                     </div>
                 </div>
-            </div>
+            </div>            
+
             <div class="ui divider"></div>
             <div class="ui basic segment">
                 <div ng-bind-html="event.description"></div>
@@ -125,7 +130,7 @@
             <div class="ui divider"></div>
             <div class="ui basic segment">
                 <h2 class="ui left aligned header event-header">
-                    <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/boat-2.png">
+                    <img class="ui mini image" src="images/boat-icon.png">
                 {{"event.theBoat" | translate}}
                 </h2>
                 <div class="ui divided items">
@@ -173,7 +178,8 @@
             
             <div class="ui basic segment" id="location">
                 <h2 class="ui left aligned header event-header">
-                    <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">
+                    <i class="map outline icon"></i>
+<!--                    <img class="ui mini image" src="http://simpleicon.com/wp-content/uploads/map-8.png">-->
                 {{"event.location" | translate}}
                 </h2>
                 <div class="angular-google-map-container">

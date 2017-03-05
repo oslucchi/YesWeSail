@@ -11,7 +11,7 @@ angular.module('yeswesailApp')
     .controller('CreateEventCtrl', function ($scope, ngDialog, $window, $http, URLs, MAPS, AuthService, Session) {
         $scope.tempEvent = {
           title: "",
-          eventType: "",
+          eventType: 1,
           shipOwnerId: "",
           categoryId: 1,
           eventId: null,
@@ -53,9 +53,15 @@ angular.module('yeswesailApp')
     
     
         $scope.EVENTTYPES=[];
+        $scope.CATEGORIES=[];
         
         MAPS.getMap('EVENTTYPES').then(function(res){
                      $scope.EVENTTYPES = res;   
+        }   
+        );
+        
+        MAPS.getMap('CATEGORIES').then(function(res){
+                     $scope.CATEGORIES = res;   
         }   
         );
     

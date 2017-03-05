@@ -58,6 +58,13 @@
         </div>
         <div class="field">
           
+            <select after-render="initializeSelect()" ng-model="tempEvent.categoryId" ng-options="eventCategory.categoryId as eventCategory.description for eventCategory in CATEGORIES" class="ui dropdown type item">
+                <option value="">{{"create.event.type" | translate}}</option>
+            </select>
+   
+        </div>
+          <div class="field">
+          
             <select ng-show="isAuthorized(9)" after-render="initializeSelect()" ng-model="tempEvent.eventType" ng-options="eventType.idEventTypes as eventType.description for eventType in EVENTTYPES" class="ui dropdown type item">
                 <option value="">{{"create.event.type" | translate}}</option>
             </select>
