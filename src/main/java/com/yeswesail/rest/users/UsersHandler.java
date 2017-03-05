@@ -46,6 +46,7 @@ import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.DocumentTypes;
 import com.yeswesail.rest.DBUtility.Documents;
+import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Roles;
@@ -489,7 +490,8 @@ public class UsersHandler {
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
-		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId))
+		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId) ||
+			(sd.getBasicProfile(token).getRoleId() != Roles.SHIP_OWNER))
 		{
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 			return Response.status(Response.Status.UNAUTHORIZED)
@@ -505,7 +507,7 @@ public class UsersHandler {
 			conn = DBInterface.connect();
 			eventsList = (ArrayList<Events>) Events.populateCollection(
 							"SELECT * FROM Events " +
-							"WHERE userId = " + userId + " " +
+							"WHERE shipownerId = " + userId + " " +
 							"ORDER BY dateStart DESC", Events.class);
 		}
 		catch (Exception e) 
@@ -1177,4 +1179,45 @@ public class UsersHandler {
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
+	@GET
+	@Path("/tickets")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response usersTickets(@HeaderParam("Authorization") String token)
+	{
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(token);
+		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId))
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(utils.jsonize())
+					.build();
+		}
+		
+		EventTicketsSold[] eventsList = null;
+		DBConnection conn = null;
+		int userId = sd.getBasicProfile(token).getIdUsers();
+		try 
+		{
+			conn = DBInterface.connect();
+			eventsList = EventTicketsSold.findTicketSoldToUser(userId, languageId);
+		}
+		catch (Exception e) 
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils ut = new Utils();
+		ut.addToJsonContainer("tickets", eventsList, true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
+	}
+
+	
 }

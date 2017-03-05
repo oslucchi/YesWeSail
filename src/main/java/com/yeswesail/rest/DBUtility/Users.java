@@ -255,7 +255,7 @@ public class Users extends DBInterface
 	public String getImageURL() {
 		if (imageURL == null)
 		{
-			return (prop.getWebHost() + "/images/users/default_icon.png");
+			return (prop.getWebHost() + "/images/users/default-icon.png");
 		}
 		else if (imageURL.startsWith("http"))
 		{
@@ -268,7 +268,7 @@ public class Users extends DBInterface
 	}
 
 	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
+		this.imageURL = imageURL.replaceAll(prop.getWebHost() + "/",  "");
 	}
 	
 	public boolean isAFakeEmail() {

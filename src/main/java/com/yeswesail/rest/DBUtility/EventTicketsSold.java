@@ -10,10 +10,15 @@ public class EventTicketsSold extends DBInterface
 	protected int idEventTicketsSold;
 	protected int eventTicketId;
 	protected int userId;
+	protected int eventId;
 	protected String transactionId;
-	protected Date timestamp;
 	protected String description;
+	protected Date timestamp;
 	protected int price;
+	protected String title;
+	protected Date dateStart;
+	protected Date dateEnd;
+	protected String location;
 
 	private void setNames()
 	{
@@ -77,6 +82,29 @@ public class EventTicketsSold extends DBInterface
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
+	public static EventTicketsSold[] findTicketSoldToUser(int userId, int languageId) throws Exception
+	{
+		String sql = "SELECT a.*, b.eventId, c.description, b.price, " +
+					 "       d.dateStart, d.dateEnd, d.location, e.description as title " +
+					 "FROM (EventTicketsDescription c INNER JOIN ( " +
+					 "       EventTicketsSold a INNER JOIN EventTickets b ON " +
+					 "         a.eventTicketId = b.idEventTickets " +
+					 "     ) ON " +
+					 "	      c.ticketType = b.ticketType AND " +
+					 "         c.languageId = " + languageId + ")  " +
+					 "	INNER JOIN " +
+					 "     (Events d INNER JOIN EventDescription e ON " +
+					 "        d.idEvents = e.eventId AND " +
+					 "        e.anchorZone = 0 AND " +
+					 "        e.languageId = " + languageId + ") ON " +
+					 "      b.eventId = e.eventId " +
+					 "WHERE a.userId = " + userId;
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTicketsSold> tickets = 
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
+	}
+
 	public int getIdEventTicketsSold() {
 		return idEventTicketsSold;
 	}
@@ -117,6 +145,22 @@ public class EventTicketsSold extends DBInterface
 		this.timestamp = timestamp;
 	}
 
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
+	}
+
+	public int getEventId() {
+		return eventId;
+	}
+
+	public void setEventId(int eventId) {
+		this.eventId = eventId;
+	}
+
 	public String getDescription() {
 		return description;
 	}
@@ -125,11 +169,35 @@ public class EventTicketsSold extends DBInterface
 		this.description = description;
 	}
 
-	public int getPrice() {
-		return price;
+	public String getTitle() {
+		return title;
 	}
 
-	public void setPrice(int price) {
-		this.price = price;
+	public void setTitle(String title) {
+		this.title = title;
+	}
+
+	public Date getDateStart() {
+		return dateStart;
+	}
+
+	public void setDateStart(Date dateStart) {
+		this.dateStart = dateStart;
+	}
+
+	public Date getDateEnd() {
+		return dateEnd;
+	}
+
+	public void setDateEnd(Date dateEnd) {
+		this.dateEnd = dateEnd;
+	}
+
+	public String getLocation() {
+		return location;
+	}
+
+	public void setLocation(String location) {
+		this.location = location;
 	}
 }

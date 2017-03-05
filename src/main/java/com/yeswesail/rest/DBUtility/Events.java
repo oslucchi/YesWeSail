@@ -359,7 +359,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	}
 
 	public void setImageURL(String imageURL) {
-		this.imageURL = imageURL;
+		this.imageURL = imageURL.replaceAll(prop.getWebHost() + "/",  "");
 	}
 
 	public int getShipOwnerId() {
