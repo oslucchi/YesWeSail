@@ -1,13 +1,18 @@
 package com.yeswesail.rest;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
+import com.yeswesail.rest.DBUtility.Events;
+import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.TicketLocks;
+import com.yeswesail.rest.DBUtility.Users;
 
 public class TicketReleaser extends Thread {
 	final Logger log = Logger.getLogger(this.getClass());
@@ -77,7 +82,7 @@ public class TicketReleaser extends Thread {
 	}
 	
     public void run() {
-    	
+    	HashMap<Integer, TicketLocks> pendingBuy = new HashMap<>();
 		Date now;
 		int count = 0;
 		log.trace("Ticket releaser Started");
@@ -90,14 +95,71 @@ public class TicketReleaser extends Thread {
         		TicketLocks[] tList = TicketLocks.findAll();
         		for(TicketLocks tl : tList)
         		{
-        			if ((tl.getLockTime() != null) && 
-        				(tl.getStatus().compareTo("P") == 0) &&
-        				(now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000))
+        			if (tl.getLockTime() == null)
+        				continue;
+        			switch(tl.getStatus())
         			{
-        				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
-        						  " eventTicketId " + tl.getEventTicketId() + 
-        		 				  " expired will be removed");
-        				release(tl);
+        			case "P":
+        				if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
+            			{
+            				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
+            						  " eventTicketId " + tl.getEventTicketId() + 
+            		 				  " expired will be removed");
+            				release(tl);
+            			}
+        				break;
+
+        			case "W":
+        				if (!pendingBuy.containsKey(tl.getIdTicketLocks()) && 
+        					(now.getTime() - tl.getLockTime().getTime() > prop.getSendMailOnTicketinWState() * 1000))
+            			{
+        					pendingBuy.put(tl.getIdTicketLocks(), tl);
+            				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
+            						  " eventTicketId " + tl.getEventTicketId() + 
+            		 				  " is in pending state since too long. Sending email to admin");
+            				EventTickets  et = new EventTickets(conn, tl.getEventTicketId());
+            				Events e = (et != null ? e = new Events(conn, et.getEventId()) : null);
+            				Users u = new Users(conn, tl.getUserId());
+            				
+            				String body =  "L'utente " + 
+		    							   u.getSurname() + " " + u.getName() +
+		        						   " ha tentato l'acquistato di un biglietto senza completare la procedura in " +
+		    							   (prop.getSendMailOnTicketinWState() / 60) + " minuti.<br/>" +
+		        						   "I riferimenti del cliente per il contatto sono:\n" +
+		    							   "<ul>" +
+		    							   "<li>email: " + u.getEmail() + "</li>" +
+		        						   "<li>telefono: " + u.getPhone1() + "</li>" +
+		    							   "</ul><br>";
+            				if (e != null)
+            				{
+            					Users so = new Users(conn, e.getShipOwnerId());
+            					SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy");
+            					body += "L'evento che aveva prenotato e' il seguente:<br>" + 
+            							"<ul>" +
+            							"<li>Id evento: " + e.getIdEvents() + "</li>" +
+            							"<li>Da: " + sf.format(e.getDateStart()) + " a: " + sf.format(e.getDateEnd()) + "</li>" +
+            							"<li>Imbarco: " + e.getLocation() + "</li>" +
+            							"<li>Armatore: " + so.getSurname() + " " + so.getName() + "</li>" +
+            							"</ul><br>";
+            				}
+            				body += "Contattare il cliente per controllare lo stato dell'acquisto e successivamente " +
+            						"il supporto tecnico, per ripristinare il corretto stato del biglietto";
+            				Mailer.sendMail(prop.getAdminEmail(), 
+            								"Biglietto in attesa completamento acquisto da troppo tempo", 
+            								body, null);
+
+            				PendingActions pa = new PendingActions();
+            				pa.setActionType("ticket lost");
+            				pa.setUserId(tl.getUserId());
+            				pa.setLink("rest/requests/ticketLost/" + tl.getIdTicketLocks());
+            				pa.setCreated(new Date());
+            				pa.setUpdated(pa.getCreated());
+            				pa.setStatus("P");
+            				pa.insert(conn, "idPendingActions", pa);
+
+            				log.debug("Mail sent");
+            			}
+        				break;
         			}
         		}
         		Thread.sleep(1000);

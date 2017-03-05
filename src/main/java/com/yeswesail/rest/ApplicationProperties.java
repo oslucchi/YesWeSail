@@ -21,6 +21,7 @@ public class ApplicationProperties {
 	private String noAuthorizationRequiredRoot = "";
 	private boolean useCoars = false;
 	private Double maxDistanceForEventsOnTheGround = 5.0;
+	private int sendMailOnTicketinWState = 900;
 
 	// package properties
 	private String mailSmtpHost = "";
@@ -129,6 +130,8 @@ public class ApplicationProperties {
     	{
     		variable = "releaseTicketLocksAfter";
     		releaseTicketLocksAfter = Integer.parseInt(properties.getProperty("releaseTicketLocksAfter"));
+    		variable = "sendMailOnTicketinWState";
+    		sendMailOnTicketinWState = Integer.parseInt(properties.getProperty("sendMailOnTicketinWState"));
     	}
     	catch(NumberFormatException e)
     	{
@@ -251,5 +254,10 @@ public class ApplicationProperties {
 
 	public String getContactsMailTo() {
 		return contactsMailTo;
-	}		
+	}
+
+	public int getSendMailOnTicketinWState() {
+		return sendMailOnTicketinWState;
+	}
+	
 }

@@ -24,9 +24,12 @@ import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
+import com.yeswesail.rest.DBUtility.EventTickets;
+import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.Reviews;
 import com.yeswesail.rest.DBUtility.Roles;
+import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
 
 @Path("/requests")
@@ -165,6 +168,54 @@ public class HandlePendingActions {
 			DBInterface.disconnect(conn);
 		}
 		utils.addToJsonContainer("review", review, true);
+		String json = utils.jsonize();
+		return Response.status(Response.Status.OK).entity(json).build();
+	}
+
+	@GET 
+	@Path("/ticketLost/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getTicketLost(@HeaderParam("Language") String language,
+								@HeaderParam("Authorization") String token,
+								@PathParam("id") int id)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		TicketLocks tl = null;
+		EventTickets et = null;
+		Events ev = null;
+		DBConnection conn = null;
+		try 
+		{
+			log.trace("Retrieving pending actions");
+			conn = DBInterface.connect();
+			tl = new TicketLocks(conn, id);
+			et = new EventTickets(conn, tl.getEventTicketId());
+			ev = new Events(conn, et.getEventId());
+			log.trace("Retrieval completed");
+		}
+		catch (Exception e) 
+		{
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		utils.addToJsonContainer("ticketLock", tl, true);
+		utils.addToJsonContainer("ticketDetails", et, false);
+		utils.addToJsonContainer("event", ev, false);
 		String json = utils.jsonize();
 		return Response.status(Response.Status.OK).entity(json).build();
 	}
