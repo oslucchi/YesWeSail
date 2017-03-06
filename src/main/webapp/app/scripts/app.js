@@ -47,8 +47,8 @@ angular.module('yeswesailApp', [
     , SHIPOWNER: 6
     , ADMIN: 9
 }).constant('URLs', {
-    // ddns: 'http://prod.yeswesail.com/'
-	ddns: 'http://test.yeswesail.com/'
+     ddns: 'http://prod.yeswesail.com/'
+//	ddns: 'http://test.yeswesail.com/'
     // ddns: 'http://lucchinis.ddns.com:8080/YesWeSail/'
     // ddns: 'http://localhost:8080/YesWeSail/'
 }).constant('LOCALES', {

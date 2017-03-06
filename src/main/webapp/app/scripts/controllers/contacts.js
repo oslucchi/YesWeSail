@@ -15,8 +15,10 @@ angular.module('yeswesailApp').controller('ContactsCtrl', function ($scope, $htt
    }
     
     $scope.sendEmail=function(email){
-       $http.post(URLs.ddns+'users/contacts', email).then(function(res){
+       
+       $http.post(URLs.ddns+'rest/users/contacts', email).then(function(res){
            toastr.success(res.data.message)
+           $scope.message=res.data.message;
        }, function(err){
            toastr.error(err.data.error)
        })

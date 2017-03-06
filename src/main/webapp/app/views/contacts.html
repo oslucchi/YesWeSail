@@ -25,16 +25,16 @@
   
   <tbody>
     <tr>
-      <td><i class="call icon"></i> Phone</td>
-      <td>+39 0212345649</td>
+      <td><i class="map outline icon"></i>Address</td>
+        <td><a target="_blank" href="https://maps.google.com/?q=Via Gaspare Spontini 5, 20131 Milano">Via Gaspare Spontini 5, 20131 Milano</a></td>
     </tr>
     <tr>
       <td><i class="mobile icon"></i>Mobile</td>
-      <td>+39 3895369222</td>
+        <td><a href="tel: +393287526298">+39 3287526298</a></td>
     </tr>
     <tr>
       <td><i class="mail icon"></i>Email</td>
-      <td>info@yeswesail.com</td>
+      <td><a href="mailto: info@yeswesail.com">info@yeswesail.com</a></td>
     </tr>
   </tbody>
 </table>
@@ -57,7 +57,7 @@
       </div>
       </div>
 </h4>
-        <form class="ui form" name="contactsForm" novalidate ng-submit="contactsForm.$valid && sendEmail(email)">
+        <form ng-hide="message" class="ui form" name="contactsForm" novalidate ng-submit="contactsForm.$valid && sendEmail(email)">
             {{loginform.$valid}}
           <div class="field" ng-class="{'error': contactsForm.name.$invalid && contactsForm.name.$dirty}">
             <label>Name</label>
@@ -84,5 +84,8 @@
 -->
           <input class="ui button" type="submit" value="Send">
         </form>
+        <div class="ui success message" ng-show="message">
+          <p>{{message}}</p>
+        </div>
     </div>
 </div>
