@@ -1,6 +1,7 @@
 package com.yeswesail.rest;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -11,10 +12,12 @@ import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.Events;
 import com.yeswesail.rest.DBUtility.PendingActions;
+import com.yeswesail.rest.DBUtility.RegistrationConfirm;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
 
 public class TicketReleaser extends Thread {
+	final long DAY_DURATION = 60 * 60 * 24 * 1000;
 	final Logger log = Logger.getLogger(this.getClass());
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	private DBConnection conn;
@@ -81,7 +84,8 @@ public class TicketReleaser extends Thread {
 		Thread.currentThread().interrupt();
 	}
 	
-    public void run() {
+    @SuppressWarnings("unchecked")
+	public void run() {
     	HashMap<Integer, TicketLocks> pendingBuy = new HashMap<>();
 		Date now;
 		int count = 0;
@@ -162,6 +166,21 @@ public class TicketReleaser extends Thread {
         				break;
         			}
         		}
+        		
+        		ArrayList<RegistrationConfirm> rcList = 
+        				(ArrayList<RegistrationConfirm>) RegistrationConfirm.populateCollection(
+    										"SELECT * FROM RegistrationConfirm " +
+    										"WHERE status = 'A'", RegistrationConfirm.class);
+        		for(RegistrationConfirm rc : rcList)
+        		{
+    				if ((now.getTime() - rc.getCreated().getTime()) > 5 * DAY_DURATION)
+    				{
+    	        		log.debug("marked confirmation id " + rc.getIdRegistrationConfirm());
+    					rc.setStatus("E");
+    					rc.update(conn, "idRegistrationConfirm");
+    				}
+        		}
+        				
         		Thread.sleep(1000);
         		if (++count == 60)
         		{

@@ -29,6 +29,7 @@ public class YesWeSail implements ServletContextListener {
 		prop = ApplicationProperties.getInstance();
 		log.debug("arg0 servlet context " + arg0.getServletContext());
 		prop.setContext(arg0.getServletContext());
+
         if (prop.isStartReleaser() && ((releaser == null) || !releaser.isAlive()))
         {
     		log.debug("starting ticket releaser");

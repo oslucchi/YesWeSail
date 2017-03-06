@@ -22,6 +22,8 @@ public class ApplicationProperties {
 	private boolean useCoars = false;
 	private Double maxDistanceForEventsOnTheGround = 5.0;
 	private int sendMailOnTicketinWState = 900;
+	private String URLFilterFiles = "";
+	private String URLFilterFolders = "";
 
 	// package properties
 	private String mailSmtpHost = "";
@@ -81,6 +83,8 @@ public class ApplicationProperties {
     	defaultLang = properties.getProperty("defaultLang");
     	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
     	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
+    	URLFilterFiles = properties.getProperty("URLFilterFiles");
+    	URLFilterFolders = properties.getProperty("URLFilterFolders");
 		useCoars = Boolean.parseBoolean(properties.getProperty("useCoars"));
     	try
     	{
@@ -258,6 +262,14 @@ public class ApplicationProperties {
 
 	public int getSendMailOnTicketinWState() {
 		return sendMailOnTicketinWState;
+	}
+
+	public String[] getURLFilterFiles() {
+		return URLFilterFiles.split(",");
+	}
+
+	public String[] getURLFilterFolders() {
+		return URLFilterFolders.split(",");
 	}
 	
 }
