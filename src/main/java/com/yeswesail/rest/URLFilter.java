@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 public class URLFilter implements Filter{
 	private final Logger log = (Logger) Logger.getLogger(getClass());
+	private final ApplicationProperties prop = ApplicationProperties.getInstance();
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException 
 	{
@@ -31,18 +32,25 @@ public class URLFilter implements Filter{
 					.forward(servletRequest, servletResponse);
 			return;
 		}
-		else if (path.equals("/") || path.equals("/index.html") ||
-				 path.startsWith("/bower_components") || 
-				 path.startsWith("/images") || 
-				 path.startsWith("/resources") || 
-				 path.startsWith("/scripts") || 
-				 path.startsWith("/styles") || 
-				 path.startsWith("/views"))
+		else
 		{
-			chain.doFilter(servletRequest, servletResponse);
-			return;
-		}
-		
+			for(String checkPath : prop.getURLFilterFiles())
+			{
+				if (path.equals(checkPath))
+				{
+					chain.doFilter(servletRequest, servletResponse);
+					return;
+				}
+			}
+			for(String checkPath : prop.getURLFilterFolders())
+			{
+				if (path.startsWith(checkPath))
+				{
+					chain.doFilter(servletRequest, servletResponse);
+					return;
+				}
+			}
+		}		
 		log.debug("request " + path + " must be handled. forwarding to index.html");
 		servletRequest.getRequestDispatcher("/index.html").forward(servletRequest, servletResponse);
 	}

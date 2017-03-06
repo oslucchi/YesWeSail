@@ -1175,8 +1175,8 @@ public class UsersHandler {
 		{
 			DBInterface.disconnect(conn);
 		}
-
-		return Response.status(Response.Status.OK).entity("{}").build();
+		utils.addToJsonContainer("message", LanguageResources.getResource(languageId, "mailer.sentOk"), true);
+		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 	}
 
 	@GET
