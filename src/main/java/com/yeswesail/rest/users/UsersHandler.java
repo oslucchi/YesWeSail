@@ -481,51 +481,6 @@ public class UsersHandler {
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 	
-	@SuppressWarnings("unchecked")
-	@GET
-	@Path("events")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response usersEvents(@HeaderParam("Authorization") String token)
-	{
-		SessionData sd = SessionData.getInstance();
-		int languageId = sd.getLanguage(token);
-		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId) ||
-			(sd.getBasicProfile(token).getRoleId() != Roles.SHIP_OWNER))
-		{
-			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(utils.jsonize())
-					.build();
-		}
-		
-		ArrayList<Events> eventsList = null;
-		DBConnection conn = null;
-		int userId = sd.getBasicProfile(token).getIdUsers();
-		try 
-		{
-			conn = DBInterface.connect();
-			eventsList = (ArrayList<Events>) Events.populateCollection(
-							"SELECT * FROM Events " +
-							"WHERE shipownerId = " + userId + " " +
-							"ORDER BY dateStart DESC", Events.class);
-		}
-		catch (Exception e) 
-		{
-			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(utils.jsonize())
-					.build();
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-		Utils ut = new Utils();
-		ut.addToJsonContainer("events", eventsList, true);
-		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
-	}
-
 	@POST
     @Path("/{userId}/profilePic")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -1178,15 +1133,62 @@ public class UsersHandler {
 		utils.addToJsonContainer("message", LanguageResources.getResource(languageId, "mailer.sentOk"), true);
 		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 	}
-
+	
 	@GET
-	@Path("/tickets")
+	@Path("/{userId}/events")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response usersTickets(@HeaderParam("Authorization") String token)
+	public Response usersEvents(@HeaderParam("Authorization") String token,
+								@HeaderParam("Language") String language,
+								@PathParam("userId") int userId)
+	{
+		Events[] eventsList = null;
+		DBConnection conn = null;
+		int languageId = Utils.setLanguageId(language);
+		
+		try 
+		{
+			conn = DBInterface.connect();
+			Users u = new Users(conn, userId);
+			if (!Utils.userSelfOrAdmin(token, userId,languageId) ||
+				(u.getRoleId() != Roles.SHIP_OWNER))
+			{
+				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(utils.jsonize())
+						.build();
+			}
+		
+			eventsList = Events.findByFilter(
+							"WHERE shipownerId = " + userId + " " +
+							"ORDER BY dateStart DESC", languageId);
+		}
+		catch (Exception e) 
+		{
+			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+					.entity(utils.jsonize())
+					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		Utils ut = new Utils();
+		ut.addToJsonContainer("events", eventsList, true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
+	}
+
+	@GET
+	@Path("/{userId}/tickets")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response usersTickets(@HeaderParam("Authorization") String token,
+								 @PathParam("userId") int userId)
 	{
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
+		// verifcare test
 		if (!Utils.userSelfOrAdmin(token, sd.getBasicProfile(token).getIdUsers(),languageId))
 		{
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
@@ -1197,7 +1199,7 @@ public class UsersHandler {
 		
 		EventTicketsSold[] eventsList = null;
 		DBConnection conn = null;
-		int userId = sd.getBasicProfile(token).getIdUsers();
+		// int userId = sd.getBasicProfile(token).getIdUsers();
 		try 
 		{
 			conn = DBInterface.connect();
@@ -1217,7 +1219,5 @@ public class UsersHandler {
 		Utils ut = new Utils();
 		ut.addToJsonContainer("tickets", eventsList, true);
 		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
-	}
-
-	
+	}	
 }
