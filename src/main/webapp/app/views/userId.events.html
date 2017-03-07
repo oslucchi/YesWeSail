@@ -1,1 +1,61 @@
-{{userEvents}}
+<div class="ui top menu">
+  <div class="item">
+     <div class="ui checkbox">
+          <input ng-model="past" type="checkbox" name="example">
+          <label>Include past events</label>
+        </div>
+    </div>
+    
+  <div class="right menu">
+
+   <select ng-model="sortValue" class="ui dropdown item" dropdown-menu action="activate">
+  <option value="dateStart">Date</option>
+  <option value="title">Title</option>
+  <option value="location">Location</option>
+  <option value="status">Status</option>
+</select>
+      
+      <div class="item">
+        <i ng-click="toggleSortDirection()" class="sort content icon link" ng-class="{'ascending': sortDirection=='-', 'descending': sortDirection==''}"></i>
+      </div>
+   
+     
+     
+      
+    <div class="ui right aligned item">
+      <div class="ui transparent icon input">
+        <input ng-model="searchTitle" type="text" placeholder="Search events...">
+        <i class="search icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui divided items">
+  <div class="item" ng-if="past || isPast(event.dateStart)" ng-repeat="event in userEvents | filter: {title: searchTitle} | orderBy:sortValueComposed track by $index">
+    <div ui-sref="event({eventId: event.idEvents})" class="image">
+      <img ng-src="{{event.imageURL}}">
+    </div>
+    <div class="content">
+      <a ui-sref="event({eventId: event.idEvents})" class="header">{{event.title}}</a>
+      <div class="meta">
+        <p>{{event.location}}</p>
+        <span>{{event.dateStart | date:  'yyyy/MM/dd'}} - {{event.dateEnd | date:  'yyyy/MM/dd'}}</span>
+      </div>
+      <div class="description">
+        <p></p>
+      </div>
+      <div class="extra">
+        Status: <div class="ui label" ng-class="{'green': event.status==='A', 'yellow': event.status==='P'}">
+          {{event.status}}
+          </div>
+              <div ng-click="showClonePopup(event)" class="ui right floated primary button">
+          Clone
+        </div>
+          <div ui-sref="editEvent({eventId: event.idEvents})" class="ui right floated primary button">
+          Edit
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

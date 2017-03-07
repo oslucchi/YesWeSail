@@ -1,0 +1,52 @@
+<div class="ui top menu">
+  <div class="item">
+     <div class="ui checkbox">
+          <input ng-model="past" type="checkbox" name="example">
+          <label>Include past tickets</label>
+        </div>
+    </div>
+    
+  <div class="right menu">
+
+   <select ng-model="sortValue" class="ui dropdown item" dropdown-menu action="activate">
+  <option value="dateStart">Date</option>
+  <option value="title">Title</option>
+  <option value="location">Location</option>
+</select>
+      
+      <div class="item">
+        <i ng-click="toggleSortDirection()" class="sort content icon link" ng-class="{'ascending': sortDirection=='-', 'descending': sortDirection==''}"></i>
+      </div>
+   
+     
+     
+      
+    <div class="ui right aligned item">
+      <div class="ui transparent icon input">
+        <input ng-model="searchTitle" type="text" placeholder="Search tickets...">
+        <i class="search icon"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="ui divided items">
+  <div class="item" ng-if="past || isPast(ticket.dateStart)" ng-repeat="ticket in userTickets | filter: {title: searchTitle} | orderBy:sortValueComposed track by $index">
+    <div ui-sref="event({eventId: ticket.eventId})" class="image">
+      <img ng-src="{{tickets.imageURL}}">
+    </div>
+    <div class="content">
+      <a ui-sref="event({eventId: ticket.eventId})" class="header">{{ticket.title}}</a>
+      <div class="meta">
+        <p>{{ticket.location}} - <span>{{ticket.dateStart | date:  'yyyy/MM/dd'}} - {{ticket.dateEnd | date:  'yyyy/MM/dd'}}</span></p>
+        
+      </div>
+      <div class="description">
+          <p>{{ticket.description}}</p>
+          <p>{{ticket.price}}€</p>
+      </div>
+      <div class="extra">
+          <p>{{ticket.transactionId}}</p>
+    </div>
+  </div>
+</div>

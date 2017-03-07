@@ -195,7 +195,12 @@ angular.module('yeswesailApp', [
     }).state('userId.events', {
         url: "/events"
         , templateUrl: 'views/userId.events.html'
-        , controller: 'UseridCtrl'
+        , controller: 'UseridEventsCtrl'
+        , accessLevel: USER_ROLES.TRAVELLER
+    }).state('userId.tickets', {
+        url: "/tickets"
+        , templateUrl: 'views/userId.tickets.html'
+        , controller: 'UseridTicketsCtrl'
         , accessLevel: USER_ROLES.TRAVELLER
     }).state('contacts', {
         url: "/contacts"
