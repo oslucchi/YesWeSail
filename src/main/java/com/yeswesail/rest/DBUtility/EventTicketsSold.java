@@ -3,6 +3,8 @@ package com.yeswesail.rest.DBUtility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.yeswesail.rest.Constants;
+
 public class EventTicketsSold extends DBInterface
 {	
 	private static final long serialVersionUID = -643395528484801051L;
@@ -19,6 +21,7 @@ public class EventTicketsSold extends DBInterface
 	protected Date dateStart;
 	protected Date dateEnd;
 	protected String location;
+	protected String imageURL;
 
 	private void setNames()
 	{
@@ -26,6 +29,22 @@ public class EventTicketsSold extends DBInterface
 		idColName = "idEventTicketsSold";
 	}
 
+	private static void fillRecorsFound(ArrayList<EventTicketsSold> list, int languageId) throws Exception
+	{
+		for(EventTicketsSold ev : list)
+		{
+			Events[] events = Events.findByFilter("WHERE idEvents = " + ev.getEventId(), languageId);
+			for(Events item : events)
+			{
+				ev.dateStart = item.getDateStart();
+				ev.dateEnd = item.getDateEnd();
+				ev.title = item.getTitle();
+				ev.location = item.getLocation();
+				ev.imageURL = item.getImageURL();
+			}
+		}
+	}
+	
 	public EventTicketsSold() throws Exception
 	{
 		setNames();
@@ -38,6 +57,13 @@ public class EventTicketsSold extends DBInterface
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
+		EventTickets et = new EventTickets(conn, eventTicketId);
+		Events e = new Events(conn, et.getEventId());
+		dateStart = e.getDateStart();
+		dateEnd = e.getDateEnd();
+		location = e.getLocation();
+		imageURL = e.getImageURL();
+		title = e.getTitle();
 	}
 
 	public static Users[] findParticipants(int eventId) throws Exception
@@ -67,6 +93,7 @@ public class EventTicketsSold extends DBInterface
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
 			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		fillRecorsFound(tickets, languageId);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
@@ -79,29 +106,24 @@ public class EventTicketsSold extends DBInterface
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
 			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		fillRecorsFound(tickets, Constants.LNG_IT);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
 	public static EventTicketsSold[] findTicketSoldToUser(int userId, int languageId) throws Exception
 	{
-		String sql = "SELECT a.*, b.eventId, c.description, b.price, " +
-					 "       d.dateStart, d.dateEnd, d.location, e.description as title " +
+		String sql = "SELECT a.*, b.eventId, c.description, b.price " +
 					 "FROM (EventTicketsDescription c INNER JOIN ( " +
-					 "       EventTicketsSold a INNER JOIN EventTickets b ON " +
-					 "         a.eventTicketId = b.idEventTickets " +
-					 "     ) ON " +
+					 "        EventTicketsSold a INNER JOIN EventTickets b ON " +
+					 "          a.eventTicketId = b.idEventTickets " +
+					 "        ) ON " +
 					 "	      c.ticketType = b.ticketType AND " +
-					 "         c.languageId = " + languageId + ")  " +
-					 "	INNER JOIN " +
-					 "     (Events d INNER JOIN EventDescription e ON " +
-					 "        d.idEvents = e.eventId AND " +
-					 "        e.anchorZone = 0 AND " +
-					 "        e.languageId = " + languageId + ") ON " +
-					 "      b.eventId = e.eventId " +
+					 "        c.languageId = " + languageId + ")  " +
 					 "WHERE a.userId = " + userId;
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
 			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
+		fillRecorsFound(tickets, languageId);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
@@ -200,4 +222,14 @@ public class EventTicketsSold extends DBInterface
 	public void setLocation(String location) {
 		this.location = location;
 	}
+
+	public String getImageURL() {
+		return imageURL;
+	}
+
+	public void setImageURL(String imageURL) {
+		this.imageURL = imageURL;
+	}
+	
+	
 }
