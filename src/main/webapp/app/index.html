@@ -56,14 +56,14 @@
             <a href="/" class="item"> <img src="images/cropped-cropped-YWS-60x70.png"> </a>
             <div class="right menu">
                 <div class="ui item">
-                     <div dropdown-selection ng-model="language" class="ui language dropdown">
+                     <div dropdown-selection ng-model="language" class="ui language labeled icon dropdown">
                       <input type="hidden" name="language">
                       <div class="default text">{{"index.language" | translate}}</div>
 	                      <div class="menu">
 	                        <div ng-click="changeLanguage('it_IT')" class="item" data-value="it_IT" ><i style="
-    margin-right: 0px;" class="it flag"></i></div>
-	                        <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag"></i></div>
-	                        <div ng-click="changeLanguage('de_DE')" class="item" data-value="de_DE" ><i class="de flag"></i></div>
+    margin-right: 0px;" class="it flag lang-icon"></i></div>
+	                        <div ng-click="changeLanguage('en_US')" class="item" data-value="en_US"><i class="gb flag lang-icon"></i></div>
+	                        <div ng-click="changeLanguage('de_DE')" class="item" data-value="de_DE" ><i class="de flag lang-icon"></i></div>
 						  </div>
                     </div>
                 </div>

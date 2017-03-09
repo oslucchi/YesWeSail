@@ -18,8 +18,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     var bDisabled = false;
     $scope.tDisabled = false;
     $scope.minDate = new Date();
-    var unsavedWork = false;
-    
+    $scope.eventLoading=true;
+    var firstTimeIn=true;
       AuthService.isAuthenticated().then(function (res) {
                     if (!res) {
                         $rootScope.$broadcast('LoginRequired', $state);
@@ -29,7 +29,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 }, function (err) {})
     
     $scope.$on('$stateChangeStart', function (event, next, current) {
-        if (unsavedWork) {
+        if ($scope.eventForm.$dirty) {
             var answer = confirm($translate.instant('global.leaveMessage'));
             if (!answer) {
                 event.preventDefault();
@@ -61,6 +61,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             //        }
     };
     $scope.getEvent = function () {
+        $scope.eventLoading=true;
         $http.post(URLs.ddns + 'rest/events/details', {
             eventId: $stateParams.eventId
         }, {
@@ -69,7 +70,10 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 , 'Language': $scope.selectedLanguage
             }
         }).then(function (res) {
-            
+            $timeout(function(){
+                $scope.eventLoading=false;
+            }, 1500)
+            $scope.eventForm.$setPristine();
             $("#cover-img").css('background-image', 'url("'+res.data.event.imageURL+'")')
             $scope.event = res.data.event;
             if (res.data.event.dateStart == -3600000) {
@@ -88,7 +92,9 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.imagesMedium = res.data.imagesMedium;
             $scope.imagesLarge = res.data.imagesLarge;
             $scope.tickets = res.data.tickets;
-            $scope.selectedLanguage=res.data.event.locale;
+            if(firstTimeIn){
+                $scope.selectedLanguage=res.data.event.locale;
+            }
             $scope.participants = res.data.participants;
             $scope.logistics = res.data.logistics;
             $scope.includes = res.data.includes;
@@ -454,7 +460,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                     'Language': $scope.selectedLanguage
                 }
             }).then(function (res) {
-                unsavedWork = false;
+                $scope.eventForm.$setPristine();
                 toastr.success($translate.instant('createeventid.saved'));
             }, function (err) {
                 toastr.error($translate.instant('global.updateError', {
@@ -534,7 +540,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         };
     };
     $scope.setLanguage = function (lang) {
-        if (unsavedWork) {
+        firstTimeIn=false;
+        if ($scope.eventForm.$dirty) {
             var answer = confirm($translate.instant('global.changeLanguage'));
             if (!answer) {
                 event.preventDefault();
@@ -543,13 +550,13 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                 $scope.saveEvent();
                 $scope.selectedLanguage = lang;
                 $scope.getEvent();
-                unsavedWork = false;
+       
             }
         }
         else {
             $scope.selectedLanguage = lang;
             $scope.getEvent();
-            unsavedWork = false;
+          
         }
     };
     angular.element('.ui.language.dropdown').dropdown({
@@ -588,9 +595,9 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
         }
         return true;
     }
-    $scope.$watchCollection('[event, event.location, event.dateStart, event.dateEvent, event.title, description, logistics, includes, excludes, route, participants, tickets, seletedBoat]', function (newVal, oldVal, scope) {
-        if (newVal != oldVal && !isArrayContentUndefined(oldVal) && newVal[0].languageId === oldVal[0].languageId) {
-            unsavedWork = true;
-        }
-    })
+//    $scope.$watchCollection('[event, event.location, event.dateStart, event.dateEvent, event.title, description, logistics, includes, excludes, route, participants, tickets, seletedBoat]', function (newVal, oldVal, scope) {
+//        if (newVal != oldVal && !isArrayContentUndefined(oldVal) ) {
+//            unsavedWork = true;
+//        }
+//    })
 });

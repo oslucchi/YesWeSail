@@ -300,6 +300,30 @@ angular.module('yeswesailApp', [
     //             });
     //            }
     //  });
+}).directive('dropdownSimple', function ($timeout) {
+    return {
+        restrict: "A"
+        , link: function (scope, elm, attr) {
+            $timeout(function () {
+                $(elm).dropdown().dropdown('setting', {
+                    action: attr.action || 'activate'
+                     , onChange: function (value) {
+                        scope.$parent[attr.ngModel] = value;
+                        scope.$parent.$apply();
+                    }
+                });
+            }, 0);
+//                 scope.$watch(attr.ngModel, function (value) {
+//                $timeout(function () {
+//                    var selected = $(elm).dropdown('get value');
+//                    if (value != selected[0] && value != undefined && !!value) {
+//                        $(elm).dropdown('set selected', value);
+//                    }
+//                }, 0);
+//            }, true);
+           
+        }
+    };
 }).directive('dropdown', function ($timeout) {
     return {
         restrict: "A"
