@@ -851,6 +851,11 @@ public class DBInterface implements Serializable
     	return conn;
 	}
 
+	public static void TransactionStart(DBConnection conn ) throws Exception
+	{
+		conn.executeQuery("START TRANSACTION");
+	}
+
 	public static void TransactionCommit(DBConnection conn) throws Exception 
 	{
 		conn.executeQuery("COMMIT");

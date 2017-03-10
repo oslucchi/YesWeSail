@@ -22,10 +22,9 @@ public class TicketReleaser extends Thread {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	private DBConnection conn;
 
-	private void release(TicketLocks tl) throws Exception
+	private void release(TicketLocks tl, DBConnection transaction) throws Exception
 	{
 		EventTickets[] ticketsToRelease;
-		DBConnection transaction = null;
 
 		EventTickets et = new EventTickets(conn, tl.getEventTicketId());
 		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
@@ -40,7 +39,7 @@ public class TicketReleaser extends Thread {
 		}
 		try
 		{
-			transaction = DBInterface.TransactionStart();
+			DBInterface.TransactionStart(transaction);
 			for(EventTickets item : ticketsToRelease)
 			{
 				try
@@ -109,7 +108,7 @@ public class TicketReleaser extends Thread {
             				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
             						  " eventTicketId " + tl.getEventTicketId() + 
             		 				  " expired will be removed");
-            				release(tl);
+            				release(tl, conn);
             			}
         				break;
 

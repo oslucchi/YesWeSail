@@ -1286,6 +1286,9 @@ public class EventsHandler {
 				continue;
 			for(TicketJson t : jsonIn[y])
 			{
+				if (t == null)
+					continue;
+				
 				et = null;
 				for(int i = 0; i < eventTickets.length; i++)
 				{
