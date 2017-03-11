@@ -50,9 +50,9 @@ angular.module('yeswesailApp')
 
         authService.isAuthenticated = function () {
             return $http.get(URLs.ddns+'rest/auth/isAuthenticated').then(function(res){
-                return res.data.authorized;
+                return true;
             }, function(res){
-                return res.data.authorized;
+                return false;
             });
         };
 

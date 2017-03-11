@@ -81,7 +81,7 @@ public class Authorizer implements ContainerRequestFilter
 		catch (Exception e) {
 			log.warn("Exception '" + e.getMessage() + "' retrieving token '" + token + "'. Returning anauthorized");
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-					.entity("{ 'error' : 'Token not recognized' }")
+					.entity("{ error : 'Token not recognized' }")
 					.build());;
 		}
 		log.trace("Request on '" + path + "' language " + language + " authorized");

@@ -101,7 +101,9 @@ angular.module('yeswesailApp')
                  cartService.bookedTickets=res.data.tickets;
                  cartService.cartExpires = res.data.expiring;
                     return res;
-                });
+                }, function(err){
+                 console.log(err);
+             });
         };
 
         cartService.emptyCart = function () {
