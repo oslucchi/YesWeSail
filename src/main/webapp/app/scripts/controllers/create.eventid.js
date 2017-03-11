@@ -457,6 +457,16 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
             $scope.tempEvent.route = [];
             $scope.tempEvent.participants = $scope.participants;
             $scope.tempEvent.labels = [];
+            
+            for(var row=0; row<$scope.tempTickets.length; row++){
+                if($scope.tempTickets[row]){
+                    for(var col=0; col<$scope.tempTickets[row].length; col++){
+                        if($scope.tempTickets[row][col] && $scope.tempTickets[row][col].price===""){
+                            $scope.tempTickets[row][col]=null;
+                        }
+                    }
+                }
+            }
             $scope.tempEvent.tickets = $scope.tempTickets;
             $scope.tempEvent.boatId = $scope.selectedBoat.idBoats;
             angular.forEach($scope.markers, function (val, key) {
