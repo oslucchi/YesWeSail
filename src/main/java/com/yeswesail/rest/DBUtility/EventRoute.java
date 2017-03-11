@@ -49,6 +49,23 @@ public class EventRoute extends DBInterface
 		return(route.toArray(new EventRoute[route.size()]));
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static EventRoute findByRouteCoordinates(DBConnection conn, int eventId, String lat, String lng) throws Exception 
+	{
+		
+		String sql = "SELECT * " +
+				 	 "FROM EventRoute " +
+				 	 "WHERE eventId = " + eventId + " AND " +
+				 	 "      lat = '" + lat + "' AND " +
+				 	 "      lng = '" + lng + "' ";
+		ArrayList<EventRoute> route = 
+				(ArrayList<EventRoute>) EventRoute.populateCollection(sql, EventRoute.class);
+		if (route.size() == 0)
+			return null;
+		
+		return(route.get(0));
+	}
+	
 	public static void deleteOnWhere(String whereClause) throws Exception
 	{
 		DBConnection conn = null;

@@ -987,26 +987,63 @@ public class EventsHandler {
 	{
 		EventRoute er =  new EventRoute();
 
+		ArrayList<EventRoute> retainPoints = new ArrayList<>();
+		EventRoute erTemp = null;
+		for(EventRouteJson item : jsonIn.route)
+		{
+			if (item == null)
+				continue;
+			erTemp = EventRoute.findByRouteCoordinates(conn, jsonIn.eventId, item.lat, item.lng);
+			if (erTemp != null)
+			{
+				retainPoints.add(erTemp);
+			}
+		}
+		
+		String sql = "WHERE eventId = " + jsonIn.eventId;
+		String sep = "";
+		if (retainPoints.size() > 0)
+		{
+			sql += " AND " +
+				   "      seq NOT IN (";
+			for(EventRoute item : retainPoints)
+			{
+				sql += sep + item.getSeq();
+				sep = ", ";
+			}
+			sql += ")";
+		}
+
 		try
 		{
-			er.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId);
+			er.deleteOnWhere(conn, sql);
 		}
 		catch(Exception e)
 		{
 			;
 		}
 
-		int seq = 0;
 		for(EventRouteJson item : jsonIn.route)
 		{
 			if (item == null)
 				continue;
-			er.setDescription(item.description);
-			er.setEventId(jsonIn.idEvents);
-			er.setLat(item.lat);
-			er.setLng(item.lng);
-			er.setSeq(seq++);
-			er.insert(conn, "idEventRoute", er);
+			erTemp = EventRoute.findByRouteCoordinates(conn, jsonIn.eventId, item.lat, item.lng);
+			if (erTemp != null)
+			{
+				erTemp.setDescription(item.description);
+				erTemp.setSeq(item.seq);
+				erTemp.update(conn, "idEventRoute");
+			}
+			else
+			{
+				er = new EventRoute();
+				er.setDescription(item.description);
+				er.setEventId(jsonIn.idEvents);
+				er.setLat(item.lat);
+				er.setLng(item.lng);
+				er.setSeq(item.seq);
+				er.insert(conn, "idEventRoute", er);
+			}
 		}
 
 	}
