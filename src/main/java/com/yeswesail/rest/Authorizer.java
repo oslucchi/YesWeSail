@@ -80,8 +80,10 @@ public class Authorizer implements ContainerRequestFilter
 		} 
 		catch (Exception e) {
 			log.warn("Exception '" + e.getMessage() + "' retrieving token '" + token + "'. Returning anauthorized");
+			Utils ut = new Utils();
+			ut.addToJsonContainer("authorized", "false", true);
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
-					.entity("{ error : 'Token not recognized' }")
+					.entity(ut.jsonize())
 					.build());;
 		}
 		log.trace("Request on '" + path + "' language " + language + " authorized");

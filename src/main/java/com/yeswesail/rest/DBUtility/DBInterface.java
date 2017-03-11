@@ -578,6 +578,11 @@ public class DBInterface implements Serializable
 
     public static ArrayList<?> populateCollection(String sql, Class<?> objClass) throws Exception
 	{
+		return populateCollection(sql, logStatement, objClass);
+	}
+
+    public static ArrayList<?> populateCollection(String sql, boolean logStatement, Class<?> objClass) throws Exception
+	{
     	String retVal = null;
     	ArrayList<Object> aList = new ArrayList<Object>();
     	

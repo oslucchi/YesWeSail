@@ -82,7 +82,7 @@ public class TicketLocks extends DBInterface
 		String sql = "SELECT a.* " +
 					 "FROM TicketLocks a INNER JOIN EventTickets b ON " +
 					 "     a.eventTicketId = b.idEventTickets ";
-		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		tickets = (ArrayList<TicketLocks>) populateCollection(sql, logStatement, TicketLocks.class);
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 	

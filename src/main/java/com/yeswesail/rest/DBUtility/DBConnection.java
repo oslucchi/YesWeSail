@@ -103,7 +103,10 @@ public class DBConnection
 	
 	public void executeQuery(String sql, boolean logStatement) throws Exception
 	{
-		log.debug("executing query '"  + sql + "'");
+		if (logStatement) 
+		{
+			log.debug("executing query '"  + sql + "'");
+		}
 
 		StringTokenizer stok = new StringTokenizer(sql);
 		String queryType = "";
@@ -126,7 +129,10 @@ public class DBConnection
 			{
 				rs = st.executeQuery(sql);
 				rsm = rs.getMetaData();
-				if (logStatement) log.debug("Done. Retrived " + rs.getFetchSize() + " rows");		
+				if (logStatement) 
+				{
+					log.debug("Done. Retrived " + rs.getFetchSize() + " rows");		
+				}
 			}
 		}
 		catch(Exception e)

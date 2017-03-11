@@ -169,7 +169,7 @@ public class TicketReleaser extends Thread {
         		ArrayList<RegistrationConfirm> rcList = 
         				(ArrayList<RegistrationConfirm>) RegistrationConfirm.populateCollection(
     										"SELECT * FROM RegistrationConfirm " +
-    										"WHERE status = 'A'", RegistrationConfirm.class);
+    										"WHERE status = 'A'", false, RegistrationConfirm.class);
         		for(RegistrationConfirm rc : rcList)
         		{
     				if ((now.getTime() - rc.getCreated().getTime()) > 5 * DAY_DURATION)
