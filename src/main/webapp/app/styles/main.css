@@ -27,6 +27,10 @@ body {
     display: none !important;
 }
 
+.ui.massive.text.loader{
+    font-size: 2em !important;
+}
+
 .header_menu {
     height: 75px;
     width: 100%;

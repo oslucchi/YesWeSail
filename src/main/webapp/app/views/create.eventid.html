@@ -49,9 +49,9 @@
         </a> </div>
     </div>
 </div>
-<div id="event-container">
-    <div class="ui inverted dimmer" ng-class="{'active': eventLoading}">
-    <div class="ui text loader">Loading</div>
+<div id="event-container" ng-disable-scroll="true">
+    <div class="ui active dimmer" ng-class="{'active': eventLoading}">
+    <div class="ui massive text loader">Loading</div>
   </div>
     <form name="eventForm">
     <div class="ui column stackable container grid">

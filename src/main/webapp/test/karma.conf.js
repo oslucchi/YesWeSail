@@ -78,6 +78,7 @@ module.exports = function(config) {
       'bower_components/jquery-tablesort/jquery.tablesort.js',
       'bower_components/angular-moment/angular-moment.js',
       'bower_components/angular-socialshare/dist/angular-socialshare.min.js',
+      'bower_components/ng-disable-scroll/disable-scroll.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",
