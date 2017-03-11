@@ -58,7 +58,6 @@ public class Cart extends DBInterface
 				"WHERE b.userId = " + userId + " " +
 				"ORDER BY idEvents, a.ticketType";
 		
-		log.debug("Querying cart. SQL:\n" + sql);
 		ArrayList<Cart> carts = (ArrayList<Cart>) populateCollection(sql, Cart.class);
 
 		log.trace("Transforming in Array of tickets in the format expected by clients");

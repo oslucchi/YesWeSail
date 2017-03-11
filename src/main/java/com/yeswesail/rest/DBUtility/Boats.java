@@ -2,11 +2,8 @@ package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 public class Boats extends DBInterface 
 {
-	private static final Logger log = Logger.getLogger(Boats.class);
 	private static final long serialVersionUID = 7805943614787085014L;
 	protected int idBoats;
 	protected int ownerId;
@@ -60,9 +57,7 @@ public class Boats extends DBInterface
 				 	 "FROM Boats " +
 				 	 "WHERE ownerId = " + ownerId;
 		
-		log.trace("trying to populate collection with sql '" + sql + "'");
 		boats = (ArrayList<Boats>) populateCollection(sql, Boats.class);
-		log.trace("Done. There are " + boats.size() + " elemets");		
 		return(boats.toArray(new Boats[boats.size()]));
 	}
 

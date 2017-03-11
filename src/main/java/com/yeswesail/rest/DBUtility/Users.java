@@ -299,7 +299,7 @@ public class Users extends DBInterface
 		}
 		catch (ParseException e) 
 		{
-			log.warn("Exception " + e.getMessage() + " convertind " + birthday + " to a date");
+			log.warn("Exception " + e.getMessage() + " converting " + birthday + " to a date");
 		}
 	}
 

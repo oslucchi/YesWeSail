@@ -1,16 +1,10 @@
 package com.yeswesail.rest.DBUtility;
 
-
 import java.util.ArrayList;
-
-import org.apache.log4j.Logger;
 
 public class EventRoute extends DBInterface
 {	
 	private static final long serialVersionUID = 2658938461796360575L;
-	private static final Logger log = Logger.getLogger(EventRoute.class);
-	// private static final ApplicationProperties prop = ApplicationProperties.getInstance();
-	
 
 	protected int idEventRoute;
 	protected int eventId;
@@ -47,10 +41,8 @@ public class EventRoute extends DBInterface
 				 	 "WHERE eventId = " + eventId + " " +
 				 	 "ORDER BY seq ";
 	
-		log.trace("trying to populate collection with sql '" + sql + "'");
 		ArrayList<EventRoute> route = 
 				(ArrayList<EventRoute>) EventRoute.populateCollection(sql, EventRoute.class);
-		log.trace("Done. There are " + route.size() + " elemets");
 		if (route.size() == 0)
 			return null;
 		
@@ -61,12 +53,12 @@ public class EventRoute extends DBInterface
 	{
 		DBConnection conn = null;
 		conn = new DBConnection();
-		conn.executeQuery("DELETE FROM EventRoute " + whereClause);
+		conn.executeQuery("DELETE FROM EventRoute " + whereClause, true);
 	}
 
 	public void deleteOnWhere(DBConnection conn , String whereClause) throws Exception
 	{
-		conn.executeQuery("DELETE FROM EventRoute " + whereClause);
+		conn.executeQuery("DELETE FROM EventRoute " + whereClause, true);
 	}
 
 	public int getIdEventRoute() {

@@ -95,7 +95,7 @@ public class TicketReleaser extends Thread {
         	while(true)
         	{
         		now = new Date();
-        		TicketLocks[] tList = TicketLocks.findAll();
+        		TicketLocks[] tList = TicketLocks.findAll(false);
         		for(TicketLocks tl : tList)
         		{
         			if (tl.getLockTime() == null)

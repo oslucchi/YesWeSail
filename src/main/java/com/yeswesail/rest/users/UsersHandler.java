@@ -1151,7 +1151,7 @@ public class UsersHandler {
 			conn = DBInterface.connect();
 			Users u = new Users(conn, userId);
 			if (!Utils.userSelfOrAdmin(token, userId,languageId) ||
-				(u.getRoleId() != Roles.SHIP_OWNER))
+				(u.getRoleId() < Roles.SHIP_OWNER))
 			{
 				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.unauthorized"), true);
 				return Response.status(Response.Status.UNAUTHORIZED)

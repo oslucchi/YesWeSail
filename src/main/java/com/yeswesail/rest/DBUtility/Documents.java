@@ -2,11 +2,8 @@ package com.yeswesail.rest.DBUtility;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
-
 public class Documents extends DBInterface 
 {
-	private static final Logger log = Logger.getLogger(Documents.class);
 	private static final long serialVersionUID = 1878310932212266623L;
 
 	protected int idDocuments;
@@ -46,9 +43,7 @@ public class Documents extends DBInterface
 				 	 "     b.idDocumentTypes = a.documentTypesId " + 
 				 	 "WHERE userId = " + userId;
 		
-		log.trace("trying to populate collection with sql '" + sql + "'");
 		docs = (ArrayList<Documents>) populateCollection(sql, Documents.class);
-		log.trace("Done. There are " + docs.size() + " elemets");		
 		return(docs.toArray(new Documents[docs.size()]));
 	}
 	public ArrayList<String> getImages()

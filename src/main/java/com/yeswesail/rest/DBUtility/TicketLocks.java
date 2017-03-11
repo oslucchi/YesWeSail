@@ -76,7 +76,7 @@ public class TicketLocks extends DBInterface
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static TicketLocks[] findAll() throws Exception
+	public static TicketLocks[] findAll(boolean logStatement) throws Exception
 	{
 		ArrayList<TicketLocks> tickets = new ArrayList<>();
 		String sql = "SELECT a.* " +

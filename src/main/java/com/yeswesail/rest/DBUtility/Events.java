@@ -162,13 +162,10 @@ public class Events extends DBInterface implements Comparable<Events>
 	{
 		whereClause = whereClause.trim().toUpperCase().startsWith("WHERE") ?
 							whereClause.trim().substring(6) : whereClause.trim();
-		log.debug("Called with whereClause = '" + whereClause + "'");
 		String where = "WHERE " + 
 					   "      b.languageId = " + languageId + 
 					   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
-		log.debug("Primary query where set to '" + where + "'");
-
-		log.trace("Populate collection with sql '" + sql + where + "'");
+		log.trace("Getting events in the primary language requested");
 		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
 		String sep = "";
 		String eventIds = "";
@@ -184,8 +181,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		where = "WHERE " + eventIds +
 				"      b.languageId = " + Constants.getAlternativeLanguage(languageId) +
 				   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
-		log.debug("Alternative query where set to '" + where + "'");
-		log.debug("Adding events on alternative laguages via '" + sql + where + "'"); 
+		log.trace("Getting other events in alternative language");
 		ArrayList<Events> fallbackEvents = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
 		events.addAll(fallbackEvents);
 		for(Events event : events)
@@ -207,10 +203,9 @@ public class Events extends DBInterface implements Comparable<Events>
 						 	 "ORDER BY dateStart ";
 		
 		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(sql, whereClause, languageId);
-		log.trace("Events retrieved. There are " + events.size() + " elemets");
 		getTicketMaxAndMin(events);
-		log.trace("Get tickets for the event");
 		
+		log.trace("Event and tickets retireved. Set locale and prepare return list accordingly with limits");
 		ArrayList<Events> retList = new ArrayList<Events>();
 		for(Events e : events)
 		{
@@ -224,7 +219,7 @@ public class Events extends DBInterface implements Comparable<Events>
 				break;
 			}
 		}
-		log.trace("Returning to caller. List size = " + retList.size());
+		log.trace("Returning finalized list to caller. List size = " + retList.size());
 		if (retList.size() == 0)
 			return null;
 		

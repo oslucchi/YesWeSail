@@ -101,8 +101,10 @@ public class DBConnection
 		}
 	}
 	
-	public void executeQuery(String sql) throws Exception
+	public void executeQuery(String sql, boolean logStatement) throws Exception
 	{
+		log.debug("executing query '"  + sql + "'");
+
 		StringTokenizer stok = new StringTokenizer(sql);
 		String queryType = "";
 		if (stok != null)
@@ -118,18 +120,18 @@ public class DBConnection
 				(queryType.compareTo("COMMIT") == 0) ||
 				(queryType.compareTo("ROLLBACK") == 0))
 			{
-				// log.debug("exec straigth query. statement is ("  + st + "). SQL '" + sql + "'");
 				st.execute(sql);
 			}
 			else
 			{
-				// log.debug("building a new recordset ("  + st + "). SQL '" + sql + "'");
 				rs = st.executeQuery(sql);
 				rsm = rs.getMetaData();
+				if (logStatement) log.debug("Done. Retrived " + rs.getFetchSize() + " rows");		
 			}
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage() + " catched on statemet '" + sql + "'");		
 			throw new Exception(e);
 		}
 	}
