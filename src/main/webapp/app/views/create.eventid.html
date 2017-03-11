@@ -75,6 +75,15 @@
                                             <div class="ui label">{{'event.location' | translate}}</div>
                                             <input name="eventLocation" type="text" ng-model="event.location"> 
                                                 </div>
+                                        
+                                        <div class="ui labeled input">
+                                            <div class="ui label">{{'create.event.category' | translate}}</div>
+                                            <select after-render="initializeSelect()" ng-model="event.categoryId" ng-options="eventCategory.categoryId as eventCategory.description for eventCategory in CATEGORIES" class="ui dropdown type item">
+                                            </select>
+                                        </div>
+                                        
+                                        
+                                        
                                         <!--                                        <div click-to-edit="event.location"></div>--></div>
                                     <div class="extra">
                                         <div class="ui labeled input">

@@ -99,6 +99,7 @@
     
     "create.event.create": "Create an event",
     "create.event.type": "Event type...",
+    "create.event.category": "Category",
     
 	"event.bunks": "Bed in the dinette",
 	"event.cabinsNoBath": "Cabin without bath",

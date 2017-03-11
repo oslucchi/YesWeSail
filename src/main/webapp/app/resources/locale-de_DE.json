@@ -67,6 +67,7 @@
     
     "create.event.create": "Erstelle eine Reise",
     "create.event.type": "Art des Programms...",
+    "create.event.category": "Categorien",
     
 	"event.bunks": "Schlafplätze im Salon",
 	"event.cabinsNoBath": "Kabine ohne Bad",

@@ -33,7 +33,7 @@
 <div class="ui divided items">
   <div class="item" ng-if="past || isPast(ticket.dateStart)" ng-repeat="ticket in userTickets | filter: {title: searchTitle} | orderBy:sortValueComposed track by $index">
     <div ui-sref="event({eventId: ticket.eventId})" class="image">
-      <img ng-src="{{tickets.imageURL}}">
+      <img ng-src="{{ticket.imageURL}}">
     </div>
     <div class="content">
       <a ui-sref="event({eventId: ticket.eventId})" class="header">{{ticket.title}}</a>

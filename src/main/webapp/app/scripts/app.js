@@ -112,13 +112,13 @@ angular.module('yeswesailApp', [
             setLocale(locale);
         }
     };
-}).factory('AuthResolver', function ($state, $http, URLs) {
+}).factory('AuthResolver', function ($state, $http, URLs, AuthService) {
     return {
         resolve: function () {
-            return $http.get(URLs.ddns + 'rest/auth/isAuthenticated').then(function (res) {
-                return res.data.authorized;
+            return AuthService.isAuthenticated().then(function (res) {
+                return res;
             }, function (res) {
-                return false;
+                return res;
             });
         }
     };

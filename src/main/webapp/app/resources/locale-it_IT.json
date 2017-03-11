@@ -98,6 +98,7 @@
     
     "create.event.create": "Crea un evento",
     "create.event.type": "Tipo evento...",
+    "create.event.category": "Categoria",
     
 	"event.bunks": "Posto in dinette",
 	"event.cabinsNoBath": "Cabine senza bagno",
