@@ -621,11 +621,16 @@ tr {
 
 .ui-grid-row:nth-child(odd):hover .ui-grid-cell{background:#cacaca}
 .ui-grid-row:nth-child(even):hover .ui-grid-cell{background:#cacaca}
+
+.ui-grid-top-panel{
+    background: #f3f3f3 !important;   
+}
 /*
 .add-to-cart:hover {
     background-color: antiquewhite !important;
 }
 */
+
 
 .anchor-menu {
     margin-bottom: 20px !important;

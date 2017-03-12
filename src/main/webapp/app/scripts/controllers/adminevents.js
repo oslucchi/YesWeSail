@@ -7,7 +7,10 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate, $timeout, $cookies) {
+    
+    $scope.eventsLoading=true;
     $scope.getEvents = function () {
+        $scope.eventsLoading=true;
         $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function (res) {
             $scope.events = res.data.events;
             $scope.shipOwners = res.data.shipowners;
@@ -76,6 +79,8 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
             }, 100);
         },
         data: res.data.events}
+               
+               $scope.eventsLoading=false;
         });
     };
     

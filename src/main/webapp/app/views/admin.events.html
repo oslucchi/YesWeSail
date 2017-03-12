@@ -1,6 +1,10 @@
 <div class="admin-events-container">
-    
-     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid"></div>
+       
+     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid">
+    </div>
+    <div class="ui dimmer" ng-class="{'active': eventsLoading}">
+            <div class="ui massive text loader">Loading</div>
+          </div>
   
     
 <!--

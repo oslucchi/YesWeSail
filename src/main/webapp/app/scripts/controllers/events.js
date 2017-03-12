@@ -14,7 +14,7 @@ angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, 
     $scope.LOCATIONS = [];
         $scope.locationsLoaded = false;
     $scope.categoriesLoaded=false;
-    
+    $scope.eventsLoading=true;
     MAPS.getMap('LOCATIONS').then(function (res) {
         $scope.LOCATIONS = res;
         $scope.locationsLoaded = true;
@@ -33,9 +33,11 @@ angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, 
     }
     body.activeOnly = true;
     var getEvents = function () {
+        $scope.eventsLoading=true;
         $http.post(URLs.ddns + 'rest/events/search/actives', body).then(function (res) {
             $scope.events = res.data.events;
             $scope.shipOwners = res.data.shipowners;
+            $scope.eventsLoading=false;
             if (res.data[0] == null) {
              
             }

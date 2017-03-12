@@ -286,7 +286,17 @@ angular.module('yeswesailApp', [
     
     
     
-}).run(function ($http, $rootScope, $state, AuthService) {
+}).run(function ($http, $rootScope, $state, AuthService, $window, $location) {
+    
+       // initialise google analytics
+        $window.ga('create', 'UA-75776094-1', 'auto');
+ 
+        // track pageview on state change
+        $rootScope.$on('$stateChangeSuccess', function (event) {
+            $window.ga('send', 'pageview', $location.path());
+        });
+    
+    
     //    $http.defaults.headers.common['Language'] = 'IT';
     //    $rootScope.$on("$stateChangeStart", function(event, toState, toParams, fromState, fromParams){
     //         if (!!toState.accessLevel && !AuthService.isAuthorized(toState.accessLevel)) {
