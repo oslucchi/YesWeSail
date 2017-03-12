@@ -79,6 +79,7 @@ module.exports = function(config) {
       'bower_components/angular-moment/angular-moment.js',
       'bower_components/angular-socialshare/dist/angular-socialshare.min.js',
       'bower_components/ng-disable-scroll/disable-scroll.js',
+      'bower_components/angular-ui-grid/ui-grid.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       "app/scripts/**/*.js",

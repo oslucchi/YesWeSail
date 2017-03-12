@@ -16,14 +16,14 @@ angular.module('yeswesailApp').directive('tickets', function ($http, URLs, toast
             var user = Session.getCurrentUser();
             var totalAmount = 0;
             scope.calculatePrice = function (tickets) {
-                if (tickets[0].ticketType == 1) {
+                if (tickets.length <= 1) {
                     return null;
                 }
-                else if (tickets.length > 1) {
-                    totalAmount = tickets[0].price + tickets[1].price
-                    return totalAmount;
-                }
+            
+                totalAmount = tickets[0].price + tickets[1].price;
+                
                 CartService.totalAmount = totalAmount;
+                return totalAmount;
             };
             scope.availableTickets = function (tickets) {
                 var sum = 0;

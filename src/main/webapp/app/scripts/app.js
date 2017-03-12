@@ -32,6 +32,10 @@ angular.module('yeswesailApp', [
     , 'angularMoment'
     , '720kb.socialshare'
     , 'ngDisableScroll'
+    , 'ui.grid'
+    , 'ui.grid.resizeColumns'
+    , 'ui.grid.moveColumns'
+    , 'ui.grid.saveState'
   ]).constant('AUTH_EVENTS', {
     loginSuccess: 'auth-login-success'
     , loginFailed: 'auth-login-failed'

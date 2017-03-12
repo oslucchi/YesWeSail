@@ -1,23 +1,11 @@
 <div class="admin-events-container">
+    
+     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid"></div>
+  
+    
+<!--
     <table id="eventsTable" class="ui compact sortable selectable celled  table">
         <thead>
-<!--
-            <tr>
-                <th class="ui fitted center aligned">{{"adminevents.gridCols.actions" | translate}}</th>
-                <th>{{"adminevents.gridCols.Status" | translate}}</th>
-                <th>{{"adminevents.gridCols.hotEvents" | translate}}</th>
-                <th>{{"adminevents.gridCols.earlyBooking" | translate}}</th>
-                <th>{{"adminevents.gridCols.lastMinute" | translate}}</th>
-                <th accesskey=""class="id">{{"adminevents.gridCols.eventId" | translate}}</th>
-                <th>{{"adminevents.gridCols.title" | translate}}</th>
-                <th class="date">{{"adminevents.gridCols.dateStart" | translate}}</th>
-                <th class="date">{{"adminevents.gridCols.dateEnd" | translate}}</th>
-                <th>{{"adminevents.gridCols.createdBy" | translate}}</th>
-                <th>{{"adminevents.gridCols.createdOn" | translate}}</th>
-                <th>{{"adminevents.gridCols.location" | translate}}</th>
-                <th>{{"user.shipOwner" | translate}}</th>
-            </tr>
--->
 
             
             
@@ -41,13 +29,7 @@
         </thead>
         <tbody>
             <tr ng-class="{'error': event.status=='I', 'positive': event.status=='A', 'warning': event.status=='P'}" ng-repeat="event in events">
-                <!--
-        <td class="collapsing">
-         <div class="ui fitted center aligned checkbox">
-          <input type="checkbox" ng-model="selectedEvents"> <label></label>
-        </div>
-      </td>
--->
+
                 <td class="collapsing">
                     <div class="ui center aligned"> <i ng-click="activate(event)" class="large green checkmark link icon"></i> <i ng-really-message="Are you sure?" ng-really-click="remove(event)" class="large red trash outline link icon"></i> <i ng-click="deactivate(event)" class="large red ban link icon"></i> <i ng-click="showClonePopup(event)" class="large grey copy link icon"></i> <i ui-sref="editEvent({eventId: event.idEvents})" class="large grey edit link icon"></i> <i ng-click="showAddPassengerPopup(event.idEvents)" class="large grey add user link icon"></i> <i ng-click="showRemovePassengerPopup(event.idEvents)" class="large grey remove user link icon"></i> </div>
                 </td>
@@ -91,11 +73,7 @@
         </tbody>
         <tfoot class="full-width">
             <tr>
-                <!--
-      <th><div class="ui small disabled button">
-          {{"global.approveAll" | translate}}
-        </div></th>
--->
+
                 <th colspan="9">
                     <button ng-click="getEvents()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
                     <button ng-click="popupCreateEventDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminevents.addEvent" | translate}}</button>
@@ -103,4 +81,5 @@
             </tr>
         </tfoot>
     </table>
+-->
 </div>

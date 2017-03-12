@@ -31,6 +31,19 @@ body {
     font-size: 2em !important;
 }
 
+div.ui-grid-cell input[type="checkbox"]{
+    margin: 0px !important;
+}
+
+.ui-grid-menu-button {
+  height: 31px;
+}
+
+.myGrid{
+    height: 100% !important;
+    border-top-width: 0px;
+    border-bottom-width: 0px;
+}
 .header_menu {
     height: 75px;
     width: 100%;
@@ -573,7 +586,7 @@ tr {
 }
 
 .admin-events-container {
-    height: calc(100vh - 60.2px);
+    height: calc(100vh - 334px);
     background-color: white;
 }
 
@@ -590,7 +603,7 @@ tr {
 }
 
 .admin-menu-container {
-    height: calc(100vh - 100.2px);
+    height: calc(100vh - 334px);
     /*    width: 84px;*/
     background-color: #1B1C1D;
     float: left;
@@ -598,15 +611,16 @@ tr {
 
 .admin-content-container {
     margin-left: 84px;
-    height: calc(100vh - 100.2px);
-    overflow-y: scroll;
+    height: calc(100vh - 334px);
+    overflow: hidden;
 }
 
 .add-to-cart {
     cursor: pointer;
 }
 
-
+.ui-grid-row:nth-child(odd):hover .ui-grid-cell{background:#cacaca}
+.ui-grid-row:nth-child(even):hover .ui-grid-cell{background:#cacaca}
 /*
 .add-to-cart:hover {
     background-color: antiquewhite !important;
@@ -663,7 +677,7 @@ tr {
 }
 
 footer {
-    margin-top: 20px;
+/*    margin-top: 20px;*/
 }
 
 .main-title,
