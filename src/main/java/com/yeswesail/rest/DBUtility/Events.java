@@ -60,6 +60,21 @@ public class Events extends DBInterface implements Comparable<Events>
 
 	public Events(DBConnection conn, int id) throws Exception
 	{
+		getEvents(conn, id);
+	}
+	
+	public Events(DBConnection conn, int id, int languageId) throws Exception
+	{
+		getEvents(conn, id, languageId);
+	}
+
+	public Events(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
+	{
+		getEvents(conn, id, languageId, activeOnly);
+	}
+	
+	public void getEvents(DBConnection conn, int id) throws Exception
+	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
@@ -67,7 +82,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		this.populateObject(conn, sql, this);
 	}
 	
-	public Events(DBConnection conn, int id, int languageId) throws Exception
+	public void getEvents(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
@@ -88,7 +103,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		getTicketMaxAndMin(events);
 	}
 
-	public Events(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
+	public void getEvents(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
@@ -111,7 +126,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
 		getTicketMaxAndMin(events);
 	}
-	
+
 	private void getSingleEventWithLanguageFallbackPolicy(
 		DBConnection conn, String sql, String whereClause, String fallbackWhereClause
 				) throws Exception

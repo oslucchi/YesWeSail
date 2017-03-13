@@ -909,4 +909,12 @@ public class DBInterface implements Serializable
 		if (conn != null)
 			conn.finalize();
 	}
+
+	public boolean isLogStatement() {
+		return logStatement;
+	}
+
+	public void setLogStatement(boolean logStatement) {
+		DBInterface.logStatement = logStatement;
+	}
 }

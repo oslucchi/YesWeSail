@@ -55,6 +55,21 @@ public class Users extends DBInterface
 
 	public Users(DBConnection conn, int id) throws Exception
 	{
+		getUsers(conn, id);
+	}
+
+	public Users(DBConnection conn, String email) throws Exception
+	{
+		getUsers(conn, email);
+	}
+
+	public Users(int shipOwnerId) throws Exception 
+	{
+		getUsers(shipOwnerId);
+	}
+
+	public void getUsers(DBConnection conn, int id) throws Exception
+	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
@@ -62,13 +77,13 @@ public class Users extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public Users(DBConnection conn, String email) throws Exception
+	public void getUsers(DBConnection conn, String email) throws Exception
 	{
 		setNames();
 		findByEmail(conn, email);
 	}
 
-	public Users(int shipOwnerId) throws Exception 
+	public void getUsers(int shipOwnerId) throws Exception 
 	{
 		DBConnection conn = new DBConnection();
 		setNames();

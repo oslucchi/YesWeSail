@@ -21,6 +21,9 @@ public class TicketReleaser extends Thread {
 	final Logger log = Logger.getLogger(this.getClass());
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	private DBConnection conn;
+	private EventTickets et = null;
+	private Events e = null;
+	private Users u = null;
 
 	private void release(TicketLocks tl, DBConnection transaction) throws Exception
 	{
@@ -117,6 +120,24 @@ public class TicketReleaser extends Thread {
 		
 		return body;
 	}
+
+	private void populateObjects(TicketLocks tl) throws Exception
+	{
+		et = new EventTickets();
+		et.setLogStatement(false);
+		et.getEventTickets(conn, tl.getEventTicketId());
+		
+		if (et != null)
+		{
+			e = new Events();
+			e.setLogStatement(false);
+			e.getEvents(conn, et.getEventId());
+		}
+		u = new Users();
+		u.setLogStatement(false);
+		u.getUsers(conn, tl.getUserId());
+
+	}
 	
     @SuppressWarnings("unchecked")
 	public void run() 
@@ -137,14 +158,12 @@ public class TicketReleaser extends Thread {
         		{
         			if (tl.getLockTime() == null)
         				continue;
-    				EventTickets  et = new EventTickets(conn, tl.getEventTicketId());
-    				Events e = (et != null ? e = new Events(conn, et.getEventId()) : null);
-    				Users u = new Users(conn, tl.getUserId());
         			switch(tl.getStatus())
         			{
         			case Constants.STATUS_PENDING_APPROVAL:
         				if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
             			{
+        					populateObjects(tl);
             				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
             						  " eventTicketId " + tl.getEventTicketId() + 
             		 				  " expired will be removed");
@@ -163,6 +182,7 @@ public class TicketReleaser extends Thread {
         				if (!pendingBuy.containsKey(tl.getIdTicketLocks()) && 
         					(now.getTime() - tl.getLockTime().getTime() > prop.getSendMailOnTicketinWState() * 1000))
             			{
+        					populateObjects(tl);
         					pendingBuy.put(tl.getIdTicketLocks(), tl);
             				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
             						  " eventTicketId " + tl.getEventTicketId() + 
@@ -174,7 +194,7 @@ public class TicketReleaser extends Thread {
 	            						u, e);
             						
             				Mailer.sendMail(prop.getAdminEmail(), 
-            								"Biglietto in attesa completamento acquisto da troppo tempo", 
+            								"Biglietto in attesa completamento del pagamento da troppo tempo", 
             								body, null);
             				log.debug("Mail sent");
 
@@ -187,6 +207,9 @@ public class TicketReleaser extends Thread {
             				pa.setUpdated(pa.getCreated());
             				pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
             				pa.insert(conn, "idPendingActions", pa);
+            				
+            				tl.setStatus(Constants.STATUS_EXPIRED);
+            				tl.update(conn, "idTicketLocks");
             			}
         				break;
         			}

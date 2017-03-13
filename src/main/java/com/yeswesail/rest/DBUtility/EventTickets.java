@@ -34,14 +34,24 @@ public class EventTickets extends DBInterface
 
 	public EventTickets(DBConnection conn, int id) throws Exception
 	{
+		getEventTickets(conn, id);
+	}
+	
+	public EventTickets(DBConnection conn, int id, int languageId) throws Exception
+	{
+		getEventTickets(conn, id, languageId);
+	}
+
+	public void getEventTickets(DBConnection conn, int id) throws Exception
+	{
 		setNames();
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + id;
 		this.populateObject(conn, sql, this);
 	}
-	
-	public EventTickets(DBConnection conn, int id, int languageId) throws Exception
+
+	public void getEventTickets(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description " +
@@ -52,7 +62,7 @@ public class EventTickets extends DBInterface
 			 	 "      available > booked ";
 		this.populateObject(conn, sql, this);
 	}
-
+	
 	public static EventTickets[] findByEventId(int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description " +
