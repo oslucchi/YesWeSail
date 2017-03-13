@@ -54,6 +54,7 @@ angular.module('yeswesailApp', [
 }).constant('URLs', {
 	ddns: 'http://prod.yeswesail.com/'
 	// ddns: 'http://test.yeswesail.com/'
+	// ddns: 'http://www.yeswesail.com/'
 	// ddns: 'http://localhost:8080/YesWeSail/'
 }).constant('LOCALES', {
     'locales': {
