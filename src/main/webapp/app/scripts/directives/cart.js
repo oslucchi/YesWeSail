@@ -40,7 +40,16 @@ angular.module('yeswesailApp')
                 
                     scope.callbackTimer={
                         finished: function(){
-                             $timeout(CartService.getAllItems, 10000);
+                             $timeout(CartService.getAllItems().then(function (res) {
+                    scope.bookedEvents = CartService.bookedTickets;
+                    scope.total = 0;
+
+                    angular.forEach(scope.bookedEvents, function (value, key) {
+//                        CartService.cartQty += value.tickets.length;
+                        scope.getTotal(value.tickets);
+                    })
+
+                }), 10000);
                         }
                     }
                 

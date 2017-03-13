@@ -1,5 +1,12 @@
 <div class="admin-events-container">
- 
+     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid">
+    </div>
+    <div class="ui dimmer" ng-class="{'active': requestsLoading}">
+            <div class="ui massive text loader">Loading</div>
+          </div>
+    
+<!--
+    
 <table class="ui compact sortable selectable celled  table">
   <thead>
     <tr>
@@ -42,10 +49,11 @@
         </div></th>
       <th colspan="9">
         <button ng-click="getRequests()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
-<!--        <button ng-click="popupCreaterequestDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add request</button>-->
+        <button ng-click="popupCreaterequestDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> Add request</button>
       </th>
     </tr>
   </tfoot>
 </table>
+-->
 
 </div>

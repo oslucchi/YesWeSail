@@ -1,5 +1,5 @@
 <div class="login_container">
-    <div class="ui container">
+    <div class="ui container" ng-if="requestType==='review'">
         <div class="ui middle aligned center aligned grid">
             <div class="column">
 
@@ -76,5 +76,42 @@
 
             </div>
         </div>
+    </div>
+    
+    <div ng-if="requestType==='ticketLost'">
+        <div class="ui segment">
+            <h2>Acquisto biglietto incompleto</h2>
+            <div class="ui items">
+              <div class="item">
+                <div class="image">
+                  <img ng-src="{{reqDetails.event.imageURL}}">
+                </div>
+                <div class="content">
+                      <div class="header">{{reqDetails.ticketDetails.description}}</div>
+                  <div class="meta">
+                    <span class="price">{{reqDetails.ticketDetails.price}}€</span>
+                  </div>
+                </div>
+              </div>
+         
+                <div class="item">
+              <div class="image">
+                  <img ng-src="{{reqDetails.user.imageURL}}">
+                </div>
+                <div class="content">
+                  <a class="header">{{reqDetails.user.name}} {{reqDetails.user.surname}}</a>
+                  <div class="description">
+                    <p>email: <span>{{reqDetails.user.email}}</span></p>
+                    <p>phone1: <span>{{reqDetails.user.phone1}}</span></p>
+                    <p>phone2: <span>{{reqDetails.user.phone2}}</span></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+     
+            
+                 <button ng-click="restoreTicket(actionId, reqDetails.ticketLock.idTicketLocks)" class="ui green button">Restore</button>
+                    <button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
+    </div>
     </div>
 </div>

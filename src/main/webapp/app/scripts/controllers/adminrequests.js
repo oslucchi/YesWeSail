@@ -8,15 +8,65 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('AdminrequestsCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate) {
+    .controller('AdminrequestsCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate, $timeout) {
+        $scope.requestsLoading=true;
+    $scope.alertme=function(){
+        alert();
+    }
         $scope.getRequests = function () {
+            $scope.requestsLoading=true;
             $http.get(URLs.ddns + 'rest/requests', {}).then(function (res) {
                 $scope.requests = res.data;
-
+                $scope.requestsLoading=false;
+                   $scope.gridOptions = {
+                    enableColumnResizing: true,
+                    enableSorting: true,
+                    enableGridMenu: true,
+                    enableFiltering: true,
+                    gridMenuCustomItems: [
+                      {
+                        title: 'Save',
+                        action: function ($event) {
+                          $scope.saveState();
+                        },
+                        order: 210
+                      },{
+                        title: 'Restore',
+                        action: function ($event) {
+                          $scope.restoreState();
+                        },
+                        order: 211
+                      }
+                    ],
+                    columnDefs: [
+            
+          {name:'Status', field: 'status', cellTemplate: '<div class="ui-grid-cell-contents"> <div ng-switch="row.entity.status"><div ng-switch-when="A"><i class="large green checkmark icon"></i></div><div ng-switch-when="I"><i class="large red remove icon"></i></div><div ng-switch-when="P"><i class="large yellow wait icon"></i></div><div ng-switch-default> </div></div></div>' },
+          {name:'ID', field: 'idPendingActions' },
+          {name:'Type', field: 'actionType' },
+          {name:'Issued By', field: 'userId' },
+          
+              
+          {name:'Created', field: 'created',  cellTemplate: '<div class="ui-grid-cell-contents">{{row.entity.created | date: "yyyy/MM/dd"}}</div>'  },
+          {name:'Updated', field: 'updated',  cellTemplate: '<div class="ui-grid-cell-contents">{{row.entity.updated | date: "yyyy/MM/dd"}}</div>'  },
+          
+        ],
+        rowTemplate: '<div ng-click="grid.appScope.openRequestApprovalDialog(row.entity.link, row.entity.actionType, row.entity.idPendingActions)" ng-repeat="(colRenderIndex, col) in colContainer.renderedColumns track by col.uid" ui-grid-one-bind-id-grid="rowRenderIndex + \'-\' + col.uid + \'-cell\'" class="ui-grid-cell" ng-class="{ \'ui-grid-row-header-cell\': col.isRowHeader }" role="{{col.isRowHeader ? \'rowheader\' : \'gridcell\'}}" ui-grid-cell></div>'
+        , onRegisterApi: function(gridApi){
+            $scope.gridApi = gridApi;
+            $timeout(function () {
+//                $scope.restoreState();  //call my restore function 
+            }, 100);
+        },
+        data: res.data}
+                   
+                   
+                   
             });
         };
       
 
+    
+    
         $scope.getRequests();
 
         $scope.update = function (link, action, actionId) {
@@ -28,7 +78,18 @@ angular.module('yeswesailApp')
             	toastr.error($translate.instant('adminRequest.updateError'));
             });
         }
+        
+        
   
+        $scope.restoreTicket = function (actionId, ticketLockId) {
+            $http.put(URLs.ddns + 'rest/requests/ticketLost/'+actionId+'/'+ticketLockId).then(function (res) {
+            	toastr.success($translate.instant('adminRequest.updateCompleted'));
+                $scope.closeModals();
+                $scope.getRequests();
+            }, function (err) {
+            	toastr.error($translate.instant('adminRequest.updateError'));
+            });
+        }
        
 
         $scope.openRequestApprovalDialog = function (link, actionType, actionId) {
