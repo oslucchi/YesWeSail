@@ -15,6 +15,7 @@ angular.module('yeswesailApp')
     }
         $scope.getRequests = function () {
             $scope.requestsLoading=true;
+             $scope.gridOptions=null;
             $http.get(URLs.ddns + 'rest/requests', {}).then(function (res) {
                 $scope.requests = res.data;
                 $scope.requestsLoading=false;
