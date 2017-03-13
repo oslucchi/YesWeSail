@@ -4,14 +4,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.log4j.Logger;
-
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 
 public class Cart extends DBInterface
 {	
 	private static final long serialVersionUID = 7529874266570588072L;
-	private static final Logger log = Logger.getLogger(DBInterface.class);
 	
 	protected int idEvents;
 	protected Date dateStart;
@@ -39,62 +37,6 @@ public class Cart extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	public static TicketsInCart[] getCartItemsAlt(DBConnection conn, int userId, int languageId) throws Exception
-	{
-		String sql = 
-				"SELECT DISTINCT idEvents, idTicketLocks, dateStart, dateEnd, " + 
-				"      price, location, eventTicketId, d.description AS title, " +
-				"      e.ticketType, e.description AS ticketDescription " +
-				"FROM ((EventTickets a INNER JOIN TicketLocks b ON " +
-				"        a.idEventTickets = b.eventTicketId) INNER JOIN " +
-				"      (Events c INNER JOIN EventDescription d ON " +
-				"        d.eventId = c.idEvents AND " +
-				"        d.languageId = " + languageId + " AND " +
-				"        d.anchorZone = 0) ON " +
-				"      a.eventId = c.idEvents) " +
-				"	INNER JOIN EventTicketsDescription e ON " +
-				"	  e.ticketType = a.ticketType AND " +
-				"	  e.languageId = " + languageId + " " +
-				"WHERE b.userId = " + userId + " " +
-				"ORDER BY idEvents, a.ticketType";
-		
-		ArrayList<Cart> carts = (ArrayList<Cart>) populateCollection(sql, Cart.class);
-
-		log.trace("Transforming in Array of tickets in the format expected by clients");
-		ArrayList<TicketsInCart> retList = new ArrayList<TicketsInCart>();
-		int idEvents = -1;
-		int i = -1;
-		TicketsInCart cartItem = null;
-		TicketsInCart.Tickets t = null;
-		for(Cart cart : carts)
-		{
-			if (idEvents != cart.idEvents)
-			{
-				idEvents = cart.idEvents;
-				cartItem = new TicketsInCart();
-				cartItem.setIdEvents(cart.idEvents);
-				cartItem.setDateStart(cart.dateStart);
-				cartItem.setDateEnd(cart.dateEnd);
-				cartItem.setLocation(cart.location);
-				cartItem.setTitle(cart.title);
-				cartItem.setTickets(new ArrayList<TicketsInCart.Tickets>());
-				retList.add(cartItem);
-				i++;
-			}
-			
-			t = cartItem.new Tickets();
-			t.setIdEventTickets(cart.idEventTickets);
-			t.setPrice(cart.price);
-			t.setQuantity(1);
-			t.setTicketDescription(cart.ticketDescription);
-			t.setTicketType(cart.ticketType);
-			t.setToBuy(true);
-			retList.get(i).getTickets().add(t);
-		}
-		return (retList.toArray(new TicketsInCart[retList.size()]));
-	}
-
-	@SuppressWarnings("unchecked")
 	public static TicketsInCart[] getCartItems(DBConnection conn, int userId, int languageId) throws Exception
 	{
 		ApplicationProperties prop = ApplicationProperties.getInstance();
@@ -107,9 +49,42 @@ public class Cart extends DBInterface
 				"        d.languageId = " + languageId + " AND " +
 				"        d.anchorZone = 0) ON " +
 				"      a.eventId = c.idEvents) " +
-				"WHERE b.userId = " + userId + " " +
+				"WHERE b.userId = " + userId + " AND " +
+				"      b.status != '" + Constants.STATUS_EXPIRED + "' " +
 				"ORDER BY idEvents, a.ticketType";
 		ArrayList<Events> events = (ArrayList<Events>) populateCollection(sql, Events.class);
+		
+		// Find if the user has tickets for events published only in an alternative language
+		String exclude = "(";
+		String sep = "";
+		for(Events e : events)
+		{
+			exclude += sep + e.getIdEvents();
+			sep = ",";
+		}
+		if (exclude.compareTo("(") != 0)
+		{
+			exclude = "AND c.idEvents NOT IN " + exclude + ") ";
+		}
+		else
+		{
+			exclude = " ";
+		}
+		sql = 
+				"SELECT DISTINCT idEvents, dateStart, dateEnd, location, description AS title " +
+				"FROM ((EventTickets a INNER JOIN TicketLocks b ON " +
+				"        a.idEventTickets = b.eventTicketId) INNER JOIN " +
+				"      (Events c INNER JOIN EventDescription d ON " +
+				"        d.eventId = c.idEvents AND " +
+				"        d.languageId = " + Constants.getAlternativeLanguage(languageId)+ " AND " +
+				"        d.anchorZone = 0) ON " +
+				"      a.eventId = c.idEvents) " +
+				"WHERE b.userId = " + userId + " AND " +
+				"      b.status != '" + Constants.STATUS_EXPIRED + "' " + exclude + 
+				"ORDER BY idEvents, a.ticketType";
+		ArrayList<Events> altEvents = (ArrayList<Events>) populateCollection(sql, Events.class);
+		events.addAll(altEvents);
+		
 		ArrayList<TicketsInCart> retList = new ArrayList<TicketsInCart>();
 		int i = -1;
 		for(Events e : events)
@@ -122,7 +97,8 @@ public class Cart extends DBInterface
 					"	INNER JOIN EventTicketsDescription e ON " +
 					"	  e.ticketType = a.ticketType AND " +
 					"	  e.languageId = " + languageId + " " +
-					"WHERE a.eventId = " + e.getIdEvents() + " " +
+					"WHERE a.eventId = " + e.getIdEvents() + " AND " +
+					"      b.status != '" + Constants.STATUS_EXPIRED + "' " +  
 					"ORDER BY a.eventId, a.ticketType, price";
 			ArrayList<Cart> tickets = (ArrayList<Cart>) populateCollection(sql, Cart.class);
 			TicketsInCart cartItem = null;

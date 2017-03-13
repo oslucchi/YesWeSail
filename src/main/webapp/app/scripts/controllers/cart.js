@@ -8,7 +8,7 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-  .controller('CartCtrl', function ($scope, $http, URLs, $state) {
+  .controller('CartCtrl', function ($scope, $http, URLs, $state, ngDialog) {
         $scope.hotEvents=null;
         
         $http.post(URLs.ddns +'rest/events/hotEvents' ).then(function(res){
