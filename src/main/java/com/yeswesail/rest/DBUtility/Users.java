@@ -75,7 +75,15 @@ public class Users extends DBInterface
 		String sql = "SELECT * " +
 					 "FROM " + tableName + " " +
 					 "WHERE " + idColName + " = " + shipOwnerId;
-		this.populateObject(conn, sql, this);
+		try
+		{
+			this.populateObject(conn, sql, this);
+		}
+    	catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			throw e;
+		}
 	}
 
 	public void findByEmail(DBConnection conn, String email) throws Exception

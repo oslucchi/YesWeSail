@@ -84,7 +84,8 @@ public class TicketReleaser extends Thread {
 	}
 	
     @SuppressWarnings("unchecked")
-	public void run() {
+	public void run() 
+    {
     	HashMap<Integer, TicketLocks> pendingBuy = new HashMap<>();
 		Date now;
 		int count = 0;
@@ -191,6 +192,7 @@ public class TicketReleaser extends Thread {
     	catch(Exception e)
     	{
 			log.trace("Exception " + e.getMessage() + " aborting");
+			DBInterface.disconnect(conn);
     		Thread.currentThread().interrupt();
     	}
     }

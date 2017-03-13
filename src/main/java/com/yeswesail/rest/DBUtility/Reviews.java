@@ -3,9 +3,12 @@ package com.yeswesail.rest.DBUtility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.yeswesail.rest.ApplicationProperties;
+
 public class Reviews extends DBInterface 
 {
 	private static final long serialVersionUID = 84894262980646849L;
+	private ApplicationProperties prop = ApplicationProperties.getInstance();
 
 	protected int idReviews;
 	protected String review;
@@ -133,7 +136,14 @@ public class Reviews extends DBInterface
 	}
 
 	public String getReviewerURL() {
-		return reviewerURL;
+		if (reviewerURL.startsWith("http"))
+		{
+			return reviewerURL;
+		}
+		else
+		{
+			return prop.getWebHost() + "/" + reviewerURL;
+		}
 	}
 
 	public String getTargetName() {
@@ -145,7 +155,14 @@ public class Reviews extends DBInterface
 	}
 
 	public String getTargetURL() {
-		return targetURL;
+		if (targetURL.startsWith("http"))
+		{
+			return targetURL;
+		}
+		else
+		{
+			return prop.getWebHost() + "/" + targetURL;
+		}
 	}
 	
 }

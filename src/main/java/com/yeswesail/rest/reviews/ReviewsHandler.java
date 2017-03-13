@@ -276,7 +276,7 @@ public class ReviewsHandler {
 		}
 		finally
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 		}
 		Utils ut = new Utils();
 		ut.addToJsonContainer("message", 
@@ -319,7 +319,7 @@ public class ReviewsHandler {
 		}
 		finally
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
@@ -358,7 +358,7 @@ public class ReviewsHandler {
 		}
 		finally
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}

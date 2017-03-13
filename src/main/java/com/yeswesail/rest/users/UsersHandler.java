@@ -655,6 +655,10 @@ public class UsersHandler {
 					.entity(utils.jsonize())
 					.build();
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return Response.status(Response.Status.OK).entity(jh.json).build();
 	}
 	
@@ -763,28 +767,6 @@ public class UsersHandler {
 				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
 				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
 			}
-/*			
-			doc.setUserId(sh.usersId);
-			doc.setDocumentTypesId(DocumentTypes.NAVIGATION_CERTIFICATE);
-			doc.setNumber(sh.navigationLicense);
-			docId = doc.insertAndReturnId(conn, "idDocuments", doc);
-			prefix = "docs_" + sh.usersId + "_" + docId + "_";
-			results = UploadFiles.uploadBodyPart(parts, "filesNavigationDocs", token, "/images/shipowner", 
-												 prefix, acceptableTypes, languageId, false);
-
-			uploadedList.addAll((ArrayList<String>) results[0]);
-			rejectedList.addAll((ArrayList<String>) results[1]);
-			rejectionMessage.addAll((ArrayList<String>) results[2]);
-			if (rejectionMessage.size() != 0)
-			{
-				DBInterface.TransactionRollback(conn);
-				Utils u = new Utils();
-				u.addToJsonContainer("uploadedList", uploadedList, true);
-				u.addToJsonContainer("rejectedList", rejectedList, false);
-				u.addToJsonContainer("rejectionMessage", rejectionMessage, false);
-				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
-			}
-*/
 			String destPath = prop.getContext().getResource("/images/shipowner").getPath();
 			UploadFiles.moveFiles( destPath + "/" + token, destPath, "docs_" + sh.usersId + "_" , true);
 			
@@ -808,6 +790,10 @@ public class UsersHandler {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
 					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 
 		Utils u = new Utils();

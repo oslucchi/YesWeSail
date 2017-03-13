@@ -67,6 +67,10 @@ public class DBInterface implements Serializable
 		{
 			throw new Exception(retVal);
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return(count);
 	}
 		
@@ -571,7 +575,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			conn.finalize();
+			DBInterface.disconnect(conn);
 		}
 		throw(new Exception("No record found"));
 	}
@@ -606,7 +610,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			conn.finalize();
+			DBInterface.disconnect(conn);
 		}
 		return aList;
 	}
@@ -759,7 +763,7 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			conn.finalize();
+			DBInterface.disconnect(conn);
 		}
 	}
 
@@ -804,16 +808,24 @@ public class DBInterface implements Serializable
 		String sqlQueryColNames = "SELECT * FROM " + tableName + " WHERE 1 = 0";
 		DBConnection conn = null;
 		conn = new DBConnection();
-    	for(int i = 0; i < collection.size(); i++)
-    	{
-	    	/*
-	    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
-	    	 */
-			sql = "INSERT INTO " + tableName + " SET ";
-			sql += (((DBInterface) collection.get(i)))
-					.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
-			conn.executeQuery(sql, logStatement);
-    	}
+		try
+		{
+	    	for(int i = 0; i < collection.size(); i++)
+	    	{
+		    	/*
+		    	 * Populating a ResultSetMetaData object to obtain table columns to be used in the query.
+		    	 */
+				sql = "INSERT INTO " + tableName + " SET ";
+				sql += (((DBInterface) collection.get(i)))
+						.getUpdateStatement(conn, sqlQueryColNames, collection.get(i), idColName);
+				conn.executeQuery(sql, logStatement);
+	    	}
+		}
+    	catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			throw e;
+		}
 	}
 
 	public void delete(DBConnection conn, String sql) throws Exception
@@ -853,7 +865,15 @@ public class DBInterface implements Serializable
 	public static DBConnection TransactionStart() throws Exception
 	{
 		DBConnection conn = new DBConnection();
-		conn.executeQuery("START TRANSACTION", logStatement);
+		try
+		{
+			conn.executeQuery("START TRANSACTION", logStatement);
+		}
+    	catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			throw e;
+		}
     	return conn;
 	}
 

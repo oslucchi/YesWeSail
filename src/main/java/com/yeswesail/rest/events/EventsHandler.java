@@ -1064,13 +1064,14 @@ public class EventsHandler {
 			@SuppressWarnings("unchecked")
 			ArrayList<EventRoute> erList = 
 					(ArrayList<EventRoute>) EventRoute.populateCollection(
-													"SELECT *  FROM EventRoute " +
+													"SELECT * FROM EventRoute " +
 													"WHERE eventId = " + jsonIn.eventId, 
 													EventRoute.class);
 			if (erList.size() == 0)
 			{
 				if ((jsonIn.route == null) || (jsonIn.route.length == 0))
 				{
+					DBInterface.disconnect(conn);
 					return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, languageId, "events.missingRoutes");
 				}
 				else
@@ -1103,6 +1104,10 @@ public class EventsHandler {
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 
 		if (jh.jasonize(event, language) != Response.Status.OK)
 		{
@@ -1128,6 +1133,10 @@ public class EventsHandler {
 		{
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
@@ -1262,6 +1271,11 @@ public class EventsHandler {
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		return Response.status(Response.Status.OK)
 				.entity("{}").build();
 	}
@@ -1378,11 +1392,12 @@ public class EventsHandler {
 		}
 		catch (Exception e) 
 		{
+			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 

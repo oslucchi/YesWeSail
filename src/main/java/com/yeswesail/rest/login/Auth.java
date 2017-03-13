@@ -68,7 +68,8 @@ public class Auth {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			DBInterface.TransactionRollback(conn);
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
@@ -80,6 +81,11 @@ public class Auth {
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		return null;
 	}
 	
@@ -107,7 +113,8 @@ public class Auth {
 			rc.setPasswordChange(jsonIn.password);
 			rc.update (conn, "idRegistrationConfirm");
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.alreadyRegistered");
@@ -137,7 +144,8 @@ public class Auth {
 			ua.setToken(token);
 			ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.tokenAlreadyExistent");
@@ -276,7 +284,8 @@ public class Auth {
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.wrongCredentials");
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			DBInterface.disconnect(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
@@ -303,7 +312,8 @@ public class Auth {
 			log.debug("Refreshing the last access");
 			ua.update(conn, "idUsersAuth");
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
 				log.debug("token not valid in DB, creating new one");
@@ -380,7 +390,8 @@ public class Auth {
 				}
 			}
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			sa.removeUser(token);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.sessionExpired");
@@ -509,6 +520,7 @@ public class Auth {
 		catch (Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.confirmTokenInvalid");
 		}
 		
@@ -523,6 +535,11 @@ public class Auth {
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception updating the registration confirm record. (" + e.getMessage() + ")");
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+
 		
 		try 
 		{
@@ -573,7 +590,8 @@ public class Auth {
 			ua.populateObject(conn, query, ua);
 			ua.delete(conn, ua.getIdUsersAuth());
 		}
-		catch (Exception e) {
+		catch (Exception e) 
+		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.tokenNotFound");
 		}
 		finally

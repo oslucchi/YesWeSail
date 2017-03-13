@@ -70,7 +70,15 @@ public class EventRoute extends DBInterface
 	{
 		DBConnection conn = null;
 		conn = new DBConnection();
-		conn.executeQuery("DELETE FROM EventRoute " + whereClause, true);
+		try
+		{
+			conn.executeQuery("DELETE FROM EventRoute " + whereClause, true);
+		}
+    	catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			throw e;
+		}
 	}
 
 	public void deleteOnWhere(DBConnection conn , String whereClause) throws Exception

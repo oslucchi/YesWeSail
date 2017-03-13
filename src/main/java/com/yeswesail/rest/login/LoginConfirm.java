@@ -51,7 +51,6 @@ public class LoginConfirm {
 			((password != null) && (password.compareTo("") == 0)))
 		{
 			log.debug("No valid mail/password passed");
-			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, 
 					prop.getDefaultLang(), "auth.wrongCredentials");
 		}
@@ -66,6 +65,7 @@ public class LoginConfirm {
 			uFB = new Users(conn, ua.getUserId());
 		} 
 		catch (Exception e1) {
+			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
 					prop.getDefaultLang(), "generic.execError");
 		}
@@ -91,6 +91,7 @@ public class LoginConfirm {
 				{
 					log.warn("Exception " + e.getMessage() + 
 							 " searching user by the given email '" + email + "'");
+					DBInterface.disconnect(conn);
 					return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
 							prop.getDefaultLang(), "generic.execError");
 				}
@@ -111,6 +112,10 @@ public class LoginConfirm {
 						 " updating user with the given email '" + email + "'");
 				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
 						prop.getDefaultLang(), "generic.execError");
+			}
+			finally
+			{
+				DBInterface.disconnect(conn);
 			}
 			
 			// returning to the user
@@ -199,7 +204,8 @@ public class LoginConfirm {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(ResponseEntityCreator.formatEntity(
 								prop.getDefaultLang(), "generic.execError")).build();
-		};
+		}
+		
 		if (email == null)
 		{
 			try 
@@ -239,6 +245,10 @@ public class LoginConfirm {
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
+			finally
+			{
+				DBInterface.disconnect(conn);
+			}
 		}
 			
 		try 
@@ -263,6 +273,10 @@ public class LoginConfirm {
 		}
 		catch (Exception e) {
 			log.error("Exception " + e.getMessage() + " updating user and registration token");
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).build();
 	}

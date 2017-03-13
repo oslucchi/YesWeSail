@@ -221,6 +221,105 @@ public class HandlePendingActions {
 	}
 
 	@PUT 
+	@Path("/ticketLost/{id}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response removeTicketLock(@HeaderParam("Language") String language,
+									@HeaderParam("Authorization") String token,
+									@PathParam("id") int id)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		EventTickets[] ticketsToRelease;
+
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.TransactionStart();
+		}
+		catch(Exception e)
+		{
+			utils.addToJsonContainer("error", 
+					LanguageResources.getResource(languageId, "ticket.cannotDeleteLocks") +
+					" (exception '" + e.getMessage() + "')", true);
+			String json = utils.jsonize();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
+		}
+
+		try
+		{
+			TicketLocks tl = new TicketLocks(conn, id);
+	
+			EventTickets et = new EventTickets(conn, tl.getEventTicketId());
+			if (et.getTicketType() == EventTickets.WHOLE_BOAT)
+			{
+				log.debug("WHOLE_BOAT ticket required to be released");
+				ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
+			}
+			else
+			{
+				ticketsToRelease = new EventTickets[1];
+				ticketsToRelease[0] = et;
+			}
+	
+			for(EventTickets item : ticketsToRelease)
+			{
+				try
+				{
+					TicketLocks ticket = TicketLocks.findByEventTicketId(conn, item.getIdEventTickets());
+					log.debug("Deleting lock id " + ticket.getIdTicketLocks());
+					ticket.delete(conn, ticket.getIdTicketLocks());
+				}
+				catch(Exception e)
+				{
+					if (e.getMessage().compareTo("No record found") != 0)
+					{
+						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
+								 item.getIdEventTickets());
+						DBInterface.TransactionRollback(conn);
+						DBInterface.disconnect(conn);
+						utils.addToJsonContainer("error", 
+								LanguageResources.getResource(languageId, "ticket.cannotDeleteLocks") +
+								" (exception '" + e.getMessage() + "')", true);
+						String json = utils.jsonize();
+						return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
+					}
+				}
+				if (item.getBooked() > 0)
+				{
+					log.debug("Updating booked status for event ticket " + item.getIdEventTickets());
+					item.setBooked(item.getBooked() - 1);
+					item.update(conn, "idEventTickets");
+				}
+			}
+			PendingActions pa = new PendingActions();
+			// TODO mark the action as 'C'ompleted once the id will be received
+			DBInterface.TransactionCommit(conn);
+		}
+		catch(Exception e1)
+		{
+			DBInterface.TransactionRollback(conn);
+			utils.addToJsonContainer("error", 
+					LanguageResources.getResource(languageId, "ticket.cannotDeleteLocks") +
+					" (exception '" + e1.getMessage() + "')", true);
+			String json = utils.jsonize();
+			return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(json).build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
+	@PUT 
 	@Path("/reviews/{id}/{idPendingActions}/{command}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -272,6 +371,10 @@ public class HandlePendingActions {
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
@@ -375,6 +478,10 @@ public class HandlePendingActions {
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
 		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 	
@@ -414,7 +521,7 @@ public class HandlePendingActions {
 		}
 		finally
 		{
-			DBInterface.TransactionRollback(conn);
+			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
