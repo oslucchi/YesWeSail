@@ -83,11 +83,47 @@ public class TicketReleaser extends Thread {
 		Thread.currentThread().interrupt();
 	}
 	
+	private String setMailBody(String variantPart, Users u, Events e)
+	{
+		String body = null;
+		body =  "L'utente " + 
+				u.getSurname() + " " + u.getName() + variantPart +
+				"I riferimenti del cliente per il contatto sono:\n" +
+				"<ul>" +
+				"<li>email: " + u.getEmail() + "</li>" +
+				"<li>telefono: " + u.getPhone1() + "</li>" +
+				"</ul><br>";
+		if (e != null)
+		{
+			try
+			{
+				Users so = new Users(conn, e.getShipOwnerId());
+				SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy");
+				body += "L'evento che aveva prenotato e' il seguente:<br>" + 
+						"<ul>" +
+						"<li>Id evento: " + e.getIdEvents() + "</li>" +
+						"<li>Da: " + sf.format(e.getDateStart()) + " a: " + sf.format(e.getDateEnd()) + "</li>" +
+						"<li>Imbarco: " + e.getLocation() + "</li>" +
+						"<li>Armatore: " + so.getSurname() + " " + so.getName() + "</li>" +
+						"</ul><br>";
+			}
+			catch(Exception ex)
+			{
+				log.warn("Exception " + ex.getMessage() + "retriving shipOnwer");
+			}
+		}
+		body += "Contattare il cliente per controllare lo stato dell'acquisto e successivamente " +
+				"il supporto tecnico, per ripristinare il corretto stato del biglietto";
+		
+		return body;
+	}
+	
     @SuppressWarnings("unchecked")
 	public void run() 
     {
     	HashMap<Integer, TicketLocks> pendingBuy = new HashMap<>();
 		Date now;
+		String body = null;
 		int count = 0;
 		log.trace("Ticket releaser Started");
     	try
@@ -101,19 +137,29 @@ public class TicketReleaser extends Thread {
         		{
         			if (tl.getLockTime() == null)
         				continue;
+    				EventTickets  et = new EventTickets(conn, tl.getEventTicketId());
+    				Events e = (et != null ? e = new Events(conn, et.getEventId()) : null);
+    				Users u = new Users(conn, tl.getUserId());
         			switch(tl.getStatus())
         			{
-        			case "P":
+        			case Constants.STATUS_PENDING_APPROVAL:
         				if (now.getTime() - tl.getLockTime().getTime() > prop.getReleaseTicketLocksAfter() * 1000)
             			{
             				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
             						  " eventTicketId " + tl.getEventTicketId() + 
             		 				  " expired will be removed");
+            				body =  setMailBody(
+	            						" ha messo un biglietto nel carrello ma non ha effettuato il pagamento nei " +
+	            						(prop.getReleaseTicketLocksAfter() / 60) + " minuti concessi.<br/>",
+	            						u, e);
+            				Mailer.sendMail(prop.getAdminEmail(), 
+    								"Biglietto messo in carrello e non acquistato", 
+    								body, null);
             				release(tl, conn);
             			}
         				break;
 
-        			case "W":
+        			case Constants.STATUS_WAITING_FOR_TRANSACTION:
         				if (!pendingBuy.containsKey(tl.getIdTicketLocks()) && 
         					(now.getTime() - tl.getLockTime().getTime() > prop.getSendMailOnTicketinWState() * 1000))
             			{
@@ -121,37 +167,18 @@ public class TicketReleaser extends Thread {
             				log.debug("Ticket lockId " + tl.getIdTicketLocks() + 
             						  " eventTicketId " + tl.getEventTicketId() + 
             		 				  " is in pending state since too long. Sending email to admin");
-            				EventTickets  et = new EventTickets(conn, tl.getEventTicketId());
-            				Events e = (et != null ? e = new Events(conn, et.getEventId()) : null);
-            				Users u = new Users(conn, tl.getUserId());
             				
-            				String body =  "L'utente " + 
-		    							   u.getSurname() + " " + u.getName() +
-		        						   " ha tentato l'acquistato di un biglietto senza completare la procedura in " +
-		    							   (prop.getSendMailOnTicketinWState() / 60) + " minuti.<br/>" +
-		        						   "I riferimenti del cliente per il contatto sono:\n" +
-		    							   "<ul>" +
-		    							   "<li>email: " + u.getEmail() + "</li>" +
-		        						   "<li>telefono: " + u.getPhone1() + "</li>" +
-		    							   "</ul><br>";
-            				if (e != null)
-            				{
-            					Users so = new Users(conn, e.getShipOwnerId());
-            					SimpleDateFormat sf = new SimpleDateFormat("dd/MM/yyyy");
-            					body += "L'evento che aveva prenotato e' il seguente:<br>" + 
-            							"<ul>" +
-            							"<li>Id evento: " + e.getIdEvents() + "</li>" +
-            							"<li>Da: " + sf.format(e.getDateStart()) + " a: " + sf.format(e.getDateEnd()) + "</li>" +
-            							"<li>Imbarco: " + e.getLocation() + "</li>" +
-            							"<li>Armatore: " + so.getSurname() + " " + so.getName() + "</li>" +
-            							"</ul><br>";
-            				}
-            				body += "Contattare il cliente per controllare lo stato dell'acquisto e successivamente " +
-            						"il supporto tecnico, per ripristinare il corretto stato del biglietto";
+            				body =  setMailBody(
+	            						" ha tentato il pagamento di un biglietto senza completare la procedura in " +
+	            						(prop.getSendMailOnTicketinWState() / 60) + " minuti.<br/>",
+	            						u, e);
+            						
             				Mailer.sendMail(prop.getAdminEmail(), 
             								"Biglietto in attesa completamento acquisto da troppo tempo", 
             								body, null);
+            				log.debug("Mail sent");
 
+            				// A ticket lost (Constants.STATUS_WAITING_FOR_TRANSACTION) needs actions to be freed
             				PendingActions pa = new PendingActions();
             				pa.setActionType("ticket lost");
             				pa.setUserId(tl.getUserId());
@@ -160,8 +187,6 @@ public class TicketReleaser extends Thread {
             				pa.setUpdated(pa.getCreated());
             				pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
             				pa.insert(conn, "idPendingActions", pa);
-
-            				log.debug("Mail sent");
             			}
         				break;
         			}
