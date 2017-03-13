@@ -17,6 +17,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -221,12 +222,13 @@ public class HandlePendingActions {
 	}
 
 	@PUT 
-	@Path("/ticketLost/{id}")
+	@Path("/ticketLost/{paId}/{tlId}")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response removeTicketLock(@HeaderParam("Language") String language,
 									@HeaderParam("Authorization") String token,
-									@PathParam("id") int id)
+									@PathParam("paId") int paId,
+									@PathParam("tlId") int tlId)
 	{
 		int languageId = Utils.setLanguageId(language);
 		SessionData sd = SessionData.getInstance();
@@ -255,7 +257,7 @@ public class HandlePendingActions {
 
 		try
 		{
-			TicketLocks tl = new TicketLocks(conn, id);
+			TicketLocks tl = new TicketLocks(conn, tlId);
 	
 			EventTickets et = new EventTickets(conn, tl.getEventTicketId());
 			if (et.getTicketType() == EventTickets.WHOLE_BOAT)
@@ -299,8 +301,10 @@ public class HandlePendingActions {
 					item.update(conn, "idEventTickets");
 				}
 			}
-			PendingActions pa = new PendingActions();
-			// TODO mark the action as 'C'ompleted once the id will be received
+			PendingActions pa = new PendingActions(conn, paId);
+			pa.setStatus(Constants.STATUS_COMPLETED);
+			pa.update(conn, "idPendingActions");
+
 			DBInterface.TransactionCommit(conn);
 		}
 		catch(Exception e1)
@@ -348,18 +352,18 @@ public class HandlePendingActions {
 			log.trace("changing review stauts");
 			if (command.compareTo("approve") == 0)
 			{
-				review.setStatus("A");
+				review.setStatus(Constants.STATUS_ACTIVE);
 			}
 			else 
 			{
-				review.setStatus("R");
+				review.setStatus(Constants.STATUS_REJECTED);
 			}
 			review.setUpdated(new Date());
 			review.update(conn, "idReviews");
 			log.trace("changed");
 			
 			action = new PendingActions(conn, idPendingActions);
-			action.setStatus("C");
+			action.setStatus(Constants.STATUS_COMPLETED);
 			action.update(conn, "idPendingActions");
 			log.trace("marked request as complete");
 			DBInterface.TransactionCommit(conn);
@@ -465,7 +469,7 @@ public class HandlePendingActions {
 			}
 
 			action = new PendingActions(conn, idPendingActions);
-			action.setStatus("C");
+			action.setStatus(Constants.STATUS_COMPLETED);
 			action.update(conn, "idPendingActions");
 			log.trace("marked request as complete");
 			DBInterface.TransactionCommit(conn);
@@ -508,7 +512,7 @@ public class HandlePendingActions {
 			log.trace("Retrieving review to update. Id " + idPendingActions);
 			conn = DBInterface.TransactionStart();
 			action = new PendingActions(conn, idPendingActions);
-			action.setStatus("C");
+			action.setStatus(Constants.STATUS_COMPLETED);
 			action.setUpdated(new Date());
 			DBInterface.TransactionCommit(conn);
 			log.trace("Status changed");

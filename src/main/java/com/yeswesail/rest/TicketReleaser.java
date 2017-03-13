@@ -158,7 +158,7 @@ public class TicketReleaser extends Thread {
             				pa.setLink("rest/requests/ticketLost/" + tl.getIdTicketLocks());
             				pa.setCreated(new Date());
             				pa.setUpdated(pa.getCreated());
-            				pa.setStatus("P");
+            				pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
             				pa.insert(conn, "idPendingActions", pa);
 
             				log.debug("Mail sent");
@@ -170,13 +170,13 @@ public class TicketReleaser extends Thread {
         		ArrayList<RegistrationConfirm> rcList = 
         				(ArrayList<RegistrationConfirm>) RegistrationConfirm.populateCollection(
     										"SELECT * FROM RegistrationConfirm " +
-    										"WHERE status = 'A'", false, RegistrationConfirm.class);
+    										"WHERE status = '" + Constants.STATUS_ACTIVE + "'", false, RegistrationConfirm.class);
         		for(RegistrationConfirm rc : rcList)
         		{
     				if ((now.getTime() - rc.getCreated().getTime()) > 5 * DAY_DURATION)
     				{
     	        		log.debug("marked confirmation id " + rc.getIdRegistrationConfirm());
-    					rc.setStatus("E");
+    					rc.setStatus(Constants.STATUS_EXPIRED);
     					rc.update(conn, "idRegistrationConfirm");
     				}
         		}

@@ -1,6 +1,15 @@
 package com.yeswesail.rest;
 
 public class Constants {
+	public static final String STATUS_ACTIVE = "A";
+	public static final String STATUS_COMPLETED = "C";
+	public static final String STATUS_D = "D";
+	public static final String STATUS_EXPIRED = "E";
+	public static final String STATUS_PENDING_APPROVAL = "P";
+	public static final String STATUS_REJECTED = "R";
+	public static final String STATUS_PENDING_CONFIRM_TO_USER = "S";
+	public static final String STATUS_WAITING_FOR_TRANSACTION = "W";
+
 	public static final int LNG_IT	= 1;
 	public static final int LNG_EN	= 2;
 	public static final int LNG_FR	= 3;

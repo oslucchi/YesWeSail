@@ -2,6 +2,8 @@ package com.yeswesail.rest.DBUtility;
 
 import java.util.Date;
 
+import com.yeswesail.rest.Constants;
+
 public class RegistrationConfirm extends DBInterface
 {	
 	private static final long serialVersionUID = -7175860686398253282L;
@@ -47,7 +49,7 @@ public class RegistrationConfirm extends DBInterface
 		String sql = "SELECT * " +
 				 "FROM " + tableName + " " +
 				 "WHERE email = '" + email + "' AND " +
-				 "      status = 'A'";
+				 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		this.populateObject(conn, sql, this);
 	}
 	
@@ -56,7 +58,7 @@ public class RegistrationConfirm extends DBInterface
 		String sql = "SELECT * " +
 				 "FROM " + tableName + " " +
 				 "WHERE token = '" + token + "' AND " +
-				 "      status = 'A'";
+				 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		this.populateObject(conn, sql, this);
 	}
 	
@@ -65,7 +67,7 @@ public class RegistrationConfirm extends DBInterface
 		String sql = "SELECT * " +
 				 "FROM " + tableName + " " +
 				 "WHERE userId = " + id + " AND " +
-				 "      status = 'A'";
+				 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		try
 		{
 			this.populateObject(conn, sql, this);

@@ -78,12 +78,12 @@ public class Events extends DBInterface implements Comparable<Events>
 		String whereClause = 
 					 "WHERE idEvents = " + id + " AND " +
 			 	 	 "      b.languageId = " + languageId + " AND " +
-				 	 "      status = 'A'";
+				 	 "      status = '" + Constants.STATUS_ACTIVE + "'";
 
 		String fallbackWhereClause = 
 					 "WHERE idEvents = " + id + " AND " +
 				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
-				 	 "      status = 'A'";
+				 	 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
 		getTicketMaxAndMin(events);
 	}
@@ -105,8 +105,8 @@ public class Events extends DBInterface implements Comparable<Events>
 				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId);
 		if (activeOnly)
 		{			
-			whereClause += " AND status = 'A'";
-			fallbackWhereClause += " AND status = 'A'";
+			whereClause += " AND status = '" + Constants.STATUS_ACTIVE + "'";
+			fallbackWhereClause += " AND status = '" + Constants.STATUS_ACTIVE + "'";
 		}
 		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
 		getTicketMaxAndMin(events);
@@ -197,7 +197,7 @@ public class Events extends DBInterface implements Comparable<Events>
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
-		String whereClause = "WHERE   a.status = 'A' AND " +
+		String whereClause = "WHERE   a.status = '" + Constants.STATUS_ACTIVE + "' AND " +
 							 "        a.dateStart > NOW() AND " +
 							 "        a.hotEvent = 1 " +
 						 	 "ORDER BY dateStart ";

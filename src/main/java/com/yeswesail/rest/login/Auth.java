@@ -53,7 +53,7 @@ public class Auth {
 			u.setEmail(jsonIn.username);
 			u.setName(jsonIn.firstName);
 			u.setSurname(jsonIn.lastName);
-			u.setStatus("D");
+			u.setStatus(Constants.STATUS_D);
 			u.setIsShipOwner(false);
 			u.setFacebook(jsonIn.facebookId);
 			u.setConnectedVia("P");
@@ -100,7 +100,7 @@ public class Auth {
 			{
 				token = jsonIn.token;
 				rc.setCreated(new Date());
-				rc.setStatus("A");
+				rc.setStatus(Constants.STATUS_ACTIVE);
 				rc.setUserId(u.getIdUsers());
 				rc.setToken(token);
 				rc.setIdRegistrationConfirm(rc.insertAndReturnId(conn, "idRegistrationConfirm", rc));
@@ -456,7 +456,7 @@ public class Auth {
 			rc = new RegistrationConfirm();
 			rc.setCreated(new Date());
 			rc.setPasswordChange(jsonIn.password);
-			rc.setStatus("A");
+			rc.setStatus(Constants.STATUS_ACTIVE);
 			rc.setToken(jsonIn.token);
 			rc.setUserId(u.getIdUsers());
 			rc.insert(conn, "idRegistrationConfirm", rc);
@@ -526,7 +526,7 @@ public class Auth {
 		
 		try 
 		{
-			rc.setStatus("C");
+			rc.setStatus(Constants.STATUS_COMPLETED);
 			rc.update(conn, "idRegistrationConfirm");
 			DBInterface.TransactionCommit(conn);
 		}

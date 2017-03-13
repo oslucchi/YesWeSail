@@ -162,7 +162,7 @@ public class LoginConfirm {
 			ua.setLastRefreshed(new Date());
 			ua.update(conn, "idUsersAuth");
 
-			u.setStatus("A");
+			u.setStatus(Constants.STATUS_ACTIVE);
 			u.setFacebook(uFB.getFacebook());
 			u.update(conn, "idUsers");
 			sd.removeUser(token);
@@ -236,7 +236,7 @@ public class LoginConfirm {
 				ua.update(conn, "idUsersAuth");
 				Users u = new Users(conn, ua.getUserId());
 				u.setEmail(email);
-				u.setStatus("A");
+				u.setStatus(Constants.STATUS_ACTIVE);
 				u.update(conn, "idUsers");
 				return Response.status(Response.Status.OK).build();
 			}
@@ -255,9 +255,9 @@ public class LoginConfirm {
 		{
 			location = new URI(uri);
 			Users u = new Users(conn,rc.getUserId());
-			u.setStatus("A");
+			u.setStatus(Constants.STATUS_ACTIVE);
 			u.update(conn, "idUsers");
-			rc.setStatus("I");
+			rc.setStatus(Constants.STATUS_COMPLETED);
 			rc.update(conn, "idRegistrationConfirm");
 			UsersAuth ua = new UsersAuth();
 			ua.setCreated(new Date());

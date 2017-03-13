@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 
 public class Reviews extends DBInterface 
 {
 	private static final long serialVersionUID = 84894262980646849L;
 	private ApplicationProperties prop = ApplicationProperties.getInstance();
-
+	
 	protected int idReviews;
 	protected String review;
 	protected int reviewerId;
@@ -44,7 +45,7 @@ public class Reviews extends DBInterface
 					 "c.name AS targetName, c.surname AS targetSurname, c.imageURL AS targetURL " +
 					 "FROM ( Reviews AS a INNER JOIN Users AS b ON " +
 					 "         b.idUsers = a.reviewerId " +
-					 		   (activeOnly ? " AND a.status = 'A' " : "") +
+					 		   (activeOnly ? " AND a.status = '" + Constants.STATUS_ACTIVE + "' " : "") +
 					 "     ) INNER JOIN Users AS c ON " +
 					 "     c.idUsers = a.reviewForId " +
 					 "WHERE " + idColName + " = " + id;
@@ -136,7 +137,7 @@ public class Reviews extends DBInterface
 	}
 
 	public String getReviewerURL() {
-		if (reviewerURL.startsWith("http"))
+		if ((reviewerURL == null) || reviewerURL.startsWith("http"))
 		{
 			return reviewerURL;
 		}
@@ -155,7 +156,7 @@ public class Reviews extends DBInterface
 	}
 
 	public String getTargetURL() {
-		if (targetURL.startsWith("http"))
+		if ((targetURL == null) || targetURL.startsWith("http"))
 		{
 			return targetURL;
 		}

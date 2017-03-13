@@ -54,7 +54,7 @@ public class Pages {
 	@Path("/dynamic/{URLReference}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDynamicPage(PagesJson jsonIn,
+	public Response putDynamicPage(PagesJson jsonIn,
 							 @HeaderParam("Authorization") String token,
 							 @HeaderParam("Language") String language)
 

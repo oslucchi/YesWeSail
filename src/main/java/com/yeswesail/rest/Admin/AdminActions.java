@@ -98,7 +98,7 @@ public class AdminActions {
 			for (Users user : usersList)
 			{
 				log.debug("Evaluating " + user.getEmail() + " with status '" + user.getStatus() + "'");
-				if ((user.getEmail() == null) || (user.getStatus().compareTo("P") != 0))
+				if ((user.getEmail() == null) || (user.getStatus().compareTo(Constants.STATUS_PENDING_APPROVAL) != 0))
 				{
 					continue;
 				}

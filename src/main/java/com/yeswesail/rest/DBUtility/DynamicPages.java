@@ -2,6 +2,8 @@ package com.yeswesail.rest.DBUtility;
 
 import java.util.Date;
 
+import com.yeswesail.rest.Constants;
+
 public class DynamicPages extends DBInterface {
 	private static final long serialVersionUID = 4904338993478927413L;
 	protected int idDynamicPages;
@@ -28,7 +30,7 @@ public class DynamicPages extends DBInterface {
 					 "FROM " + tableName + " " +
 					 "WHERE URLReference = '" + URLReference + "' AND " +
 					 "      languageId = " + languageId + " AND " +
-					 "      status = 'A'";
+					 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		populateObject(conn, sql, this);
 	}
 

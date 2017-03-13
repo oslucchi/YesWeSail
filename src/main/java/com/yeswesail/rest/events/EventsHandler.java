@@ -264,7 +264,7 @@ public class EventsHandler {
 		}
 		if (jsonIn.activeOnly)
 		{
-			where += and + "a.status = 'A' ";
+			where += and + "a.status = '" + Constants.STATUS_ACTIVE + "' ";
 			and = " AND ";
 		}
 		if (jsonIn.labels != null)
@@ -398,7 +398,7 @@ public class EventsHandler {
 								  @HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		jsonIn.status = "A";
+		jsonIn.status = Constants.STATUS_ACTIVE;
 		return handleSearch(jsonIn, languageId, true);
 	}
 	
@@ -444,7 +444,7 @@ public class EventsHandler {
 			ev.setEarlyBooking(false);
 			ev.setHotEvent(false);
 			ev.setLastMinute(false);
-			ev.setStatus("P");
+			ev.setStatus(Constants.STATUS_PENDING_APPROVAL);
 			ev.setImageURL(ev.getImageURL().replace(new Integer(ev.getIdEvents()).toString(), 
 													new Integer(idEvents).toString()));
 			ev.update(conn, "idEvents");
@@ -862,7 +862,7 @@ public class EventsHandler {
 		event.setShipOwnerId(jsonIn.shipOwnerId);
 		if (jsonIn.status == null)
 		{
-			event.setStatus("P");
+			event.setStatus(Constants.STATUS_PENDING_APPROVAL);
 		}
 		else
 		{
@@ -1239,7 +1239,7 @@ public class EventsHandler {
 				u.setEmail(jsonIn.userEmail);
 				u.setRoleId(Roles.DUMMY);
 				u.setConnectedVia("X");
-				u.setStatus("A");
+				u.setStatus(Constants.STATUS_ACTIVE);
 				u.setIsShipOwner(false);
 				u.setImageURL("images/users/default-icon.png");
 				try

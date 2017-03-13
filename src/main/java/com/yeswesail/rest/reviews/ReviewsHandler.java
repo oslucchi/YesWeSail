@@ -24,6 +24,7 @@ import javax.ws.rs.core.Response.Status;
 import org.apache.log4j.Logger;
 
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -117,7 +118,7 @@ public class ReviewsHandler {
 		}
 		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
 		{
-			jsonIn.status = "A";
+			jsonIn.status = Constants.STATUS_ACTIVE;
 		}
 		
 		Reviews[] reviews = null;
@@ -167,7 +168,7 @@ public class ReviewsHandler {
 			String sql = "SELECT AVG(rating), count(*) as population " +
 						 "FROM Reviews " +
 						 "WHERE reviewForId = " + userId + " AND " +
-						 "      status = 'A'";
+						 "      status = '" + Constants.STATUS_ACTIVE + "'";
 			results = DBInterface.executeAggregateStatement(conn, sql);
 			HashMap<String, Object> json = new HashMap<>();
 			json.put("rating", (Double) results.get(0));
@@ -250,7 +251,7 @@ public class ReviewsHandler {
 			review.setReviewerId(sd.getBasicProfile(token).getIdUsers());
 			review.setReviewForId(jsonIn.reviewForId);
 			review.setRating(jsonIn.rating);
-			review.setStatus("P");
+			review.setStatus(Constants.STATUS_PENDING_APPROVAL);
 			review.setCreated(new Date());
 			review.setUpdated(review.getCreated());
 			int id = review.insertAndReturnId(conn, "idReviews", review);
@@ -262,7 +263,7 @@ public class ReviewsHandler {
 			pa.setLink("rest/requests/reviews/" + id);
 			pa.setCreated(review.getCreated());
 			pa.setUpdated(pa.getCreated());
-			pa.setStatus("P");
+			pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
 			pa.insert(conn, "idPendingActions", pa);
 
 			DBInterface.TransactionCommit(conn);
@@ -306,7 +307,7 @@ public class ReviewsHandler {
 			log.trace("Retrieving review to update. Id " + idReviews);
 			conn = DBInterface.TransactionStart();
 			review = new Reviews(conn, idReviews, false);
-			review.setStatus("A");
+			review.setStatus(Constants.STATUS_ACTIVE);
 			review.update(conn, "idReviews");
 			DBInterface.TransactionCommit(conn);
 			log.trace("Status changed");

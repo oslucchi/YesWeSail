@@ -6,7 +6,7 @@ import java.util.Date;
 public class TicketLocks extends DBInterface 
 {
 	private static final long serialVersionUID = 7805943614787085014L;
-
+	
 	protected int idTicketLocks;
 	protected int eventTicketId;
 	protected Date lockTime;

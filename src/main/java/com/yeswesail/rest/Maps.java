@@ -114,7 +114,7 @@ public class Maps {
 			events = (ArrayList<Events>) e.populateCollectionOfDistinctsOnCondition(
 					"WHERE dateEnd > '" + sdf.format(new Date()) + "' AND " +
 					"      location != 'TBD' AND " +
-					"      status = 'A'", "location" , Events.class);
+					"      status = '" + Constants.STATUS_ACTIVE + "'", "location" , Events.class);
 		}
 		for(Events e : events)
 		{

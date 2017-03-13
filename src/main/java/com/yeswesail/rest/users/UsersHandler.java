@@ -687,7 +687,7 @@ public class UsersHandler {
 			u.setEmail(jsonIn.email);
 			u.setName(jsonIn.name);
 			u.setSurname(jsonIn.surname);
-			u.setStatus("A");
+			u.setStatus(Constants.STATUS_ACTIVE);
 			u.setRoleId(Roles.DUMMY);
 			u.insert(conn, "idUsers", u);
 		}
@@ -776,7 +776,7 @@ public class UsersHandler {
 			pa.setLink("rest/requests/statusUpgrade/" + sd.getBasicProfile(token).getIdUsers());
 			pa.setCreated(new Date());
 			pa.setUpdated(pa.getCreated());
-			pa.setStatus("P");
+			pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
 			pa.insert(conn, "idPendingActions", pa);
 
 			log.trace("User's status upgrade request added");

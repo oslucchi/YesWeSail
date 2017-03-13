@@ -34,6 +34,7 @@ import com.paypal.base.rest.PayPalRESTException;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.ApplicationProperties;
+import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
@@ -389,7 +390,7 @@ public class CartHandler {
 			tickets = TicketLocks.findByUserId(conn, userId);
 			for(TicketLocks ticket : tickets)
 			{
-				ticket.setStatus("W");
+				ticket.setStatus(Constants.STATUS_WAITING_FOR_TRANSACTION);
 				ticket.update(conn, "idTicketLocks");
 			}
 		}

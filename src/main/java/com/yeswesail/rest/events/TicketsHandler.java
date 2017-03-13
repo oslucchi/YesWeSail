@@ -154,7 +154,7 @@ public class TicketsHandler {
 				tl.setBookedTo((t.bookedTo != null ? t.bookedTo : 
 					SessionData.getInstance().getBasicProfile(token).getEmail()));
 				tl.setUserId(u.getIdUsers());
-				tl.setStatus("P");
+				tl.setStatus(Constants.STATUS_PENDING_APPROVAL);
 				tl.insert(conn, "idTicketLocks", tl);
 			}
 			DBInterface.TransactionCommit(conn);
@@ -237,6 +237,7 @@ public class TicketsHandler {
 		String listForApproval = "";
 		String sep = "";
 		String ticketsList = "<ul>";
+
 		DBConnection conn = null;
 		try 
 		{
@@ -247,7 +248,7 @@ public class TicketsHandler {
 				for(TicketJson t : jsonIn[i])
 				{
 					tl = new TicketLocks(conn, t.idEventTickets);
-					tl.setStatus("S");
+					tl.setStatus(Constants.STATUS_PENDING_CONFIRM_TO_USER);
 					tl.update(conn, "idTicketLocks");
 					EventDescription ed = new EventDescription();
 					ed.findEventTitleyId(conn, t.eventId, languageId);
@@ -263,10 +264,12 @@ public class TicketsHandler {
 			pa.setActionType(PendingActions.TICKETS_BUY);
 			pa.setCreated(new Date());
 			pa.setLink("rest/tickets/confirm?tickets=" + listForApproval);
-			pa.setStatus("P");
+			pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
 			pa.setUserId(jsonIn[0][0].usersId);
 			pa.insert(conn, "idPendingActions", pa);
 			DBInterface.TransactionCommit(conn);
+			Mailer.sendMail(prop.getAdminEmail(), "Passenger " + tl.getUserId() + " just bought a ticket", 
+							"<p>Go to the requests admin page and confirm it</p>", null);
 		}
 		catch (Exception e) 
 		{

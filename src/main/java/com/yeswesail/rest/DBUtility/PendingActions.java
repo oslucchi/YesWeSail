@@ -3,6 +3,8 @@ package com.yeswesail.rest.DBUtility;
 import java.util.ArrayList;
 import java.util.Date;
 
+import com.yeswesail.rest.Constants;
+
 public class PendingActions extends DBInterface 
 {
 	final public static String STATUS_UPGRADE = "statusUpgrade";
@@ -43,7 +45,7 @@ public class PendingActions extends DBInterface
 	{
 		String sql = "SELECT * " +
 				 "FROM PendingActions " +
-				 "WHERE status != 'C'";
+				 "WHERE status != '" + Constants.STATUS_COMPLETED + "'";
 		@SuppressWarnings("unchecked")
 		ArrayList<PendingActions> actions = 
 				(ArrayList<PendingActions>) populateCollection(sql, PendingActions.class);
@@ -54,7 +56,7 @@ public class PendingActions extends DBInterface
 	{
 		String sql = "SELECT * " +
 					 "FROM PendingActions " +
-					 "WHERE status != 'C' AND " +
+					 "WHERE status != '" + Constants.STATUS_COMPLETED + "' AND " +
 					 "      userId = " + userId;
 		@SuppressWarnings("unchecked")
 		ArrayList<PendingActions> actions = 
