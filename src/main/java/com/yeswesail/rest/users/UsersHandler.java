@@ -585,12 +585,16 @@ public class UsersHandler {
 		}
 		
 		boolean retVal = true;
-		if ((jsonIn.billingInfo != null) && (jsonIn.billingInfo.taxCode != null))
+		if ((jsonIn.billingInfo != null) && 
+			(jsonIn.billingInfo.taxCode != null) &&
+			(jsonIn.billingInfo.taxCode.trim().compareTo("") != 0))
 		{
 			retVal = TaxcodeChecker.checkTaxcode(jsonIn.billingInfo.country, 
 												 jsonIn.billingInfo.taxCode, TaxcodeChecker.COMPANY);
 		}
-		else if ((jsonIn.personalInfo != null) && (jsonIn.personalInfo.taxCode != null))
+		else if ((jsonIn.personalInfo != null) && 
+				 (jsonIn.personalInfo.taxCode != null)  &&
+				 (jsonIn.personalInfo.taxCode.trim().compareTo("") != 0))
 		{
 			retVal = TaxcodeChecker.checkTaxcode(jsonIn.personalInfo.country, 
 												 jsonIn.personalInfo.taxCode, TaxcodeChecker.PERSONAL);
@@ -753,13 +757,16 @@ public class UsersHandler {
 			int docId = doc.insertAndReturnId(conn, "idDocuments", doc);
 			String prefix = "docs_" + sh.usersId + "_" + docId + "_";
 			Object[] results = null;
+			log.trace("uploading file...");
 			results = UploadFiles.uploadBodyPart(parts, "filesSailingDocs", token, "/images/shipowner", 
 												 prefix, acceptableTypes, languageId, false);
+			log.trace("done!");
 			uploadedList = (ArrayList<String>) results[0];
 			rejectedList = (ArrayList<String>) results[1];
 			rejectionMessage = (ArrayList<String>) results[2];
 			if (rejectionMessage.size() != 0)
 			{
+				log.debug("Some files have been rejected");
 				DBInterface.TransactionRollback(conn);
 				Utils u = new Utils();
 				u.addToJsonContainer("uploadedList", uploadedList, true);
@@ -768,12 +775,14 @@ public class UsersHandler {
 				return Response.status(Status.NOT_ACCEPTABLE).entity(u.jsonize()).build();
 			}
 			String destPath = prop.getContext().getResource("/images/shipowner").getPath();
+			log.trace("move uploaded files in the proper folder");
 			UploadFiles.moveFiles( destPath + "/" + token, destPath, "docs_" + sh.usersId + "_" , true);
 			
 			PendingActions pa = new PendingActions();
 			pa.setActionType("statusUpgrade");
 			pa.setUserId(sd.getBasicProfile(token).getIdUsers());
-			pa.setLink("rest/requests/statusUpgrade/" + sd.getBasicProfile(token).getIdUsers());
+			pa.setLink("rest/requests/" + PendingActions.STATUS_UPGRADE + "/" + 
+						sd.getBasicProfile(token).getIdUsers());
 			pa.setCreated(new Date());
 			pa.setUpdated(pa.getCreated());
 			pa.setStatus(Constants.STATUS_PENDING_APPROVAL);

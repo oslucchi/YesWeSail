@@ -80,6 +80,9 @@ public class TaxcodeChecker {
 
 	public static boolean checkTaxcode(String countryCode, String taxcode, int type)
 	{
+		if (countryCode == null)
+			return true;
+		
 		switch(countryCode.toUpperCase())
 		{
 		case "IT":

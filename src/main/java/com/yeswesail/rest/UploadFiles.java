@@ -32,11 +32,11 @@ public class UploadFiles {
 	public static boolean moveFiles(String fromPath, String toPath, String prefix, boolean overwrite)
 	{
 		boolean errorMoving = false;
-		String contexToPath = getContextPath(toPath);
+		// String contexToPath = getContextPath(toPath);
     	if (overwrite)
     	{
     		// Remove all file with the given prefix from the destination directory
-    		File toDir = new File(contexToPath);
+    		File toDir = new File(toPath);
     		if(toDir.isDirectory()) 
     		{
     		    File[] dirContent = toDir.listFiles();
@@ -48,8 +48,8 @@ public class UploadFiles {
     		}
     	}
     	
-		String contexFromPath = getContextPath(fromPath);
-		File srcDir = new File(contexFromPath);
+		// String contexFromPath = getContextPath(fromPath);
+		File srcDir = new File(fromPath);
 		if(srcDir.isDirectory()) 
 		{
 		    File[] dirContent = srcDir.listFiles();
@@ -58,7 +58,7 @@ public class UploadFiles {
 			    for(int i = 0; i < dirContent.length; i++) 
 			    {
 			    	Files.move(Paths.get(dirContent[i].getPath()), 
-			    			   Paths.get(contexToPath + dirContent[i].getName()), 
+			    			   Paths.get(toPath + dirContent[i].getName()), 
 			    			   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 			    }
 				FileUtils.deleteDirectory(srcDir);
@@ -276,6 +276,14 @@ public class UploadFiles {
 		results[2] = new ArrayList<String>();
 
 		String destPath = null;
+		if (prop.getContext() == null)
+		{
+			log.warn("The application context path is not populated. Aborting");
+			((ArrayList<String>) results[2]).add(
+					(String) Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, new Exception("No context path"), 
+												   languageId, "generic.uploadFileFormatError").getEntity());
+			return results;
+		}
 		try 
 		{
 			destPath = prop.getContext().getResource(resource).getPath();
@@ -289,17 +297,22 @@ public class UploadFiles {
 			return results;
 		}
 
+		log.trace("performing the effective upload");
 		ArrayList<String> uploaded = new ArrayList<String>();
 		ArrayList<String> rejected  = new ArrayList<String>();
 		ArrayList<String> rejectionMsg  = new ArrayList<String>();
 
-		int lastIndex = startUploafFromIndex(destPath, prefix, overwrite);
+		int lastIndex = startUploafFromIndex(resource, prefix, overwrite);
 		// uploading the files into temp dir
 		for(BodyPart part : parts)
 		{
-			if ((part.getContentDisposition() == null) ||
-				!part.getContentDisposition().getParameters().get("name").startsWith(partName))
+			if (part.getContentDisposition() == null)
 				continue;
+			log.trace("part fileName '" + part.getContentDisposition().getFileName() + "'");
+			if (part.getContentDisposition().getParameters().get("name").startsWith(partName))
+				continue;
+			log.trace("uploading part: '" + 
+					  part.getContentDisposition().getParameters().get("name") + "'");
 			
 			if(isAcceptable(acceptableTypes, part.getMediaType().getType() + "/" + part.getMediaType().getSubtype()))
 			{

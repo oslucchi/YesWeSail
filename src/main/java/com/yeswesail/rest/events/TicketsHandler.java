@@ -55,7 +55,7 @@ public class TicketsHandler {
 		EventTickets[] tickets = null;
 		try 
 		{
-			tickets = EventTickets.findByEventId(jsonIn.eventId, languageId);
+			tickets = EventTickets.getAllTicketByEventId(jsonIn.eventId, languageId);
 		}
 		catch (Exception e)
 		{
@@ -72,8 +72,14 @@ public class TicketsHandler {
 		int index = -1;
 		ArrayList<ArrayList<EventTickets>> toReturn = new ArrayList<>();
 
+		boolean wholeBoatAvailable = true;
 		for (int i = 0; i < tickets.length; i++)
 		{
+			if (tickets[i].getAvailable() - tickets[i].getBooked() <= 0)
+			{
+				wholeBoatAvailable = false;
+				continue;
+			}
 			if (tickets[i].getTicketType() != ticketType)
 			{
 				ticketType = tickets[i].getTicketType();
@@ -81,6 +87,17 @@ public class TicketsHandler {
 				toReturn.add(new ArrayList<EventTickets>());
 			}
 			toReturn.get(index).add(tickets[i]);
+		}
+		if (!wholeBoatAvailable)
+		{
+			for(int i = 0; i < toReturn.size(); i++)
+			{
+				if (toReturn.get(i).get(0).getTicketType() == EventTickets.WHOLE_BOAT)
+				{
+					toReturn.remove(i);
+					break;
+				}
+			}
 		}
 
 		if (jh.jasonize(toReturn, language) != Response.Status.OK)
