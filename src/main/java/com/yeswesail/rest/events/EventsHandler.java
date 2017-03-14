@@ -324,51 +324,65 @@ public class EventsHandler {
 			return Response.status(Response.Status.OK).entity("{}").build();
 		}
 		Object list = null;
+		ArrayList<ArrayList<Events>> eventsList = null;
 		HashMap<Integer, Users> shipownerList = new HashMap<>();
 		if (activeOnly)
 		{
-			ArrayList<ArrayList<Events>> eventsList = organizeEvents(eventsFiltered);
-			for(ArrayList<Events> listItem : eventsList)
-			{
-				for(Events e : listItem)
-				{
-					e.setImageURL(e.getImageURL().replace("large", "medium"));
-					try 
-					{
-						if (!shipownerList.containsKey(e.getShipOwnerId()))
-						{
-							shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
-						}
-					}
-					catch (Exception e1)
-					{
-						log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
-								  e.getShipOwnerId());
-					}
-				}
-			}
-			list = eventsList;
+			eventsList = organizeEvents(eventsFiltered);
 		}
 		else
 		{
-			for(Events e : eventsFiltered)
+			eventsList = new ArrayList<>();
+			eventsList.add(eventsFiltered);
+		}
+		String soIdList = "";
+		String sep = "";
+		for(ArrayList<Events> listItem : eventsList)
+		{
+			for(Events e : listItem)
 			{
 				e.setImageURL(e.getImageURL().replace("large", "medium"));
-				try 
+				if (!shipownerList.containsKey(e.getShipOwnerId()))
 				{
-					if (!shipownerList.containsKey(e.getShipOwnerId()))
-					{
-						shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
-					}
-				}
-				catch (Exception e1)
-				{
-					log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
-							  e.getShipOwnerId());
+					shipownerList.put(e.getShipOwnerId(), null);
+					soIdList += sep + e.getShipOwnerId();
+					sep = ",";
 				}
 			}
-			list = eventsFiltered;
 		}
+		if (soIdList.compareTo("") != 0)
+		{
+			soIdList = " (" + soIdList + ") ";
+			try 
+			{
+				@SuppressWarnings("unchecked")
+				ArrayList<Users> soList = (ArrayList<Users>) Users.populateCollection(
+						"SELECT * FROM Users " +
+						"WHERE idUsers IN " + soIdList, Users.class);
+				for(Users u : soList)
+				{
+					if (shipownerList.containsKey(u.getIdUsers()))
+					{
+						shipownerList.put(u.getIdUsers(), u.wipe());
+					}
+				}
+			}
+			catch (Exception e1)
+			{
+				log.debug("Exception " + e1.getMessage() + " retrieving data for shipowner " + 
+						  e.getShipOwnerId());
+			}
+		}
+
+		if (eventsList.size() == 1)
+		{
+			list = eventsList.get(0);
+		}
+		else
+		{
+			list = eventsList;
+		}
+
 		HashMap<String, Object> jsonResponse = new HashMap<>();
 		jsonResponse.put("events", list);
 		jsonResponse.put("shipowners", shipownerList);
