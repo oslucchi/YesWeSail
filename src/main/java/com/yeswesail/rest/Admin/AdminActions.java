@@ -33,19 +33,20 @@ public class AdminActions {
 	ApplicationProperties prop = ApplicationProperties.getInstance();
 	final Logger log = Logger.getLogger(this.getClass());
 
-	private Response prepareAndSendMail(String bodyProperty, String subjectProperty, String language, String email)
+	private Response prepareAndSendMail(String bodyProperty, String subjectProperty, String language, Users user)
 	{
 		int languageId = Utils.setLanguageId(language);
 		try
 		{
-			String httpLink = prop.getWebHost() + "#/reset-password?email=" + email;
+			String httpLink = prop.getWebHost() + "#/reset-password?email=" + user.getEmail();
 			String htmlText = LanguageResources.getResource(languageId, bodyProperty);
 			htmlText = htmlText.replaceAll("CNFMLINK", httpLink);
+			htmlText = htmlText.replaceAll("USERNAME", user.getName());
 			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), subjectProperty);
 			URL url = null;
 			url = prop.getContext().getResource("/images/application/mailLogo.png");
 			String imagePath = url.getPath();
-			Mailer.sendMail(email, subject, htmlText, imagePath);
+			Mailer.sendMail(user.getEmail(), subject, htmlText, imagePath);
 		}
 		catch(MessagingException e)
 		{
@@ -90,6 +91,16 @@ public class AdminActions {
 					.build();
 		}
 		DBConnection conn = null;
+		String bodyRef = null;
+		switch(roleId)
+		{
+		case Roles.SHIP_OWNER:
+			bodyRef = "mail.newhome.shipowner.body";
+			break;
+		default:
+			bodyRef = "mail.newhome.body";
+			break;
+		}
 		try 
 		{
 			conn = DBInterface.connect();
@@ -103,8 +114,8 @@ public class AdminActions {
 					continue;
 				}
 				log.debug("Sending email to: " + user.getEmail());
-				if ((response = prepareAndSendMail("mail.newhome.body", "mail.newhome.subject", 
-												   "it-IT", user.getEmail())) != null)
+				if ((response = prepareAndSendMail(bodyRef, "mail.newhome.subject", 
+												   "it-IT", user)) != null)
 					return response;
 
 			}

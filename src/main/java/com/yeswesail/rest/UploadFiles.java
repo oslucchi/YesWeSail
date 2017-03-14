@@ -275,7 +275,7 @@ public class UploadFiles {
 		Object[] results = new Object[3];
 		results[2] = new ArrayList<String>();
 
-		String destPath = null;
+//		String destPath = null;
 		if (prop.getContext() == null)
 		{
 			log.warn("The application context path is not populated. Aborting");
@@ -284,18 +284,18 @@ public class UploadFiles {
 												   languageId, "generic.uploadFileFormatError").getEntity());
 			return results;
 		}
-		try 
-		{
-			destPath = prop.getContext().getResource(resource).getPath();
-		}
-		catch (MalformedURLException e) 
-		{
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
-			((ArrayList<String>) results[2]).add(
-					(String) Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, 
-												   languageId, "generic.uploadFileFormatError").getEntity());
-			return results;
-		}
+//		try 
+//		{
+//			destPath = prop.getContext().getResource(resource).getPath();
+//		}
+//		catch (MalformedURLException e) 
+//		{
+//			log.warn("Exception " + e.getMessage() + " retrieving context path");
+//			((ArrayList<String>) results[2]).add(
+//					(String) Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, e, 
+//												   languageId, "generic.uploadFileFormatError").getEntity());
+//			return results;
+//		}
 
 		log.trace("performing the effective upload");
 		ArrayList<String> uploaded = new ArrayList<String>();
