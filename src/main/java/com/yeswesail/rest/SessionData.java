@@ -101,6 +101,11 @@ public class SessionData {
 			return;
 		Object[] userData = new Object[SESSION_ELEMENTS];
 		UsersAuth ua = UsersAuth.findToken(token);
+		if (ua == null)
+		{
+			throw new Exception("Token '" + token + "' not found");
+		}
+		
 		DBConnection conn = null;
 		try
 		{
@@ -153,6 +158,10 @@ public class SessionData {
 	public void addUser(int userId, int languageId) throws Exception
 	{
 		UsersAuth ua = UsersAuth.findUserId(userId);
+		if (ua == null)
+		{
+			throw new Exception("User " + userId + " not found");
+		}
 		if (sessionData.get(ua.getToken()) != null)
 		{
 			removeUser(ua.getUserId());

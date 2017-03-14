@@ -74,13 +74,22 @@ public class Authorizer implements ContainerRequestFilter
 			return;
 		}
 		UsersAuth ua = null;
-		try {
-			ua = UsersAuth.findToken(token);
-			sd.addUser(ua.getUserId(), Constants.getLanguageCode(language));
+		Utils ut = new Utils();
+		if ((ua = UsersAuth.findToken(token)) == null)
+		{
+			log.warn("Token '" + token + "' not found. Returning anauthorized");
+			ut.addToJsonContainer("authorized", "false", true);
+			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
+					.entity(ut.jsonize())
+					.build());;
 		} 
-		catch (Exception e) {
-			log.warn("Exception '" + e.getMessage() + "' retrieving token '" + token + "'. Returning anauthorized");
-			Utils ut = new Utils();
+		try 
+		{
+			sd.addUser(ua.getUserId(), Constants.getLanguageCode(language));
+		}
+		catch (Exception e) 
+		{
+			log.warn("Exception '" + e.getMessage() + "' adding user to session data. Returning anauthorized");
 			ut.addToJsonContainer("authorized", "false", true);
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
 					.entity(ut.jsonize())

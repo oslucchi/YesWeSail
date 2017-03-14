@@ -134,26 +134,34 @@ public class Auth {
 	protected Response populateUsersAuthTable(String token, int userId, String language)
 	{
 		DBConnection conn = null;
+		UsersAuth ua = null;
 		try 
 		{
 			conn = DBInterface.connect();
-			UsersAuth ua = new UsersAuth();
-			ua.setCreated(new Date());
-			ua.setLastRefreshed(ua.getCreated());
-			ua.setUserId(userId);
-			ua.setToken(token);
-			ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
-		}
-		catch (Exception e) 
-		{
-			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
+			ua = UsersAuth.findToken(token);
+			if (ua == null)
 			{
-				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.tokenAlreadyExistent");
+				ua = UsersAuth.findUserId(userId);
+			}
+			if (ua == null)
+			{
+				ua = new UsersAuth();
+				ua.setCreated(new Date());
+				ua.setLastRefreshed(ua.getCreated());
+				ua.setUserId(userId);
+				ua.setToken(token);
+				ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
 			}
 			else
 			{
-				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
+				ua.setLastRefreshed(new Date());
+				ua.setToken(token);
+				ua.update(conn, "idUsersAuth");
 			}
+		}
+		catch (Exception e) 
+		{
+			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 		}
 		finally
 		{
@@ -236,11 +244,8 @@ public class Auth {
 			return Response.status(Status.OK).entity(ut.jsonize()).build();
 		}
 		
-		try 
+		if (UsersAuth.findToken(token) == null)
 		{
-			UsersAuth.findToken(token);
-		}
-		catch (Exception e) {
 			ut.addToJsonContainer("authorized", "false", true);
 			return Response.status(Status.UNAUTHORIZED).entity(ut.jsonize()).build();
 		}
@@ -304,35 +309,28 @@ public class Auth {
 		try
 		{
 			log.debug("Setting up the new token for the user in DB");
-			ua = new UsersAuth();
-			query = "SELECT * FROM UsersAuth WHERE userId = " + u.getIdUsers();
-			ua.populateObject(conn, query, ua);
-			ua.setToken(token);
-			ua.setLastRefreshed(new Date());
-			log.debug("Refreshing the last access");
-			ua.update(conn, "idUsersAuth");
-		}
-		catch (Exception e) 
-		{
-			if (e.getMessage().compareTo("No record found") == 0)
+			ua = UsersAuth.findUserId(u.getIdUsers());
+			if (ua == null)
 			{
-				log.debug("token not valid in DB, creating new one");
+				log.debug("userId not found in DB, creating new record");
+				ua = new UsersAuth();
 				ua.setUserId(u.getIdUsers());
 				ua.setToken(token);
 				ua.setCreated(new Date());
 				ua.setLastRefreshed(ua.getCreated());
-				try 
-				{
-					ua.insert(conn, "idUsersAuth", ua);
-				} 
-				catch (Exception e1) {
-					log.error("Error inserting token for user id " + u.getIdUsers());
-				}
+				ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
 			}
 			else
 			{
-				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+				ua.setToken(token);
+				ua.setLastRefreshed(new Date());
+				log.debug("Refreshing the last access");
+				ua.update(conn, "idUsersAuth");
 			}
+		}
+		catch (Exception e) 
+		{
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
 		}
 		finally
 		{
@@ -378,7 +376,12 @@ public class Auth {
 		try 
 		{
 			conn = DBInterface.connect();
-			ua = UsersAuth.findToken(token);
+			if ((ua = UsersAuth.findToken(token)) == null)
+			{
+				sa.removeUser(token);
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, new Exception("Token not found"), language, "auth.sessionExpired");
+			}
 			if (prop.getSessionExpireTime() != 0)
 			{
 				if (ua.getLastRefreshed().getTime() + prop.getSessionExpireTime() * 1000 < new Date().getTime())
@@ -585,10 +588,9 @@ public class Auth {
 		try 
 		{
 			conn = DBInterface.connect();
-			String query = "SELECT * FROM UsersAuth WHERE token = '" + token + "'";
-			UsersAuth ua = new UsersAuth();
-			ua.populateObject(conn, query, ua);
-			ua.delete(conn, ua.getIdUsersAuth());
+			UsersAuth ua = UsersAuth.findToken(token);
+			if (ua != null)
+				ua.delete(conn, ua.getIdUsersAuth());
 		}
 		catch (Exception e) 
 		{

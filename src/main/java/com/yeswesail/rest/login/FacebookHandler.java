@@ -162,11 +162,12 @@ public class FacebookHandler implements Serializable
 		{
 			return response;
 		}
-		if (u.getIdUsers() == -1)
-		{
-			// User not found, create a new one and set the UsersAuth accordingly
-			setUsersAuth(conn, token);
-		}
+		setUsersAuth(conn, token);
+//		if (u.getIdUsers() == -1)
+//		{
+//			// User not found, create a new one and set the UsersAuth accordingly
+//			setUsersAuth(conn, token);
+//		}
 		
 		boolean changed = false;
 		if (u.isAFakeEmail() && getAttributeAsString(json, "email") != null)
@@ -195,29 +196,26 @@ public class FacebookHandler implements Serializable
 	
 	private UsersAuth evalUsersAuth(int idUsers, String token)
 	{
-		try 
+		if ((ua = UsersAuth.findUserId(idUsers)) == null)
 		{
-			if ((ua = UsersAuth.findUserId(idUsers)) == null)
+			log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
+			response = new Auth().populateUsersAuthTable(token, idUsers, prop.getDefaultLang());
+			if (response != null)
 			{
-				log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
-				response = new Auth().populateUsersAuthTable(token, idUsers, prop.getDefaultLang());
-				if (response != null)
-				{
-					log.error("Error populating the UsersAuth object");
-					return null;
-				}
-				ua = UsersAuth.findUserId(idUsers); // Now it should be populated... no need to test
-				log.debug("Populated UsersAuth");
+				log.error("Error populating the UsersAuth object");
+				return null;
 			}
-		} 
-		catch (Exception e) 
-		{
-			// All exceptions. No record found is treated as a particular case
-			errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
-					   e.getMessage() + ")";
-			response = Utils.jsonizeResponse(Status.UNAUTHORIZED, e, 
-							 					 sd.getLanguage(ua.getToken()), "generic.execError");
-			return null;
+			ua = UsersAuth.findUserId(idUsers); // Now it should be populated... no need to test
+			if (ua == null)
+			{
+				// All exceptions. No record found is treated as a particular case
+				errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + 
+										" (user id " +idUsers+ " not found)";
+				response = Utils.jsonizeResponse(Status.UNAUTHORIZED, null, 
+								 					 sd.getLanguage(ua.getToken()), "generic.execError");
+				return null;
+			}
+			log.debug("Populated UsersAuth");
 		}
 		return ua;
 	}
@@ -251,31 +249,19 @@ public class FacebookHandler implements Serializable
 		}
 		else
 		{
-			try 
+			if ((ua = UsersAuth.findToken(token)) == null)
 			{
-				ua = UsersAuth.findToken(token);
-			}
-			catch (Exception e)
-			{
-				if (!e.getMessage().equals("No record found"))
-				{
-					log.warn("Exception " + e.getMessage() + " retrieving UsersAuth by token '" + token + "'");
-					return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, Constants.LNG_EN, "generic.execError");
-				}
+				log.trace("Toke '" + token + "' not found. Creating new");
 				response = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang());
 				if (response != null)
 				{
 					log.debug("Got an error while populating user '" + errorMsg + "'");
 					return response;
 				}
-				try
+				if ((ua = UsersAuth.findToken(token)) == null)
 				{
-					ua = UsersAuth.findToken(token);
-				}
-				catch(Exception e1)
-				{
-					log.warn("Very strange, we can't retrieve what we just added.." + e.getMessage());
-					return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, Constants.LNG_EN, "generic.execError");
+					log.warn("Very strange, we can't retrieve what we just added..");
+					return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, new Exception("App token not found"), Constants.LNG_EN, "generic.execError");
 				}
 			}
 		}

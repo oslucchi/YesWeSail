@@ -32,16 +32,27 @@ public class UsersAuth extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public static UsersAuth findToken(String token) throws Exception
+	public static UsersAuth findToken(String token)
 	{
 		String sql = "SELECT * " +
 				 	 "FROM UsersAuth " +
 				 	 "WHERE  token = '" + token + "'";
-		UsersAuth ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+		UsersAuth ua = null;
+		try
+		{
+			ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") != 0)
+			{
+				return null;
+			}
+		}
 		return(ua);
 	}
 	
-	public static UsersAuth findUserId(int userId) throws Exception
+	public static UsersAuth findUserId(int userId)
 	{
 		String sql = "SELECT * " +
 				 	 "FROM UsersAuth " +

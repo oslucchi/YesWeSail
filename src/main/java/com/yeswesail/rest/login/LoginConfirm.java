@@ -59,12 +59,20 @@ public class LoginConfirm {
 		UsersAuth ua = null;			
 		Users uFB = null;
 		Users u = null;
-		try {
+		try 
+		{
 			conn = DBInterface.connect();
-			ua = UsersAuth.findToken(token);			
+			if ((ua = UsersAuth.findToken(token)) == null)
+			{
+				DBInterface.disconnect(conn);
+				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, 
+						new Exception("App token '" +token + "' not found"), 
+						prop.getDefaultLang(), "generic.execError");
+			}
 			uFB = new Users(conn, ua.getUserId());
 		} 
-		catch (Exception e1) {
+		catch (Exception e1) 
+		{
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
 					prop.getDefaultLang(), "generic.execError");
@@ -229,9 +237,15 @@ public class LoginConfirm {
 				return Response.status(Response.Status.BAD_REQUEST)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
+			UsersAuth ua = null;
+			if ((ua = UsersAuth.findToken(token)) == null)
+			{
+				DBInterface.disconnect(conn);
+				return Response.status(Response.Status.UNAUTHORIZED)
+						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
+			}
 			try 
 			{
-				UsersAuth ua = UsersAuth.findToken(token);
 				ua.setLastRefreshed(new Date());
 				ua.update(conn, "idUsersAuth");
 				Users u = new Users(conn, ua.getUserId());
