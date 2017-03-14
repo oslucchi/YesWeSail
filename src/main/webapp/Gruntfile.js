@@ -401,6 +401,12 @@ module.exports = function (grunt) {
                     src: ['**/*'],
                     dest: 'styles/themes/default/assets/fonts'
                 },
+                {
+                    expand: true,
+                    cwd: 'bower_components/angular-ui-grid/',
+                    src: ['**/*.woff', '**/*.eot', '**/*.ttf'],
+                    dest: '<%= yeoman.dist %>/styles'
+                },
         {
             expand: true,
             cwd: 'bower_components/angular-i18n/',

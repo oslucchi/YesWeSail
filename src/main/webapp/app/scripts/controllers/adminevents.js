@@ -25,6 +25,8 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
             });
             
                $scope.gridOptions = {
+                    autoResize: false,
+                    enableHorizontalScrollbar: 0, 
                     enableColumnResizing: true,
                     enableSorting: true,
                     enableGridMenu: true,

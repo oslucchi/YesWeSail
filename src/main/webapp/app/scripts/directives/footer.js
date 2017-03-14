@@ -12,16 +12,22 @@ angular.module('yeswesailApp')
       templateUrl: 'views/footer.html',
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
-        element.find('.ui.selection.language.dropdown').dropdown({
-            action: 'activate'
-        });
+        var hideOnStates=['admin', 'admin.events', 'admin.requests', 'admin.users'];
           
-//          scope.changeLanguage=function(lang){
-//              $http.defaults.headers.common['Language'] = lang;
-//              LocaleService.setLocale(lang.toLowerCase()+'_'+lang.toUpperCase());
-//              $state.go($state.current, {}, {reload: true});
-//              
-//          }
+          element.find('.ui.selection.language.dropdown').dropdown({
+            action: 'activate'
+          });
+          
+          
+          scope.shouldItBeVisible=function(){
+                if(hideOnStates.indexOf($state.current.name)==-1){
+                    return true;
+                }else{
+                    return false;
+                }
+          }
+          
+          
       }
     };
   });

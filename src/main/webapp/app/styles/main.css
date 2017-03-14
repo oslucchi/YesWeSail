@@ -586,7 +586,7 @@ tr {
 }
 
 .admin-events-container {
-    height: calc(100vh - 334px);
+    height: calc(100vh - 60.2px);
     background-color: white;
 }
 
@@ -603,7 +603,7 @@ tr {
 }
 
 .admin-menu-container {
-    height: calc(100vh - 334px);
+    height: calc(100vh - 60.2px);
     /*    width: 84px;*/
     background-color: #1B1C1D;
     float: left;
@@ -611,7 +611,7 @@ tr {
 
 .admin-content-container {
     margin-left: 84px;
-    height: calc(100vh - 334px);
+    height: calc(100vh - 60.2px);
     overflow: hidden;
 }
 
