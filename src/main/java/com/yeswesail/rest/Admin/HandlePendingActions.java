@@ -1,5 +1,6 @@
 package com.yeswesail.rest.Admin;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +21,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
+import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
@@ -480,8 +482,15 @@ public class HandlePendingActions {
 				u.update(conn, "idUsers");
 				if (sd.getBasicProfile(u.getIdUsers()) != null)
 				{
-					sd.getBasicProfile(u.getIdUsers()).setRoleId(Roles.ADMINISTRATOR);
+					sd.getBasicProfile(u.getIdUsers()).setRoleId(Roles.SHIP_OWNER);
 				}
+				URL url = null;
+				url = prop.getContext().getResource("/images/application/mailLogo.png");
+				String imagePath = url.getPath();
+				Mailer.sendMail(u.getEmail(), 
+								LanguageResources.getResource(languageId, "mail.shipowner.req.accepted.subject"), 
+								LanguageResources.getResource(languageId, "mail.shipowner.req.accepted.body"), 
+								imagePath);
 			}
 
 			action = new PendingActions(conn, idPendingActions);

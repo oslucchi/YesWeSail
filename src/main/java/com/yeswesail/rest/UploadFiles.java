@@ -316,7 +316,7 @@ public class UploadFiles {
 			
 			if(isAcceptable(acceptableTypes, part.getMediaType().getType() + "/" + part.getMediaType().getSubtype()))
 			{
-				uploaded.addAll(UploadFiles.uploadFiles(part, destPath, prefix, token, lastIndex++));
+				uploaded.addAll(UploadFiles.uploadFiles(part, resource, prefix, token, lastIndex++));
 			}
 			else if (part.getMediaType().getType().compareTo("text") != 0)
 			{
