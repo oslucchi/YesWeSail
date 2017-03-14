@@ -34,6 +34,7 @@
 	"global.refresh": "Aggiorna",
     "global.cancel": "Abbandona",
     "global.create": "Crea",
+    "global.delete.success": "Eliminato con successo",
     "global.description": "Descrizione",
     "global.emailMessage": "Ciao! Dai un occhio a questa vacanza!",
     "global.emailMissing": "Inserire un indirizzo email valido!",

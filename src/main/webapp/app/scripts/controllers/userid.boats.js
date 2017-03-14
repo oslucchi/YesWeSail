@@ -25,21 +25,21 @@ angular.module('yeswesailApp')
 
         $scope.tempBoat = {
             info: {
-                bunks: 2,
-                cabinsNoBathroom: 3,
-                cabinsWithBathroom: 4,
+                bunks: 0,
+                cabinsNoBathroom: 0,
+                cabinsWithBathroom: 0,
                 engineType: 'V',
                 idBoats: 0,
-                insurance: '1234567890',
-                length: '1110',
-                model: 'boh',
-                name: 'laPippa',
+                insurance: '',
+                length: '',
+                model: '',
+                name: '',
                 ownerId: 0,
-                plate: 'BN023WX',
-                RTFLicense: '1234',
-                securityCertification: '56789',
-                sharedBathrooms: '1',
-                year: '2000'
+                plate: '',
+                RTFLicense: '',
+                securityCertification: '',
+                sharedBathrooms: '',
+                year: ''
             },
             files: {
                 docs: [],

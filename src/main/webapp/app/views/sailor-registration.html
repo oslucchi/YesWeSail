@@ -18,9 +18,7 @@
                     
                     <br>
                     <div class="document-container">
-                        <div class="ui tiny images">
-                            <img ngf-src="doc" ng-repeat="doc in sailor.sailingDocs">
-                        </div>
+                        <p ng-repeat="doc in sailor.sailingDocs">{{doc.name}}</p>
                     </div>
 
                 </div>

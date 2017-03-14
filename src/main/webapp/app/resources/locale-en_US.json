@@ -34,6 +34,7 @@
 	"global.refresh": "Refresh",
     "global.cancel": "Abort",
     "global.create": "Create",
+     "global.delete.success": "Deleted successfully",
     "global.description": "Description",
     "global.emailMessage": "Hey! Check out this cool vacation!",
     "global.emailMissing": "Please insert a valid email address!",

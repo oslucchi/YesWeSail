@@ -13,16 +13,16 @@ angular.module('yeswesailApp').controller('UseridProfileCtrl', function ($scope,
             if (!!res.data.docs) {
                 $scope.user = res.data.user;
                 $scope.docs = res.data.docs;
+            }
+            else {
+                $scope.user = res.data;
+            }
                 $('.new.star.rating').rating({
                     maxRating: 5
                     , onRate: function (value) {
                         updateRate(value);
                     }
                 });
-            }
-            else {
-                $scope.user = res.data;
-            }
         }, function (err) {});
     };
     getUser();
