@@ -27,7 +27,8 @@ public class URLFilter implements Filter{
 		String path = ((HttpServletRequest) servletRequest).getServletPath();
 		if (path.startsWith("/rest"))
 		{
-			log.debug("trapped " + path + " call, forward to proper servlet");
+			log.debug("trapped " + path + " call from " + 
+					 ((HttpServletRequest) servletRequest).getRemoteAddr() + ", forward it to proper servlet");
 			servletRequest.getRequestDispatcher("/restcall" + path.substring(5))
 					.forward(servletRequest, servletResponse);
 			return;
@@ -51,7 +52,8 @@ public class URLFilter implements Filter{
 				}
 			}
 		}		
-		log.debug("request " + path + " must be handled. forwarding to index.html");
+		log.debug("request " + path + " from " + 
+				  ((HttpServletRequest) servletRequest).getRemoteAddr() + " must be handled. Forwarding it to index.html");
 		servletRequest.getRequestDispatcher("/index.html").forward(servletRequest, servletResponse);
 	}
 

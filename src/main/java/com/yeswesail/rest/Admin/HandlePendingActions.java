@@ -23,6 +23,7 @@ import com.yeswesail.rest.LanguageResources;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.UploadFiles;
 import com.yeswesail.rest.Utils;
+import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
@@ -193,14 +194,28 @@ public class HandlePendingActions {
 		TicketLocks tl = null;
 		EventTickets et = null;
 		Events ev = null;
+		Users u = null;
+		AddressInfo[] ai = null;
 		DBConnection conn = null;
 		try 
 		{
 			log.trace("Retrieving pending actions");
 			conn = DBInterface.connect();
 			tl = new TicketLocks(conn, id);
-			et = new EventTickets(conn, tl.getEventTicketId());
-			ev = new Events(conn, et.getEventId());
+			et = new EventTickets(conn, tl.getEventTicketId(), languageId);
+			ev = new Events(conn, et.getEventId(), languageId, false);
+			u = new Users(conn, tl.getUserId());
+			ai = AddressInfo.findUserId(u.getIdUsers());
+			if (ai.length == 0)
+			{
+				ai = new AddressInfo[2];
+				ai[0] = new AddressInfo();
+				ai[0].setType("D");
+				ai[1] = new AddressInfo();
+				ai[1].setType("I");
+			}
+			u.setPersonalInfo(ai[0]);
+			u.setBillingInfo(ai[1]);
 			log.trace("Retrieval completed");
 		}
 		catch (Exception e) 
@@ -217,6 +232,7 @@ public class HandlePendingActions {
 		utils.addToJsonContainer("ticketLock", tl, true);
 		utils.addToJsonContainer("ticketDetails", et, false);
 		utils.addToJsonContainer("event", ev, false);
+		utils.addToJsonContainer("user", u, false);
 		String json = utils.jsonize();
 		return Response.status(Response.Status.OK).entity(json).build();
 	}

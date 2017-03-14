@@ -290,6 +290,8 @@ public class EventsHandler {
 		Events[] events= null;
 		try 
 		{
+			jsonIn.activeOnly = activeOnly;
+			log.trace("Search for " + (activeOnly ? " active " : " all ") + " events");
 			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
 		catch (Exception e) {
@@ -333,7 +335,10 @@ public class EventsHandler {
 					e.setImageURL(e.getImageURL().replace("large", "medium"));
 					try 
 					{
-						shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
+						if (!shipownerList.containsKey(e.getShipOwnerId()))
+						{
+							shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()).wipe());
+						}
 					}
 					catch (Exception e1)
 					{
@@ -383,7 +388,8 @@ public class EventsHandler {
 	{
 		int languageId = Utils.setLanguageId(language);
 		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if ((sd.getBasicProfile(token) == null) ||
+			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}

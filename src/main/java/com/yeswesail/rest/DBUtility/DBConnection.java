@@ -131,7 +131,13 @@ public class DBConnection
 				rsm = rs.getMetaData();
 				if (logStatement) 
 				{
-					log.debug("Done. Retrived " + rs.getFetchSize() + " rows");		
+					if ((rs.getType() == ResultSet.TYPE_SCROLL_INSENSITIVE) &&
+						(rs.getConcurrency() == ResultSet.CONCUR_READ_ONLY))
+					{
+						rs.last();
+						log.debug("Done. Retrived " + rs.getRow() + " rows");
+						rs.beforeFirst();
+					}
 				}
 			}
 		}

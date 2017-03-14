@@ -277,31 +277,45 @@ public class Events extends DBInterface implements Comparable<Events>
 	@SuppressWarnings("unchecked")
 	private static void getTicketMaxAndMin(ArrayList<Events> events)
 	{
+		if ((events == null) || (events.size() == 0))
+			return;
+		
 		String sql = null;
+		String eventsList = "";
+		String sep = "";
 		for(Events e : events)
 		{
-			sql = "SELECT price " +
-					  "FROM EventTickets c " + 
-					  "WHERE c.booked < c.available AND " +
-					  "      c.eventId = " + e.idEvents + " " +
-					  "ORDER BY price ASC";
-				ArrayList<EventTickets> tickets = null;
-				try {
-					tickets = (ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
-				} 
-				catch (Exception e1) {
-					log.warn("Exception '" + e1.getMessage() + "' ");
-				}
-				if (tickets.size() != 0)
+			eventsList += sep + e.getIdEvents();
+			sep = ",";
+		}
+		sql = "SELECT DISTINCT eventId as idEvents, MAX(price) as maxPrice, MIN(PRICE) as minPrice " +
+			  "FROM EventTickets c " + 
+			  "WHERE c.booked < c.available AND " +
+			  "      c.eventId IN (" + eventsList + ") AND " +
+			  "      c.ticketType != " + EventTickets.WHOLE_BOAT + " " +
+			  "GROUP BY eventId " +
+			  "ORDER BY eventId";
+		ArrayList<Events> tickets = null;
+		try {
+			tickets = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+		} 
+		catch (Exception e1) {
+			log.warn("Exception '" + e1.getMessage() + "' ");
+		}
+		for(Events e : events)
+		{
+			e.minPrice = 0;
+			e.maxPrice = 0;
+			for(Events ePrice : tickets)
+			{
+				if (e.idEvents == ePrice.idEvents)
 				{
-					e.minPrice = tickets.get(0).price;
-					e.maxPrice = tickets.get(tickets.size() - 1).price;
+					e.minPrice = ePrice.minPrice;
+					e.maxPrice = ePrice.maxPrice;
+					tickets.remove(ePrice);
+					break;
 				}
-				else
-				{
-					e.minPrice = 0;
-					e.maxPrice = 0;
-				}
+			}
 		}
 	}
 	

@@ -200,7 +200,7 @@ public class TicketReleaser extends Thread {
 
             				// A ticket lost (Constants.STATUS_WAITING_FOR_TRANSACTION) needs actions to be freed
             				PendingActions pa = new PendingActions();
-            				pa.setActionType("ticket lost");
+            				pa.setActionType(PendingActions.TICKETS_LOST);
             				pa.setUserId(tl.getUserId());
             				pa.setLink("rest/requests/ticketLost/" + tl.getIdTicketLocks());
             				pa.setCreated(new Date());

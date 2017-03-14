@@ -54,12 +54,12 @@ public class EventTickets extends DBInterface
 	public void getEventTickets(DBConnection conn, int id, int languageId) throws Exception
 	{
 		setNames();
-		String sql = "SELECT a.*, b.description " +
+		String sql = 
+				 "SELECT a.*, b.description " +
 			 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
 			 	 "     a.ticketType = b.ticketType AND " +
 			 	 "     b.languageId = " + languageId + " " +
-				 "WHERE eventId = " + id + " AND " +
-			 	 "      available > booked ";
+				 "WHERE idEventTickets = " + id;
 		this.populateObject(conn, sql, this);
 	}
 	
