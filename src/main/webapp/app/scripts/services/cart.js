@@ -83,8 +83,8 @@ angular.module('yeswesailApp')
     
     
     
-        cartService.checkout = function (nonce) {
-            $http.get(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce=null')
+        cartService.checkout = function (nonce, tickets) {
+            $http.post(URLs.ddns + 'rest/cart/checkout/pp/'+ Session.getCurrentUser().idUsers+'?payment_method_nonce=null', tickets)
                 .then(function (res) {
                     $window.location.href = res.data.approval_url;    
                     return res;
@@ -102,7 +102,10 @@ angular.module('yeswesailApp')
                  cartService.cartExpires = res.data.expiring;
                     return res;
                 }, function(err){
-                 console.log(err);
+                    cartService.cartQty=0;
+                    cartService.bookedTickets=[];
+                    cartService.cartExpires = null;
+                    return err;
              });
         };
 
@@ -113,7 +116,7 @@ angular.module('yeswesailApp')
                 cartService.cartExpires = null;
                 
                  $cookieStore.remove('bookedTickets');
-                    return res;
+                return res;
                 });
         };
     

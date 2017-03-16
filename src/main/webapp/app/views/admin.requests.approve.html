@@ -1,21 +1,10 @@
 <div class="login_container">
-    <div class="ui container" ng-if="requestType!=='ticketLost'">
+    <div class="ui container" ng-if="requestType==='reviews'">
         <div class="ui middle aligned center aligned grid">
             <div class="column">
 
-
-
-
-
-
-
-
-
-
                 <form class="ui large form">
                     <div class="ui stacked segment">
-                        <span ng-switch="requestType">
-        <span ng-switch-when="review">
             
             
             <div class="ui comments">
@@ -38,12 +27,28 @@
                 </div>
               </div>
             </div>
-            
-            
-            
-          </span>
 
-                        <span ng-switch-when="statusUpgrade">
+   
+
+
+                    </div>
+                    <button ng-click="update(reqLink, 'approve', actionId)" class="ui green button">{{"global.approve" | translate}}</button>
+                    <button ng-click="update(reqLink, 'reject', actionId)" class="ui red button">{{"global.reject" | translate}}</button>
+                    <button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
+
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <div class="ui container" ng-if="requestType==='statusUpgrade'">
+        <div class="ui middle aligned center aligned grid">
+            <div class="column">
+
+                <form class="ui large form">
+                    <div class="ui stacked segment">
+
+
           <div class="ui comments">
               <div class="comment">
                 <a class="avatar">
@@ -63,10 +68,6 @@
                 </div>
               </div>
             </div>
-          </span>
-
-                        </span>
-
                     </div>
                     <button ng-click="update(reqLink, 'approve', actionId)" class="ui green button">{{"global.approve" | translate}}</button>
                     <button ng-click="update(reqLink, 'reject', actionId)" class="ui red button">{{"global.reject" | translate}}</button>
@@ -111,6 +112,27 @@
      
             
                  <button ng-click="restoreTicket(actionId, reqDetails.ticketLock.idTicketLocks)" class="ui green button">Restore</button>
+                    <button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
+    </div>
+    </div>
+    
+    <div ng-if="requestType==='confirmTicket'">
+        <div class="ui segment">
+            <h2>Manda mail di conferma</h2>
+          <div class="ui items">
+              <div class="item" ng-repeat="ticket in payload.tickets">
+               <div class="content">
+                      <div class="header">{{ticket.eventDescription}}</div>
+                  <div class="meta">
+                      <div class="description">{{ticket.eventTicketDescription}}</div>
+                    <span class="price">{{ticket.amount}}€</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+     
+            
+                 <button ng-click="confirmTicket(actionId, payload)" class="ui green button">Manda mail di conferma</button>
                     <button ng-click="closeModals()" class="ui button">{{"global.cancel" | translate}}</button>
     </div>
     </div>

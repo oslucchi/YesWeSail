@@ -1,22 +1,22 @@
 <div class="admin-menu-container">
-<div class="ui left vertical inverted labeled icon menu">
-  <a ui-sref="admin.events" class="item">
-    <i class="home icon"></i>
-    {{"admin.panelEvents" | translate}}
-      <div class="floating ui red label">{{badges.numberEvents}}</div>
-  </a>
-  <a ui-sref="admin.requests" class="item">
-     
-      <i class="block layout icon"></i>
-    {{"admin.panelRequests" | translate}}
-      <div class="floating ui red label">{{badges.numberReqs}}</div>
-  </a>
-  <a ui-sref="admin.users" class="item">
-    <i class="smile icon"></i>
-    {{"admin.panelUsers" | translate}}
-      <div class="floating ui red label">{{badges.numberUsers}}</div>
-  </a>
-</div>
+    <div class="ui left vertical inverted labeled icon menu">
+        <a ui-sref="admin.events" class="item">
+            <i class="home icon"></i> {{"admin.panelEvents" | translate}}
+            <div class="floating ui red label">{{badges.numberEvents}}</div>
+        </a>
+        <a ui-sref="admin.requests" class="item">
+
+            <i class="block layout icon"></i> {{"admin.panelRequests" | translate}}
+            <div class="floating ui red label">{{badges.numberReqs}}</div>
+        </a>
+        <a ui-sref="admin.users" class="item">
+            <i class="smile icon"></i> {{"admin.panelUsers" | translate}}
+            <div class="floating ui red label">{{badges.numberUsers}}</div>
+        </a>
+        <a ui-sref="admin.dynamicPages" class="item">
+            <i class="file icon"></i> {{"admin.panelDynamicPages" | translate}}
+        </a>
+    </div>
 </div>
 
 <div class="admin-content-container" ui-view></div>

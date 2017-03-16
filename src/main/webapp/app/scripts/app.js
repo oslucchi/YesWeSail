@@ -53,10 +53,10 @@ angular.module('yeswesailApp', [
     , ADMIN: 9
 }).constant('URLs', {
 //	ddns: 'http://prod.yeswesail.com/'
-	 ddns: 'http://test.yeswesail.com/'
+//	 ddns: 'http://test.yeswesail.com/'
 	// ddns: 'http://www.yeswesail.com/'
 	// ddns: 'http://localhost:8080/YesWeSail/'
-	// ddns: 'http://lucchinis.ddns.net:8080/YesWeSail/'
+	 ddns: 'http://lucchinis.ddns.net:8080/YesWeSail/'
 }).constant('LOCALES', {
     'locales': {
         'it_IT': 'Italiano',
@@ -260,12 +260,17 @@ angular.module('yeswesailApp', [
         , templateUrl: 'views/admin.requests.html'
         , controller: 'AdminrequestsCtrl'
         , accessLevel: USER_ROLES.ADMIN
+    }).state('admin.dynamicPages', {
+        url: "/dynamicPages"
+        , templateUrl: 'views/admin.dynamicPages.html'
+        , controller: 'AdminDymamicPagesCtrl'
+        , accessLevel: USER_ROLES.ADMIN
     }).state('dynamicPage', {
         url: "/dynamic/{pageRef}"
         , templateUrl: 'views/dynamicPage.html'
         , controller: 'DynamicPageCtrl'
     }).state('dynamicPageEdit', {
-        url: "/dynamic/edit/{pageRef}"
+        url: "/dynamic/edit/{idPageRef}"
         , templateUrl: 'views/dynamicPage.edit.html'
         , controller: 'DynamicPageEditCtrl'
     }).state('sailorRegistration', {

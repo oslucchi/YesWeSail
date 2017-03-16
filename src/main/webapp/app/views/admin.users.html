@@ -1,9 +1,17 @@
 <div class="admin-events-container">
- 
+     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid">
+    </div>
+    <div class="ui dimmer" ng-class="{'active': usersLoading}">
+        <div class="ui massive text loader">Loading</div>
+    </div>
+    
+    
+<!--
+    
 <table class="ui compact sortable selectable celled table">
   <thead>
     <tr>
-<!--      <th>{{"adminusers.gridCols.select" | translate}}</th>-->
+      <th>{{"adminusers.gridCols.select" | translate}}</th>
       <th  class="ui fitted center aligned">{{"adminusers.gridCols.actions" | translate}}</th>
       <th>{{"adminusers.gridCols.status" | translate}}</th>
       <th>{{"adminusers.gridCols.id" | translate}}</th>
@@ -17,6 +25,7 @@
     
   <tbody>
     <tr ng-class="{'error': user.status=='I', 'positive': user.status=='A', 'warning': user.status=='P'}" ng-repeat="user in users">
+-->
 <!--
         <td class="collapsing">
          <div class="ui fitted center aligned checkbox">
@@ -24,6 +33,7 @@
         </div>
       </td>
 -->
+<!--
       <td class="collapsing">
         <div class="ui center aligned">
               <i ng-click="activate(user)" class="large green checkmark link icon"></i>
@@ -57,6 +67,7 @@
   </tbody>
   <tfoot class="full-width">
     <tr>
+-->
 <!--
       <th><div class="ui small disabled button">
           {{"global.approveAll" | translate}}
@@ -65,9 +76,11 @@
       <th colspan="9">
         <button ng-click="getusers()" class="ui small icon labeled green button"><i class="refresh icon"></i>{{"global.refresh" | translate}}</button>
 <!--        <button ng-disabled="true" ng-click="popupCreateuserDialog()" class="ui small primary labeled icon button"><i class="user icon"></i> {{"adminusers.gridCols.addUser" | translate}}</button>-->
+<!--
       </th>
     </tr>
   </tfoot>
 </table>
+-->
 
 </div>

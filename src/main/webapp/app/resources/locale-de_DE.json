@@ -31,6 +31,7 @@
     "global.description": "Beschreibung",
     "global.emailMessage": "Hey! Checken outen thisen coolen vacationen!",
     "global.emailMissing": "Pleasen inserten ein validen emailen addressen!",
+    "global.pageName": "Nomen Paginen",
     "global.error": "Fehler",
     "global.from": "Von",
     "global.guide": "Anleitung ",
@@ -61,6 +62,7 @@
     "admin.events.clone.aggregated": "Weitere Reiesetermine",
     
     "admin.events.success.update": "Aktualisiertet {{eventId}} Reiseprogramm",
+    "admin.panelDynamicPages": "Pages",
     
     "cart.suggestedEvents": "Programmvorschläge",
     "carterror.message": "Die Bezahlung wurde nicht abgeschlossen ",

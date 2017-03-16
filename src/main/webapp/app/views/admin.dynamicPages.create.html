@@ -1,0 +1,16 @@
+<form class="ui form">
+    <div class="field">
+
+        <label>{{"global.pageName" | translate}}</label>
+        <input type="text" ng-model="tempPage.URLReference" name="page-name" placeholder="{{'global.pageName' | translate}}...">
+    </div>
+    <div class="field">
+        <label>{{"global.language" | translate}}</label>
+        <select ng-model="tempPage.language" class="ui dropdown">
+                        <option value="it_IT">Italiano</option>
+                        <option value="en_US">English</option>
+                        <option value="de_DE">Deutsche</option>
+      </select>
+    </div>
+    <input ng-click="createPage(tempPage)" class="ui blue button" type="submit" value="{{'global.create' | translate}}">
+</form>

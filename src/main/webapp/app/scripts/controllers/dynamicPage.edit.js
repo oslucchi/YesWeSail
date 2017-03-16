@@ -8,35 +8,39 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('DynamicPageEditCtrl', function ($scope, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $http, $window, URLs, $stateParams) {
+    .controller('DynamicPageEditCtrl', function ($scope, toastr, $rootScope, AUTH_EVENTS, AuthService, ngDialog, $http, $window, URLs, $stateParams, moment) {
  
     $scope.dynamicPage={
         createdOn: '',
-        uRLReference: $stateParams.pageRef,
+        uRLReference: '',
         innerHTML: '',
         language: '',
         status: 'I',
+        idDynamicPages: $stateParams.idPageRef
     }
     
     
         
-        function getPage(pageRef){
-            $http.get(URLs.ddns + 'rest/pages/dynamic/'+pageRef).then(function(res){
+        function getPage(idPageRef){
+            $http.get(URLs.ddns + 'rest/pages/dynamic/edit/'+idPageRef).then(function(res){
                 $scope.dynamicPage=res.data.dynamicPage;
+                $scope.dynamicPage.createdOn=moment($scope.dynamicPage.createdOn).format('YYYY/MM/DD');
             }, function(err){
-                $scope.page='<h2 class="ui icon center aligned header"><i class="settings icon"></i><div class="content">404 - Page not found<div class="sub header">The requested page was not found</div></div></h2>';
+                toastr.error(err.data.error);
             })
         } 
     
         $scope.savePage=function(page){
-                $http.put(URLs.ddns + 'rest/pages/dynamic/'+$scope.dynamicPage.uRLReference, page).then(function(res){
-                    toastr.success();
+                    page.createdOn=Number(moment(page.createdOn, 'YYYY/MM/DD').format('x'));
+                    $http.put(URLs.ddns + 'rest/pages/dynamic/'+$scope.dynamicPage.idDynamicPages, page).then(function(res){
+                    toastr.success('global.success');
+                    page.createdOn=moment(page.createdOn, 'x').format('YYYY/MM/DD');
                 }, function(err){
                     toastr.error();
                 })
             }
-        if($scope.dynamicPage.uRLReference){
-            getPage($scope.dynamicPage.uRLReference);
+        if($scope.dynamicPage.idDynamicPages){
+            getPage($scope.dynamicPage.idDynamicPages);
         }
 
         

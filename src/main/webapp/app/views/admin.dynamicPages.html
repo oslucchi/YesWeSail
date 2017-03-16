@@ -1,7 +1,8 @@
 <div class="admin-events-container">
+    <button ng-click="showCreatePagePopup()" class="ui blue button">Add new page</button>
     <div ng-if="gridOptions" ui-grid-resize-columns ui-grid-move-columns ui-grid-save-state ui-grid="gridOptions" class="myGrid">
     </div>
-    <div class="ui dimmer" ng-class="{'active': requestsLoading}">
+    <div class="ui dimmer" ng-class="{'active': dynamicPagesLoading}">
         <div class="ui massive text loader">Loading</div>
     </div>
 </div>

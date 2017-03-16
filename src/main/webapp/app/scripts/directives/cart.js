@@ -22,6 +22,9 @@ angular.module('yeswesailApp')
                     paying:CartService.status.paying
                 }
                 
+                
+                
+                
                 scope.$watch('CartService.status.paying', function(oldVal, newVal){
                     scope.status.paying=newVal;
                 })
@@ -83,8 +86,18 @@ angular.module('yeswesailApp')
 
 
                 scope.checkout = function(){
+                    var tickets=[];
+                    
+                    for(var i = 0; i < scope.bookedEvents.length; i++){
+                        for(var x=0; x<scope.bookedEvents[i].tickets.length; x++){
+                            if(scope.bookedEvents[i].tickets[x].toBuy==true){
+                                tickets.push(scope.bookedEvents[i].tickets[x]);
+                            }
+                        }
+                        
+                    }
                     scope.paying=true;
-                    CartService.checkout('QUALCOSA')
+                    CartService.checkout('QUALCOSA', tickets)
                 }
 
                 scope.requestToken = function () {

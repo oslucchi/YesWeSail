@@ -77,6 +77,7 @@
 	"global.siteMap": "Mappa del sito",
 	"global.contacts": "Contatti",
 	"global.privacy": "Gestione della privacy",
+	"global.pageName": "Nome Pagina",
 	"global.password": "Password",
 	"global.total": "Totale",
 	"global.reject": "Rifiuta",
@@ -270,6 +271,7 @@
 	"admin.panelEvents": "Eventi",
 	"admin.panelRequests": "Richieste",
 	"admin.panelUsers": "Utenti",
+	"admin.panelDynamicPages": "Pagine",
 	
 	"adminrequests.reviewed": " ha fatto un commento ",
 	"adminrequests.stars": "stelle",

@@ -12,7 +12,7 @@ angular.module('yeswesailApp')
       templateUrl: 'views/footer.html',
       restrict: 'E',
       link: function postLink(scope, element, attrs) {
-        var hideOnStates=['admin', 'admin.events', 'admin.requests', 'admin.users'];
+        var hideOnStates=['admin', 'admin.events', 'admin.requests', 'admin.users', 'admin.dynamicPages'];
           
           element.find('.ui.selection.language.dropdown').dropdown({
             action: 'activate'
