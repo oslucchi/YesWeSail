@@ -9,11 +9,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -37,6 +39,7 @@ import com.yeswesail.rest.ApplicationProperties;
 import com.yeswesail.rest.Constants;
 import com.yeswesail.rest.JsonHandler;
 import com.yeswesail.rest.LanguageResources;
+import com.yeswesail.rest.Mailer;
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.Cart;
@@ -44,9 +47,12 @@ import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
 import com.yeswesail.rest.DBUtility.EventTickets;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
+import com.yeswesail.rest.DBUtility.Events;
+import com.yeswesail.rest.DBUtility.PendingActions;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.TicketsInCart;
 import com.yeswesail.rest.DBUtility.TicketsInCart.Tickets;
+import com.yeswesail.rest.jsonInt.TicketJson;
 
 @Path("/cart")
 public class CartHandler {
@@ -152,12 +158,16 @@ public class CartHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("paypal/process/{userId}")
+	@Path("/paypal/process/{userId}/{paymentRef}")
 	public Response paypalProcess(@QueryParam("paymentId") String paymentId,
 								  @QueryParam("PayerID") String payerId,
 								  @QueryParam("token") String token,
-								  @PathParam("userId") int userId)
+								  @PathParam("userId") int userId,
+								  @PathParam("paymentRef") String paymentRef)
 	{
+		SessionData sd = SessionData.getInstance();
+		int languageId = sd.getLanguage(userId);
+		
 		log.trace("Paypal processs called back on userId " + userId + " paypal token '" + token + "'" +
 				  "' paymnet Id '" + paymentId + "' payer id '" + payerId + "'");
 		URI location = null;
@@ -194,9 +204,9 @@ public class CartHandler {
         try
         {
         	conn = DBInterface.TransactionStart();
-        	TicketLocks[] tickets = TicketLocks.findByUserId(conn, userId);
-        	processTicketsPaid(conn, tickets, payment.getId());
-    		DBInterface.TransactionCommit(conn);
+        	TicketLocks[] tickets = TicketLocks.findByPaymentRef(conn, paymentRef);
+        	processTicketsPaid(conn, tickets, payment, languageId);
+			DBInterface.TransactionCommit(conn);
         }
         catch(Exception e)
         {
@@ -227,7 +237,7 @@ public class CartHandler {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("paypal/cancel/{userId}")
+	@Path("/paypal/cancel/{userId}")
 	public Response paypalCancel(@PathParam("userId") int userId,
 								 @QueryParam("token") String ppToken)
 	{
@@ -261,20 +271,40 @@ public class CartHandler {
 	}
 	
 
-	private Payment getPPgateway(int userId)
+	private Payment getPPgateway(int userId, ArrayList<TicketLocks> tickets, DBConnection conn, int languageId)
 	{
         APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), "sandbox");
 
         RedirectUrls paypalUrl = new RedirectUrls();
-        paypalUrl.setReturnUrl(prop.getWebHost() + "/rest/cart/paypal/process/" + userId);
-        paypalUrl.setCancelUrl(prop.getWebHost() + "/rest/cart/paypal/cancel/" + userId);
+        
+        paypalUrl.setReturnUrl(prop.getWebHost() + "/rest/cart/paypal/process/" + userId + "/" + tickets.get(0).getPaymentRef());
+        paypalUrl.setCancelUrl(prop.getWebHost() + "/rest/cart/paypal/cancel/" + userId + "/" + tickets.get(0).getPaymentRef());
         List<com.paypal.api.payments.Transaction> transactions = new ArrayList<com.paypal.api.payments.Transaction>();
-        com.paypal.api.payments.Transaction t = new com.paypal.api.payments.Transaction();
+
+        int amount = 0;
+        try
+        {
+	        for(TicketLocks ticket : tickets)
+	        {
+	        	EventTickets ev = new EventTickets(conn, ticket.getEventTicketId());
+	        	amount += ev.getPrice();
+	        }
+        }
+        catch(Exception e)
+        {
+			log.error("Unable to create ticket list and calculate amount. Exception '" + 
+					  e.getMessage() + "' while creating a PayPal payment");
+			return null;        	
+        }
+        
+		com.paypal.api.payments.Transaction t = new com.paypal.api.payments.Transaction();
         t.setAmount(
         		new Amount()
     			.setCurrency("EUR")
-    			.setTotal("100"))
-        	.setDescription("Osvaldo's payment");
+    			.setTotal(Integer.toString(amount)))
+        		.setDescription(LanguageResources.getResource(languageId, "ticket.payment.description"))
+//        		.setCustom(Integer.toString(ticket.getIdTicketLocks()))
+        		;
         transactions.add(t);
         
         Payment payment = new Payment()
@@ -294,45 +324,62 @@ public class CartHandler {
         return returnVal;
 	}
 
-	private void processTicketsPaid(DBConnection conn, TicketLocks[] tickets, String transactionId) 
+	private void processTicketsPaid(DBConnection conn, TicketLocks[] tickets, Payment payment, int languageId) 
 			throws Exception
 	{
+		String payload = "";
+		String sep = "";
+		int userId = -1;
+		int amount = 0;
 		for(TicketLocks t : tickets)
 		{
+			userId = t.getUserId();
 			EventTicketsSold ev;
 			ev = new EventTicketsSold();
 			ev.setEventTicketId(t.getEventTicketId());
 			ev.setUserId(t.getUserId());
-			ev.setTransactionId(transactionId);
+			ev.setTransactionId(payment.getId());
 			ev.insert(conn, "idEventTicketsSold", ev);
+			
+			EventTickets et = new EventTickets();
+			et.getEventTickets(conn, t.getEventTicketId(), languageId);
+			Events e = new Events();
+			e.getEvents(conn, et.getEventId(), languageId);
+			
 			t.delete(conn, t.getIdTicketLocks());
-		}		
-	}
-	
-	private int calculateTransactionAmount(DBConnection conn, int userId, TicketLocks[] tickets)
-	{
-		int amount = 0;
-		try
-		{
-			for(TicketLocks t : tickets)
-			{
-				EventTickets et = new EventTickets(conn, t.getEventTicketId());
-				amount = amount + et.getPrice();
-			}
-			log.trace("Payment for user " + userId + ". Amount requested " + amount);
+			payload += sep + "{" +
+							 "\"eventTicketId\" : \"" + et.getIdEventTickets() + "\", " +
+							 "\"eventTicketDescription\" : \"" + et.getDescription() + "\", " +
+							 "\"eventDescription\" : \"" + e.getTitle() + "\"," +
+							 "\"amount\" : \"" + et.getPrice() + "\"" + 
+							 "}";
+			sep = ",";
+			amount += et.getPrice();
 		}
-		catch(Exception e)
-		{
-			log.warn("Exception " + e.getMessage() + " retrieving tickets");
-		}
-		return amount;
-	}
 
+		payload = "{" +
+					"\"userId\" : \"" + userId + "\", " +
+					"\"paymentId\" : \"" + payment.getId() + "\", " +
+					"\"tickets\" : [" + payload + "], " +
+					"\"totalAmount\" : \"" + amount + "\"" +
+				  "}";
+        
+		Mailer.sendMail(prop.getAdminEmail(), "Passenger " + userId + " just bought a ticket", 
+				"<p>Go to the requests admin page and confirm it</p>", null);
+
+		PendingActions pa = new PendingActions();
+		pa.setActionType(PendingActions.CONFIRM_TICKET);
+		pa.setLink("rest/requests/" + PendingActions.CONFIRM_TICKET + "/" + userId);
+		pa.setPayload(payload);
+		pa.setCreated(new Date());
+		pa.setStatus(Constants.STATUS_PENDING_APPROVAL);
+		pa.setUserId(userId);
+		pa.insert(conn, "idPendingActions", pa);
+	}
 	
-	private Response payViaPaypal(DBConnection conn, int amount, int userId, 
-								  int languageId, TicketLocks[] tickets)
+	private Response payViaPaypal(DBConnection conn, int userId, int languageId, ArrayList<TicketLocks> tickets)
 	{
-		Payment payment = getPPgateway(userId);
+		Payment payment = getPPgateway(userId, tickets, conn, languageId);
 		Utils jsonizer = new Utils();
 		if ((payment == null) || (payment.getLinks() == null))
 		{
@@ -361,18 +408,21 @@ public class CartHandler {
 	}
 
 	
-	@GET
-	@Path("checkout/{method}/{userId}")
+	@POST
+	@Path("/checkout/{method}/{userId}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response checkout(@QueryParam("payment_method_nonce") String nonce,
 							 @PathParam("userId") int userId,
 							 @PathParam("method") String method,
-							 @HeaderParam("Authorization") String token)
+							 @HeaderParam("Authorization") String token,
+							 TicketJson[] ticketsToHandle)
 	{
 		int languageId;
+		Response response = null;
 		SessionData sd = SessionData.getInstance();
-
+		String paymentRef = UUID.randomUUID().toString();
+		
 		if(token != null)
 		{
 			languageId = sd.getLanguage(token);
@@ -384,38 +434,25 @@ public class CartHandler {
 		}
 		DBConnection conn = null;
 		
-		TicketLocks[] tickets = null;
+		TicketLocks ticket = null;
+		ArrayList<TicketLocks> tickets = new ArrayList<>();
 		try {
 			conn = DBInterface.TransactionStart();
-			tickets = TicketLocks.findByUserId(conn, userId);
-			for(TicketLocks ticket : tickets)
+			for(TicketJson t : ticketsToHandle)
 			{
+				ticket = new TicketLocks(conn, t.idTicketLocks);
+				ticket.setPaymentRef(paymentRef);
 				ticket.setStatus(Constants.STATUS_WAITING_FOR_TRANSACTION);
 				ticket.update(conn, "idTicketLocks");
+				tickets.add(ticket);
 			}
+			DBInterface.TransactionCommit(conn);
+			response = payViaPaypal(conn, userId, languageId, tickets);
 		}
 		catch (Exception e) 
 		{
 			log.error("Unable to process tickets. Exception " + e.getMessage());
 			DBInterface.TransactionRollback(conn);
-			DBInterface.disconnect(conn);
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.error");
-		}
-
-		int amount = calculateTransactionAmount(conn, userId, tickets);
-		if (amount == 0)
-		{
-			DBInterface.TransactionRollback(conn);
-			DBInterface.disconnect(conn);
-			return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "payment.cantfindtickets");
-		}
-		
-		try
-		{
-			DBInterface.TransactionCommit(conn);
-		}
-		catch(Exception e)
-		{
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.error");
 		}
 		finally
@@ -423,7 +460,8 @@ public class CartHandler {
 			DBInterface.disconnect(conn);
 		}
 
-		return payViaPaypal(conn, amount, userId, languageId, tickets);
+		log.trace("proceeding with the effective payment");
+		return response;
 	}
 	
 }

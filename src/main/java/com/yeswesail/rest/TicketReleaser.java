@@ -202,7 +202,7 @@ public class TicketReleaser extends Thread {
             				PendingActions pa = new PendingActions();
             				pa.setActionType(PendingActions.TICKETS_LOST);
             				pa.setUserId(tl.getUserId());
-            				pa.setLink("rest/requests/ticketLost/" + tl.getIdTicketLocks());
+            				pa.setLink("rest/requests/" + PendingActions.TICKETS_LOST + "/" + tl.getIdTicketLocks());
             				pa.setCreated(new Date());
             				pa.setUpdated(pa.getCreated());
             				pa.setStatus(Constants.STATUS_PENDING_APPROVAL);

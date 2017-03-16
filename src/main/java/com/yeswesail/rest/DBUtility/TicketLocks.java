@@ -13,6 +13,7 @@ public class TicketLocks extends DBInterface
 	protected int userId;
 	protected String bookedTo;
 	protected String status;
+	protected String paymentRef;
 	
 	public String getStatus() {
 		return status;
@@ -76,6 +77,17 @@ public class TicketLocks extends DBInterface
 	}
 	
 	@SuppressWarnings("unchecked")
+	public static TicketLocks[] findByPaymentRef(DBConnection conn, String paymentRef) throws Exception 
+	{
+		ArrayList<TicketLocks> tickets = new ArrayList<>();
+		String sql = "SELECT * " +
+					 "FROM TicketLocks " +
+					 "WHERE paymentRef = '" + paymentRef + "'";
+		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		return(tickets.toArray(new TicketLocks[tickets.size()]));
+	}
+
+	@SuppressWarnings("unchecked")
 	public static TicketLocks[] findAll(boolean logStatement) throws Exception
 	{
 		ArrayList<TicketLocks> tickets = new ArrayList<>();
@@ -130,5 +142,13 @@ public class TicketLocks extends DBInterface
 	{
 		String sql = "DELETE FROM TicketLocks WHERE userId = " + idUsers;
 		executeStatement(conn, sql, false);	
+	}
+
+	public String getPaymentRef() {
+		return paymentRef;
+	}
+
+	public void setPaymentRef(String paymentRef) {
+		this.paymentRef = paymentRef;
 	}
 }

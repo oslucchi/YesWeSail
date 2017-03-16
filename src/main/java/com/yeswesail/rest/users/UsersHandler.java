@@ -779,7 +779,7 @@ public class UsersHandler {
 			UploadFiles.moveFiles( destPath + "/" + token, destPath, "docs_" + sh.usersId + "_" , true);
 			
 			PendingActions pa = new PendingActions();
-			pa.setActionType("statusUpgrade");
+			pa.setActionType(PendingActions.STATUS_UPGRADE);
 			pa.setUserId(sd.getBasicProfile(token).getIdUsers());
 			pa.setLink("rest/requests/" + PendingActions.STATUS_UPGRADE + "/" + 
 						sd.getBasicProfile(token).getIdUsers());

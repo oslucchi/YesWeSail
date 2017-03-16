@@ -258,9 +258,9 @@ public class ReviewsHandler {
 			log.trace("Review added");
 			
 			PendingActions pa = new PendingActions();
-			pa.setActionType("review");
+			pa.setActionType(PendingActions.REVIEWS);
 			pa.setUserId(sd.getBasicProfile(token).getIdUsers());
-			pa.setLink("rest/requests/reviews/" + id);
+			pa.setLink("rest/requests/" + PendingActions.REVIEWS + "/" + id);
 			pa.setCreated(review.getCreated());
 			pa.setUpdated(pa.getCreated());
 			pa.setStatus(Constants.STATUS_PENDING_APPROVAL);

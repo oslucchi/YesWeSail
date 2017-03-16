@@ -8,6 +8,7 @@ import java.util.Date;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -35,6 +36,8 @@ import com.yeswesail.rest.DBUtility.Reviews;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
+import com.yeswesail.rest.jsonInt.ConfirmTicketSold;
+import com.yeswesail.rest.jsonInt.ConfirmTicketSold.ConfirmItem;
 
 @Path("/requests")
 public class HandlePendingActions {
@@ -553,5 +556,59 @@ public class HandlePendingActions {
 			DBInterface.disconnect(conn);
 		}
 		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+	
+	@POST
+	@Path("/confirmTicket/{paId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response confirmTicket(@HeaderParam("Language") String language,
+								  @HeaderParam("Authorization") String token,
+								  @PathParam("paId") int paId,
+								  @PathParam("paymentRef") String paymentRef,
+								  ConfirmTicketSold jsonIn)
+	{
+		int languageId = Utils.setLanguageId(language);
+		if (Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
+
+		String ticketsHTML = "<ul>";
+		for(ConfirmItem item : jsonIn.tickets)
+		{
+			ticketsHTML += "<li>" + item.eventDescription + " - " + 
+						   item.eventTicketDescription + " @ " + item.amount + "eur/<li>";
+		}
+		ticketsHTML += "</ul><br>";
+		DBConnection conn = null;
+		try
+		{
+			String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirmSubject");
+			htmlText = htmlText.replaceAll("TICKETLIST", ticketsHTML);
+			htmlText = htmlText.replaceAll("AMOUNT", String.valueOf(jsonIn.totalAmount));
+			htmlText = htmlText.replaceAll("PAYMENTID", jsonIn.paymentId);
+			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirm");
+			URL url = getClass().getResource("/images/mailLogo.png");
+			String imagePath = url.getPath();
+			conn = DBInterface.TransactionStart();
+			Users u = new Users(conn, jsonIn.userId);
+			PendingActions pa = new PendingActions(conn, paId);
+			pa.setStatus(Constants.STATUS_COMPLETED);
+			pa.setUpdated(new Date());
+			pa.update(conn, "idPendingActions");
+			Mailer.sendMail(u.getEmail(), subject, htmlText, imagePath);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch(Exception e)
+		{
+			DBInterface.TransactionRollback(conn);
+			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		return Response.status(Response.Status.OK).entity("").build();
 	}
 }

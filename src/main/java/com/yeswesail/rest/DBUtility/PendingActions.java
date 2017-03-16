@@ -8,9 +8,10 @@ import com.yeswesail.rest.Constants;
 public class PendingActions extends DBInterface 
 {
 	final public static String STATUS_UPGRADE = "statusUpgrade";
-	final public static String REVIEW = "review";
+	final public static String REVIEWS = "reviews";
 	final public static String TICKETS_BUY = "ticketsBuy";
 	final public static String TICKETS_LOST = "ticketLost";
+	final public static String CONFIRM_TICKET = "confirmTicket"; 
 	
 	private static final long serialVersionUID = 5253990869677923299L;
 
@@ -18,6 +19,7 @@ public class PendingActions extends DBInterface
 	protected int userId;
 	protected String actionType;
 	protected String link;
+	protected String payload;
 	protected Date created;
 	protected String status;
 	protected Date updated;
@@ -119,6 +121,14 @@ public class PendingActions extends DBInterface
 
 	public void setUpdated(Date updated) {
 		this.updated = updated;
+	}
+
+	public String getPayload() {
+		return payload;
+	}
+
+	public void setPayload(String payload) {
+		this.payload = payload;
 	}
 
 }
