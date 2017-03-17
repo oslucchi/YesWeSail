@@ -36,8 +36,8 @@ import com.yeswesail.rest.DBUtility.Reviews;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.TicketLocks;
 import com.yeswesail.rest.DBUtility.Users;
-import com.yeswesail.rest.jsonInt.ConfirmTicketSold;
-import com.yeswesail.rest.jsonInt.ConfirmTicketSold.ConfirmItem;
+import com.yeswesail.rest.jsonInt.ConfirmPaymentJson;
+import com.yeswesail.rest.jsonInt.ConfirmTicketJson;
 
 @Path("/requests")
 public class HandlePendingActions {
@@ -55,8 +55,7 @@ public class HandlePendingActions {
 								@HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
@@ -98,13 +97,9 @@ public class HandlePendingActions {
 								@PathParam("userId") int userId)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if ((sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR) &&
-			(sd.getBasicProfile(token).getIdUsers() != userId))
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		PendingActions[] actions = null;
@@ -146,12 +141,9 @@ public class HandlePendingActions {
 								@PathParam("id") int id)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		Reviews review = null;
@@ -188,12 +180,9 @@ public class HandlePendingActions {
 								@PathParam("id") int id)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		TicketLocks tl = null;
@@ -252,12 +241,9 @@ public class HandlePendingActions {
 									@PathParam("tlId") int tlId)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		EventTickets[] ticketsToRelease;
@@ -355,12 +341,9 @@ public class HandlePendingActions {
 								@PathParam("command") String command)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		PendingActions action = null;
@@ -413,12 +396,9 @@ public class HandlePendingActions {
 									 @PathParam("id") int id)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		Users u = null;
@@ -461,14 +441,12 @@ public class HandlePendingActions {
 									   @PathParam("command") String command)
 	{
 		int languageId = Utils.setLanguageId(language);
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
-			return Response.status(Response.Status.UNAUTHORIZED)
-					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
-					.build();
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
+		SessionData sd = SessionData.getInstance();
 		Users u = null;
 		DBConnection conn = null;
 		PendingActions action = null;
@@ -526,9 +504,7 @@ public class HandlePendingActions {
 							  @HeaderParam("Authorization") String token)
 	{
 		int languageId = Utils.setLanguageId(language);
-		
-		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if (!Utils.userIsAdmin(token, languageId))
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
@@ -565,35 +541,40 @@ public class HandlePendingActions {
 	public Response confirmTicket(@HeaderParam("Language") String language,
 								  @HeaderParam("Authorization") String token,
 								  @PathParam("paId") int paId,
-								  @PathParam("paymentRef") String paymentRef,
-								  ConfirmTicketSold jsonIn)
+								  ConfirmPaymentJson jsonIn)
 	{
 		int languageId = Utils.setLanguageId(language);
-		if (Utils.userIsAdmin(token, languageId))
+		if (!Utils.userIsAdmin(token, languageId))
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
 
 		String ticketsHTML = "<ul>";
-		for(ConfirmItem item : jsonIn.tickets)
+		for(ConfirmTicketJson item : jsonIn.tickets)
 		{
 			ticketsHTML += "<li>" + item.eventDescription + " - " + 
-						   item.eventTicketDescription + " @ " + item.amount + "eur/<li>";
+						   item.eventTicketDescription + " @ " + item.amount + "eur</li>";
 		}
 		ticketsHTML += "</ul><br>";
 		DBConnection conn = null;
 		try
 		{
-			String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirmSubject");
+			conn = DBInterface.TransactionStart();
+			PendingActions pa = new PendingActions(conn, paId);
+			if (pa.getStatus().compareTo("C") == 0)
+			{
+				DBInterface.TransactionRollback(conn);
+				log.warn("The required action ha nothing left to do. aborting");
+				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.action.completed");
+			}
+			String htmlText = LanguageResources.getResource(languageId, "mail.ticketsUserOnPaymentConfirm");
 			htmlText = htmlText.replaceAll("TICKETLIST", ticketsHTML);
 			htmlText = htmlText.replaceAll("AMOUNT", String.valueOf(jsonIn.totalAmount));
 			htmlText = htmlText.replaceAll("PAYMENTID", jsonIn.paymentId);
-			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirm");
+			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirmSubject");
 			URL url = getClass().getResource("/images/mailLogo.png");
 			String imagePath = url.getPath();
-			conn = DBInterface.TransactionStart();
 			Users u = new Users(conn, jsonIn.userId);
-			PendingActions pa = new PendingActions(conn, paId);
 			pa.setStatus(Constants.STATUS_COMPLETED);
 			pa.setUpdated(new Date());
 			pa.update(conn, "idPendingActions");
@@ -609,6 +590,42 @@ public class HandlePendingActions {
 		{
 			DBInterface.disconnect(conn);
 		}
-		return Response.status(Response.Status.OK).entity("").build();
+		return Response.status(Response.Status.OK).entity("{}").build();
 	}
+
+	@GET
+	@Path("/confirmTicket/{paId}")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response getConfirmTicketAction(
+								  @HeaderParam("Language") String language,
+								  @HeaderParam("Authorization") String token,
+								  @PathParam("paId") int paId)
+	{
+		int languageId = Utils.setLanguageId(language);
+		if (!Utils.userIsAdmin(token, languageId))
+		{
+			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
+		}
+		DBConnection conn = null;
+		PendingActions pa = null;
+		try
+		{
+			conn = new DBConnection();
+			pa = new PendingActions(conn, paId);
+			DBInterface.TransactionCommit(conn);
+		}
+		catch(Exception e)
+		{
+			DBInterface.TransactionRollback(conn);
+			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+		utils.addToJsonContainer("confirmTicket", pa, true);
+		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
+	}
+
 }

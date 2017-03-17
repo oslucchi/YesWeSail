@@ -1,5 +1,6 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import com.yeswesail.rest.Constants;
@@ -12,6 +13,7 @@ public class DynamicPages extends DBInterface {
 	protected String status;
 	protected String innerHTML;
 	protected int languageId;
+	protected String language;
 
 	private void setNames()
 	{
@@ -34,6 +36,22 @@ public class DynamicPages extends DBInterface {
 		populateObject(conn, sql, this);
 	}
 
+	public DynamicPages(DBConnection conn, int idDynamicPages) throws Exception
+	{
+		setNames();
+		String sql = "SELECT * " +
+					 "FROM " + tableName + " " +
+					 "WHERE idDynamicPages = " + idDynamicPages;
+		populateObject(conn, sql, this);
+	}
+
+	@SuppressWarnings("unchecked")
+	public static ArrayList<DynamicPages> getAllPages(int languageId) throws Exception
+	{
+		return (ArrayList<DynamicPages>) populateCollection("SELECT * FROM DynamicPages WHERE languageId = " + languageId, 
+															DynamicPages.class);
+	}
+	
 	public int getIdDynamicPages() {
 		return idDynamicPages;
 	}
@@ -80,5 +98,20 @@ public class DynamicPages extends DBInterface {
 
 	public void setLanguageId(int languageId) {
 		this.languageId = languageId;
-	}	
+		this.language = Constants.getLocale(languageId);
+	}
+	
+	public String getLanguage()
+	{
+		if (language == null)
+			return Constants.getLocale(languageId);
+		else
+			return language;
+	}
+	
+	public void setLanguage(String language)
+	{
+		this.language = language;
+		this.languageId = Constants.getLanguageCode(language);
+	}
 }

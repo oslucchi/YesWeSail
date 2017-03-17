@@ -348,20 +348,20 @@ public class CartHandler {
 			
 			t.delete(conn, t.getIdTicketLocks());
 			payload += sep + "{" +
-							 "\"eventTicketId\" : \"" + et.getIdEventTickets() + "\", " +
+							 "\"eventTicketId\" : " + et.getIdEventTickets() + ", " +
 							 "\"eventTicketDescription\" : \"" + et.getDescription() + "\", " +
 							 "\"eventDescription\" : \"" + e.getTitle() + "\"," +
-							 "\"amount\" : \"" + et.getPrice() + "\"" + 
+							 "\"amount\" : " + et.getPrice() +  
 							 "}";
 			sep = ",";
 			amount += et.getPrice();
 		}
 
 		payload = "{" +
-					"\"userId\" : \"" + userId + "\", " +
+					"\"userId\" : " + userId + ", " +
 					"\"paymentId\" : \"" + payment.getId() + "\", " +
 					"\"tickets\" : [" + payload + "], " +
-					"\"totalAmount\" : \"" + amount + "\"" +
+					"\"totalAmount\" : " + amount + 
 				  "}";
         
 		Mailer.sendMail(prop.getAdminEmail(), "Passenger " + userId + " just bought a ticket", 
