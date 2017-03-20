@@ -56,7 +56,8 @@ angular.module('yeswesailApp', [
 //	 ddns: 'http://test.yeswesail.com/'
 	// ddns: 'http://www.yeswesail.com/'
 	// ddns: 'http://localhost:8080/YesWeSail/'
-	 ddns: 'http://lucchinis.ddns.net:8080/YesWeSail/'
+//	 ddns: 'http://lucchinis.ddns.net:8080/YesWeSail/'
+	 ddns: window.location.hostname=='localhost' ? 'http://test.yeswesail.com/': window.location.protocol+'//'+window.location.host+'/'
 }).constant('LOCALES', {
     'locales': {
         'it_IT': 'Italiano',
