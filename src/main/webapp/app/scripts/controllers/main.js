@@ -75,8 +75,13 @@ angular.module('yeswesailApp').controller('MainCtrl', function ($scope, $http, U
         if($scope.user.email){
             $http.post(URLs.ddns + 'rest/users/subscribe', {u: $scope.user, what: 'MAILCHIMP'}).then(function(res){
                 toastr.success('Subscribed');
+                 $scope.user={
+                                email: '',
+                                name: '',
+                                surname: ''
+                            }
             }, function(err){
-                toastr.error('Error while subscribing!');
+                toastr.error(err.data.error);
             })
         }else{
             toastr.warning($translate.instant('global.emailMissing'));
