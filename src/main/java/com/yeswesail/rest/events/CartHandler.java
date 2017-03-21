@@ -172,7 +172,7 @@ public class CartHandler {
 				  "' paymnet Id '" + paymentId + "' payer id '" + payerId + "'");
 		URI location = null;
 
-		APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), "sandbox");
+		APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), prop.getPaypalMode());
         Payment payment = new Payment();
         payment.setId(paymentId);
         
@@ -273,7 +273,8 @@ public class CartHandler {
 
 	private Payment getPPgateway(int userId, ArrayList<TicketLocks> tickets, DBConnection conn, int languageId)
 	{
-        APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), "sandbox");
+		log.debug("Connecting to PayPal context " + prop.getPaypalMode());
+        APIContext context = new APIContext(prop.getPaypalClientId(), prop.getPaypalClientSecret(), prop.getPaypalMode());
 
         RedirectUrls paypalUrl = new RedirectUrls();
         

@@ -141,11 +141,11 @@ public class UsersHandler {
 	    SessionData session = SessionData.getInstance();
 		Users u = null;
 		int languageId = Constants.LNG_EN;
-		if (token != null)
+		if ((token != null) && !token.trim().isEmpty())
 		{
 			languageId = session.getLanguage(token);
 			u = session.getBasicProfile(token);
-			if (u.getEmail().compareTo(jsonIn.u.email) != 0)
+			if ((u == null) || (u.getEmail().compareTo(jsonIn.u.email) != 0))
 			{
 				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "users.mailSpoofing"), true);
 				return Response.status(Response.Status.UNAUTHORIZED)

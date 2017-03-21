@@ -39,6 +39,7 @@ public class ApplicationProperties {
 	private String fbApplicationSecret = "";
 	private String paypalClientId;
 	private String paypalClientSecret;
+	private String paypalMode;
 	private String mailchimpListId = "";
 	private String mailchimpAPIKEY = "";
 
@@ -126,6 +127,7 @@ public class ApplicationProperties {
     	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
 		paypalClientId = properties.getProperty("paypalClientId");
 		paypalClientSecret = properties.getProperty("paypalClientSecret");
+		paypalMode = properties.getProperty("paypalMode");
 		mailchimpListId = properties.getProperty("mailchimpListId");
 		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
     	try
@@ -264,6 +266,10 @@ public class ApplicationProperties {
 
 	public String[] getURLFilterFolders() {
 		return URLFilterFolders.split(",");
+	}
+
+	public String getPaypalMode() {
+		return paypalMode;
 	}
 	
 }
