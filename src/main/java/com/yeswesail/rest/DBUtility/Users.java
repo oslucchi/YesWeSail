@@ -1,5 +1,6 @@
 package com.yeswesail.rest.DBUtility;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,6 +8,9 @@ import java.util.Date;
 
 import org.apache.log4j.Logger;
 
+import com.ecwid.maleorang.MailchimpClient;
+import com.ecwid.maleorang.method.v3_0.members.GetMemberMethod;
+import com.ecwid.maleorang.method.v3_0.members.MemberInfo;
 import com.yeswesail.rest.ApplicationProperties;
 
 public class Users extends DBInterface
@@ -38,6 +42,7 @@ public class Users extends DBInterface
 	protected String about;
 	protected String sailingLicense;
 	protected String navigationLicense;
+	protected String newsSubscribed;
 	private AddressInfo personalInfo;
 	private AddressInfo billingInfo;
 
@@ -127,6 +132,35 @@ public class Users extends DBInterface
 		return retList;
 	}
 	
+	public void update(DBConnection conn, String idColumns) throws Exception
+	{
+		if ((newsSubscribed == null) || newsSubscribed.trim().isEmpty())
+		{
+			GetMemberMethod method = new GetMemberMethod(prop.getMailchimpListId(), email);
+			MailchimpClient client = new MailchimpClient(prop.getMailchimpAPIKEY());
+			try
+			{
+				MemberInfo member = client.execute(method);
+				newsSubscribed = member.id;
+			}
+			catch(Exception e)
+			{
+				log.error("Exception '" + e.getMessage() + "' on mailchimp subscription action for " + email);
+			}
+			finally
+			{
+				try 
+				{
+					client.close();
+				} 
+				catch (IOException e) {
+					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")");
+				}
+			}
+		}
+		super.update(conn, idColumns);
+	}
+	
 	public int getIdUsers() {
 		return idUsers;
 	}
@@ -167,18 +201,6 @@ public class Users extends DBInterface
 		this.email = email;
 	}
 
-//	public String getPassword() {
-//		return "*******";
-//	}
-//
-//	public String getArchivedPassword() {
-//		return password;
-//	}
-//
-//	public void setPassword(String password) {
-//		this.password = password;
-//	}
-//
 	public String getPhone1() {
 		return phone1;
 	}
@@ -249,6 +271,14 @@ public class Users extends DBInterface
 
 	public void setIsShipOwner(boolean isShipOwner) {
 		this.isShipOwner = isShipOwner;
+	}
+
+	public String getNewsSubscribed() {
+		return newsSubscribed;
+	}
+
+	public void setNewsSubscribed(String newsSubscribed) {
+		this.newsSubscribed = newsSubscribed;
 	}
 
 	public String getLanguagesSpoken() {
