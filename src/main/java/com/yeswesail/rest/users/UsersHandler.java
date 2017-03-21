@@ -165,8 +165,8 @@ public class UsersHandler {
 		{
 		case "MAILCHIMP":
 			MailchimpClient client = new MailchimpClient(prop.getMailchimpAPIKEY());
-			EditMemberMethod.CreateOrUpdate method = 
-				new EditMemberMethod.CreateOrUpdate(prop.getMailchimpListId(), u.getEmail());
+			EditMemberMethod.Create method = 
+				new EditMemberMethod.Create(prop.getMailchimpListId(), u.getEmail());
 			method.status = "subscribed";
 			method.merge_fields = new MailchimpObject();
 			method.merge_fields.mapping.put("FNAME", u.getName());
@@ -179,8 +179,16 @@ public class UsersHandler {
 			catch(Exception e)
 			{
 				log.error("Error trying to register " + jsonIn.u.email + " to mailchimp (Exception " + e.getMessage() + ")");
-				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
-				return Response.status(Response.Status.UNAUTHORIZED)
+				if (e.getMessage().contains("is already a list member"))
+				{
+					utils.addToJsonContainer("error", 
+							LanguageResources.getResource(languageId, "mailchimp.already.registered"), true);
+				}
+				else
+				{
+					utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
+				}
+				return Response.status(Response.Status.BAD_REQUEST)
 						.entity(utils.jsonize())
 						.build();
 			}

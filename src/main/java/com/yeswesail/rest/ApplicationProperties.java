@@ -39,7 +39,6 @@ public class ApplicationProperties {
 	private String fbApplicationSecret = "";
 	private String paypalClientId;
 	private String paypalClientSecret;
-	private String mailchimpURL = "";
 	private String mailchimpListId = "";
 	private String mailchimpAPIKEY = "";
 
@@ -127,7 +126,6 @@ public class ApplicationProperties {
     	fbApplicationSecret = properties.getProperty("fbApplicationSecret");
 		paypalClientId = properties.getProperty("paypalClientId");
 		paypalClientSecret = properties.getProperty("paypalClientSecret");
-		mailchimpURL = properties.getProperty("mailchimpURL");
 		mailchimpListId = properties.getProperty("mailchimpListId");
 		mailchimpAPIKEY = properties.getProperty("mailchimpAPIKEY");
     	try
@@ -238,10 +236,6 @@ public class ApplicationProperties {
 
 	public Double getMaxDistanceForEventsOnTheGround() {
 		return maxDistanceForEventsOnTheGround;
-	}
-
-	public String getMailchimpURL() {
-		return mailchimpURL;
 	}
 
 	public String getMailchimpListId() {
