@@ -140,7 +140,7 @@
   "user.changePassword": "Passwort ändern",
   "user.personalInfo": "Persönliche Daten",
   "user.birthDay": "Geburtsdatum (tt/mm/jjjj)",
-  "user.Phones": "Telefon",
+  "user.phones": "Telefon",
   "user.addressStreet": "Adresse",
   "user.addressCity": "Stadt",
   "user.addressState": "Bundeslandt",

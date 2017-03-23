@@ -77,9 +77,6 @@ public class ApplicationProperties {
 		}
     	
     	webHome = properties.getProperty("webHome");
-    	redirectRegistrationCompleted = properties.getProperty("redirectRegistrationCompleted");
-    	redirectHome = properties.getProperty("redirectHome");
-    	redirectOnLogin = properties.getProperty("redirectOnLogin");
     	defaultLang = properties.getProperty("defaultLang");
     	noAuthorizationRequired = properties.getProperty("noAuthorizationRequired");
     	noAuthorizationRequiredRoot = properties.getProperty("noAuthorizationRequiredRoot");
@@ -121,6 +118,9 @@ public class ApplicationProperties {
     	mailPassword = properties.getProperty("mailPassword");
     	contactsMailTo = properties.getProperty("contactsMailTo");
     	webHost = properties.getProperty("webHost");
+    	redirectRegistrationCompleted = properties.getProperty("redirectRegistrationCompleted");
+    	redirectHome = properties.getProperty("redirectHome");
+    	redirectOnLogin = properties.getProperty("redirectOnLogin");
 		startReleaser = Boolean.parseBoolean(properties.getProperty("startReleaser"));
 		adminEmail = properties.getProperty("adminEmail");
     	fbApplicationId = properties.getProperty("fbApplicationId");

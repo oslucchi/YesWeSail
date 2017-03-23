@@ -420,9 +420,11 @@ public class FacebookHandler implements Serializable
 			}
 			catch (IOException e)
 			{
+				log.warn("Exception " + e.getMessage() + " on HttpClientBuilder.create");
 				return Utils.jsonizeResponse(Status.UNAUTHORIZED, e, Constants.LNG_EN, "generic.execError");
 			}
 		}
+		log.trace("Request placed, getting and parsing response");
 		return getJsonResponseFromFb(token);
 	}
 

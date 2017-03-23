@@ -28,15 +28,15 @@ public class UploadFiles {
 	final static Logger log = Logger.getLogger(UploadFiles.class);
 	final static ApplicationProperties prop = ApplicationProperties.getInstance();
 	
-	
 	public static boolean moveFiles(String fromPath, String toPath, String prefix, boolean overwrite)
 	{
 		boolean errorMoving = false;
-		// String contexToPath = getContextPath(toPath);
+		String contexToPath = getContextPath(toPath);
+		
     	if (overwrite)
     	{
     		// Remove all file with the given prefix from the destination directory
-    		File toDir = new File(toPath);
+    		File toDir = new File(contexToPath);
     		if(toDir.isDirectory()) 
     		{
     		    File[] dirContent = toDir.listFiles();
@@ -48,8 +48,8 @@ public class UploadFiles {
     		}
     	}
     	
-		// String contexFromPath = getContextPath(fromPath);
-		File srcDir = new File(fromPath);
+		String contextFromPath = getContextPath(fromPath);
+		File srcDir = new File(contextFromPath);
 		if(srcDir.isDirectory()) 
 		{
 		    File[] dirContent = srcDir.listFiles();
@@ -58,14 +58,15 @@ public class UploadFiles {
 			    for(int i = 0; i < dirContent.length; i++) 
 			    {
 			    	Files.move(Paths.get(dirContent[i].getPath()), 
-			    			   Paths.get(toPath + dirContent[i].getName()), 
+			    			   Paths.get(contexToPath + dirContent[i].getName()), 
 			    			   java.nio.file.StandardCopyOption.REPLACE_EXISTING);
 			    }
 				FileUtils.deleteDirectory(srcDir);
 			}
 		    catch (IOException e) 
 		    {
-		    	log.warn("Exception '" + e.getMessage() + "' removing the src directory '" + fromPath + "'");
+		    	log.warn("Exception '" + e.getMessage() + 
+		    			 "' removing the src directory '" + contextFromPath + "'");
 			}
 		}
 		return errorMoving;
@@ -74,7 +75,14 @@ public class UploadFiles {
 	private static String getContextPath(String root)
 	{
 		try {
-			return(prop.getContext().getResource(root).getPath());
+			if (!root.startsWith(prop.getContext().getResource("/").getPath()))
+			{
+				return prop.getContext().getResource(root).getPath();
+			}
+			else
+			{
+				return root;
+			}
 		} 
 		catch (MalformedURLException e) {
 			return "";
@@ -97,7 +105,9 @@ public class UploadFiles {
 
 	public static ArrayList<ArrayList<String>> getExistingFilesPathAsURL(String prefix, String root)
 	{
+		log.debug("Contextualize root '" + root + "'");
 		String contextPath = getContextPath(root);
+		log.debug("Contextualized as '" + contextPath + "'");
 		ArrayList<ArrayList<String>> imageURLs = new ArrayList<>();
 		imageURLs.add(new ArrayList<String>());
 		imageURLs.add(new ArrayList<String>());

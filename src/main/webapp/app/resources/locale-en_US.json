@@ -174,7 +174,7 @@
   "user.changePassword": "Change password",
   "user.personalInfo": "Personal info",
   "user.birthDay": "Birthday (dd/mm/yyyy)",
-  "user.Phones": "Phones",
+  "user.phones": "Phones",
   "user.addressStreet": "Address",
   "user.addressCity": "City",
   "user.addressState": "State/Province",
