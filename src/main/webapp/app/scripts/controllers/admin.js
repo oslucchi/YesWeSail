@@ -8,13 +8,21 @@
  * Controller of the yeswesailApp
  */
 angular.module('yeswesailApp')
-    .controller('AdminCtrl', function ($scope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate, moment) {
+    .controller('AdminCtrl', function ($scope, $rootScope, $http, URLs, MAPS, lodash, toastr, ngDialog, $filter, $translate, moment, AuthService, $state) {
 
         $scope.badges = {
             numberEvents: 0,
             numberReqs: 0,
             numberUsers: 0
         };
+    
+         AuthService.isAuthenticated().then(function (res) {
+                    if (!res) {
+                        $state.go('main');
+                        $rootScope.$broadcast('LoginRequired', $state);
+                        return;
+                    }
+                }, function (err) {});
 
         $http.post(URLs.ddns + 'rest/events/search/all', {}).then(function (res) {
         	$scope.badges.numberEvents = 0;

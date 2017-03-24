@@ -16,8 +16,9 @@ angular.module('yeswesailApp')
     
         $scope.fbRedirectUrl=URLs.ddns;
         $scope.login = function (credentials) {
+            var toState=$state.current.name;
             $scope.error = null;
-            AuthService.login(credentials).then(function (res) {
+            AuthService.login(credentials, toState).then(function (res) {
                 $http.defaults.headers.common['Authorization'] = res.token;
                 if (res.user.roleId == USER_ROLES.ADMIN && !!!$scope.previousState) {
                     $window.location.href = '/admin/events?token=' + res.token;

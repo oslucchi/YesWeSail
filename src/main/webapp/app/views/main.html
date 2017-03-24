@@ -73,7 +73,7 @@
                     <div class="content" style="height: 70px; padding: 5px; font-weight: 900;
     font-size: 16px;">
                         <div class="right floated meta">
-                            <ship-owner ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
+                            <ship-owner ship-owner-object="shipOwners[multipleEvents[0].shipOwnerId]" ship-owner-id="multipleEvents[0].shipOwnerId"></ship-owner>
                         </div> {{multipleEvents[0].title}} </div>
                     <div class="image">
                         <div class="card-event-image" ng-style="{'background-image':'url('+multipleEvents[0].imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;">   <div ng-if="multipleEvents[0].lastMinute" class="last-minute-stamp">
