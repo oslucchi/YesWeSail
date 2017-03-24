@@ -4,7 +4,8 @@
   </div>
     <div class="search_content">
 
-        <div class="ui three stackable column grid">
+<!--
+        <div class="ui four stackable column grid">
 
             <div class="three wide column">
                 
@@ -33,8 +34,69 @@
 
             <div class="two wide column"> 
                 <a ng-click="search()" class="ui blue button">{{"global.search" | translate}}</a></div>
+           
+            <div class="five wide column"> 
+                <a ng-click="search()" class="ui blue button">{{"global.search" | translate}}</a></div>
 
         </div>
+-->
+        
+        
+        <div class="ui top menu">
+            <div ng-if="locationsLoaded" dropdown-search-selection ng-model="selectedLocation" class="ui selection dropdown item">
+                      <input type="hidden" name="language">
+                        <i class="dropdown icon"></i>
+                      <div class="default text">{{"global.selectLocation" | translate}}</div>
+                      <div class="menu">
+                          <div class="item" data-value="">{{"global.selectLocation" | translate}}</div>
+                          <div ng-repeat="location in LOCATIONS" class="item" data-value="{{location}}">{{location}}</div>
+                      </div>
+                    </div>
+            
+                <div ng-if="categoriesLoaded" dropdown-search-selection ng-model="selectedCategory" class="ui selection dropdown item">
+                      <input type="hidden" name="language">
+                    <i class="dropdown icon"></i>
+                      <div class="default text">{{"global.selectCategory" | translate}}</div>
+                      <div class="menu">
+                          <div class="item" data-value="">{{"global.selectCategory" | translate}}</div>
+                          <div ng-repeat="category in CATEGORIES" class="item" data-value="{{category.categoryId}}">{{category.description}}</div>
+                      </div>
+                    </div>
+<!--
+               <div class="item">
+              <div class="ui transparent icon input">
+                <input ng-model="searchTitle" type="text" placeholder="Search events...">
+                <i class="search icon"></i>
+              </div>
+            </div>
+-->
+            
+            <a ng-click="search()" class="item ui blue button">{{"global.search" | translate}}</a>
+          <div class="right menu">
+              <div class="item">
+              Sort:
+              </div>
+
+           <select ng-model="sortValue" class="ui dropdown item" dropdown-menu action="activate">
+              <option value="dateStart">Date</option>
+              <option value="title">Title</option>
+              <option value="location">Location</option>
+              <option value="price">Price</option>
+            </select>
+
+<!--
+              <div class="item">
+                <i ng-click="toggleSortDirection()" class="sort content icon link" ng-class="{'ascending': sortDirection=='-', 'descending': sortDirection==''}"></i>
+              </div>
+-->
+
+
+
+
+         
+          </div>
+        </div>
+        
     </div>
 
 
@@ -181,7 +243,7 @@ Starting at {{event.minPrice}}€
                         <div class="ui stackable doubling three cards">
 
             
-                       <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in events track by $index">
+                       <div class="ui letter card" ng-click="processEventClick(multipleEvents)" ng-repeat="multipleEvents in events | orderBy:secondIndex track by $index">
                     <div class="content" style="height: 70px; padding: 5px; font-weight: 900;
     font-size: 16px;">
                         <div class="right floated meta">

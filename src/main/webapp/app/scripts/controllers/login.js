@@ -40,6 +40,22 @@ angular.module('yeswesailApp')
                 $rootScope.$broadcast(AUTH_EVENTS.loginFailed);
             });
         };
+    
+        function getFBAppId(){
+            $http.get(URLs.ddns+'rest/auth/fbAppId').then(function(res){
+                if(res.data.fbAppId){
+                    $scope.fbAppId=res.data.fbAppId;
+                }else{
+                    console.log('FB App ID not available, falling back to prod App ID: 484756285065008');    
+                    $scope.fbAppId='484756285065008';
+                }
+            }, function(err){
+                console.log('Failed to get FB App ID, falling back to prod App ID: 484756285065008');
+                $scope.fbAppId='484756285065008';
+            })
+        };
+    
+        getFBAppId();
 
         $scope.closeModals = function () {
             ngDialog.closeAll();

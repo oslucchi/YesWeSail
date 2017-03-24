@@ -8,6 +8,8 @@
  */
 angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, $http, $stateParams, MAPS, ngDialog, $state) {
     var body = {};
+    $scope.sortDirection='';
+    $scope.sortValue='dateStart';
     $scope.selectedCategory = $stateParams.categoryId;
     $scope.selectedLocation = $stateParams.location;
     $scope.CATEGORIES = [];
@@ -44,6 +46,20 @@ angular.module('yeswesailApp').controller('EventsCtrl', function ($scope, URLs, 
         }, function (err) {});
     };
     getEvents();
+    
+    
+    $scope.secondIndex = function(arr){
+        return arr[0][$scope.sortValue];
+    }
+    
+    $scope.toggleSortDirection=function(){
+        if($scope.sortDirection==='-'){
+            $scope.sortDirection='';
+        }else{
+            $scope.sortDirection='-';
+        }
+        $scope.sortValueComposed=$scope.sortDirection+'multipleEvents[0].'+$scope.sortValue;
+    }
     
     $scope.search = function () {
         if ($scope.selectedLocation) {
