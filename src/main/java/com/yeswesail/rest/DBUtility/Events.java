@@ -264,8 +264,25 @@ public class Events extends DBInterface implements Comparable<Events>
 		{
 			event.setLocale(Constants.getLocale(event.getLanguageId()));
 		}
-		Collections.sort(events);
-		return(sort(events.toArray(new Events[events.size()])));
+		Collections.sort(events, new Comparator<Events>() {
+	        @Override 
+	        public int compare(Events e1, Events e2) {
+	            if (e1.dateStart.getTime() >  e2.dateStart.getTime())
+	            {
+	            	return 1;
+	            }
+	            else if (e1.dateStart.getTime() ==  e2.dateStart.getTime())
+	            {
+	            	return 0;
+	            }
+	            else
+	            {
+	            	return -1;
+	            }
+	        }
+	    });
+		// return(sort(events.toArray(new Events[events.size()])));
+		return(events.toArray(new Events[events.size()]));
 	}
 
 	public static Events[] findByFilter(String whereClause, String token) throws Exception

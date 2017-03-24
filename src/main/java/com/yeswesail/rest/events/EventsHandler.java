@@ -7,6 +7,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -227,7 +229,24 @@ public class EventsHandler {
 		ArrayList<ArrayList<Events>> sorted = new ArrayList<>();
 		for(ArrayList<Events> listItem : hotList)
 		{
-			sorted.add(Events.sort(listItem));
+			Collections.sort(listItem, new Comparator<Events>() {
+		        @Override 
+		        public int compare(Events e1, Events e2) {
+		            if (e1.getDateStart().getTime() >  e2.getDateStart().getTime())
+		            {
+		            	return 1;
+		            }
+		            else if (e1.getDateStart().getTime() ==  e2.getDateStart().getTime())
+		            {
+		            	return 0;
+		            }
+		            else
+		            {
+		            	return -1;
+		            }
+		        }
+		    });
+			sorted.add(listItem);
 		}
 		return sorted;
 	}
@@ -328,17 +347,29 @@ public class EventsHandler {
 		HashMap<Integer, Users> shipownerList = new HashMap<>();
 		if (activeOnly)
 		{
+			log.trace("Look for active only. Organizing events");
 			eventsList = organizeEvents(eventsFiltered);
 		}
 		else
 		{
+			log.trace("All events requested. Simulating through an ArrayList of 1 element only");
 			eventsList = new ArrayList<>();
 			eventsList.add(eventsFiltered);
 		}
 		String soIdList = "";
 		String sep = "";
+		log.debug("the eventsList contains " + eventsList.size() + " elements");
 		for(ArrayList<Events> listItem : eventsList)
 		{
+			if (listItem.size() > 0)
+			{
+				log.debug("Current list has " + listItem.size() + " events. The first item is on event " + 
+						  listItem.get(0).getIdEvents());
+			}
+			else
+			{
+				log.debug("current item contains no elements");
+			}
 			for(Events e : listItem)
 			{
 				e.setImageURL(e.getImageURL().replace("large", "medium"));
@@ -374,7 +405,7 @@ public class EventsHandler {
 			}
 		}
 
-		if (eventsList.size() == 1)
+		if (!activeOnly)
 		{
 			list = eventsList.get(0);
 		}
