@@ -135,4 +135,39 @@ public class AdminActions {
 		return Response.status(Response.Status.OK).entity("{}").build();
 	}
 
+	@GET 
+	@Path("/dumpSessionData")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response dumpSessionData(@HeaderParam("Language") String language,
+									@HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd == null)
+		{
+			log.error("Unable to retrieve session data");
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+		if (sd.getBasicProfile(token) == null)
+		{
+			log.error("Unable to retrieve a basic profile for token " + token);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+		Utils ut = new Utils();
+		ut.addToJsonContainer("sessionData", sd.getAllItems(), true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
+	}
+
 }

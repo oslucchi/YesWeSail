@@ -129,7 +129,7 @@ public class FacebookHandler implements Serializable
 		}
 		log.debug("The user " + jsonIn.firstName + " " + jsonIn.lastName + " " + 
 				  jsonIn.facebookId + " " + jsonIn.username + " is not registered yet"
-				  		+ "populating users table");
+				  		+ " populating users table");
 		return jsonIn;
 	}
 	
@@ -155,6 +155,28 @@ public class FacebookHandler implements Serializable
 		return(null);
 	}
 	
+	private Response getUserByEmail(DBConnection conn, String email)
+	{
+		try
+		{
+			u.findByEmail(conn, email);
+			// User was found in our archives.
+			log.debug("User " + u.getIdUsers() + " already registered with (email " + email + ")");
+		}
+		catch (Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") != 0)
+			{
+				// All exceptions. No record found is treated as a particular case
+				errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
+						   e.getMessage() + ")";
+				return Utils.jsonizeResponse(Status.UNAUTHORIZED, e, prop.getDefaultLang(), "generic.execError");
+			}
+			u.setIdUsers(-1);
+		}
+		return(null);
+	}
+	
 	private Response isUserAlreadyRegistered(DBConnection conn, JSONObject json, String token)
 	{
 		Response response = null;
@@ -162,12 +184,16 @@ public class FacebookHandler implements Serializable
 		{
 			return response;
 		}
+		if ((u.getIdUsers() == -1) && (getAttributeAsString(json, "email") != null))
+		{
+			// User not found, create a new one and set the UsersAuth accordingly
+			// try to see if by chance the email returned is already registered
+			if ((response = getUserByEmail(conn, getAttributeAsString(json, "email"))) != null)
+			{
+				return response;
+			}
+		}
 		setUsersAuth(conn, token);
-//		if (u.getIdUsers() == -1)
-//		{
-//			// User not found, create a new one and set the UsersAuth accordingly
-//			setUsersAuth(conn, token);
-//		}
 		
 		boolean changed = false;
 		if (u.isAFakeEmail() && getAttributeAsString(json, "email") != null)
@@ -251,7 +277,7 @@ public class FacebookHandler implements Serializable
 		{
 			if ((ua = UsersAuth.findToken(token)) == null)
 			{
-				log.trace("Toke '" + token + "' not found. Creating new");
+				log.trace("Token '" + token + "' not found. Creating new");
 				response = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang());
 				if (response != null)
 				{

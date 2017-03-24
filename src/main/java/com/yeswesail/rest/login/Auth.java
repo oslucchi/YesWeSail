@@ -138,13 +138,16 @@ public class Auth {
 		try 
 		{
 			conn = DBInterface.connect();
+			log.debug("Looking up the token '" + token + "' to check if it exists already in the DB");
 			ua = UsersAuth.findToken(token);
 			if (ua == null)
 			{
+				log.debug("Not found, checking if the user " + userId + " already has one...");
 				ua = UsersAuth.findUserId(userId);
 			}
 			if (ua == null)
 			{
+				log.debug("Neither token or user were found, create a new entry in the table");
 				ua = new UsersAuth();
 				ua.setCreated(new Date());
 				ua.setLastRefreshed(ua.getCreated());
@@ -154,8 +157,10 @@ public class Auth {
 			}
 			else
 			{
+				log.debug("An entry was already present, updating it with new data");
 				ua.setLastRefreshed(new Date());
 				ua.setToken(token);
+				ua.setUserId(userId);
 				ua.update(conn, "idUsersAuth");
 			}
 		}
@@ -167,7 +172,27 @@ public class Auth {
 		{
 			DBInterface.disconnect(conn);
 		}
-		return null;
+
+		// Updating the session data. Any user should have maximum one entry in SD
+		SessionData sa = SessionData.getInstance();
+		Object[] userProfile = sa.getSessionData(userId);
+		if (userProfile == null)
+		{
+			userProfile = new Object[SessionData.SESSION_ELEMENTS];
+			userProfile[SessionData.LANGUAGE] = new Integer(Utils.setLanguageId(language));
+		}
+		try 
+		{
+			userProfile[SessionData.BASIC_PROFILE] = (u == null ? new Users(userId) : u);
+			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(userId);
+		}
+		catch (Exception e) 
+		{
+			;
+		}
+		
+		sa.updateSession(userId, userProfile, token);
+		return null;		
 	}
 
 	private Response prepareAndSendMail(String bodyProperty, String subjectProperty, 
@@ -221,8 +246,10 @@ public class Auth {
 		if ((response = populateUsersTable(jsonIn, false, language)) != null)
 			return response;
 
+		log.debug("Sending a registration confirm email to '" + u.getEmail() + "'");
 		if ((response = prepareAndSendMail("mail.body", "mail.subject", "confirmUser", language, jsonIn)) != null)
 			return response;
+		log.debug("Sent");
 		
 		Utils ut = new Utils();
 		ut.addToJsonContainer("responseMessage", LanguageResources.getResource(languageId, "auth.registerRedirectMsg"), true);
@@ -254,6 +281,18 @@ public class Auth {
 	}
 
 	
+	@GET
+	@Path("/fbAppId")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response fbAppId() 
+	{
+		Utils ut = new Utils();
+		ut.addToJsonContainer("fbAppId", prop.getFbApplicationId(), true);
+		return Response.status(Status.OK).entity(ut.jsonize()).build();
+	}
+
+	
 	@POST
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -263,21 +302,19 @@ public class Auth {
 		String username = jsonIn.username; 
 		String password = jsonIn.password; 
 		Users u;
-		String query = null;
 
 		/*
 		 * A new login always requires a new token to be generated
 		 */
 		String token = UUID.randomUUID().toString();
-		log.debug("Login called. Parameters: '" + username + "|" + password + "'");
+		log.debug("Login called for user '" + username + "'");
 		DBConnection conn = null;
 		try 
 		{
 			conn = DBInterface.connect();
-			query = "SELECT * FROM Users WHERE email = '" + username + "'";
 			u = new Users();
-			log.debug("Select user by email");
-			u.populateObject(conn, query, u);
+			log.debug("Get user by email");
+			u.findByEmail(conn, username);
 
 			PasswordHandler pw = new PasswordHandler();
 			pw.userPassword(conn, u.getIdUsers());
@@ -303,58 +340,7 @@ public class Auth {
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "generic.execError");
 			}
 		}
-
-		// Check if this user already has a token
-		UsersAuth ua = null;
-		try
-		{
-			log.debug("Setting up the new token for the user in DB");
-			ua = UsersAuth.findUserId(u.getIdUsers());
-			if (ua == null)
-			{
-				log.debug("userId not found in DB, creating new record");
-				ua = new UsersAuth();
-				ua.setUserId(u.getIdUsers());
-				ua.setToken(token);
-				ua.setCreated(new Date());
-				ua.setLastRefreshed(ua.getCreated());
-				ua.setIdUsersAuth(ua.insertAndReturnId(conn, "idUsersAuth", ua));
-			}
-			else
-			{
-				ua.setToken(token);
-				ua.setLastRefreshed(new Date());
-				log.debug("Refreshing the last access");
-				ua.update(conn, "idUsersAuth");
-			}
-		}
-		catch (Exception e) 
-		{
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
-		}
-
-		SessionData sa = SessionData.getInstance();
-		Object[] userProfile = sa.getSessionData(token);
-		if (userProfile == null)
-		{
-			userProfile = new Object[SessionData.SESSION_ELEMENTS];
-			userProfile[SessionData.LANGUAGE] = new Integer(Utils.setLanguageId(language));
-		}
-		try 
-		{
-			userProfile[SessionData.BASIC_PROFILE] = u;
-			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(u.getIdUsers());
-		}
-		catch (Exception e) 
-		{
-			;
-		}
-		
-		sa.updateSession(u.getIdUsers(), userProfile, token);
+		populateUsersAuthTable(token, u.getIdUsers(), language);
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();
 		jsonResponse.put("token", token);
@@ -367,7 +353,8 @@ public class Auth {
 	@Path("/loginByToken")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response loginByToken(@HeaderParam("Authorization") String token, @HeaderParam("Language") String language)
+	public Response loginByToken(@HeaderParam("Authorization") String token, 
+								 @HeaderParam("Language") String language)
 	{
 		UsersAuth ua = null;
 		SessionData sa = SessionData.getInstance();
@@ -503,22 +490,7 @@ public class Auth {
 			pw.setPassword(rc.getPasswordChange());
 			pw.setIdUsers(rc.getUserId());
 			pw.updatePassword(conn, true);
-			UsersAuth ua = UsersAuth.findUserId(rc.getUserId());
-			if (ua == null)
-			{
-				ua = new UsersAuth();
-				ua.setCreated(new Date());
-				ua.setLastRefreshed(ua.getCreated());
-				ua.setUserId(rc.getUserId());
-				ua.setToken(token);
-				ua.insert(conn, "idUsersAuth", ua);
-			}
-			else
-			{
-				SessionData.getInstance().removeUser(ua.getToken());
-				ua.setToken(token);
-				ua.update(conn, "idUsersAuth");
-			}
+			populateUsersAuthTable(token, rc.getUserId(), language);
 		}
 		catch (Exception e) 
 		{

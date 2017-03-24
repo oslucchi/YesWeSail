@@ -181,14 +181,13 @@ public class EventsHandler {
 		}
 		
 		ArrayList<ArrayList<Events>> hotList = organizeEvents(hot);
-		
-		if (jh.jasonize(hotList, language) != Response.Status.OK)
-		{
-			log.error("Error '" + jh.json + "' jsonizing the hot event object");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("events", hotList);
+		jsonResponse.put("shipowners", getShipownerList(hotList));
+		Genson genson = new Genson();
+		String entity = genson.serialize(jsonResponse);
+
+		return Response.status(Response.Status.OK).entity(entity).build();
 	}
 
 
@@ -344,7 +343,6 @@ public class EventsHandler {
 		}
 		Object list = null;
 		ArrayList<ArrayList<Events>> eventsList = null;
-		HashMap<Integer, Users> shipownerList = new HashMap<>();
 		if (activeOnly)
 		{
 			log.trace("Look for active only. Organizing events");
@@ -356,15 +354,39 @@ public class EventsHandler {
 			eventsList = new ArrayList<>();
 			eventsList.add(eventsFiltered);
 		}
+
+		if (!activeOnly)
+		{
+			list = eventsList.get(0);
+		}
+		else
+		{
+			list = eventsList;
+		}
+
+		HashMap<String, Object> jsonResponse = new HashMap<>();
+		jsonResponse.put("events", list);
+		jsonResponse.put("shipowners", getShipownerList(eventsList));
+
+		Genson genson = new Genson();
+		String entity = genson.serialize(jsonResponse);
+
+		return Response.status(Response.Status.OK).entity(entity).build();
+	}
+
+	@SuppressWarnings("unchecked")
+	private HashMap<Integer, Users> getShipownerList(ArrayList<ArrayList<Events>> eventsList) 
+	{
 		String soIdList = "";
 		String sep = "";
+		HashMap<Integer, Users> shipownerList = new HashMap<>();
 		log.debug("the eventsList contains " + eventsList.size() + " elements");
 		for(ArrayList<Events> listItem : eventsList)
 		{
 			if (listItem.size() > 0)
 			{
 				log.debug("Current list has " + listItem.size() + " events. The first item is on event " + 
-						  listItem.get(0).getIdEvents());
+						listItem.get(0).getIdEvents());
 			}
 			else
 			{
@@ -381,15 +403,15 @@ public class EventsHandler {
 				}
 			}
 		}
+		ArrayList<Users> soList = null;
 		if (soIdList.compareTo("") != 0)
 		{
 			soIdList = " (" + soIdList + ") ";
 			try 
 			{
-				@SuppressWarnings("unchecked")
-				ArrayList<Users> soList = (ArrayList<Users>) Users.populateCollection(
+				soList = (ArrayList<Users>) Users.populateCollection(
 						"SELECT * FROM Users " +
-						"WHERE idUsers IN " + soIdList, Users.class);
+								"WHERE idUsers IN " + soIdList, Users.class);
 				for(Users u : soList)
 				{
 					if (shipownerList.containsKey(u.getIdUsers()))
@@ -401,28 +423,12 @@ public class EventsHandler {
 			catch (Exception e1)
 			{
 				log.debug("Exception " + e1.getMessage() + " retrieving data for shipowner " + 
-						  e.getShipOwnerId());
+						e.getShipOwnerId());
 			}
 		}
-
-		if (!activeOnly)
-		{
-			list = eventsList.get(0);
-		}
-		else
-		{
-			list = eventsList;
-		}
-
-		HashMap<String, Object> jsonResponse = new HashMap<>();
-		jsonResponse.put("events", list);
-		jsonResponse.put("shipowners", shipownerList);
-		
-		Genson genson = new Genson();
-		String entity = genson.serialize(jsonResponse);
-
-		return Response.status(Response.Status.OK).entity(entity).build();
+		return(shipownerList);
 	}
+
 
 	@POST
 	@Path("/search/all")
