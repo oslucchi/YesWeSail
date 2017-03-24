@@ -199,6 +199,10 @@ input:disabled {
     color: white !important;
 }
 
+.event-description-container > div{
+    width: auto !important;
+}
+
 ship-owner {
     z-index: 9;
     /*
