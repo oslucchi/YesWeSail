@@ -50,8 +50,9 @@ public class TicketsHandler {
 		{
 			tickets = EventTickets.getAllTicketByEventId(jsonIn.eventId, languageId);
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 
@@ -169,8 +170,9 @@ public class TicketsHandler {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
 			{
@@ -211,8 +213,9 @@ public class TicketsHandler {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return false;
 		}
 		finally
@@ -240,6 +243,7 @@ public class TicketsHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -292,6 +296,7 @@ public class TicketsHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -331,8 +336,9 @@ public class TicketsHandler {
 			ets.delete(conn, idEventTicketsSold);
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -94,6 +95,7 @@ public class CartHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -143,6 +145,7 @@ public class CartHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -182,7 +185,7 @@ public class CartHandler {
         try {
 			payment.execute(context, pe);
 		} 
-        catch (PayPalRESTException e) {
+        catch(PayPalRESTException e) {
             try 
             {
             	location = new URI(prop.getWebHost() + "/#/cart/error?responseCode=" + 
@@ -190,6 +193,7 @@ public class CartHandler {
             }
             catch(Exception e1)
             {
+    			log.warn("Exception " + e.getMessage(), e);
     			return Response
     					.status(Response.Status.UNAUTHORIZED)
     					.entity("{responseCode : 'Error executing PayPal payment. Please contact YWS administrators'}")
@@ -211,7 +215,7 @@ public class CartHandler {
         catch(Exception e)
         {
         	// TODO should send the admin an email to advise
-        	log.error("Exception " + e.getMessage() + " updating tickets for user " + userId);
+        	log.error("Exception " + e.getMessage() + " updating tickets for user " + userId, e);
     		DBInterface.TransactionRollback(conn);
         }
         finally
@@ -225,7 +229,9 @@ public class CartHandler {
 		{
 			location = new URI(prop.getWebHost() + "/#/cart/success?transactionId=" + payment.getId());
 		} 
-		catch (URISyntaxException e) {
+		catch(URISyntaxException e) 
+        {
+			log.warn("Exception " + e.getMessage(), e);
 			return Response
 					.status(Response.Status.OK)
 					.entity("{}")
@@ -258,8 +264,8 @@ public class CartHandler {
 
 			location = new URI(url);
 		} 
-		catch (URISyntaxException | UnsupportedEncodingException e) {
-			log.warn("Exception " + e.getMessage() + " On redirecting to '" + url + "'");
+		catch(URISyntaxException | UnsupportedEncodingException e) {
+			log.warn("Exception " + e.getMessage() + " On redirecting to '" + url + "'", e);
 					
 			return Response
 					.status(Response.Status.OK)
@@ -294,7 +300,7 @@ public class CartHandler {
         catch(Exception e)
         {
 			log.error("Unable to create ticket list and calculate amount. Exception '" + 
-					  e.getMessage() + "' while creating a PayPal payment");
+					  e.getMessage() + "' while creating a PayPal payment", e);
 			return null;        	
         }
         
@@ -318,8 +324,8 @@ public class CartHandler {
         try {
 			returnVal = payment.create(context);
 		} 
-        catch (PayPalRESTException e) {
-			log.error("Exception '" + e.getMessage() + "' while creating a PayPal payment");
+        catch(PayPalRESTException e) {
+			log.error("Exception '" + e.getMessage() + "' while creating a PayPal payment", e);
 			return null;
 		}
         return returnVal;
@@ -332,6 +338,7 @@ public class CartHandler {
 		String sep = "";
 		int userId = -1;
 		int amount = 0;
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		for(TicketLocks t : tickets)
 		{
 			userId = t.getUserId();
@@ -352,6 +359,7 @@ public class CartHandler {
 							 "\"eventTicketId\" : " + et.getIdEventTickets() + ", " +
 							 "\"eventTicketDescription\" : \"" + et.getDescription() + "\", " +
 							 "\"eventDescription\" : \"" + e.getTitle() + "\"," +
+							 "\"dateStart\" : \"" + sdf.format(e.getDateStart()) + "\"," +
 							 "\"amount\" : " + et.getPrice() +  
 							 "}";
 			sep = ",";
@@ -450,9 +458,9 @@ public class CartHandler {
 			DBInterface.TransactionCommit(conn);
 			response = payViaPaypal(conn, userId, languageId, tickets);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Unable to process tickets. Exception " + e.getMessage());
+			log.error("Unable to process tickets. Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, languageId, "generic.error");
 		}

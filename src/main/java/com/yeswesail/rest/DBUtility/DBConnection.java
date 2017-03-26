@@ -27,18 +27,10 @@ public class DBConnection
 		try {
 			Class.forName("com.mysql.jdbc.Driver").newInstance();
 		} 
-		catch (InstantiationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		catch(Exception e)
+		{
+			log.warn("Exception " + e.getMessage(), e);
 		} 
-		catch (IllegalAccessException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
 		String retVal = null;
  		Exception e1 = null;
@@ -55,7 +47,7 @@ public class DBConnection
 			// log.debug("Creted connection (" + conn + ") and statement (" + st + ")");
 			st.executeQuery("SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED");
 		}
-		catch (SQLException e) 
+		catch(SQLException e) 
 		{
 			retVal = "Error on database connection (" + e.getMessage() + ")";
 			e1 = e;
@@ -66,7 +58,7 @@ public class DBConnection
 			{
 				finalize();
 			} 
-			catch (Throwable e) 
+			catch(Throwable e) 
 			{
 				// No action required
 				;
@@ -143,7 +135,7 @@ public class DBConnection
 		}
 		catch(Exception e)
 		{
-			log.warn("Exception " + e.getMessage() + " catched on statemet '" + sql + "'");		
+			log.warn("Exception " + e.getMessage() + " catched on statemet '" + sql + "'", e);		
 			throw new Exception(e);
 		}
 	}

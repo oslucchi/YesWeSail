@@ -56,7 +56,7 @@ public class TicketReleaser extends Thread {
 					if (e.getMessage().compareTo("No record found") != 0)
 					{
 						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
-								 item.getIdEventTickets());
+								 item.getIdEventTickets(), e);
 						DBInterface.TransactionRollback(transaction);
 						throw e;
 					}
@@ -71,6 +71,7 @@ public class TicketReleaser extends Thread {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(transaction);
 			return;
 		}
@@ -112,7 +113,7 @@ public class TicketReleaser extends Thread {
 			}
 			catch(Exception ex)
 			{
-				log.warn("Exception " + ex.getMessage() + "retriving shipOnwer");
+				log.warn("Exception " + ex.getMessage() + "retriving shipOnwer", ex);
 			}
 		}
 		body += "Contattare il cliente per controllare lo stato dell'acquisto e successivamente " +
@@ -239,7 +240,7 @@ public class TicketReleaser extends Thread {
     	}
     	catch(Exception e)
     	{
-			log.trace("Exception " + e.getMessage() + " aborting");
+			log.trace("Exception " + e.getMessage() + " aborting", e);
 			DBInterface.disconnect(conn);
     		Thread.currentThread().interrupt();
     	}

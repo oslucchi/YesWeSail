@@ -98,7 +98,7 @@ public class EventsHandler {
 			hot = Events.findHot(Constants.getLanguageCode(language));
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
@@ -128,7 +128,7 @@ public class EventsHandler {
 				{
 					shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()));
 				}
-				catch (Exception e1)
+				catch(Exception e1)
 				{
 					log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
 							  e.getShipOwnerId());
@@ -168,9 +168,9 @@ public class EventsHandler {
 			hot = Events.findHot(Constants.getLanguageCode(language));
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
+			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language, e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		// No record found. return an empty object
@@ -312,7 +312,9 @@ public class EventsHandler {
 			log.trace("Search for " + (activeOnly ? " active " : " all ") + " events");
 			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
 		}
-		catch (Exception e) {
+		catch(Exception e) 
+		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
 		if (events == null)
@@ -420,10 +422,10 @@ public class EventsHandler {
 					}
 				}
 			}
-			catch (Exception e1)
+			catch(Exception e1)
 			{
 				log.debug("Exception " + e1.getMessage() + " retrieving data for shipowner " + 
-						e.getShipOwnerId());
+						e.getShipOwnerId(), e1);
 			}
 		}
 		return(shipownerList);
@@ -543,7 +545,9 @@ public class EventsHandler {
 			}
 			log.debug("...done");
 		}
-		catch (Exception e) {
+		catch(Exception e) 
+		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}	
@@ -579,8 +583,9 @@ public class EventsHandler {
 			event.setImageURL(jsonIn.imageURL);
 			event.update(conn, "idEvents");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -653,8 +658,9 @@ public class EventsHandler {
 									.replace("small", "large")
 									.replace("medium", "large"));
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
@@ -694,6 +700,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
@@ -721,6 +728,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
@@ -748,7 +756,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
-			log.warn("Unable to populate descriptions (" + e.getMessage() + ")");
+			log.warn("Unable to populate descriptions (" + e.getMessage() + ")", e);
 		}
 
 		ArrayList<ArrayList<String>> imagesTemp = UploadFiles.getExistingFilesPathAsURL("ev_"+ event.getIdEvents() + "_", "/images/events");
@@ -773,8 +781,8 @@ public class EventsHandler {
 			Users u = new Users(conn, event.getShipOwnerId());
 			jsonResponse.put("shipOwner", u);
 		}
-		catch (Exception e) {
-			log.warn("Unable to get details, exception (" + e.getMessage() + ")");
+		catch(Exception e) {
+			log.warn("Unable to get details, exception (" + e.getMessage() + ")", e);
 			jsonResponse.put("shipOwner", "{}");
 		}
 
@@ -785,8 +793,8 @@ public class EventsHandler {
 			r = EventRoute.getRoute(conn, event.getIdEvents());
 			jsonResponse.put("route", r);
 		}
-		catch (Exception e) {
-			log.warn("Unable to get route details, exception (" + e.getMessage() + ")");
+		catch(Exception e) {
+			log.warn("Unable to get route details, exception (" + e.getMessage() + ")", e);
 			jsonResponse.put("route", "{}");
 		}
 
@@ -823,8 +831,8 @@ public class EventsHandler {
 			jsonResponse.put("imagesLarge", imagesLarge);
 			jsonResponse.put("boat", b);
 		}
-		catch (Exception e) {
-			log.warn("Unable to get the required boat, exception (" + e.getMessage() + ")");
+		catch(Exception e) {
+			log.warn("Unable to get the required boat, exception (" + e.getMessage() + ")", e);
 			jsonResponse.put("boat", "{}");
 		}
 		
@@ -832,8 +840,8 @@ public class EventsHandler {
 		try {
 			groundEventsAvailable = Events.findByFilter("WHERE eventType = 2", languageId);
 		} 
-		catch (Exception e) {
-			log.warn("Exception " + e.getMessage() + " populating ground events for event " + event.getIdEvents());
+		catch(Exception e) {
+			log.warn("Exception " + e.getMessage() + " populating ground events for event " + event.getIdEvents(), e);
 		}
 		ArrayList<Events> groundEvents = new ArrayList<Events>();
 		if(groundEventsAvailable != null)
@@ -856,8 +864,8 @@ public class EventsHandler {
 						}
 					}
 				} 
-				catch (Exception e) {
-					log.warn("Exception " + e.getMessage() + " getting routes for ground event " + ev.getIdEvents());
+				catch(Exception e) {
+					log.warn("Exception " + e.getMessage() + " getting routes for ground event " + ev.getIdEvents(), e);
 				}
 			}
 		}
@@ -889,10 +897,10 @@ public class EventsHandler {
 			{
 				event.setDateStart(sdf.parse(jsonIn.dateStart));
 			}
-			catch (ParseException e1)
+			catch(ParseException e1)
 			{
 				jsonIn.dateStart = "1970-01-01";
-				log.warn("Exception parsing jsonIn.dateStart = " + jsonIn.dateStart + ". Date set to epoch");
+				log.warn("Exception parsing jsonIn.dateStart = " + jsonIn.dateStart + ". Date set to epoch", e);
 			}
 		}
 		try
@@ -905,10 +913,10 @@ public class EventsHandler {
 			{
 				event.setDateEnd(sdf.parse(jsonIn.dateEnd));
 			}
-			catch (ParseException e1)
+			catch(ParseException e1)
 			{
 				jsonIn.dateEnd = "1970-01-01";
-				log.warn("Exception parsing jsonIn.dateEnd = " + jsonIn.dateEnd + ". Date set to epoch");
+				log.warn("Exception parsing jsonIn.dateEnd = " + jsonIn.dateEnd + ". Date set to epoch", e1);
 			}
 		}
 		event.setEventType(jsonIn.eventType);
@@ -1021,7 +1029,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
-			;
+			log.warn("Exception " + e.getMessage(), e);
 		}
 
 		int zone = 1;
@@ -1077,7 +1085,7 @@ public class EventsHandler {
 		}
 		catch(Exception e)
 		{
-			;
+			log.warn("Exception " + e.getMessage(), e);
 		}
 
 		for(EventRouteJson item : jsonIn.route)
@@ -1156,8 +1164,9 @@ public class EventsHandler {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
@@ -1186,8 +1195,9 @@ public class EventsHandler {
 			handleInsertUpdateRoute(jsonIn, languageId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
 		}
@@ -1252,9 +1262,9 @@ public class EventsHandler {
 				}
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.warn("Exception " + e.getMessage() + " raised");
+			log.warn("Exception " + e.getMessage() + " raised", e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1323,8 +1333,9 @@ public class EventsHandler {
 			ets.insert(conn, "idEventTicketsSold", ets);
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1447,8 +1458,10 @@ public class EventsHandler {
 			handleInsertTicket(jsonIn, jsonIn[0][0].eventId, conn);
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch 
+		(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1490,8 +1503,9 @@ public class EventsHandler {
 			et.update(conn, "idEventTickets");
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1523,8 +1537,9 @@ public class EventsHandler {
 			new EventTickets().delete(conn, jsonIn.idEventTickets);
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1545,9 +1560,9 @@ public class EventsHandler {
 		try {
 			eventsPath = context.getResource("/images/events").getPath();
 		}
-		catch (MalformedURLException e) 
+		catch(MalformedURLException e) 
 		{
-			log.warn("Exception " + e.getMessage() + " retrieving images/events path");	
+			log.warn("Exception " + e.getMessage() + " retrieving images/events path", e);	
 		}
 		String baseName = imageName.substring(0, imageName.indexOf("-"));
 //		File toRemove = new File(eventsPath + File.separator + imageName);
@@ -1641,8 +1656,9 @@ public class EventsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.debug("done");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1683,8 +1699,9 @@ public class EventsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.debug("done");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1725,8 +1742,9 @@ public class EventsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.debug("done");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
@@ -1767,8 +1785,9 @@ public class EventsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.debug("done");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}

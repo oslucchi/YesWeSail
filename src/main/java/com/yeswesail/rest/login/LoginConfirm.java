@@ -71,8 +71,9 @@ public class LoginConfirm {
 			}
 			uFB = new Users(conn, ua.getUserId());
 		} 
-		catch (Exception e1) 
+		catch(Exception e1) 
 		{
+			log.warn("Exception " + e1.getMessage(), e1);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e1, 
 					prop.getDefaultLang(), "generic.execError");
@@ -98,7 +99,7 @@ public class LoginConfirm {
 				if (!e.getMessage().equalsIgnoreCase("No record found"))
 				{
 					log.warn("Exception " + e.getMessage() + 
-							 " searching user by the given email '" + email + "'");
+							 " searching user by the given email '" + email + "'", e);
 					DBInterface.disconnect(conn);
 					return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
 							prop.getDefaultLang(), "generic.execError");
@@ -114,10 +115,10 @@ public class LoginConfirm {
 				sd.removeUser(token);
 				sd.addUser(token, Constants.getLanguageCode(language));
 			}
-			catch (Exception e) 
+			catch(Exception e) 
 			{
-				log.warn("Exception " + e.getMessage() + 
-						 " updating user with the given email '" + email + "'");
+				log.warn("Exception " + e.getMessage() +
+						 " updating user with the given email '" + email + "'", e);
 				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
 						prop.getDefaultLang(), "generic.execError");
 			}
@@ -155,7 +156,7 @@ public class LoginConfirm {
 		}
 		catch(Exception e)
 		{
-			log.debug("Exception " + e.getMessage() + ", returning UNAUTHORIZED");
+			log.debug("Exception " + e.getMessage() + ", returning UNAUTHORIZED", e);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, 
 										 prop.getDefaultLang(), "auth.wrongCredentials");
@@ -185,6 +186,7 @@ public class LoginConfirm {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, null, 
 					prop.getDefaultLang(), "generic.execError");
 		}
@@ -208,7 +210,8 @@ public class LoginConfirm {
 		try {
 			conn = DBInterface.connect();
 		} 
-		catch (Exception e1) {
+		catch(Exception e1) {
+			log.warn("Exception " + e1.getMessage(), e1);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(ResponseEntityCreator.formatEntity(
 								prop.getDefaultLang(), "generic.execError")).build();
@@ -222,8 +225,9 @@ public class LoginConfirm {
 				rc = new RegistrationConfirm();
 				rc.populateObject(conn, query, rc);
 			}
-			catch (Exception e) 
+			catch(Exception e) 
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				DBInterface.disconnect(conn);
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
@@ -256,6 +260,7 @@ public class LoginConfirm {
 			}
 			catch(Exception e)
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				return Response.status(Response.Status.UNAUTHORIZED)
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.confirmTokenInvalid")).build();
 			}
@@ -281,12 +286,12 @@ public class LoginConfirm {
 			ua.insert(conn, "idUsersAuth", ua);
 			return Response.seeOther(location).build();
 		} 
-		catch (URISyntaxException e) 
+		catch(URISyntaxException e) 
 		{
-			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage());
+			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage(), e);
 		}
-		catch (Exception e) {
-			log.error("Exception " + e.getMessage() + " updating user and registration token");
+		catch(Exception e) {
+			log.error("Exception " + e.getMessage() + " updating user and registration token", e);
 		}
 		finally
 		{

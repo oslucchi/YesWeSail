@@ -41,9 +41,9 @@ public class ImageHandler {
 		{
 			contextPath = prop.getContext().getResource("/").getPath();
 		}
-		catch (MalformedURLException e) 
+		catch(MalformedURLException e) 
 		{
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
+			log.warn("Exception " + e.getMessage() + " retrieving context path", e);
 		}
 	}
 
@@ -90,8 +90,8 @@ public class ImageHandler {
 			Thumbnails.of(imagePath)
 			  .size(width.intValue(), heigth.intValue()) 
 			  .toFile(thumbnailPath);
-		} catch (IOException e) {
-			log.warn("Exception " + e.getMessage() + " resizing image");
+		} catch(IOException e) {
+			log.warn("Exception " + e.getMessage() + " resizing image", e);
 		}
 	}
 
@@ -121,8 +121,8 @@ public class ImageHandler {
 			Thumbnails.of(imagePath)
 			  .size(width.intValue(), heigth.intValue()) 
 			  .toFile(outPath);
-		} catch (IOException e) {
-			log.warn("Exception " + e.getMessage() + " resizing image");
+		} catch(IOException e) {
+			log.warn("Exception " + e.getMessage() + " resizing image", e);
 		}
 	}
 

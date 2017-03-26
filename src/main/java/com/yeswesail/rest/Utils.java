@@ -14,7 +14,6 @@ import javax.ws.rs.core.Response.Status;
 
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
@@ -93,18 +92,9 @@ public class Utils {
 					break;
 				}
 			}			
-			catch(JSONException e)
+			catch(Exception e)
 			{
-				e.printStackTrace();;
-			} catch (NumberFormatException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				log.warn("Exception " + e.getMessage(), e);
 			}
 		}
 		return objInst;
@@ -135,8 +125,8 @@ public class Utils {
 		{
 			json = mapper.writeValueAsString(o);
 		} 
-		catch (IOException e) {
-			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+		catch(IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")", e);
 			return jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		return Response.status(Status.OK).entity(json).build();
@@ -207,7 +197,7 @@ public class Utils {
 		}
 		catch(Exception e)
 		{
-			log.warn("Unable to check if tickets for this event have been sold already. not adding the all boat ticket");
+			log.warn("Unable to check if tickets for this event have been sold already. not adding the all boat ticket", e);
 		}
 		return true;
 	}

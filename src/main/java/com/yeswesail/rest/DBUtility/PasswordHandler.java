@@ -25,7 +25,8 @@ public class PasswordHandler extends DBInterface {
 		{
 			populateObject(conn, sql, this);
 		}
-		catch (Exception e) {
+		catch(Exception e) 
+		{
 			return null;
 		}
 		return password;

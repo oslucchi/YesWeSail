@@ -19,7 +19,9 @@ public class YesWeSail implements ServletContextListener {
         try {
             releaser.doShutdown();
             releaser.interrupt();
-        } catch (Exception ex) {
+        } 
+        catch(Exception e) {
+    		log.warn("Exception " + e.getMessage(), e);    		
         }
     }
 

@@ -85,19 +85,20 @@ public class UsersHandler {
 				String query = "SELECT * FROM UsersAuth WHERE token = '" + jsonIn.token + "'";
 				ua.populateObject(conn, query, ua);
 			}
-			catch (Exception e) 
+			catch(Exception e) 
 			{
 				if (e.getMessage().compareTo("No record found") == 0)
 				{
+					log.error("No record found on token: " + jsonIn.token);
 					utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "auth.loginTokenNotExist"), true);
 					errMsg = utils.jsonize();
 				}
 				else
 				{
+					log.warn("Exception " + e.getMessage(), e);
 					utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 					errMsg = utils.jsonize();
 				}
-				log.error("Error getting user from UsersAuth: " + errMsg);
 			}
 			finally
 			{
@@ -110,6 +111,7 @@ public class UsersHandler {
 			}
 			catch(Exception e)
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 				errMsg = utils.jsonize();
 			}
@@ -178,7 +180,7 @@ public class UsersHandler {
 			}
 			catch(Exception e)
 			{
-				log.error("Error trying to register " + jsonIn.u.email + " to mailchimp (Exception " + e.getMessage() + ")");
+				log.error("Error trying to register " + jsonIn.u.email + " to mailchimp (Exception " + e.getMessage() + ")", e);
 				if (e.getMessage().contains("is already a list member"))
 				{
 					utils.addToJsonContainer("error", 
@@ -198,8 +200,8 @@ public class UsersHandler {
 				{
 					client.close();
 				} 
-				catch (IOException e) {
-					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")");
+				catch(IOException e) {
+					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")", e);
 				}
 			}
 			log.debug("Member subscribed. Status " + member.status + ". Last update " + member.last_changed);
@@ -237,8 +239,8 @@ public class UsersHandler {
 			// u.setPassword("******");
 			json = mapper.writeValueAsString(u);
 		} 
-		catch (IOException e) {
-			log.error("Error jasonizing basic profile (" + e.getMessage() + ")");
+		catch(IOException e) {
+			log.error("Error jasonizing basic profile (" + e.getMessage() + ")", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.UNAUTHORIZED)
 					.entity(utils.jsonize())
@@ -275,8 +277,9 @@ public class UsersHandler {
 				uWiped.setTwitter(u.getTwitter());
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -294,8 +297,8 @@ public class UsersHandler {
 		{
 			json = mapper.writeValueAsString(uWiped);
 		} 
-		catch (IOException e) {
-			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+		catch(IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -328,8 +331,9 @@ public class UsersHandler {
 		{
 			uList = Users.findUsersbyRole(roleId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -343,8 +347,8 @@ public class UsersHandler {
 		{
 			json = mapper.writeValueAsString(uList.toArray());
 		} 
-		catch (IOException e) {
-			log.error("Error jsonizing basic profile (" + e.getMessage() + ")");
+		catch(IOException e) {
+			log.error("Error jsonizing basic profile (" + e.getMessage() + ")", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -378,8 +382,9 @@ public class UsersHandler {
 			u.setBillingInfo(ai[1]);
 			docs = Documents.findAllUsersDoc(languageId, u.getIdUsers());
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -408,9 +413,9 @@ public class UsersHandler {
 				eventList = Events.findByFilter("shipOwnerId = " + u.getIdUsers(), languageId);
 				utils.addToJsonContainer("events", eventList, false);				
 			} 
-			catch (Exception e) 
+			catch(Exception e) 
 			{
-				log.debug("Exception " + e.getMessage() + " retrieving events for shipowner " + u.getIdUsers());
+				log.debug("Exception " + e.getMessage() + " retrieving events for shipowner " + u.getIdUsers(), e);
 			}
 		}
 		return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
@@ -469,8 +474,9 @@ public class UsersHandler {
 				usersList.get(i).setBillingInfo(ai[1]);
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -563,7 +569,7 @@ public class UsersHandler {
 		}
 		catch(Exception e)
 		{
-			log.warn("Exception " + e.getMessage() + " setting user's image URL");
+			log.warn("Exception " + e.getMessage() + " setting user's image URL", e);
 		}
 		finally
 		{
@@ -659,8 +665,9 @@ public class UsersHandler {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -705,6 +712,7 @@ public class UsersHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -799,10 +807,10 @@ public class UsersHandler {
 			log.trace("User's status upgrade request added");
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.error("Exception '" + e.getMessage() + "' on insert", e);
 			DBInterface.TransactionRollback(conn);
-			log.error("Exception '" + e.getMessage() + "' on insert");
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -891,9 +899,9 @@ public class UsersHandler {
 			
 			log.trace("User's status upgrade request added");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on insert");
+			log.error("Exception '" + e.getMessage() + "' on insert", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -947,10 +955,10 @@ public class UsersHandler {
 		try {
 			destPath = prop.getContext().getResource("/images/boats").getPath();
 		}
-		catch (MalformedURLException e) 
+		catch(MalformedURLException e) 
 		{
 			destPath = "";
-			log.warn("Exception " + e.getMessage() + " retrieving context path");
+			log.warn("Exception " + e.getMessage() + " retrieving context path", e);
 			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		UploadFiles.moveFiles(destPath + "/" + token, destPath, 
@@ -1006,9 +1014,9 @@ public class UsersHandler {
 			bo.delete(conn, idBoats);
 			boats = Boats.findAll(languageId, shipownerId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on boat delete");
+			log.error("Exception '" + e.getMessage() + "' on boat delete", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -1053,9 +1061,9 @@ public class UsersHandler {
 			conn = DBInterface.connect();			
 			boats = Boats.findAll(languageId, shipownerId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on insert");
+			log.error("Exception '" + e.getMessage() + "' on insert", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -1121,9 +1129,9 @@ public class UsersHandler {
 			Mailer.sendMail(jsonIn.email, prop.getContactsMailTo(), null, 
 							jsonIn.subject, jsonIn.message, null);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on insert");
+			log.error("Exception '" + e.getMessage() + "' on insert", e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -1166,8 +1174,9 @@ public class UsersHandler {
 							"WHERE shipownerId = " + userId + " " +
 							"ORDER BY dateStart DESC", languageId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())
@@ -1208,8 +1217,9 @@ public class UsersHandler {
 			conn = DBInterface.connect();
 			eventsList = EventTicketsSold.findTicketSoldToUser(userId, languageId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			utils.addToJsonContainer("error", LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")", true);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(utils.jsonize())

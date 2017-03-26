@@ -68,7 +68,7 @@ public class Auth {
 			}
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
@@ -78,6 +78,7 @@ public class Auth {
 			}
 			else
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
@@ -113,7 +114,7 @@ public class Auth {
 			rc.setPasswordChange(jsonIn.password);
 			rc.update (conn, "idRegistrationConfirm");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			if (e.getCause().getMessage().substring(0, 15).compareTo("Duplicate entry") == 0)
 			{
@@ -121,6 +122,7 @@ public class Auth {
 			}
 			else
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 			}
 		}
@@ -164,8 +166,9 @@ public class Auth {
 				ua.update(conn, "idUsersAuth");
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
 		}
 		finally
@@ -186,7 +189,7 @@ public class Auth {
 			userProfile[SessionData.BASIC_PROFILE] = (u == null ? new Users(userId) : u);
 			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(userId);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			;
 		}
@@ -217,10 +220,12 @@ public class Auth {
 		}
 		catch(MessagingException e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "mailer.sendError");
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} 
+		catch(MalformedURLException e)
+		{
+			log.warn("Exception " + e.getMessage(), e);
 		}
 		return null;
 	}
@@ -326,7 +331,7 @@ public class Auth {
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.wrongCredentials");
 			}
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
 			DBInterface.disconnect(conn);
 			if (e.getMessage().compareTo("No record found") == 0)
@@ -336,7 +341,7 @@ public class Auth {
 			}
 			else
 			{
-				log.debug("Generic error " + e.getMessage());
+				log.debug("Generic error " + e.getMessage(), e);
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "generic.execError");
 			}
 		}
@@ -380,8 +385,9 @@ public class Auth {
 				}
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			sa.removeUser(token);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.sessionExpired");
@@ -406,8 +412,9 @@ public class Auth {
 				sa.updateSession(token, userProfile);
 			}
 		}
-		catch (Exception e) {
-			log.error("Exception " + e.getMessage() + " setting up sessionData");
+		catch(Exception e) 
+		{
+			log.error("Exception " + e.getMessage() + " setting up sessionData", e);
 		}
 		finally
 		{
@@ -451,8 +458,9 @@ public class Auth {
 			rc.setUserId(u.getIdUsers());
 			rc.insert(conn, "idRegistrationConfirm", rc);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "users.badMail");
 		}
 		finally
@@ -492,8 +500,9 @@ public class Auth {
 			pw.updatePassword(conn, true);
 			populateUsersAuthTable(token, rc.getUserId(), language);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.confirmTokenInvalid");
@@ -507,6 +516,7 @@ public class Auth {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(conn);
 			log.error("Exception updating the registration confirm record. (" + e.getMessage() + ")");
 		}
@@ -521,12 +531,12 @@ public class Auth {
 			location = new URI(uri);
 			return Response.seeOther(location).build();
 		}
-		catch (URISyntaxException e) 
+		catch(URISyntaxException e) 
 		{
-			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage());
+			log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage(), e);
 		}
-		catch (Exception e) {
-			log.error("Exception " + e.getMessage() + " updating user and registration token");
+		catch(Exception e) {
+			log.error("Exception " + e.getMessage() + " updating user and registration token", e);
 		}
 		return Response.status(Response.Status.OK)
 				.entity("").build();
@@ -564,8 +574,9 @@ public class Auth {
 			if (ua != null)
 				ua.delete(conn, ua.getIdUsersAuth());
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, language, "auth.tokenNotFound");
 		}
 		finally

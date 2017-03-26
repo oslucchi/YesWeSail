@@ -69,9 +69,9 @@ public class HandlePendingActions {
 			actions = PendingActions.getActives(conn);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
 		}
 		finally
@@ -111,9 +111,9 @@ public class HandlePendingActions {
 			actions = PendingActions.getPendingOnUser(conn, userId);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -155,9 +155,9 @@ public class HandlePendingActions {
 			review = new Reviews(conn, id, false);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -212,9 +212,13 @@ public class HandlePendingActions {
 			u.setBillingInfo(ai[1]);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
+			if (e.getMessage().equals("No record found"))
+			{
+				return Utils.jsonizeResponse(Response.Status.NOT_FOUND, null, languageId, "No record found");
+			}
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -291,7 +295,7 @@ public class HandlePendingActions {
 					if (e.getMessage().compareTo("No record found") != 0)
 					{
 						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
-								 item.getIdEventTickets());
+								 item.getIdEventTickets(), e);
 						DBInterface.TransactionRollback(conn);
 						DBInterface.disconnect(conn);
 						utils.addToJsonContainer("error", 
@@ -316,6 +320,7 @@ public class HandlePendingActions {
 		}
 		catch(Exception e1)
 		{
+			log.warn("Exception " + e1.getMessage(), e1);
 			DBInterface.TransactionRollback(conn);
 			utils.addToJsonContainer("error", 
 					LanguageResources.getResource(languageId, "ticket.cannotDeleteLocks") +
@@ -372,10 +377,10 @@ public class HandlePendingActions {
 			log.trace("marked request as complete");
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			log.error("Exception '" + e.getMessage() + "' on status upgrade action");
+			log.error("Exception '" + e.getMessage() + "' on status upgrade action", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -412,9 +417,9 @@ public class HandlePendingActions {
 			docs = UploadFiles.getExistingFilesPathAsURL("docs_" + u.getIdUsers() + "_", "/images/shipowner").get(UploadFiles.LARGE);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -480,10 +485,10 @@ public class HandlePendingActions {
 			log.trace("marked request as complete");
 			DBInterface.TransactionCommit(conn);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			log.error("Exception '" + e.getMessage() + "' on status upgrade action");
+			log.error("Exception '" + e.getMessage() + "' on status upgrade action", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -521,10 +526,10 @@ public class HandlePendingActions {
 			DBInterface.TransactionCommit(conn);
 			log.trace("Status changed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			DBInterface.TransactionRollback(conn);
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.unauthorized");
 		}
 		finally
@@ -552,8 +557,12 @@ public class HandlePendingActions {
 		String ticketsHTML = "<ul>";
 		for(ConfirmTicketJson item : jsonIn.tickets)
 		{
-			ticketsHTML += "<li>" + item.eventDescription + " - " + 
-						   item.eventTicketDescription + " @ " + item.amount + "eur</li>";
+			ticketsHTML += "<li>" + 
+								item.dateStart + " - " + 
+								item.eventDescription + " - " + 
+						   		item.eventTicketDescription + " @ " + 
+						   		item.amount + "eur" + 
+						   "</li>";
 		}
 		ticketsHTML += "</ul><br>";
 		DBConnection conn = null;
@@ -572,8 +581,7 @@ public class HandlePendingActions {
 			htmlText = htmlText.replaceAll("AMOUNT", String.valueOf(jsonIn.totalAmount));
 			htmlText = htmlText.replaceAll("PAYMENTID", jsonIn.paymentId);
 			String subject = LanguageResources.getResource(Constants.getLanguageCode(language), "mail.ticketsUserOnPaymentConfirmSubject");
-			URL url = getClass().getResource("/images/mailLogo.png");
-			String imagePath = url.getPath();
+			String imagePath = prop.getContext().getResource("/images/mailLogo.png").getPath(); // url.getPath();
 			Users u = new Users(conn, jsonIn.userId);
 			pa.setStatus(Constants.STATUS_COMPLETED);
 			pa.setUpdated(new Date());
@@ -584,7 +592,7 @@ public class HandlePendingActions {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage(), e);
 		}
 		finally
 		{
@@ -618,7 +626,7 @@ public class HandlePendingActions {
 		catch(Exception e)
 		{
 			DBInterface.TransactionRollback(conn);
-			log.warn("Couldn't send ticket confirmation message to the user. Exception " + e.getMessage());
+			log.warn("Couldn't get confirmTicket action. Exception " + e.getMessage(), e);
 		}
 		finally
 		{

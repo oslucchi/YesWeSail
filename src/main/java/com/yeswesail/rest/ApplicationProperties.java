@@ -70,9 +70,9 @@ public class ApplicationProperties {
 			properties.load(in);
 	    	in.close();
 		}
-    	catch (IOException e) 
+    	catch(IOException e) 
     	{
-			e.printStackTrace();
+			log.warn("Exception " + e.getMessage(), e);
     		return;
 		}
     	
@@ -107,9 +107,9 @@ public class ApplicationProperties {
 			properties.load(in);
 	    	in.close();
 		}
-    	catch (IOException e) 
+    	catch(IOException e) 
     	{
-			e.printStackTrace();
+			log.warn("Exception " + e.getMessage(), e);
     		return;
 		}
     	mailSmtpHost = properties.getProperty("mailSmtpHost");

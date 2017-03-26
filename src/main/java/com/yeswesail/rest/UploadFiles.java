@@ -63,10 +63,10 @@ public class UploadFiles {
 			    }
 				FileUtils.deleteDirectory(srcDir);
 			}
-		    catch (IOException e) 
+		    catch(IOException e) 
 		    {
 		    	log.warn("Exception '" + e.getMessage() + 
-		    			 "' removing the src directory '" + contextFromPath + "'");
+		    			 "' removing the src directory '" + contextFromPath + "'", e);
 			}
 		}
 		return errorMoving;
@@ -84,7 +84,8 @@ public class UploadFiles {
 				return root;
 			}
 		} 
-		catch (MalformedURLException e) {
+		catch(MalformedURLException e) {
+    		log.warn("Exception " + e.getMessage(), e);    		
 			return "";
 		}
 	}
@@ -157,8 +158,9 @@ public class UploadFiles {
 		{
 			Files.createDirectories(Paths.get(tempDir));
 		}
-		catch (IOException e1) 
+		catch(IOException e) 
 		{
+    		log.warn("Exception " + e.getMessage(), e);    		
 			return(null);
 		}
 		
@@ -193,22 +195,22 @@ public class UploadFiles {
 				catch(Exception e)
 				{
 					log.warn("Exception " + e.getMessage() + " moving " + original.getPath() + 
-							 "to " + root + "/images/originals/" + prefix + "-" + now  + extension);
+							 "to " + root + "/images/originals/" + prefix + "-" + now  + extension, e);
 				}
 				break;
 			default:
 				uploaded.add(original.getPath());
 			}
 		} 
-		catch (FileNotFoundException e) 
+		catch(FileNotFoundException e) 
 		{
 			log.error("Exception FileNotFoundException on '" +
-					  part.getContentDisposition().getFileName() + "'");
+					  part.getContentDisposition().getFileName() + "'", e);
 			return(null);
 		} 
-		catch (IOException e) {
+		catch(IOException e) {
 			log.error("Exception IOException on '" +
-					  part.getContentDisposition().getFileName() + "'");
+					  part.getContentDisposition().getFileName() + "'", e);
 			return(null);
 		}
 
@@ -298,7 +300,7 @@ public class UploadFiles {
 //		{
 //			destPath = prop.getContext().getResource(resource).getPath();
 //		}
-//		catch (MalformedURLException e) 
+//		catch(MalformedURLException e) 
 //		{
 //			log.warn("Exception " + e.getMessage() + " retrieving context path");
 //			((ArrayList<String>) results[2]).add(

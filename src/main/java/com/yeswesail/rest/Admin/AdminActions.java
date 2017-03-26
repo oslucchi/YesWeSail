@@ -50,10 +50,12 @@ public class AdminActions {
 		}
 		catch(MessagingException e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "mailer.sendError");
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} 
+		catch(MalformedURLException e) 
+		{
+			log.warn("Exception " + e.getMessage(), e);
 		}
 		return null;
 	}
@@ -120,9 +122,9 @@ public class AdminActions {
 
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on mailToUsers");
+			log.error("Exception '" + e.getMessage() + "' on mailToUsers", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();

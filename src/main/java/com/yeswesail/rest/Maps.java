@@ -170,8 +170,8 @@ public class Maps {
 				}
 			}
 		} 
-		catch (Exception e) {
-			log.error("Error jasonizing the map " + jsonIn.mapName + " (" + e.getMessage() + ")");
+		catch(Exception e) {
+			log.error("Error jasonizing the map " + jsonIn.mapName + " (" + e.getMessage() + ")", e);
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, e, languageId, "generic.execError");
 		}
 		// No record found. return an empty object
