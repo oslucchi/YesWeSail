@@ -12,7 +12,7 @@ angular.module('yeswesailApp')
         $scope.hotEvents=null;
         
         $http.post(URLs.ddns +'rest/events/hotEvents' ).then(function(res){
-            $scope.hotEvents=res.data;
+            $scope.hotEvents=res.data.events;
         }, function(err){})
         $scope.showAvailableDatesForEvents=function(events){
           $scope.aggregatedEvents=events;
