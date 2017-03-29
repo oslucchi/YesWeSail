@@ -429,7 +429,7 @@ public class FacebookHandler implements Serializable
 		
 		if (faceCode != null && ! "".equals(faceCode)) {
 			String appId = prop.getFbApplicationId();
-			String redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin";
+			String redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin/";
 			String faceAppSecret = prop.getFbApplicationSecret();
 			String newUrl = "https://graph.facebook.com/oauth/access_token?client_id=" + appId +
 							"&redirect_uri=" + redirectUrl + 
@@ -441,9 +441,9 @@ public class FacebookHandler implements Serializable
 				HttpGet httpget = new HttpGet(newUrl);
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				String responseBody = httpClient.execute(httpget, responseHandler);
+				JSONObject jsonResp = new JSONObject(responseBody);
 				log.debug("FB callback received. Response body '" + responseBody + "'");
-				token = responseBody.substring(13);
-				token = token.substring(0, token.length() - 16);
+				token = jsonResp.getString("access_token");
 				log.debug("authentication token '" + token + "'");
 
 			}

@@ -102,8 +102,9 @@ public class ApplicationProperties {
     	try 
     	{
     		properties = new Properties();
-        	InputStream in = ApplicationProperties.class.getResourceAsStream(
-        							"/site." + (envConf == null ? "dev" : envConf) + ".properties");        	
+    		String siteProps = "/site." + (envConf == null ? "dev" : envConf) + ".properties";
+    		log.debug("Use " + siteProps);
+        	InputStream in = ApplicationProperties.class.getResourceAsStream(siteProps);        	
 			properties.load(in);
 	    	in.close();
 		}
