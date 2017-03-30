@@ -145,7 +145,7 @@ public class Users extends DBInterface
 			}
 			catch(Exception e)
 			{
-				log.error("Exception '" + e.getMessage() + "' on mailchimp subscription action for " + email);
+				log.error("Exception '" + e.getMessage() + "' on mailchimp subscription action for " + email, e);
 			}
 			finally
 			{
@@ -153,8 +153,9 @@ public class Users extends DBInterface
 				{
 					client.close();
 				} 
-				catch (IOException e) {
-					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")");
+				catch(IOException e)
+				{
+					log.warn("Unable to close the malchimp client. (Exception " + e.getMessage() + ")", e);
 				}
 			}
 		}
@@ -350,9 +351,9 @@ public class Users extends DBInterface
 		{
 			this.birthday = sdf.parse(birthday);
 		}
-		catch (ParseException e) 
+		catch(ParseException e) 
 		{
-			log.warn("Exception " + e.getMessage() + " converting " + birthday + " to a date");
+			log.warn("Exception " + e.getMessage() + " converting " + birthday + " to a date", e);
 		}
 	}
 

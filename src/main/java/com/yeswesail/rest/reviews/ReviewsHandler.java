@@ -130,9 +130,9 @@ public class ReviewsHandler {
 			reviews = Reviews.search(conn, buildWhereCondition(jsonIn));
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -177,6 +177,7 @@ public class ReviewsHandler {
 		}
 		catch(Exception e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
 		}
 		finally
@@ -211,9 +212,9 @@ public class ReviewsHandler {
 			review = new Reviews(conn, idReviews, false);
 			log.trace("Retrieval completed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			log.error("Exception '" + e.getMessage() + "' on Reviews.search", e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -269,10 +270,10 @@ public class ReviewsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.trace("Review added");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
+			log.error("Exception '" + e.getMessage() + "' on insert", e);
 			DBInterface.TransactionRollback(conn);
-			log.error("Exception '" + e.getMessage() + "' on insert");
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -312,10 +313,10 @@ public class ReviewsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.trace("Status changed");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -351,10 +352,10 @@ public class ReviewsHandler {
 			DBInterface.TransactionCommit(conn);
 			log.trace("Review deleted");
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			DBInterface.TransactionRollback(conn);
 			log.error("Exception '" + e.getMessage() + "' on Reviews.search");
+			DBInterface.TransactionRollback(conn);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally

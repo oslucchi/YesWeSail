@@ -313,10 +313,12 @@ public class Events extends DBInterface implements Comparable<Events>
 			  "GROUP BY eventId " +
 			  "ORDER BY eventId";
 		ArrayList<Events> tickets = null;
-		try {
+		try 
+		{
 			tickets = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
 		} 
-		catch (Exception e1) {
+		catch(Exception e1) 
+		{
 			log.warn("Exception '" + e1.getMessage() + "' ");
 		}
 		for(Events e : events)

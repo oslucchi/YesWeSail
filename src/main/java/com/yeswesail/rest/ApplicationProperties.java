@@ -70,9 +70,9 @@ public class ApplicationProperties {
 			properties.load(in);
 	    	in.close();
 		}
-    	catch (IOException e) 
+    	catch(IOException e) 
     	{
-			e.printStackTrace();
+			log.warn("Exception " + e.getMessage(), e);
     		return;
 		}
     	
@@ -102,14 +102,15 @@ public class ApplicationProperties {
     	try 
     	{
     		properties = new Properties();
-        	InputStream in = ApplicationProperties.class.getResourceAsStream(
-        							"/site." + (envConf == null ? "dev" : envConf) + ".properties");        	
+    		String siteProps = "/site." + (envConf == null ? "dev" : envConf) + ".properties";
+    		log.debug("Use " + siteProps);
+        	InputStream in = ApplicationProperties.class.getResourceAsStream(siteProps);        	
 			properties.load(in);
 	    	in.close();
 		}
-    	catch (IOException e) 
+    	catch(IOException e) 
     	{
-			e.printStackTrace();
+			log.warn("Exception " + e.getMessage(), e);
     		return;
 		}
     	mailSmtpHost = properties.getProperty("mailSmtpHost");

@@ -105,9 +105,9 @@ public class FacebookHandler implements Serializable
 						  getAttributeAsString(json, attributeName) + "'");
 			}
 		}
-		catch (IOException e)
+		catch(IOException e)
 		{
-			log.warn("Exception " + e.getMessage() + " retrieving frinds list");
+			log.warn("Exception " + e.getMessage() + " retrieving frinds list", e);
 			return null;
 		}
 		return json;
@@ -129,7 +129,7 @@ public class FacebookHandler implements Serializable
 		}
 		log.debug("The user " + jsonIn.firstName + " " + jsonIn.lastName + " " + 
 				  jsonIn.facebookId + " " + jsonIn.username + " is not registered yet"
-				  		+ "populating users table");
+				  		+ " populating users table");
 		return jsonIn;
 	}
 	
@@ -141,14 +141,38 @@ public class FacebookHandler implements Serializable
 			// User was found in our archives.
 			log.debug("User " + u.getIdUsers() + " already registered (fbId " + fbId + ")");
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
 			if (e.getMessage().compareTo("No record found") != 0)
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				// All exceptions. No record found is treated as a particular case
 				errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
 						   e.getMessage() + ")";
 				return Utils.jsonizeResponse(Status.UNAUTHORIZED, e, sd.getLanguage(token), "generic.execError");
+			}
+			u.setIdUsers(-1);
+		}
+		return(null);
+	}
+	
+	private Response getUserByEmail(DBConnection conn, String email)
+	{
+		try
+		{
+			u.findByEmail(conn, email);
+			// User was found in our archives.
+			log.debug("User " + u.getIdUsers() + " already registered with (email " + email + ")");
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().compareTo("No record found") != 0)
+			{
+				log.warn("Exception " + e.getMessage(), e);
+				// All exceptions. No record found is treated as a particular case
+				errorMsg = LanguageResources.getResource(Constants.LNG_EN, "generic.execError") + "(" +
+						   e.getMessage() + ")";
+				return Utils.jsonizeResponse(Status.UNAUTHORIZED, e, prop.getDefaultLang(), "generic.execError");
 			}
 			u.setIdUsers(-1);
 		}
@@ -162,12 +186,16 @@ public class FacebookHandler implements Serializable
 		{
 			return response;
 		}
+		if ((u.getIdUsers() == -1) && (getAttributeAsString(json, "email") != null))
+		{
+			// User not found, create a new one and set the UsersAuth accordingly
+			// try to see if by chance the email returned is already registered
+			if ((response = getUserByEmail(conn, getAttributeAsString(json, "email"))) != null)
+			{
+				return response;
+			}
+		}
 		setUsersAuth(conn, token);
-//		if (u.getIdUsers() == -1)
-//		{
-//			// User not found, create a new one and set the UsersAuth accordingly
-//			setUsersAuth(conn, token);
-//		}
 		
 		boolean changed = false;
 		if (u.isAFakeEmail() && getAttributeAsString(json, "email") != null)
@@ -186,8 +214,9 @@ public class FacebookHandler implements Serializable
 			{
 				u.update(conn, "idUsers");
 			}
-			catch (Exception e)
+			catch(Exception e)
 			{
+				log.warn("Exception " + e.getMessage(), e);
 				return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, sd.getLanguage(token), "generic.execError");
 			}
 		}
@@ -240,7 +269,7 @@ public class FacebookHandler implements Serializable
 			}
 			catch(Exception e)
 			{
-				log.warn("Exception " + e.getMessage() + " updating the user");
+				log.warn("Exception " + e.getMessage() + " updating the user", e);
 			}
 			if ((ua = evalUsersAuth(u.getIdUsers(), token)) == null)
 			{
@@ -251,7 +280,7 @@ public class FacebookHandler implements Serializable
 		{
 			if ((ua = UsersAuth.findToken(token)) == null)
 			{
-				log.trace("Toke '" + token + "' not found. Creating new");
+				log.trace("Token '" + token + "' not found. Creating new");
 				response = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang());
 				if (response != null)
 				{
@@ -291,15 +320,15 @@ public class FacebookHandler implements Serializable
 	        is.close();
 	        os.close();
 		}
-		catch (MalformedURLException e) 
+		catch(MalformedURLException e) 
 		{
-			log.warn("Exception " + e.getMessage() + " retrieving images/avatars path");	
+			log.warn("Exception " + e.getMessage() + " retrieving images/avatars path", e);	
 		} 
-		catch (FileNotFoundException e) {
-			log.warn("Exception " + e.getMessage() + " creating new file '" + destinationFile + "'");	
+		catch(FileNotFoundException e) {
+			log.warn("Exception " + e.getMessage() + " creating new file '" + destinationFile + "'", e);	
 		} 
-		catch (IOException e) {
-			log.warn("Exception " + e.getMessage() + " handling the output file");	
+		catch(IOException e) {
+			log.warn("Exception " + e.getMessage() + " handling the output file", e);	
 		}
 		return("images/avatars/" + fileName);
 	}
@@ -350,7 +379,7 @@ public class FacebookHandler implements Serializable
 				}
 				catch(Exception e)
 				{
-					log.warn("Not able to retrieve the avatar's URL");
+					log.warn("Not able to retrieve the avatar's URL", e);
 				}
 			}
 			
@@ -374,16 +403,16 @@ public class FacebookHandler implements Serializable
 				log.debug("Redirect to '" + uri + "'");
 				location = new URI(uri);
 			}
-			catch (URISyntaxException e) 
+			catch(URISyntaxException e) 
 			{
-				log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage());
+				log.error("Invalid URL generated '" + uri + "'. Error " + e.getMessage(), e);
 				return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, e, 
 											 sd.getLanguage(ua.getToken()), "generic.execError");
 			} 
 		}
 		catch(Exception e)
 		{
-			log.warn("Unable to get a connection. Exception " + e.getMessage());
+			log.warn("Unable to get a connection. Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, null, Constants.LNG_EN, "generic.execError");
 		}
 		finally 
@@ -396,11 +425,11 @@ public class FacebookHandler implements Serializable
 	public Response getFacebookAccessToken(String faceCode)
 	{
 		String token = null;
-		log.debug("Trying athetication vs FB servers");
+		log.debug("Trying authetication vs FB servers");
 		
 		if (faceCode != null && ! "".equals(faceCode)) {
 			String appId = prop.getFbApplicationId();
-			String redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin";
+			String redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin/";
 			String faceAppSecret = prop.getFbApplicationSecret();
 			String newUrl = "https://graph.facebook.com/oauth/access_token?client_id=" + appId +
 							"&redirect_uri=" + redirectUrl + 
@@ -412,15 +441,15 @@ public class FacebookHandler implements Serializable
 				HttpGet httpget = new HttpGet(newUrl);
 				ResponseHandler<String> responseHandler = new BasicResponseHandler();
 				String responseBody = httpClient.execute(httpget, responseHandler);
+				JSONObject jsonResp = new JSONObject(responseBody);
 				log.debug("FB callback received. Response body '" + responseBody + "'");
-				token = responseBody.substring(13);
-				token = token.substring(0, token.length() - 16);
+				token = jsonResp.getString("access_token");
 				log.debug("authentication token '" + token + "'");
 
 			}
-			catch (IOException e)
+			catch(IOException e)
 			{
-				log.warn("Exception " + e.getMessage() + " on HttpClientBuilder.create");
+				log.warn("Exception " + e.getMessage() + " on HttpClientBuilder.create", e);
 				return Utils.jsonizeResponse(Status.UNAUTHORIZED, e, Constants.LNG_EN, "generic.execError");
 			}
 		}

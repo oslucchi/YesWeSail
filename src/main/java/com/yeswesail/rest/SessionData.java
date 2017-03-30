@@ -64,12 +64,26 @@ public class SessionData {
 	
 	public Object[] getSessionData(String token)
 	{
-		Object[] profile = sessionData.get(token);
-		if (profile == null)
+		return sessionData.get(token);
+	}
+
+	public Object[] getSessionData(int userId)
+	{
+		Iterator<Map.Entry<String, Object[]>> iter = sessionData.entrySet().iterator();
+		while (iter.hasNext()) 
 		{
-			return(null);
+		    Map.Entry<String, Object[]> entry = iter.next();
+		    Object[] profile = entry.getValue();
+			if (profile[BASIC_PROFILE] == null)
+			{
+		        iter.remove();
+			}
+			else if (((Users)profile[BASIC_PROFILE]).getIdUsers() == userId)
+			{
+				return(profile);
+			}
 		}
-		return profile;
+		return null;
 	}
 
 	public int getLanguage(int userId)
@@ -233,4 +247,8 @@ public class SessionData {
 		sessionData.put(token, data);
 	}
 
+	public Map<String, Object[]> getAllItems()
+	{
+		return sessionData;
+	}
 }

@@ -14,6 +14,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Logger;
+
 import com.yeswesail.rest.SessionData;
 import com.yeswesail.rest.Utils;
 import com.yeswesail.rest.DBUtility.DBConnection;
@@ -23,8 +25,10 @@ import com.yeswesail.rest.jsonInt.PagesJson;
 
 @Path("/pages")
 public class Pages {
+	final Logger log = Logger.getLogger(this.getClass());
 	Utils utils = new Utils();
 
+	
 	@GET
 	@Path("/dynamic/{URLReference}")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -47,6 +51,7 @@ public class Pages {
 		}
 		catch(Exception e)
 		{
+       		log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.NOT_FOUND, e, languageId, "generic.pageNotFound");
 		}
 		finally
@@ -78,6 +83,7 @@ public class Pages {
 		}
 		catch(Exception e)
 		{
+       		log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -107,6 +113,7 @@ public class Pages {
 		}
 		catch(Exception e)
 		{
+       		log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -136,6 +143,7 @@ public class Pages {
 		}
 		catch(Exception e)
 		{
+       		log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally
@@ -169,6 +177,7 @@ public class Pages {
 		}
 		catch(Exception e)
 		{
+       		log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
 		}
 		finally

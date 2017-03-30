@@ -14,11 +14,14 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import com.yeswesail.rest.Utils;
 
 public class DBInterface implements Serializable
 {
 	static final long serialVersionUID = 1;
+	static final Logger log = Logger.getLogger(DBInterface.class);
 
 	protected String tableName = "";
 	protected String idColName = "";
@@ -51,7 +54,6 @@ public class DBInterface implements Serializable
 
 	public static int numberOfRecords(DBConnection conn, String table, String where) throws Exception 
 	{
-		String retVal = null;
 		int count = -1;
 		
 		String sql = "SELECT COUNT(*) as count FROM " + table + " WHERE " + where;
@@ -63,9 +65,9 @@ public class DBInterface implements Serializable
 			if(rs.next())
 				count = rs.getInt("count");
 		}
-		catch (SQLException e) 
+		catch(SQLException e) 
 		{
-			throw new Exception(retVal);
+			throw e;
 		}
 		finally
 		{
@@ -124,7 +126,7 @@ public class DBInterface implements Serializable
 		{
 			columnCount = rsm.getColumnCount();
 		}
-		catch (SQLException e) 
+		catch(SQLException e) 
 		{
 			retSql = "Error " + e.getMessage() + " retrieving column count from result set. (" + Utils.printStackTrace(e) + ")"; 
 			throw new Exception(retSql);
@@ -140,7 +142,7 @@ public class DBInterface implements Serializable
 				columnType = rsm.getColumnType(i);
 				columnName = rsm.getColumnLabel(i);
 			}
-			catch (SQLException e) 
+			catch(SQLException e) 
 			{
 				retSql = "Error " + e.getMessage() + " retrieving column details. (" + Utils.printStackTrace(e) + ")"; 
 				throw new Exception(retSql);
@@ -243,7 +245,7 @@ public class DBInterface implements Serializable
 							}
 							catch(Exception e)
 							{
-								e.printStackTrace();
+								log.warn("Exception setting " + columnName + " to duoble", e);
 							}
 							break;
 							
@@ -260,7 +262,8 @@ public class DBInterface implements Serializable
 						}
 					}
 					catch(Exception e)
-					{
+					{ 
+						log.warn("Exception " + e.getMessage(), e);
 			    		retVal = "Error " + e.getMessage() + " retrieving fields value from object (" + Utils.printStackTrace(e) + ")";
 						throw new Exception(retVal);
 					}
@@ -346,7 +349,7 @@ public class DBInterface implements Serializable
 				}
 	    	}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			throw new Exception(e);
 		}
@@ -356,150 +359,119 @@ public class DBInterface implements Serializable
     private static void populateObjectAttributesFromRecordset(Object objInst, ResultSetMetaData rsm, ResultSet rs) 
 			throws Exception
 	{
-		Exception e = null;
 		Field[] clFields = getAllFields(objInst.getClass());
-		try
+		for(int i = 1; i <= rsm.getColumnCount(); i++)
 		{
-			for(int i = 1; i <= rsm.getColumnCount(); i++)
+			for(int y = 0; y < clFields.length; y++)
 			{
-				for(int y = 0; y < clFields.length; y++)
+				if (clFields[y].getName().compareTo(rsm.getColumnLabel(i)) == 0)
 				{
-					if (clFields[y].getName().compareTo(rsm.getColumnLabel(i)) == 0)
+					switch(rsm.getColumnType(i))
 					{
-						switch(rsm.getColumnType(i))
+					case Types.INTEGER:
+					case Types.BIGINT:
+					case Types.SMALLINT:
+					case Types.TINYINT:
+					case Types.NUMERIC:
+					case Types.BIT:
+						switch(clFields[y].getType().getName())
 						{
-						case Types.INTEGER:
-						case Types.BIGINT:
-						case Types.SMALLINT:
-						case Types.TINYINT:
-						case Types.NUMERIC:
-						case Types.BIT:
-							switch(clFields[y].getType().getName())
-							{
-							case "boolean":
-								clFields[y].setBoolean(objInst, rs.getBoolean(clFields[y].getName()));
-								break;
-							default:
-								clFields[y].setInt(objInst, rs.getInt(clFields[y].getName()));
-							}
+						case "boolean":
+							clFields[y].setBoolean(objInst, rs.getBoolean(clFields[y].getName()));
 							break;
-							
-						case Types.DATE:
-							try
-							{
-								clFields[y].set(objInst, rs.getDate(clFields[y].getName()));
-							}
-							catch(SQLException e1)
-							{
-								clFields[y].set(objInst, null);
-							}
-							break;
-
-						case Types.TIMESTAMP:
-							try
-							{
-								clFields[y].set(objInst, rs.getTimestamp(clFields[y].getName()));
-							}
-							catch(SQLException e1)
-							{
-								clFields[y].set(objInst, null);
-							}
-							break;
-
-						case Types.BLOB:
-						case Types.CHAR:
-						case Types.VARCHAR:
-						case Types.LONGVARCHAR:
-							clFields[y].set(objInst, rs.getString(clFields[y].getName()));
-							break;
-						
-						case Types.FLOAT:
-						case Types.REAL:
-						case Types.DOUBLE:
-						case Types.DECIMAL:
-							clFields[y].set(objInst, rs.getDouble(clFields[y].getName()));
-							break;
-							
 						default:
-							clFields[y].set(objInst, rs.getString(clFields[y].getName()));
-							
-						}							
-						y = clFields.length + 1;
-					}
+							clFields[y].setInt(objInst, rs.getInt(clFields[y].getName()));
+						}
+						break;
+						
+					case Types.DATE:
+						try
+						{
+							clFields[y].set(objInst, rs.getDate(clFields[y].getName()));
+						}
+						catch(SQLException e1)
+						{
+							clFields[y].set(objInst, null);
+						}
+						break;
+
+					case Types.TIMESTAMP:
+						try
+						{
+							clFields[y].set(objInst, rs.getTimestamp(clFields[y].getName()));
+						}
+						catch(SQLException e1)
+						{
+							clFields[y].set(objInst, null);
+						}
+						break;
+
+					case Types.BLOB:
+					case Types.CHAR:
+					case Types.VARCHAR:
+					case Types.LONGVARCHAR:
+						clFields[y].set(objInst, rs.getString(clFields[y].getName()));
+						break;
+					
+					case Types.FLOAT:
+					case Types.REAL:
+					case Types.DOUBLE:
+					case Types.DECIMAL:
+						clFields[y].set(objInst, rs.getDouble(clFields[y].getName()));
+						break;
+						
+					default:
+						clFields[y].set(objInst, rs.getString(clFields[y].getName()));
+						
+					}							
+					y = clFields.length + 1;
 				}
 			}
-		}
-		catch (IllegalArgumentException e1) {
-			e = e1;
-		}
-		catch (IllegalAccessException e1) {
-			e = e1;
-		}
-		catch (SQLException e1) {
-			e = e1;
-		}
-		if (e != null)
-		{
-			throw new Exception(e);
 		}
 	}
 	
     private static ArrayList<Object> populateGenericObjectFromRecordset(ResultSetMetaData rsm, ResultSet rs) 
 			throws Exception
 	{
-		Exception e = null;
 		ArrayList<Object> retVal = new ArrayList<>();
-		try
+		for(int i = 1; i <= rsm.getColumnCount(); i++)
 		{
-			for(int i = 1; i <= rsm.getColumnCount(); i++)
+			switch(rsm.getColumnType(i))
 			{
-				switch(rsm.getColumnType(i))
-				{
-				case Types.INTEGER:
-				case Types.BIGINT:
-				case Types.SMALLINT:
-				case Types.TINYINT:
-				case Types.NUMERIC:
-				case Types.BIT:
-					retVal.add(new Integer(rs.getInt(rsm.getColumnName(i))));
-					break;
+			case Types.INTEGER:
+			case Types.BIGINT:
+			case Types.SMALLINT:
+			case Types.TINYINT:
+			case Types.NUMERIC:
+			case Types.BIT:
+				retVal.add(new Integer(rs.getInt(rsm.getColumnName(i))));
+				break;
 
-				case Types.DATE:
-					retVal.add(rs.getDate(rsm.getColumnName(i)));
-					break;
+			case Types.DATE:
+				retVal.add(rs.getDate(rsm.getColumnName(i)));
+				break;
 
-				case Types.TIMESTAMP:
-					retVal.add(rs.getTimestamp(rsm.getColumnName(i)));
-					break;
+			case Types.TIMESTAMP:
+				retVal.add(rs.getTimestamp(rsm.getColumnName(i)));
+				break;
 
-				case Types.BLOB:
-				case Types.CHAR:
-				case Types.VARCHAR:
-				case Types.LONGVARCHAR:
-					retVal.add(rs.getString(rsm.getColumnName(i)));
-					break;
+			case Types.BLOB:
+			case Types.CHAR:
+			case Types.VARCHAR:
+			case Types.LONGVARCHAR:
+				retVal.add(rs.getString(rsm.getColumnName(i)));
+				break;
 
-				case Types.FLOAT:
-				case Types.REAL:
-				case Types.DOUBLE:
-				case Types.DECIMAL:
-					retVal.add(rs.getDouble(rsm.getColumnName(i)));
-					break;
+			case Types.FLOAT:
+			case Types.REAL:
+			case Types.DOUBLE:
+			case Types.DECIMAL:
+				retVal.add(rs.getDouble(rsm.getColumnName(i)));
+				break;
 
-				default:
-					retVal.add(rs.getString(rsm.getColumnName(i)));
-				}							
-			}
-		}
-		catch (IllegalArgumentException e1) {
-			e = e1;
-		}
-		catch (SQLException e1) {
-			e = e1;
-		}
-		if (e != null)
-		{
-			throw new Exception(e);
+			default:
+				retVal.add(rs.getString(rsm.getColumnName(i)));
+			}							
 		}
 		return retVal;
 	}
@@ -507,18 +479,13 @@ public class DBInterface implements Serializable
     public void populateObject(DBConnection conn, String sql, Object tbObj) throws Exception
 	{
 		conn.executeQuery(sql, logStatement);
-		try 
+		if (conn.getRs().next())
 		{
-			if (conn.getRs().next())
-			{
-		    	populateObjectAttributesFromRecordset(tbObj, conn.getRsm(), conn.getRs());
-			}
-			else
-				throw new Exception("No record found");	
+	    	populateObjectAttributesFromRecordset(tbObj, conn.getRsm(), conn.getRs());
 		}
-		catch (SQLException e) 
+		else
 		{
-			throw new Exception(e);
+			throw new Exception("No record found");	
 		}
 	}
 
@@ -527,27 +494,8 @@ public class DBInterface implements Serializable
      */
     public void populateObject(DBConnection conn, String idName) throws Exception
 	{
-    	Exception e = null;
 		String sql = "SELECT * FROM " + tableName + " WHERE " + idName + " = ";
-		try {
-			sql += this.getClass().getDeclaredField(idName).get(this);
-		}
-		catch (IllegalArgumentException e1) {
-			e = e1;
-		}
-		catch (SecurityException e1) {
-			e = e1;
-		}
-		catch (IllegalAccessException e1) {
-			e = e1;
-		}
-		catch (NoSuchFieldException e1) {
-			e = e1;
-		}
-		if (e != null)
-		{
-			throw new Exception(e);
-		}
+		sql += this.getClass().getDeclaredField(idName).get(this);
 		populateObject(conn, sql, this);
 	}
 	
@@ -567,7 +515,7 @@ public class DBInterface implements Serializable
 				return objInst;
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
     		retVal = "Error '" + e.getMessage() + "' retrieving fields from class '" + 
 					  objClass.getName() + "'" + ". StackTrace:" + Utils.printStackTrace(e);
@@ -602,7 +550,7 @@ public class DBInterface implements Serializable
 				aList.add(objInst);
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
     		retVal = "Error " + e.getMessage() + " retrieving fields from class '" + 
 					  objClass.getName() + "'. (" + Utils.printStackTrace(e) + ")";
@@ -757,7 +705,7 @@ public class DBInterface implements Serializable
 					conn.executeQuery(sql, logStatement);
 	    	}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			throw new Exception(e);
 		}
@@ -784,16 +732,9 @@ public class DBInterface implements Serializable
 		int id = -1;
 		insert(conn, idColName, objectToInsert);
 		conn.executeQuery("SELECT LAST_INSERT_ID() AS id", logStatement);
-		try 
+		if (conn.getRs().next())
 		{
-			if (conn.getRs().next())
-			{
-				id = conn.getRs().getInt("id");
-			}
-		}
-		catch (Exception e) 
-		{
-			throw new Exception(e);
+			id = conn.getRs().getInt("id");
 		}
 		return(id);
 	}
@@ -845,7 +786,7 @@ public class DBInterface implements Serializable
     	{
     		conn.executeQuery(sql, logStatement);
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
 			throw e;
 		}
@@ -871,6 +812,7 @@ public class DBInterface implements Serializable
 		}
     	catch(Exception e)
 		{
+    		log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
 			throw e;
 		}
@@ -893,9 +835,9 @@ public class DBInterface implements Serializable
 		{
 			conn.executeQuery("ROLLBACK", logStatement);
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			;
+			log.warn("Exception " + e.getMessage(), e);
 		}
 	}
 	

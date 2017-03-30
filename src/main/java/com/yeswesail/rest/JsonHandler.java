@@ -25,9 +25,9 @@ public class JsonHandler {
 		{
 			json = mapper.writeValueAsString(obj);
 		}
-		catch (IOException e) 
+		catch(IOException e) 
 		{
-			log.error("Error jasonizing the object (" + e.getMessage() + ")");
+			log.error("Error jasonizing the object (" + e.getMessage() + ")", e);
 			json = LanguageResources.getResource(languageId, "generic.execError") + " (" + 
 					e.getMessage() + ")";
 			return Response.Status.UNAUTHORIZED;

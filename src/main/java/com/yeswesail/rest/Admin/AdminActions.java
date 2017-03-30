@@ -50,10 +50,12 @@ public class AdminActions {
 		}
 		catch(MessagingException e)
 		{
+			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "mailer.sendError");
-		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} 
+		catch(MalformedURLException e) 
+		{
+			log.warn("Exception " + e.getMessage(), e);
 		}
 		return null;
 	}
@@ -120,9 +122,9 @@ public class AdminActions {
 
 			}
 		}
-		catch (Exception e) 
+		catch(Exception e) 
 		{
-			log.error("Exception '" + e.getMessage() + "' on mailToUsers");
+			log.error("Exception '" + e.getMessage() + "' on mailToUsers", e);
 			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
 					.entity(LanguageResources.getResource(languageId, "generic.execError") + " (" + e.getMessage() + ")")
 					.build();
@@ -133,6 +135,41 @@ public class AdminActions {
 		}
 		
 		return Response.status(Response.Status.OK).entity("{}").build();
+	}
+
+	@GET 
+	@Path("/dumpSessionData")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response dumpSessionData(@HeaderParam("Language") String language,
+									@HeaderParam("Authorization") String token)
+	{
+		int languageId = Utils.setLanguageId(language);
+		SessionData sd = SessionData.getInstance();
+		if (sd == null)
+		{
+			log.error("Unable to retrieve session data");
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+		if (sd.getBasicProfile(token) == null)
+		{
+			log.error("Unable to retrieve a basic profile for token " + token);
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+
+		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		{
+			return Response.status(Response.Status.UNAUTHORIZED)
+					.entity(LanguageResources.getResource(languageId, "generic.unauthorized"))
+					.build();
+		}
+		Utils ut = new Utils();
+		ut.addToJsonContainer("sessionData", sd.getAllItems(), true);
+		return Response.status(Response.Status.OK).entity(ut.jsonize()).build();
 	}
 
 }
