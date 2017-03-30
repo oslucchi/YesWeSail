@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
 import com.yeswesail.rest.DBUtility.AddressInfo;
 import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.DBInterface;
@@ -11,6 +13,8 @@ import com.yeswesail.rest.DBUtility.Users;
 import com.yeswesail.rest.DBUtility.UsersAuth;
 
 public class SessionData {
+	final static Logger log = Logger.getLogger(SessionData.class);
+	
 	final public static int BASIC_PROFILE = 0; // a users Object only
 	final public static int WHOLE_PROFILE = 1; // Users and AddressInfo array
 	final public static int LANGUAGE = 2; // Language 
@@ -176,6 +180,26 @@ public class SessionData {
 		{
 			throw new Exception("User " + userId + " not found");
 		}
+		addUser(ua, languageId);
+		return;
+	}
+
+	public void addUser(UsersAuth ua, String language) throws Exception
+	{
+		int languageId = Constants.getLanguageCode(language);
+		addUser(ua, languageId);
+	}
+	
+	public void addUser(UsersAuth ua, int languageId) throws Exception
+	{
+		log.trace("ua " + ua);
+		if (ua == null)
+		{
+			throw new Exception("UsersAuth is null...");
+		}
+		
+		log.trace("Adding user id " + ua.getUserId() + " token '" + ua.getToken() + 
+				  "' using language " + languageId);
 		if (sessionData.get(ua.getToken()) != null)
 		{
 			removeUser(ua.getUserId());
@@ -199,8 +223,8 @@ public class SessionData {
 			DBInterface.disconnect(conn);
 		}
 		sessionData.put(ua.getToken(), userData);
-		return;
 	}
+
 
 	public void removeUser(int userId)
 	{
@@ -251,4 +275,5 @@ public class SessionData {
 	{
 		return sessionData;
 	}
+
 }

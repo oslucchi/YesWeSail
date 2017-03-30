@@ -7,10 +7,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.UUID;
 
 import javax.ws.rs.core.Response;
@@ -333,7 +335,7 @@ public class FacebookHandler implements Serializable
 		return("images/avatars/" + fileName);
 	}
 	
-	private Response getJsonResponseFromFb(String accessToken) 
+	private Response getJsonResponseFromFb(String accessToken, String state) 
 	{
 		String token = UUID.randomUUID().toString();
 		
@@ -397,7 +399,8 @@ public class FacebookHandler implements Serializable
 			try 
 			{
 				// No exception hence the user is already registered. Set the token and redirect to the login page
-				uri = prop.getWebHost() + "/" + prop.getRedirectOnLogin() + 
+				uri = prop.getWebHost() + "/" + 
+					  (state.trim().equals("") ? prop.getRedirectOnLogin() : state) + 
 					  "?token=" + ua.getToken() + "&invalidEmail=" + (u.isAFakeEmail() ? "true" : "false");
 				log.debug("User '" + u.getEmail() + "' already registered. Returning a valid token");
 				log.debug("Redirect to '" + uri + "'");
@@ -422,17 +425,28 @@ public class FacebookHandler implements Serializable
 	    return null;
 	}    
 	
-	public Response getFacebookAccessToken(String faceCode)
+	public Response getFacebookAccessToken(String faceCode, String state)
 	{
 		String token = null;
-		log.debug("Trying authetication vs FB servers");
+		log.debug("Trying authetication against FB servers");
 		
 		if (faceCode != null && ! "".equals(faceCode)) {
 			String appId = prop.getFbApplicationId();
-			String redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin/";
 			String faceAppSecret = prop.getFbApplicationSecret();
-			String newUrl = "https://graph.facebook.com/oauth/access_token?client_id=" + appId +
-							"&redirect_uri=" + redirectUrl + 
+			String redirectUrl = null;
+			try
+			{
+				redirectUrl = URLEncoder.encode(prop.getWebHost() + "/rest/auth/fbLogin/", "UTF-8");
+			}
+			catch(UnsupportedEncodingException e)
+			{
+				redirectUrl = prop.getWebHost() + "/rest/auth/fbLogin/";
+				log.warn("Exception encoding fromState, defaulting to webHost");
+			}
+			
+			String newUrl = "https://graph.facebook.com/oauth/access_token?" +
+							"redirect_uri=" + redirectUrl + 
+							"&client_id=" + appId +
 							"&client_secret=" + faceAppSecret + 
 							"&code=" + faceCode;
 			log.debug("Request redirect on: '" + newUrl + "'");
@@ -454,7 +468,7 @@ public class FacebookHandler implements Serializable
 			}
 		}
 		log.trace("Request placed, getting and parsing response");
-		return getJsonResponseFromFb(token);
+		return getJsonResponseFromFb(token, state);
 	}
 
 	public URI getLocation() {

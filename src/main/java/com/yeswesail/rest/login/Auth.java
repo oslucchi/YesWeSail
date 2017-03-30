@@ -302,7 +302,9 @@ public class Auth {
 	@Path("/login")
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response login(AuthJson jsonIn, @HeaderParam("Language") String language) 
+	public Response login(AuthJson jsonIn, 
+						  @HeaderParam("Language") String language,
+						  @QueryParam("fromState") String fromState) 
 	{ 
 		String username = jsonIn.username; 
 		String password = jsonIn.password; 
@@ -350,6 +352,7 @@ public class Auth {
 		HashMap<String, Object> jsonResponse = new HashMap<>();
 		jsonResponse.put("token", token);
 		jsonResponse.put("user", u);
+		jsonResponse.put("toState", fromState);
 		String entity = genson.serialize(jsonResponse);
 		return Response.status(Response.Status.OK).entity(entity).build();
 	}
@@ -546,12 +549,13 @@ public class Auth {
 	@GET
 	@Path("/fbLogin")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fbLogin(@QueryParam("code") String code)
+	public Response fbLogin(@QueryParam("state") String state, 
+							@QueryParam("code") String code)
 	{
-		log.debug("Authenticating via facebook on code '" + code + "'");
+		log.debug("Authenticating via facebook on code '" + code + "' state '" + state + "'");
         FacebookHandler fbh = new FacebookHandler();
         Response response = null;
-        if ((response = fbh.getFacebookAccessToken(code)) != null)
+        if ((response = fbh.getFacebookAccessToken(code, state)) != null)
         {
     		log.warn("Can't get the FB token. returning UNAUTHORIZED");
 			return response;

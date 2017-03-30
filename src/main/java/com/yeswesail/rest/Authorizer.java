@@ -85,11 +85,12 @@ public class Authorizer implements ContainerRequestFilter
 		} 
 		try 
 		{
-			sd.addUser(ua.getUserId(), Constants.getLanguageCode(language));
+			log.trace("Adding user to session data");
+			sd.addUser(ua, language);
 		}
 		catch(Exception e) 
 		{
-			log.warn("Exception '" + e.getMessage() + "' adding user to session data. Returning anauthorized", e);
+			log.warn("Exception '" + e.getMessage() + "' adding user to session data. Returning anauthorized");
 			ut.addToJsonContainer("authorized", "false", true);
 			request.abortWith(Response.status(Response.Status.UNAUTHORIZED)
 					.entity(ut.jsonize())
