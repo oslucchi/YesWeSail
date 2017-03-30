@@ -15,10 +15,11 @@ angular.module('yeswesailApp')
         };
     
         $scope.toState=$location.$$url;
-        $scope.fbRedirectUrl=encodeURIComponent(URLs.ddns+'/rest/auth/fbLogin?fromState='+$location.$$url);
+        $scope.fbRedirectUrl=encodeURIComponent(URLs.ddns+'/rest/auth/fbLogin/');
+    
         $scope.login = function (credentials) {
             $scope.error = null;
-            AuthService.login(credentials, $scope.toState).then(function (res) {
+            AuthService.login(credentials, encodeURIComponent($scope.toState)).then(function (res) {
                 $http.defaults.headers.common['Authorization'] = res.token;
                 if (res.user.roleId == USER_ROLES.ADMIN && !!!$scope.previousState) {
                     $window.location.href = '/admin/events?token=' + res.token;
@@ -26,7 +27,7 @@ angular.module('yeswesailApp')
                     $state.go($scope.previousState.current.name,{eventId: $scope.previousState.params.eventId});
                     $scope.previousState=null;
                 } else {
-                    $window.location.href = '/?token=' + res.token;
+                    $window.location.href = res.toState+'?token=' + res.token;
                 }
 
                 $scope.setCurrentUser(res.user);
