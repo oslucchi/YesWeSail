@@ -12,7 +12,7 @@
     </h2>
     <form ng-submit="login(credentials)" ng-keyup="$event.keyCode == 13 && login(credentials)" class="ui large form">
       <div class="ui stacked segment">
-          <a href="https://www.facebook.com/dialog/oauth?client_id={{fbAppId}}&redirect_uri={{fbRedirectUrl}}rest/auth/fbLogin&scope=email,user_birthday&state=" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
+          <a href="https://www.facebook.com/dialog/oauth?client_id={{fbAppId}}&redirect_uri={{fbRedirectUrl}}&scope=email,user_birthday&state=&fromState={{toState}}" class="ui fluid large blue button"><i class="facebook icon"></i>Facebook</a>
 <!--
            <div class="ui horizontal divider"></div>
              <div class="ui fluid large basic button"><i class="google plus icon"></i>Google</div>

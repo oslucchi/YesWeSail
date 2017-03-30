@@ -9,7 +9,7 @@
 angular.module('yeswesailApp').factory('AuthService', function ($http, Session, URLs, $rootScope, $state) {
     var authService = {};
     authService.login = function (credentials, toState) {
-        var promise = $http.post(URLs.ddns + 'rest/auth/login', credentials).then(function (res) {
+        var promise = $http.post(URLs.ddns + 'rest/auth/login?fromState='+toState, credentials).then(function (res) {
             var jsonResData = res.data;
             Session.create(jsonResData.token, jsonResData.user);
             return jsonResData;

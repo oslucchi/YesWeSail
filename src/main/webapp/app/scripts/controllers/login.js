@@ -14,11 +14,11 @@ angular.module('yeswesailApp')
             password: ''
         };
     
-        $scope.fbRedirectUrl=URLs.ddns;
+        $scope.toState=$location.$$url;
+        $scope.fbRedirectUrl=encodeURIComponent(URLs.ddns+'/rest/auth/fbLogin?fromState='+$location.$$url);
         $scope.login = function (credentials) {
-            var toState=$state.current.name;
             $scope.error = null;
-            AuthService.login(credentials, toState).then(function (res) {
+            AuthService.login(credentials, $scope.toState).then(function (res) {
                 $http.defaults.headers.common['Authorization'] = res.token;
                 if (res.user.roleId == USER_ROLES.ADMIN && !!!$scope.previousState) {
                     $window.location.href = '/admin/events?token=' + res.token;
