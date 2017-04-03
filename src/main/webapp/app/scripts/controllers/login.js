@@ -9,13 +9,26 @@
  */
 angular.module('yeswesailApp')
     .controller('LoginCtrl', function ($scope, $rootScope, ngDialog, AUTH_EVENTS, AuthService, $location, $window, $http, USER_ROLES, $state, URLs) {
+        String.prototype.splice = function(index, count, add) {
+          if (index < 0) {
+            index = this.length + index;
+            if (index < 0) {
+              index = 0;
+            }
+          }
+          return this.slice(0, index) + (add || "") + this.slice(index + count);
+        };
         $scope.credentials = {
             username: '',
             password: ''
         };
     
         $scope.toState=$location.$$url;
+        if($scope.toState.indexOf('token=')!=-1){
+            $scope.toState=$scope.toState.splice($scope.toState.indexOf('token='), 42);
+        }
         $scope.fbRedirectUrl=encodeURIComponent(URLs.ddns+'/rest/auth/fbLogin/');
+    
     
         $scope.login = function (credentials) {
             $scope.error = null;
