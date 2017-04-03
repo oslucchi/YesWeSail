@@ -738,7 +738,11 @@ public class EventsHandler {
 			EventDescription ed = null;
 			for(int i = 1; i < EventDescription.MAX_ANCHOR_ZONE; i++)
 			{
-				ed = EventDescription.findByEventId(conn, event.getIdEvents(), i, languageId);
+				if (((ed = EventDescription.findByEventId(conn, event.getIdEvents(), i, languageId)) == null) &&
+					!editMode)
+				{
+					ed = EventDescription.findByEventId(conn, event.getIdEvents(), i, Constants.getAlternativeLanguage(languageId)); 
+				}
 				jsonResponse.put(EventDescription.zones[i], ed);
 			}
 		}
