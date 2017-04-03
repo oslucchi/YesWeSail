@@ -78,6 +78,19 @@ public class EventTickets extends DBInterface
 		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 
+	public static EventTickets[] findByEventId(int eventId) throws Exception
+	{
+		String sql = "SELECT a.*, b.description " +
+				 	 "FROM EventTickets a " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      available > booked " + 
+					 "ORDER BY ticketType, price ASC";
+		@SuppressWarnings("unchecked")
+		ArrayList<EventTickets> tickets=
+			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+		return(tickets.toArray(new EventTickets[tickets.size()]));
+	}
+
 	public static EventTickets[] getAllTicketByEventId(int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description " +

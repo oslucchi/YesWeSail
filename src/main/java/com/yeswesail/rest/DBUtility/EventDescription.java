@@ -67,6 +67,29 @@ public class EventDescription extends DBInterface
 		return(eventDescriptions.toArray(new EventDescription[eventDescriptions.size()]));
 	}
 
+	public static EventDescription findByEventId(DBConnection conn, int eventId, int anchorZone, int languageId) throws Exception
+	{
+		EventDescription ed = new EventDescription();
+		String sql = "SELECT * " +
+				 	 "FROM EventDescription " +
+					 "WHERE eventId = " + eventId + " AND " +
+				 	 "      languageId = " + languageId + " " +
+					 "      anchorZone = " + anchorZone;
+		try
+		{
+			ed.populateObject(conn, sql, ed);
+		}
+		catch(Exception e)
+		{
+			if (e.getMessage().equals("No record found"))
+			{
+				return null;
+			}
+			throw e;
+		}
+		return ed;
+	}
+
 	public void findEventTitleyId(DBConnection conn, int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT * " +

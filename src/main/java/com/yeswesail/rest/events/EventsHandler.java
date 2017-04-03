@@ -1032,17 +1032,24 @@ public class EventsHandler {
 			log.warn("Exception " + e.getMessage(), e);
 		}
 
-		int zone = 1;
-		for(EventDescriptionJson item : eventDetails)
+		for(int zone = 0; zone < eventDetails.length; zone++)
 		{
-			if (item == null)
+			if ((eventDetails[zone] == null) || (eventDetails[zone].description == null))
 				continue;
-			if (item.description != null)
+
+			if ((ed = EventDescription.findByEventId(conn, jsonIn.eventId, 
+													 zone, languageId)) != null)
 			{
+				ed.setDescription(eventDetails[zone].description);
+				ed.update(conn, "idEventDescription");
+			}
+			else
+			{
+				ed = new EventDescription();
 				ed.setEventId(jsonIn.idEvents);
 				ed.setLanguageId(languageId);
-				ed.setAnchorZone(zone++);
-				ed.setDescription(item.description);
+				ed.setAnchorZone(zone + 1);
+				ed.setDescription(eventDetails[zone].description);
 				ed.insert(conn, "idEventDescription", ed);
 			}
 		}
@@ -1398,7 +1405,7 @@ public class EventsHandler {
 	private void handleInsertTicket(TicketJson[][] jsonIn, int eventId, DBConnection conn) throws Exception
 	{
 		EventTickets et = null;
-		EventTickets[] eventTickets = EventTickets.findByEventId(eventId, Constants.LNG_IT);
+		EventTickets[] eventTickets = EventTickets.findByEventId(eventId);
 		for(int y = 0; y < jsonIn.length; y++)
 		{
 			if (jsonIn[y] == null)
