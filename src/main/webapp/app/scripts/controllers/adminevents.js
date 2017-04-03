@@ -81,7 +81,10 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
                     },
                     {
                         name: 'ID Armatore',
-                        field: 'shipOwnerId'
+                        field: 'shipOwnerId',
+                        sortingAlgorithm: function(a, b, rowA, rowB, direction) {
+                            return a > b ? 1 : a < b ? -1 : 0;
+                        }
                     },
                     {
                         enableFiltering: false,
@@ -91,7 +94,13 @@ angular.module('yeswesailApp').controller('AdmineventsCtrl', function ($scope, $
                         },
                         name: 'Armatore',
                         field: 'shipOwnerId',
-                        cellTemplate: '<div class="ui-grid-cell-contents">{{grid.appScope.shipOwners[row.entity.shipOwnerId].name}} {{grid.appScope.shipOwners[row.entity.shipOwnerId].surname}}</div>'
+                        cellTemplate: '<div class="ui-grid-cell-contents">{{grid.appScope.shipOwners[row.entity.shipOwnerId].name}} {{grid.appScope.shipOwners[row.entity.shipOwnerId].surname}}</div>',
+                        sortingAlgorithm: function(a, b, rowA, rowB, direction) {
+                            
+                            return ($scope.shipOwners[a].name.toUpperCase()+$scope.shipOwners[a].surname.toUpperCase()).localeCompare($scope.shipOwners[b].name.toUpperCase()+$scope.shipOwners[b].surname.toUpperCase());
+                            
+                        }
+                        
                     },
                     {
                         enableFiltering: false,

@@ -433,7 +433,8 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
     };
     $scope.deleteImage = function (image) {
         $http.delete(URLs.ddns + 'rest/events/' + $scope.event.idEvents + '/' + image.substring(image.lastIndexOf("ev"))).then(function (res) {
-            $scope.images.splice($scope.images.indexOf(image), 1);
+            $scope.imagesSmall.splice($scope.imagesSmall.indexOf(image), 1);
+            $scope.imagesLarge.splice($scope.imagesLarge.indexOf(image), 1);
         }, function (err) {})
     };
     $scope.saveEvent = function () {

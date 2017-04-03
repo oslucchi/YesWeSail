@@ -1,4 +1,4 @@
-<div ng-show="event.imageURL" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
+<div ng-if="event.imageURL" ng-style="{'background-image':'url('+event.imageURL+')'}" style="background-repeat:no-repeat; background-size: cover;" class="cover-img">
     <div class="ui button" ng-click="calculateBackgroundPositionUp(30)">UP</div>
     <div class="ui button" ng-click="calculateBackgroundPositionDown(30)">DOWN</div>
 </div>
