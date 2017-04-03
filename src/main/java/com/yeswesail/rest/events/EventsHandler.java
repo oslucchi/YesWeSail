@@ -638,6 +638,7 @@ public class EventsHandler {
 								 @HeaderParam("Language") String language, @HeaderParam("Edit-Mode") boolean editMode)
 	{
 		Genson genson = new Genson();
+		log.debug("Request is edit? " + editMode + ". Language requested is " + language);
 		int languageId = Utils.setLanguageId(language);
 
 		Events event = null;
@@ -647,11 +648,11 @@ public class EventsHandler {
 			conn = DBInterface.connect();
 			if (editMode)
 			{
-				event = new Events(conn, jsonIn.eventId, languageId, false);
+				event = new Events(conn, jsonIn.eventId, languageId, false, false);
 			}
 			else
 			{
-				event = new Events(conn, jsonIn.eventId, languageId);
+				event = new Events(conn, jsonIn.eventId, languageId, true);
 			}
 			// Make sure the imageURL is set to large regardless of what is the DB
 			event.setImageURL(event.getImageURL()
@@ -734,24 +735,11 @@ public class EventsHandler {
 		}
 		
 		try {
-			EventDescription[] ed = EventDescription.findByEventId(event.getIdEvents(), languageId);
-			for(int i = 0; i < ed.length; i++)
+			EventDescription ed = null;
+			for(int i = 1; i < EventDescription.MAX_ANCHOR_ZONE; i++)
 			{
-				switch(ed[i].getAnchorZone())
-				{
-				case 1:
-					jsonResponse.put("description", ed[i]);
-					break;
-				case 2:
-					jsonResponse.put("logistics", ed[i]);
-					break;
-				case 3:
-					jsonResponse.put("includes", ed[i]);
-					break;
-				case 4:
-					jsonResponse.put("excludes", ed[i]);
-					break;
-				}
+				ed = EventDescription.findByEventId(conn, event.getIdEvents(), i, languageId);
+				jsonResponse.put(EventDescription.zones[i], ed);
 			}
 		}
 		catch(Exception e)
@@ -1020,32 +1008,32 @@ public class EventsHandler {
 		eventDetails[2] = jsonIn.includes; 
 		eventDetails[3] = jsonIn.excludes; 
 
-		EventDescription ed =  new EventDescription();
-		try
-		{
-			ed.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId + " AND " +
-								   "      languageId = " + languageId + " AND " +
-								   "      anchorZone != 0");
-		}
-		catch(Exception e)
-		{
-			log.warn("Exception " + e.getMessage(), e);
-		}
+//		try
+//		{
+//			ed.deleteOnWhere(conn, "WHERE eventId = " + jsonIn.eventId + " AND " +
+//								   "      languageId = " + languageId + " AND " +
+//								   "      anchorZone != 0");
+//		}
+//		catch(Exception e)
+//		{
+//			log.warn("Exception " + e.getMessage(), e);
+//		}
 
+		EventDescription ed =  null;
 		for(int zone = 0; zone < eventDetails.length; zone++)
 		{
 			if ((eventDetails[zone] == null) || (eventDetails[zone].description == null))
 				continue;
 
 			if ((ed = EventDescription.findByEventId(conn, jsonIn.eventId, 
-													 zone, languageId)) != null)
+													 zone + 1, languageId)) != null)
 			{
 				ed.setDescription(eventDetails[zone].description);
 				ed.update(conn, "idEventDescription");
 			}
 			else
 			{
-				ed = new EventDescription();
+				ed =  new EventDescription();
 				ed.setEventId(jsonIn.idEvents);
 				ed.setLanguageId(languageId);
 				ed.setAnchorZone(zone + 1);

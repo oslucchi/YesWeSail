@@ -7,7 +7,15 @@ import com.yeswesail.rest.Constants;
 public class EventDescription extends DBInterface 
 {
 	private static final long serialVersionUID = -1022667590563399335L;
-
+	public static final int MAX_ANCHOR_ZONE = 5;
+	public static final String[] zones = {
+										"title",
+										"description",
+										"logistics", 
+										"includes", 
+										"excludes"
+									};
+	
 	protected int idEventDescription;
 	protected int languageId;
 	protected int eventId;
@@ -73,7 +81,7 @@ public class EventDescription extends DBInterface
 		String sql = "SELECT * " +
 				 	 "FROM EventDescription " +
 					 "WHERE eventId = " + eventId + " AND " +
-				 	 "      languageId = " + languageId + " " +
+				 	 "      languageId = " + languageId + " AND " +
 					 "      anchorZone = " + anchorZone;
 		try
 		{

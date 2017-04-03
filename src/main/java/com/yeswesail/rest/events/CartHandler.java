@@ -352,7 +352,7 @@ public class CartHandler {
 			EventTickets et = new EventTickets();
 			et.getEventTickets(conn, t.getEventTicketId(), languageId);
 			Events e = new Events();
-			e.getEvents(conn, et.getEventId(), languageId);
+			e.getEvents(conn, et.getEventId(), languageId, true);
 			
 			t.delete(conn, t.getIdTicketLocks());
 			payload += sep + "{" +

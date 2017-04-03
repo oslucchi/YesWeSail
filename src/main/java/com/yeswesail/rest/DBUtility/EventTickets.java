@@ -80,7 +80,7 @@ public class EventTickets extends DBInterface
 
 	public static EventTickets[] findByEventId(int eventId) throws Exception
 	{
-		String sql = "SELECT a.*, b.description " +
+		String sql = "SELECT a.* " +
 				 	 "FROM EventTickets a " +
 					 "WHERE eventId = " + eventId + " AND " +
 				 	 "      available > booked " + 

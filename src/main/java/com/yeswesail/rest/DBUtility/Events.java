@@ -63,14 +63,15 @@ public class Events extends DBInterface implements Comparable<Events>
 		getEvents(conn, id);
 	}
 	
-	public Events(DBConnection conn, int id, int languageId) throws Exception
+	public Events(DBConnection conn, int id, int languageId, boolean useFallback) throws Exception
 	{
-		getEvents(conn, id, languageId);
+		getEvents(conn, id, languageId, useFallback);
 	}
 
-	public Events(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
+	public Events(DBConnection conn, int id, int languageId, 
+				  boolean activeOnly, boolean useFallback) throws Exception
 	{
-		getEvents(conn, id, languageId, activeOnly);
+		getEvents(conn, id, languageId, activeOnly, useFallback);
 	}
 	
 	public void getEvents(DBConnection conn, int id) throws Exception
@@ -82,58 +83,71 @@ public class Events extends DBInterface implements Comparable<Events>
 		this.populateObject(conn, sql, this);
 	}
 	
-	public void getEvents(DBConnection conn, int id, int languageId) throws Exception
+	public void getEvents(DBConnection conn, int id, int languageId, 
+						  boolean useFallback) throws Exception
 	{
 		setNames();
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
-					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
+					 "FROM Events AS a " + (!useFallback ? " LEFT OUTER " : "" ) + " JOIN EventDescription AS b " +
 					 "     ON a.idEvents = b.eventId AND " +
-					 "		  b.anchorZone = 0 ";
-				 
-		String whereClause = 
+			 	 	 "        b.languageId = " + languageId + " AND " +
+					 "		  b.anchorZone = 0 " + 
 					 "WHERE idEvents = " + id + " AND " +
-			 	 	 "      b.languageId = " + languageId + " AND " +
 				 	 "      status = '" + Constants.STATUS_ACTIVE + "'";
 
-		String fallbackWhereClause = 
+		String sqlFallback = "";
+		if (useFallback)
+		{
+			sqlFallback = "SELECT a.*, b.description AS `title`, b.languageId " +
+					 "FROM Events AS a JOIN EventDescription AS b " +
+					 "     ON a.idEvents = b.eventId AND " +
+					 "        b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
+					 "		  b.anchorZone = 0 " + 
 					 "WHERE idEvents = " + id + " AND " +
-				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
 				 	 "      status = '" + Constants.STATUS_ACTIVE + "'";
-		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
+		}
+		getSingleEventWithLanguageFallbackPolicy(conn, sql, sqlFallback);
 		getTicketMaxAndMin(events);
 	}
 
-	public void getEvents(DBConnection conn, int id, int languageId, boolean activeOnly) throws Exception
+	public void getEvents(DBConnection conn, int id, 
+						  int languageId, boolean activeOnly, boolean useFallback) throws Exception
 	{
 		setNames();
+		// if no fallback is required, get the event in outer join
+		// the description will so be populated only if the language required exists
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
-					 "FROM Events AS a LEFT OUTER JOIN EventDescription AS b " +
-					 "     ON a.idEvents = b.eventId AND " +
-					 "		  b.anchorZone = 0 ";
-				 
-		String whereClause = 
-					 "WHERE idEvents = " + id + " AND " +
-			 	 	 "      b.languageId = " + languageId;
+				 "FROM Events AS a " + (!useFallback ? " LEFT OUTER " : "" ) + " JOIN EventDescription AS b " +
+				 "     ON a.idEvents = b.eventId AND " +
+		 	 	 "        b.languageId = " + languageId + " AND " +
+				 "		  b.anchorZone = 0 " + 
+				 "WHERE idEvents = " + id;
 
-		String fallbackWhereClause = 
-					 "WHERE idEvents = " + id + " AND " +
-				 	 "      b.languageId = " + Constants.getAlternativeLanguage(languageId);
+		String sqlFallback = "";
+		if (useFallback)
+		{
+			sqlFallback = "SELECT a.*, b.description AS `title`, b.languageId " +
+						  "FROM Events AS a JOIN EventDescription AS b " +
+						  "     ON a.idEvents = b.eventId AND " +
+						  "        b.languageId = " + Constants.getAlternativeLanguage(languageId) + " AND " +
+						  "		   b.anchorZone = 0 " + 
+						  "WHERE idEvents = " + id ;
+		}
 		if (activeOnly)
 		{			
-			whereClause += " AND status = '" + Constants.STATUS_ACTIVE + "'";
-			fallbackWhereClause += " AND status = '" + Constants.STATUS_ACTIVE + "'";
+			sql += " AND status = '" + Constants.STATUS_ACTIVE + "'";
+			sqlFallback += " AND status = '" + Constants.STATUS_ACTIVE + "'";
 		}
-		getSingleEventWithLanguageFallbackPolicy(conn, sql, whereClause, fallbackWhereClause);
+		getSingleEventWithLanguageFallbackPolicy(conn, sql, sqlFallback);
 		getTicketMaxAndMin(events);
 	}
 
 	private void getSingleEventWithLanguageFallbackPolicy(
-		DBConnection conn, String sql, String whereClause, String fallbackWhereClause
-				) throws Exception
+				DBConnection conn, String sql, String sqlFallback) throws Exception
 	{
 		try
 		{
-			this.populateObject(conn, sql + whereClause, this);
+			this.populateObject(conn, sql, this);
 		}
 		catch(Exception e)
 		{
@@ -141,7 +155,10 @@ public class Events extends DBInterface implements Comparable<Events>
 			{
 				throw e;
 			}
-			this.populateObject(conn, sql + fallbackWhereClause, this);
+			if (!sqlFallback.equals(""))
+			{
+				this.populateObject(conn, sqlFallback, this);
+			}
 		}
 		
 		setLocale(Constants.getLocale(this.getLanguageId()));
