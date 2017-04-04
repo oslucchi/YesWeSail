@@ -56,16 +56,16 @@ public class Constants {
 			return(LNG_IT);
 
 		case "FR":
-			return(LNG_EN);
+			return(LNG_IT);
 
 		case "DE":
-			return(LNG_EN);
+			return(LNG_IT);
 
 		case "ES":
-			return(LNG_EN);
+			return(LNG_IT);
 
 		default:
-			return(LNG_EN);
+			return(LNG_IT);
 		}
 	}
 
@@ -80,16 +80,16 @@ public class Constants {
 			return(LNG_IT);
 
 		case LNG_FR:
-			return(LNG_EN);
+			return(LNG_IT);
 
 		case LNG_DE:
-			return(LNG_EN);
+			return(LNG_IT);
 
 		case LNG_ES:
-			return(LNG_EN);
+			return(LNG_IT);
 
 		default:
-			return(LNG_EN);
+			return(LNG_IT);
 		}
 	}
 

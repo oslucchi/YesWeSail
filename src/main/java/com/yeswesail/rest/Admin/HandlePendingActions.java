@@ -97,7 +97,7 @@ public class HandlePendingActions {
 								@PathParam("userId") int userId)
 	{
 		int languageId = Utils.setLanguageId(language);
-		if (!Utils.userIsAdmin(token, languageId))
+		if (!Utils.userSelfOrAdmin(token, userId, languageId))
 		{
 			return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}

@@ -140,6 +140,9 @@ public class Utils {
 	public static boolean userSelfOrAdmin(String token, int idUsers, int languageId)
 	{
 		SessionData sd = SessionData.getInstance();
+		log.debug("token '" + token + "', " +
+				  "idUsers " + idUsers + "/" + sd.getBasicProfile(token).getIdUsers() + "', " +
+				  "role " + sd.getBasicProfile(token).getRoleId());
 		if ((sd.getBasicProfile(token).getIdUsers() != idUsers) && 
 			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
 		{
