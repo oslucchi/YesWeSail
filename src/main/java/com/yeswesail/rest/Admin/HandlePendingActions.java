@@ -297,7 +297,6 @@ public class HandlePendingActions {
 						log.warn("Exception " + e.getMessage() + " retrieving and deleting ticket lock for eventTicket " +
 								 item.getIdEventTickets(), e);
 						DBInterface.TransactionRollback(conn);
-						DBInterface.disconnect(conn);
 						utils.addToJsonContainer("error", 
 								LanguageResources.getResource(languageId, "ticket.cannotDeleteLocks") +
 								" (exception '" + e.getMessage() + "')", true);
@@ -621,11 +620,9 @@ public class HandlePendingActions {
 		{
 			conn = new DBConnection();
 			pa = new PendingActions(conn, paId);
-			DBInterface.TransactionCommit(conn);
 		}
 		catch(Exception e)
 		{
-			DBInterface.TransactionRollback(conn);
 			log.warn("Couldn't get confirmTicket action. Exception " + e.getMessage(), e);
 		}
 		finally

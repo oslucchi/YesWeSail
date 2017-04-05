@@ -97,7 +97,7 @@ public class Auth {
 		{
 			conn = DBInterface.connect();
 			RegistrationConfirm rc = new RegistrationConfirm();
-			if (rc.findActiveRecordById(conn, u.getIdUsers()) == null)
+			if (rc.findActiveRecordByUserId(conn, u.getIdUsers()) == null)
 			{
 				token = jsonIn.token;
 				rc.setCreated(new Date());
@@ -136,10 +136,23 @@ public class Auth {
 	protected Response populateUsersAuthTable(String token, int userId, String language)
 	{
 		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.connect();
+		}
+		catch(Exception e)
+		{
+			log.warn("Exception " + e.getMessage(), e);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+		return(populateUsersAuthTable(conn, token, userId, language));
+	}
+	
+	protected Response populateUsersAuthTable(DBConnection conn, String token, int userId, String language)
+	{
 		UsersAuth ua = null;
 		try 
 		{
-			conn = DBInterface.connect();
 			log.debug("Looking up the token '" + token + "' to check if it exists already in the DB");
 			ua = UsersAuth.findToken(token);
 			if (ua == null)
@@ -170,10 +183,6 @@ public class Auth {
 		{
 			log.warn("Exception " + e.getMessage(), e);
 			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, e, language, "generic.execError");
-		}
-		finally
-		{
-			DBInterface.disconnect(conn);
 		}
 
 		// Updating the session data. Any user should have maximum one entry in SD
@@ -332,6 +341,7 @@ public class Auth {
 				log.debug("Wrong password, returning UNAUTHORIZED");
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "auth.wrongCredentials");
 			}
+			populateUsersAuthTable(conn, token, u.getIdUsers(), language);
 		}
 		catch(Exception e)
 		{
@@ -347,7 +357,6 @@ public class Auth {
 				return Utils.jsonizeResponse(Response.Status.UNAUTHORIZED, null, language, "generic.execError");
 			}
 		}
-		populateUsersAuthTable(token, u.getIdUsers(), language);
 
 		HashMap<String, Object> jsonResponse = new HashMap<>();
 		jsonResponse.put("token", token);
@@ -441,25 +450,66 @@ public class Auth {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response changePassword(AuthJson jsonIn, 
 								   @HeaderParam("Language") String language)
-	{
+	{		
 		jsonIn.token = UUID.randomUUID().toString();		
 		if (jsonIn.username == null)
 		{
 			return Utils.jsonizeResponse(Response.Status.FORBIDDEN, null, language, "users.badMail");
 		}
 		DBConnection conn = null;
-		RegistrationConfirm rc;
 		try 
 		{
 			conn = DBInterface.connect();
+		}
+		catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+		
+		RegistrationConfirm rc = null;
+		try
+		{
 			u = new Users(conn, jsonIn.username);
 			rc = new RegistrationConfirm();
-			rc.setCreated(new Date());
-			rc.setPasswordChange(jsonIn.password);
-			rc.setStatus(Constants.STATUS_ACTIVE);
-			rc.setToken(jsonIn.token);
-			rc.setUserId(u.getIdUsers());
-			rc.insert(conn, "idRegistrationConfirm", rc);
+			if (rc.findActiveRecordByUserId(conn, u.getIdUsers()) == null)
+			{
+				log.trace("No existing request for user " + jsonIn.username + 
+						  " generating a new token '" + token + "'");
+				rc = null;
+
+			}
+			else
+			{
+				log.trace("An existing request for user " + rc.getUserId() + 
+						  " is already there on token '" + rc.getToken() + "'");
+				jsonIn.token = rc.getToken();
+			}
+		}
+		catch(Exception e)
+		{
+			DBInterface.disconnect(conn);
+			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, language, "generic.execError");
+		}
+
+		try
+		{
+			if (rc == null)
+			{
+				rc = new RegistrationConfirm();
+				rc.setCreated(new Date());
+				rc.setStatus(Constants.STATUS_ACTIVE);
+				rc.setToken(jsonIn.token);
+				rc.setUserId(u.getIdUsers());
+				rc.setPasswordChange(jsonIn.password);
+				rc.insert(conn, "idRegistrationConfirm", rc);
+			}
+			else
+			{
+				jsonIn.token = rc.getToken();
+				rc.setPasswordChange(jsonIn.password);
+				rc.update(conn, "idRegistrationConfirm");
+			}
 		}
 		catch(Exception e) 
 		{
@@ -474,8 +524,10 @@ public class Auth {
 		Response response;
 		if ((response = prepareAndSendMail("mail.passwordChange", "mail.passwordChangeSubject", 
 									  "confirmPasswordChange", language, jsonIn)) != null)
+		{
 			return response;
-		
+		}
+		log.trace("Confirmation mail sent to: " + jsonIn.username);
 		return Response.status(Response.Status.OK)
 				.entity(ResponseEntityCreator.formatEntity(language, "auth.registerRedirectMsg")).build();
 	}
@@ -501,7 +553,7 @@ public class Auth {
 			pw.setPassword(rc.getPasswordChange());
 			pw.setIdUsers(rc.getUserId());
 			pw.updatePassword(conn, true);
-			populateUsersAuthTable(token, rc.getUserId(), language);
+			populateUsersAuthTable(conn, token, rc.getUserId(), language);
 		}
 		catch(Exception e) 
 		{

@@ -216,6 +216,7 @@ public class TicketsHandler {
 		catch(Exception e) 
 		{
 			log.warn("Exception " + e.getMessage(), e);
+			DBInterface.TransactionRollback(conn);
 			return false;
 		}
 		finally

@@ -68,16 +68,13 @@ public class TicketReleaser extends Thread {
 					item.update(transaction, "idEventTickets");
 				}
 			}			
+			DBInterface.TransactionCommit(transaction);
 		}
 		catch(Exception e)
 		{
 			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.TransactionRollback(transaction);
 			return;
-		}
-		finally
-		{
-			DBInterface.TransactionCommit(transaction);
 		}
 	}
 	

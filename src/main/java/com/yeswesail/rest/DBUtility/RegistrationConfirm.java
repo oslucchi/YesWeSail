@@ -47,9 +47,10 @@ public class RegistrationConfirm extends DBInterface
 	public void findActiveRecordByMail(DBConnection conn, String email) throws Exception
 	{
 		String sql = "SELECT * " +
-				 "FROM " + tableName + " " +
-				 "WHERE email = '" + email + "' AND " +
-				 "      status = '" + Constants.STATUS_ACTIVE + "'";
+					 "FROM RegistrationConfirm AS a JOIN Users AS b ON " +
+					 "       a.userId = b.idUsers " +
+					 "WHERE b.email = '" + email + "' AND " +
+					 "      a.status = '" + Constants.STATUS_ACTIVE + "'";
 		this.populateObject(conn, sql, this);
 	}
 	
@@ -62,7 +63,7 @@ public class RegistrationConfirm extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 	
-	public RegistrationConfirm findActiveRecordById(DBConnection conn, int id) throws Exception
+	public RegistrationConfirm findActiveRecordByUserId(DBConnection conn, int id) throws Exception
 	{
 		String sql = "SELECT * " +
 				 "FROM " + tableName + " " +

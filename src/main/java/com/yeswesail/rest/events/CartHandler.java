@@ -393,8 +393,6 @@ public class CartHandler {
 		if ((payment == null) || (payment.getLinks() == null))
 		{
 			log.error("payment didn't get through. Failure reason '" + payment.getFailureReason() + "'");
-			DBInterface.TransactionRollback(conn);
-			DBInterface.disconnect(conn);
 			return Utils.jsonizeResponse(Response.Status.PRECONDITION_FAILED, null, 
 										 languageId, "payment.paypal.unableToCreatePayment");
 		}

@@ -1135,7 +1135,7 @@ public class EventsHandler {
 			{
 				if ((jsonIn.route == null) || (jsonIn.route.length == 0))
 				{
-					DBInterface.disconnect(conn);
+					DBInterface.TransactionRollback(conn);
 					return Utils.jsonizeResponse(Response.Status.BAD_REQUEST, null, languageId, "events.missingRoutes");
 				}
 				else
@@ -1229,7 +1229,6 @@ public class EventsHandler {
 				(TicketLocks.findByEventId(idEvents).length > 0))
 			{
 				log.warn("Tickets for this event have been sold already. can't delete");
-				DBInterface.TransactionRollback(conn);
 				return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, 
 											 languageId, "events.cannotDelete.ticketsSold");
 			}
