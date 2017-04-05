@@ -43,7 +43,7 @@ public class EventDescription extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	public static EventDescription[] findByEventId(int eventId, int languageId) throws Exception
+	public static EventDescription[] findByEventId(DBConnection conn, int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT * " +
 				 	 "FROM EventDescription " +
@@ -51,7 +51,7 @@ public class EventDescription extends DBInterface
 				 	 "      languageId = " + languageId + " " +
 					 "ORDER BY anchorZone";
 		ArrayList<EventDescription> eventDescriptions =
-			(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+			(ArrayList<EventDescription>) EventDescription.populateCollection(conn, sql, EventDescription.class);
 		if (eventDescriptions.size() == 0)
 		{
 			sql = "SELECT * " +
@@ -60,7 +60,7 @@ public class EventDescription extends DBInterface
 				 	 "      languageId = " + Constants.getLanguageCode("en_US") + " " +
 					 "ORDER BY anchorZone";
 			eventDescriptions =
-					(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+					(ArrayList<EventDescription>) EventDescription.populateCollection(conn, sql, EventDescription.class);
 		}
 		if (eventDescriptions.size() == 0)
 		{
@@ -70,7 +70,7 @@ public class EventDescription extends DBInterface
 				 	 "      languageId = " + Constants.getLanguageCode("it_IT") + " " +
 					 "ORDER BY anchorZone";
 			eventDescriptions =
-					(ArrayList<EventDescription>) EventDescription.populateCollection(sql, EventDescription.class);
+					(ArrayList<EventDescription>) EventDescription.populateCollection(conn, sql, EventDescription.class);
 		}
 		return(eventDescriptions.toArray(new EventDescription[eventDescriptions.size()]));
 	}

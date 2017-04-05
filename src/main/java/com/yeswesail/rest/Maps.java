@@ -64,7 +64,7 @@ public class Maps {
 		{
 			Roles r = new Roles();
 			roles = (ArrayList<Object>) r.populateCollectionOnCondition(
-							"WHERE languageId = " + languageId, RolesLanguages.class);
+							null, "WHERE languageId = " + languageId, RolesLanguages.class);
 		}
 		for(Object e : roles)
 		{
@@ -80,7 +80,7 @@ public class Maps {
 		{
 			EventTypes e = new EventTypes();
 			eventTypes = (ArrayList<Object>) e.populateCollectionOnCondition(
-					"WHERE b.languageId = " + languageId, EventTypes.class);
+					null, "WHERE b.languageId = " + languageId, EventTypes.class);
 		}
 		for(Object e : eventTypes)
 		{
@@ -96,6 +96,7 @@ public class Maps {
 		{
 			EventTicketsDescription e = new EventTicketsDescription();
 			eventTicketDescription = (ArrayList<Object>) e.populateCollectionOnCondition(
+						null,
 						"WHERE languageId = " + languageId, EventTicketsDescription.class);
 		}
 		for(Object e : eventTicketDescription)
@@ -112,6 +113,7 @@ public class Maps {
 		{
 			Events e = new Events();
 			events = (ArrayList<Events>) e.populateCollectionOfDistinctsOnCondition(
+					null,
 					"WHERE dateEnd > '" + sdf.format(new Date()) + "' AND " +
 					"      location != 'TBD' AND " +
 					"      status = '" + Constants.STATUS_ACTIVE + "'", "location" , Events.class);

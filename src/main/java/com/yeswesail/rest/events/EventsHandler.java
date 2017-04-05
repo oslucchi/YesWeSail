@@ -165,7 +165,7 @@ public class EventsHandler {
 		try 
 		{
 			log.trace("Getting hot events via findHot method");
-			hot = Events.findHot(Constants.getLanguageCode(language));
+			hot = Events.findHot(null, Constants.getLanguageCode(language));
 			log.trace("Retrieval completed");
 		}
 		catch(Exception e) 
@@ -310,7 +310,7 @@ public class EventsHandler {
 		{
 			jsonIn.activeOnly = activeOnly;
 			log.trace("Search for " + (activeOnly ? " active " : " all ") + " events");
-			events = Events.findByFilter(buildWhereCondition(jsonIn), languageId);
+			events = Events.findByFilter(null, buildWhereCondition(jsonIn), languageId);
 		}
 		catch(Exception e) 
 		{
@@ -412,7 +412,8 @@ public class EventsHandler {
 			try 
 			{
 				soList = (ArrayList<Users>) Users.populateCollection(
-						"SELECT * FROM Users " +
+								null,
+								"SELECT * FROM Users " +
 								"WHERE idUsers IN " + soIdList, Users.class);
 				for(Users u : soList)
 				{
@@ -673,13 +674,14 @@ public class EventsHandler {
 		int ticketsAvailable = 0;
 		try
 		{
-			allTickets = EventTickets.getAllTicketByEventId(event.getIdEvents(), languageId);
+			allTickets = EventTickets.getAllTicketByEventId(conn, event.getIdEvents(), languageId);
 			ArrayList<ArrayList<EventTickets>> tickets = new ArrayList<>();
 			int ticketType = -1;
 			int index = -1;
 			for (int i = 0; i < allTickets.length; i++)
 			{
-				if ((allTickets[i].getTicketType() == EventTickets.WHOLE_BOAT) && Utils.anyTicketAlreadySold(event.getIdEvents()))
+				if ((allTickets[i].getTicketType() == EventTickets.WHOLE_BOAT) && 
+					Utils.anyTicketAlreadySold(conn, event.getIdEvents()))
 				{
 					continue;
 				}
@@ -709,7 +711,7 @@ public class EventsHandler {
 		Users[] participants = null;
 		try
 		{
-			participants = EventTicketsSold.findParticipants(event.getIdEvents());
+			participants = EventTicketsSold.findParticipants(conn, event.getIdEvents());
 			if (ticketsAvailable == 0)
 			{
 				jsonResponse.put("participantMessage", 
@@ -830,7 +832,7 @@ public class EventsHandler {
 		
 		Events[] groundEventsAvailable = null;
 		try {
-			groundEventsAvailable = Events.findByFilter("WHERE eventType = 2", languageId);
+			groundEventsAvailable = Events.findByFilter(conn, "WHERE eventType = 2", languageId);
 		} 
 		catch(Exception e) {
 			log.warn("Exception " + e.getMessage() + " populating ground events for event " + event.getIdEvents(), e);
@@ -1128,6 +1130,7 @@ public class EventsHandler {
 			@SuppressWarnings("unchecked")
 			ArrayList<EventRoute> erList = 
 					(ArrayList<EventRoute>) EventRoute.populateCollection(
+													conn,
 													"SELECT * FROM EventRoute " +
 													"WHERE eventId = " + jsonIn.eventId, 
 													EventRoute.class);
@@ -1225,8 +1228,8 @@ public class EventsHandler {
 
 		try
 		{
-			if ((EventTicketsSold.getTicketSold(idEvents, languageId).length > 0) ||
-				(TicketLocks.findByEventId(idEvents).length > 0))
+			if ((EventTicketsSold.getTicketSold(conn, idEvents, languageId).length > 0) ||
+				(TicketLocks.findByEventId(conn, idEvents).length > 0))
 			{
 				log.warn("Tickets for this event have been sold already. can't delete");
 				return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, 
@@ -1396,7 +1399,7 @@ public class EventsHandler {
 	private void handleInsertTicket(TicketJson[][] jsonIn, int eventId, DBConnection conn) throws Exception
 	{
 		EventTickets et = null;
-		EventTickets[] eventTickets = EventTickets.findByEventId(eventId);
+		EventTickets[] eventTickets = EventTickets.findByEventId(conn, eventId);
 		for(int y = 0; y < jsonIn.length; y++)
 		{
 			if (jsonIn[y] == null)

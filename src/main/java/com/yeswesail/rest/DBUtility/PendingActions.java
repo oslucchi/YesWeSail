@@ -51,7 +51,7 @@ public class PendingActions extends DBInterface
 				 "WHERE status != '" + Constants.STATUS_COMPLETED + "'";
 		@SuppressWarnings("unchecked")
 		ArrayList<PendingActions> actions = 
-				(ArrayList<PendingActions>) populateCollection(sql, PendingActions.class);
+				(ArrayList<PendingActions>) populateCollection(conn, sql, PendingActions.class);
 		return actions.toArray(new PendingActions[actions.size()]);
 	}
 	
@@ -63,7 +63,7 @@ public class PendingActions extends DBInterface
 					 "      userId = " + userId;
 		@SuppressWarnings("unchecked")
 		ArrayList<PendingActions> actions = 
-				(ArrayList<PendingActions>) populateCollection(sql, PendingActions.class);
+				(ArrayList<PendingActions>) populateCollection(conn, sql, PendingActions.class);
 		return actions.toArray(new PendingActions[actions.size()]);
 	}
 

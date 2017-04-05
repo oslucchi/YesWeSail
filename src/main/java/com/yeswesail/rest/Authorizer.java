@@ -75,7 +75,7 @@ public class Authorizer implements ContainerRequestFilter
 		}
 		UsersAuth ua = null;
 		Utils ut = new Utils();
-		if ((ua = UsersAuth.findToken(token)) == null)
+		if ((ua = UsersAuth.findToken(null, token)) == null)
 		{
 			log.warn("Token '" + token + "' not found. Returning anauthorized");
 			ut.addToJsonContainer("authorized", "false", true);

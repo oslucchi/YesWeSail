@@ -51,13 +51,13 @@ public class Boats extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Boats[] findAll(int languageId, int ownerId) throws Exception
+	public static Boats[] findAll(DBConnection conn, int languageId, int ownerId) throws Exception
 	{
 		String sql = "SELECT * " +
 				 	 "FROM Boats " +
 				 	 "WHERE ownerId = " + ownerId;
 		
-		boats = (ArrayList<Boats>) populateCollection(sql, Boats.class);
+		boats = (ArrayList<Boats>) populateCollection(conn, sql, Boats.class);
 		return(boats.toArray(new Boats[boats.size()]));
 	}
 

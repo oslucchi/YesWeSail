@@ -60,7 +60,7 @@ public class Reviews extends DBInterface
 					"     b.idUsers = a.reviewerId " +
 					sqlWhere;
 		@SuppressWarnings("unchecked")
-		ArrayList<Reviews> reviews = (ArrayList<Reviews>) Reviews.populateCollection(sqlWhere, Reviews.class);
+		ArrayList<Reviews> reviews = (ArrayList<Reviews>) Reviews.populateCollection(conn, sqlWhere, Reviews.class);
 		return(reviews.toArray(new Reviews[reviews.size()]));
 	}
 

@@ -52,7 +52,7 @@ public class Cart extends DBInterface
 				"WHERE b.userId = " + userId + " AND " +
 				"      b.status != '" + Constants.STATUS_EXPIRED + "' " +
 				"ORDER BY idEvents, a.ticketType";
-		ArrayList<Events> events = (ArrayList<Events>) populateCollection(sql, Events.class);
+		ArrayList<Events> events = (ArrayList<Events>) populateCollection(conn, sql, Events.class);
 		
 		// Find if the user has tickets for events published only in an alternative language
 		String exclude = "(";
@@ -82,7 +82,7 @@ public class Cart extends DBInterface
 				"WHERE b.userId = " + userId + " AND " +
 				"      b.status != '" + Constants.STATUS_EXPIRED + "' " + exclude + 
 				"ORDER BY idEvents, a.ticketType";
-		ArrayList<Events> altEvents = (ArrayList<Events>) populateCollection(sql, Events.class);
+		ArrayList<Events> altEvents = (ArrayList<Events>) populateCollection(conn, sql, Events.class);
 		events.addAll(altEvents);
 		
 		ArrayList<TicketsInCart> retList = new ArrayList<TicketsInCart>();
@@ -100,7 +100,7 @@ public class Cart extends DBInterface
 					"WHERE a.eventId = " + e.getIdEvents() + " AND " +
 					"      b.status != '" + Constants.STATUS_EXPIRED + "' " +  
 					"ORDER BY a.eventId, a.ticketType, price";
-			ArrayList<Cart> tickets = (ArrayList<Cart>) populateCollection(sql, Cart.class);
+			ArrayList<Cart> tickets = (ArrayList<Cart>) populateCollection(conn, sql, Cart.class);
 			TicketsInCart cartItem = null;
 			cartItem= new TicketsInCart();
 			cartItem.setIdEvents(e.idEvents);

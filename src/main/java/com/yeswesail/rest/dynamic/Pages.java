@@ -107,7 +107,7 @@ public class Pages {
 		try
 		{
 			conn = DBInterface.connect();
-			pageList = DynamicPages.getAllPages(languageId);
+			pageList = DynamicPages.getAllPages(conn, languageId);
 			utils.addToJsonContainer("dynamicPages", pageList, true);
 			return Response.status(Response.Status.OK).entity(utils.jsonize()).build();
 		}

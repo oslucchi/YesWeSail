@@ -29,7 +29,7 @@ public class CategoriesLanguages extends DBInterface
 					 "FROM CategoriesLanguages a INNER JOIN Categories b ON " +
 					 "     a.categoryId = b.idCategories AND " +
 					 "     a.languageId = " + languageId;
-		return (ArrayList<Object>) populateCollection(sql, CategoriesLanguages.class);
+		return (ArrayList<Object>) populateCollection(null, sql, CategoriesLanguages.class);
 	}
 	
 	public int getCategoryId() {

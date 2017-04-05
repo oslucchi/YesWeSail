@@ -329,7 +329,7 @@ public class UsersHandler {
 		ArrayList<Users> uList = null;
 		try 
 		{
-			uList = Users.findUsersbyRole(roleId);
+			uList = Users.findUsersbyRole(null, roleId);
 		}
 		catch(Exception e) 
 		{
@@ -369,7 +369,7 @@ public class UsersHandler {
 			conn = DBInterface.connect();
 			u = new Users(conn, userId);
 			// u.setPassword("******");
-			ai = AddressInfo.findUserId(u.getIdUsers());
+			ai = AddressInfo.findUserId(conn, u.getIdUsers());
 			if (ai.length == 0)
 			{
 				ai = new AddressInfo[2];
@@ -380,7 +380,7 @@ public class UsersHandler {
 			}
 			u.setPersonalInfo(ai[0]);
 			u.setBillingInfo(ai[1]);
-			docs = Documents.findAllUsersDoc(languageId, u.getIdUsers());
+			docs = Documents.findAllUsersDoc(conn, languageId, u.getIdUsers());
 		}
 		catch(Exception e) 
 		{
@@ -410,7 +410,7 @@ public class UsersHandler {
 			Events[] eventList = null;
 			try 
 			{
-				eventList = Events.findByFilter("shipOwnerId = " + u.getIdUsers(), languageId);
+				eventList = Events.findByFilter(null, "shipOwnerId = " + u.getIdUsers(), languageId);
 				utils.addToJsonContainer("events", eventList, false);				
 			} 
 			catch(Exception e) 
@@ -460,10 +460,10 @@ public class UsersHandler {
 		try 
 		{
 			conn = DBInterface.connect();
-			usersList = (ArrayList<Users>) Users.populateCollection("SELECT * FROM Users", Users.class);
+			usersList = (ArrayList<Users>) Users.populateCollection(conn, "SELECT * FROM Users", Users.class);
 			for(int i = 0; i < usersList.size(); i++)
 			{
-				AddressInfo[] ai = AddressInfo.findUserId(usersList.get(i).getIdUsers());
+				AddressInfo[] ai = AddressInfo.findUserId(conn, usersList.get(i).getIdUsers());
 				if ((ai == null) || (ai.length == 0))
 				{
 					ai = new AddressInfo[2];
@@ -565,7 +565,7 @@ public class UsersHandler {
 			}
 			u.setImageURL(imgPath);
 			u.update(conn, "idUsers");
-			sd.addUser(u.getIdUsers(), languageId);;
+			sd.addUser(conn, u.getIdUsers(), languageId);;
 		}
 		catch(Exception e)
 		{
@@ -1012,7 +1012,7 @@ public class UsersHandler {
 			conn = DBInterface.connect();
 			log.trace("Deleting boat id " + idBoats);
 			bo.delete(conn, idBoats);
-			boats = Boats.findAll(languageId, shipownerId);
+			boats = Boats.findAll(conn, languageId, shipownerId);
 		}
 		catch(Exception e) 
 		{
@@ -1059,7 +1059,7 @@ public class UsersHandler {
 		try 
 		{
 			conn = DBInterface.connect();			
-			boats = Boats.findAll(languageId, shipownerId);
+			boats = Boats.findAll(conn, languageId, shipownerId);
 		}
 		catch(Exception e) 
 		{
@@ -1171,6 +1171,7 @@ public class UsersHandler {
 			}
 		
 			eventsList = Events.findByFilter(
+							conn,
 							"WHERE shipownerId = " + userId + " " +
 							"ORDER BY dateStart DESC", languageId);
 		}
@@ -1215,7 +1216,7 @@ public class UsersHandler {
 		try 
 		{
 			conn = DBInterface.connect();
-			eventsList = EventTicketsSold.findTicketSoldToUser(userId, languageId);
+			eventsList = EventTicketsSold.findTicketSoldToUser(conn, userId, languageId);
 		}
 		catch(Exception e) 
 		{

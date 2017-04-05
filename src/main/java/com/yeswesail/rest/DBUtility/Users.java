@@ -68,11 +68,6 @@ public class Users extends DBInterface
 		getUsers(conn, email);
 	}
 
-	public Users(int shipOwnerId) throws Exception 
-	{
-		getUsers(shipOwnerId);
-	}
-
 	public void getUsers(DBConnection conn, int id) throws Exception
 	{
 		setNames();
@@ -86,24 +81,6 @@ public class Users extends DBInterface
 	{
 		setNames();
 		findByEmail(conn, email);
-	}
-
-	public void getUsers(int shipOwnerId) throws Exception 
-	{
-		DBConnection conn = new DBConnection();
-		setNames();
-		String sql = "SELECT * " +
-					 "FROM " + tableName + " " +
-					 "WHERE " + idColName + " = " + shipOwnerId;
-		try
-		{
-			this.populateObject(conn, sql, this);
-		}
-    	catch(Exception e)
-		{
-			DBInterface.disconnect(conn);
-			throw e;
-		}
 	}
 
 	public void findByEmail(DBConnection conn, String email) throws Exception
@@ -123,12 +100,33 @@ public class Users extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<Users> findUsersbyRole(int role) throws Exception
+	public static ArrayList<Users> findUsersbyRole(DBConnection conn, int role) throws Exception
 	{
+		boolean disconnect = false;
+		if (conn == null)
+		{
+			disconnect = true;
+			conn = new DBConnection();
+		}
 		String sql = "SELECT name, surname, idUsers, imageURL, email, status " +
 				 "FROM Users " +
 				 "WHERE roleId = " + role;
-		ArrayList<Users> retList = (ArrayList<Users>) populateCollection(sql, Users.class);
+		ArrayList<Users> retList = null;
+		try
+		{
+			retList = (ArrayList<Users>) populateCollection(conn, sql, Users.class);
+		}
+		catch(Exception e)
+		{
+			throw e;
+		}
+		finally
+		{
+			if (disconnect)
+			{
+				DBInterface.disconnect(conn);
+			}
+		}
 		return retList;
 	}
 	

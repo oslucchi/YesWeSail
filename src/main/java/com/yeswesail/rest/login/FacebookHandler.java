@@ -227,7 +227,7 @@ public class FacebookHandler implements Serializable
 	
 	private UsersAuth evalUsersAuth(int idUsers, String token)
 	{
-		if ((ua = UsersAuth.findUserId(idUsers)) == null)
+		if ((ua = UsersAuth.findUserId(null, idUsers)) == null)
 		{
 			log.warn("Strangely we have the user but not the authtoken. Generate a new one and create it");
 			response = new Auth().populateUsersAuthTable(token, idUsers, prop.getDefaultLang());
@@ -236,7 +236,7 @@ public class FacebookHandler implements Serializable
 				log.error("Error populating the UsersAuth object");
 				return null;
 			}
-			ua = UsersAuth.findUserId(idUsers); // Now it should be populated... no need to test
+			ua = UsersAuth.findUserId(null, idUsers); // Now it should be populated... no need to test
 			if (ua == null)
 			{
 				// All exceptions. No record found is treated as a particular case
@@ -280,7 +280,7 @@ public class FacebookHandler implements Serializable
 		}
 		else
 		{
-			if ((ua = UsersAuth.findToken(token)) == null)
+			if ((ua = UsersAuth.findToken(null, token)) == null)
 			{
 				log.trace("Token '" + token + "' not found. Creating new");
 				response = a.populateUsersAuthTable(token, u.getIdUsers(), prop.getDefaultLang());
@@ -289,7 +289,7 @@ public class FacebookHandler implements Serializable
 					log.debug("Got an error while populating user '" + errorMsg + "'");
 					return response;
 				}
-				if ((ua = UsersAuth.findToken(token)) == null)
+				if ((ua = UsersAuth.findToken(null, token)) == null)
 				{
 					log.warn("Very strange, we can't retrieve what we just added..");
 					return Utils.jsonizeResponse(Status.INTERNAL_SERVER_ERROR, new Exception("App token not found"), Constants.LNG_EN, "generic.execError");

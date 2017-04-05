@@ -33,7 +33,7 @@ public class TicketReleaser extends Thread {
 		if (et.getTicketType() == EventTickets.WHOLE_BOAT)
 		{
 			log.debug("WHOLE_BOAT ticket required to be released");
-			ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
+			ticketsToRelease = EventTickets.getAllTicketByEventId(conn, et.getEventId(), 1);
 		}
 		else
 		{
@@ -151,7 +151,7 @@ public class TicketReleaser extends Thread {
         	while(true)
         	{
         		now = new Date();
-        		TicketLocks[] tList = TicketLocks.findAll(false);
+        		TicketLocks[] tList = TicketLocks.findAll(conn, false);
         		for(TicketLocks tl : tList)
         		{
         			if (tl.getLockTime() == null)
@@ -215,6 +215,7 @@ public class TicketReleaser extends Thread {
         		
         		ArrayList<RegistrationConfirm> rcList = 
         				(ArrayList<RegistrationConfirm>) RegistrationConfirm.populateCollection(
+    										null,
     										"SELECT * FROM RegistrationConfirm " +
     										"WHERE status = '" + Constants.STATUS_ACTIVE + "'", false, RegistrationConfirm.class);
         		for(RegistrationConfirm rc : rcList)

@@ -38,7 +38,7 @@ public class AddressInfo extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public static AddressInfo[] findUserId(int userId) throws Exception
+	public static AddressInfo[] findUserId(DBConnection conn, int userId) throws Exception
 	{
 		String sql = "SELECT * " +
 				 "FROM AddressInfo " +
@@ -46,7 +46,7 @@ public class AddressInfo extends DBInterface
 				 "ORDER BY type";
 		@SuppressWarnings("unchecked")
 		ArrayList<AddressInfo> adList = 
-				(ArrayList<AddressInfo>) DBInterface.populateCollection(sql, AddressInfo.class);
+				(ArrayList<AddressInfo>) DBInterface.populateCollection(conn, sql, AddressInfo.class);
 		AddressInfo[] adi = new AddressInfo[adList.size()];
 		adi = adList.toArray(adi);
 		return(adi);

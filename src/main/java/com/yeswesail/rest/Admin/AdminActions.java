@@ -106,7 +106,7 @@ public class AdminActions {
 		try 
 		{
 			conn = DBInterface.connect();
-			ArrayList<Users> usersList = Users.findUsersbyRole(roleId);
+			ArrayList<Users> usersList = Users.findUsersbyRole(conn, roleId);
 			log.debug("Found " + usersList.size() + " users");
 			for (Users user : usersList)
 			{

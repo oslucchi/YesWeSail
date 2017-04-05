@@ -32,7 +32,7 @@ public class UsersAuth extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public static UsersAuth findToken(String token)
+	public static UsersAuth findToken(DBConnection conn, String token)
 	{
 		String sql = "SELECT * " +
 				 	 "FROM UsersAuth " +
@@ -40,7 +40,7 @@ public class UsersAuth extends DBInterface
 		UsersAuth ua = null;
 		try
 		{
-			ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+			ua = (UsersAuth) UsersAuth.populateByQuery(conn, sql, UsersAuth.class);
 		}
 		catch(Exception e)
 		{
@@ -52,7 +52,7 @@ public class UsersAuth extends DBInterface
 		return(ua);
 	}
 	
-	public static UsersAuth findUserId(int userId)
+	public static UsersAuth findUserId(DBConnection conn, int userId)
 	{
 		String sql = "SELECT * " +
 				 	 "FROM UsersAuth " +
@@ -60,7 +60,7 @@ public class UsersAuth extends DBInterface
 		UsersAuth ua = null;
 		try
 		{
-			ua = (UsersAuth) UsersAuth.populateByQuery(sql, UsersAuth.class);
+			ua = (UsersAuth) UsersAuth.populateByQuery(conn, sql, UsersAuth.class);
 		}
 		catch(Exception e)
 		{

@@ -63,7 +63,7 @@ public class EventTickets extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 	
-	public static EventTickets[] findByEventId(int eventId, int languageId) throws Exception
+	public static EventTickets[] findByEventId(DBConnection conn, int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description " +
 				 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
@@ -74,11 +74,11 @@ public class EventTickets extends DBInterface
 					 "ORDER BY ticketType, price ASC";
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTickets> tickets=
-			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+			(ArrayList<EventTickets>) EventTickets.populateCollection(conn, sql, EventTickets.class);
 		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 
-	public static EventTickets[] findByEventId(int eventId) throws Exception
+	public static EventTickets[] findByEventId(DBConnection conn, int eventId) throws Exception
 	{
 		String sql = "SELECT a.* " +
 				 	 "FROM EventTickets a " +
@@ -87,11 +87,11 @@ public class EventTickets extends DBInterface
 					 "ORDER BY ticketType, price ASC";
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTickets> tickets=
-			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+			(ArrayList<EventTickets>) EventTickets.populateCollection(conn, sql, EventTickets.class);
 		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 
-	public static EventTickets[] getAllTicketByEventId(int eventId, int languageId) throws Exception
+	public static EventTickets[] getAllTicketByEventId(DBConnection conn, int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description " +
 				 	 "FROM EventTickets a INNER JOIN EventTicketsDescription b ON " +
@@ -101,7 +101,7 @@ public class EventTickets extends DBInterface
 					 "ORDER BY ticketType, price ASC";
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTickets> tickets=
-			(ArrayList<EventTickets>) EventTickets.populateCollection(sql, EventTickets.class);
+			(ArrayList<EventTickets>) EventTickets.populateCollection(conn, sql, EventTickets.class);
 		return(tickets.toArray(new EventTickets[tickets.size()]));
 	}
 

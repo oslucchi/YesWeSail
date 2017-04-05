@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import com.owlike.genson.Genson;
 import com.yeswesail.rest.DBUtility.AddressInfo;
+import com.yeswesail.rest.DBUtility.DBConnection;
 import com.yeswesail.rest.DBUtility.EventTicketsSold;
 import com.yeswesail.rest.DBUtility.Roles;
 import com.yeswesail.rest.DBUtility.TicketLocks;
@@ -187,12 +188,12 @@ public class Utils {
 		return true;
 	}
 
-	public static boolean anyTicketAlreadySold(int eventId)
+	public static boolean anyTicketAlreadySold(DBConnection conn, int eventId)
 	{
 		try
 		{
-			TicketLocks[] tl = TicketLocks.findByEventId(eventId);
-			EventTicketsSold[] ets = EventTicketsSold.findByEventId(eventId);
+			TicketLocks[] tl = TicketLocks.findByEventId(conn, eventId);
+			EventTicketsSold[] ets = EventTicketsSold.findByEventId(conn, eventId);
 			if ((tl.length == 0) && (ets.length == 0))
 			{
 				return false;

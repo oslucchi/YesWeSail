@@ -42,7 +42,7 @@ public class EventRoute extends DBInterface
 				 	 "ORDER BY seq ";
 	
 		ArrayList<EventRoute> route = 
-				(ArrayList<EventRoute>) EventRoute.populateCollection(sql, EventRoute.class);
+				(ArrayList<EventRoute>) EventRoute.populateCollection(conn, sql, EventRoute.class);
 		if (route.size() == 0)
 			return null;
 		
@@ -59,7 +59,7 @@ public class EventRoute extends DBInterface
 				 	 "      lat = '" + lat + "' AND " +
 				 	 "      lng = '" + lng + "' ";
 		ArrayList<EventRoute> route = 
-				(ArrayList<EventRoute>) EventRoute.populateCollection(sql, EventRoute.class);
+				(ArrayList<EventRoute>) EventRoute.populateCollection(conn, sql, EventRoute.class);
 		if (route.size() == 0)
 			return null;
 		

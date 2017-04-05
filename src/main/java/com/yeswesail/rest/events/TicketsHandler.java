@@ -48,7 +48,7 @@ public class TicketsHandler {
 		EventTickets[] tickets = null;
 		try 
 		{
-			tickets = EventTickets.getAllTicketByEventId(jsonIn.eventId, languageId);
+			tickets = EventTickets.getAllTicketByEventId(null, jsonIn.eventId, languageId);
 		}
 		catch(Exception e)
 		{
@@ -132,12 +132,12 @@ public class TicketsHandler {
 			{
 				if (t.ticketType == EventTickets.WHOLE_BOAT) 
 				{
-					if (Utils.anyTicketAlreadySold(t.eventId))
+					if (Utils.anyTicketAlreadySold(conn, t.eventId))
 					{
 						DBInterface.TransactionRollback(conn);
 						return Utils.jsonizeResponse(Response.Status.NOT_ACCEPTABLE, null, languageId, "ticket.fareNotAvailable");
 					}
-					EventTickets[] tickets = EventTickets.findByEventId(t.eventId, languageId);
+					EventTickets[] tickets = EventTickets.findByEventId(conn, t.eventId, languageId);
 					for (EventTickets item : tickets)
 					{
 						while(item.getBooked() != item.getAvailable())
@@ -204,7 +204,7 @@ public class TicketsHandler {
 			et = new EventTickets(conn, tl.getEventTicketId());
 			if (et.getTicketType() == EventTickets.WHOLE_BOAT) 
 			{
-				EventTickets[] tickets = EventTickets.findByEventId(et.getEventId(), 1);
+				EventTickets[] tickets = EventTickets.findByEventId(conn, et.getEventId(), 1);
 				for (EventTickets item : tickets)
 				{
 					item.setBooked(0);
@@ -240,7 +240,7 @@ public class TicketsHandler {
 		try
 		{
 			conn = DBInterface.connect();
-			tickets = EventTickets.findByEventId(eventId, languageId);
+			tickets = EventTickets.findByEventId(conn, eventId, languageId);
 		}
 		catch(Exception e)
 		{
@@ -281,7 +281,7 @@ public class TicketsHandler {
 		try
 		{
 			conn = DBInterface.connect();
-			tickets = EventTicketsSold.getTicketSold(eventId, languageId);
+			tickets = EventTicketsSold.getTicketSold(conn, eventId, languageId);
 			EventTicketsJson[] participants = new EventTicketsJson[tickets.length];
 			int idx = 0;
 			for(EventTicketsSold item : tickets)

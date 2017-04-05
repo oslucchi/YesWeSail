@@ -46,9 +46,10 @@ public class DynamicPages extends DBInterface {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static ArrayList<DynamicPages> getAllPages(int languageId) throws Exception
+	public static ArrayList<DynamicPages> getAllPages(DBConnection conn, int languageId) throws Exception
 	{
-		return (ArrayList<DynamicPages>) populateCollection("SELECT * FROM DynamicPages WHERE languageId = " + languageId, 
+		return (ArrayList<DynamicPages>) populateCollection(conn,
+															"SELECT * FROM DynamicPages WHERE languageId = " + languageId, 
 															DynamicPages.class);
 	}
 	

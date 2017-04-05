@@ -50,19 +50,19 @@ public class TicketLocks extends DBInterface
 		String sql = "SELECT * " +
 					 "FROM TicketLocks " +
 					 "WHERE userId = " + userId;
-		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		tickets = (ArrayList<TicketLocks>) populateCollection(conn, sql, TicketLocks.class);
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 	
 	@SuppressWarnings("unchecked")
-	public static TicketLocks[] findByEventId(int eventId) throws Exception
+	public static TicketLocks[] findByEventId(DBConnection conn, int eventId) throws Exception
 	{
 		ArrayList<TicketLocks> tickets = new ArrayList<>();
 		String sql = "SELECT a.* " +
 					 "FROM TicketLocks a INNER JOIN EventTickets b ON " +
 					 "     a.eventTicketId = b.idEventTickets " +
 					 "WHERE b.eventId = " + eventId;
-		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		tickets = (ArrayList<TicketLocks>) populateCollection(conn, sql, TicketLocks.class);
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 	
@@ -83,18 +83,18 @@ public class TicketLocks extends DBInterface
 		String sql = "SELECT * " +
 					 "FROM TicketLocks " +
 					 "WHERE paymentRef = '" + paymentRef + "'";
-		tickets = (ArrayList<TicketLocks>) populateCollection(sql, TicketLocks.class);
+		tickets = (ArrayList<TicketLocks>) populateCollection(conn, sql, TicketLocks.class);
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 
 	@SuppressWarnings("unchecked")
-	public static TicketLocks[] findAll(boolean logStatement) throws Exception
+	public static TicketLocks[] findAll(DBConnection conn, boolean logStatement) throws Exception
 	{
 		ArrayList<TicketLocks> tickets = new ArrayList<>();
 		String sql = "SELECT a.* " +
 					 "FROM TicketLocks a INNER JOIN EventTickets b ON " +
 					 "     a.eventTicketId = b.idEventTickets ";
-		tickets = (ArrayList<TicketLocks>) populateCollection(sql, logStatement, TicketLocks.class);
+		tickets = (ArrayList<TicketLocks>) populateCollection(conn, sql, logStatement, TicketLocks.class);
 		return(tickets.toArray(new TicketLocks[tickets.size()]));
 	}
 	

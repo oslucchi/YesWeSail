@@ -57,7 +57,10 @@ public class DBInterface implements Serializable
 		int count = -1;
 		
 		String sql = "SELECT COUNT(*) as count FROM " + table + " WHERE " + where;
-		conn = new DBConnection();
+		if (conn == null)
+		{
+			conn = new DBConnection();
+		}
     	conn.executeQuery(sql, false);
 		ResultSet rs = conn.getRs();
 		try 
@@ -499,15 +502,19 @@ public class DBInterface implements Serializable
 		populateObject(conn, sql, this);
 	}
 	
-	public static Object populateByQuery(String sql, Class<?> objClass) throws Exception
+	public static Object populateByQuery(DBConnection conn, String sql, Class<?> objClass) throws Exception
 	{
     	String retVal = null;
 		Object objInst = objClass.newInstance();
+		boolean disconnect = false;
     	
-		DBConnection conn = null;
 		try
 		{
-			conn = new DBConnection();
+			if (conn == null)
+			{
+				disconnect = true;
+				conn = new DBConnection();
+			}
 	    	conn.executeQuery(sql, logStatement);
 			if(conn.getRs().next())
 			{
@@ -523,25 +530,32 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			DBInterface.disconnect(conn);
+			if (disconnect)
+			{
+				DBInterface.disconnect(conn);
+			}
 		}
 		throw(new Exception("No record found"));
 	}
 
-    public static ArrayList<?> populateCollection(String sql, Class<?> objClass) throws Exception
+    public static ArrayList<?> populateCollection(DBConnection conn, String sql, Class<?> objClass) throws Exception
 	{
-		return populateCollection(sql, logStatement, objClass);
+		return populateCollection(conn, sql, logStatement, objClass);
 	}
 
-    public static ArrayList<?> populateCollection(String sql, boolean logStatement, Class<?> objClass) throws Exception
+    public static ArrayList<?> populateCollection(DBConnection conn, String sql, boolean logStatement, Class<?> objClass) throws Exception
 	{
     	String retVal = null;
     	ArrayList<Object> aList = new ArrayList<Object>();
+    	boolean disconnect = false;
     	
-		DBConnection conn = null;
 		try
 		{
-			conn = new DBConnection();
+			if (conn == null)
+			{
+				conn = new DBConnection();
+				disconnect = true;
+			}
 	    	conn.executeQuery(sql, logStatement);
 			while(conn.getRs().next())
 			{
@@ -558,19 +572,23 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			DBInterface.disconnect(conn);
+			if (disconnect)
+			{
+				DBInterface.disconnect(conn);
+			}
 		}
 		return aList;
 	}
 
-	public ArrayList<?> populateCollectionOnCondition(String whereClause, Class<?> objClass) throws Exception
+	public ArrayList<?> populateCollectionOnCondition(DBConnection conn, String whereClause, Class<?> objClass) throws Exception
 	{
-		return(populateCollection("SELECT * FROM " + tableName + " " + whereClause, objClass));
+		return(populateCollection(conn, "SELECT * FROM " + tableName + " " + whereClause, objClass));
 	}
 	
-	public ArrayList<?> populateCollectionOfDistinctsOnCondition(String whereClause, String distinctColumn, Class<?> objClass) throws Exception
+	public ArrayList<?> populateCollectionOfDistinctsOnCondition(DBConnection conn, String whereClause, String distinctColumn, Class<?> objClass) throws Exception
 	{
-		return(populateCollection("SELECT DISTINCT * " +
+		return(populateCollection(conn, 
+								  "SELECT DISTINCT * " +
 								  "FROM " + tableName + " " + 
 								  whereClause + " " +
 								  "GROUP BY " + distinctColumn, objClass));
@@ -677,7 +695,7 @@ public class DBInterface implements Serializable
 		update(conn, idColumns, getWhereClauseOnId(idColumns));
     }
 
-	public static void updateCollection(ArrayList<?> collection, String idColName, Class<?> objectClass) 
+	public static void updateCollection(DBConnection conn, ArrayList<?> collection, String idColName, Class<?> objectClass) 
 			throws Exception
 	{
 		if (collection.size() == 0)
@@ -685,8 +703,12 @@ public class DBInterface implements Serializable
     	String sql = "";
 		String tableName = ((DBInterface) collection.get(0)).tableName;
 		String sqlQueryColNames = "SELECT * FROM " + tableName + " WHERE 1 = 0";
-		DBConnection conn = null;
-		conn = new DBConnection();
+		boolean disconnect = false;
+		if (conn == null)
+		{
+			conn = new DBConnection();
+			disconnect = true;
+		}
 		try 
 		{
 	    	for(int i = 0; i < collection.size(); i++)
@@ -711,7 +733,10 @@ public class DBInterface implements Serializable
 		}
 		finally
 		{
-			DBInterface.disconnect(conn);
+			if (disconnect)
+			{
+				DBInterface.disconnect(conn);
+			}
 		}
 	}
 
@@ -739,7 +764,7 @@ public class DBInterface implements Serializable
 		return(id);
 	}
 
-	public static void insertCollection(ArrayList<?> collection, String idColName, Class<?> objectClass) 
+	public static void insertCollection(DBConnection conn, ArrayList<?> collection, String idColName, Class<?> objectClass) 
 			throws Exception
 	{
 		if (collection.size() == 0)
@@ -747,8 +772,12 @@ public class DBInterface implements Serializable
     	String sql = "";
 		String tableName = ((DBInterface) collection.get(0)).tableName;
 		String sqlQueryColNames = "SELECT * FROM " + tableName + " WHERE 1 = 0";
-		DBConnection conn = null;
-		conn = new DBConnection();
+		boolean disconnect = false;
+		if (conn == null)
+		{
+			conn = new DBConnection();
+			disconnect = true;
+		}
 		try
 		{
 	    	for(int i = 0; i < collection.size(); i++)
@@ -764,7 +793,10 @@ public class DBInterface implements Serializable
 		}
     	catch(Exception e)
 		{
-			DBInterface.disconnect(conn);
+    		if (disconnect)
+			{
+    			DBInterface.disconnect(conn);
+			}
 			throw e;
 		}
 	}

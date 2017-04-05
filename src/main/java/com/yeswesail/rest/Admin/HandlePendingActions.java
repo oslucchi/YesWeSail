@@ -199,7 +199,7 @@ public class HandlePendingActions {
 			et = new EventTickets(conn, tl.getEventTicketId(), languageId);
 			ev = new Events(conn, et.getEventId(), languageId, false);
 			u = new Users(conn, tl.getUserId());
-			ai = AddressInfo.findUserId(u.getIdUsers());
+			ai = AddressInfo.findUserId(conn, u.getIdUsers());
 			if (ai.length == 0)
 			{
 				ai = new AddressInfo[2];
@@ -274,7 +274,7 @@ public class HandlePendingActions {
 			if (et.getTicketType() == EventTickets.WHOLE_BOAT)
 			{
 				log.debug("WHOLE_BOAT ticket required to be released");
-				ticketsToRelease = EventTickets.getAllTicketByEventId(et.getEventId(), 1);
+				ticketsToRelease = EventTickets.getAllTicketByEventId(conn, et.getEventId(), 1);
 			}
 			else
 			{

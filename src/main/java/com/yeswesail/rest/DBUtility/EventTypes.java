@@ -32,13 +32,13 @@ public class EventTypes extends DBInterface
 		this.populateObject(conn, sql, this);
 	}
 
-	public ArrayList<?> populateCollectionOnCondition(String whereClause, Class<?> objClass) throws Exception
+	public ArrayList<?> populateCollectionOnCondition(DBConnection conn, String whereClause, Class<?> objClass) throws Exception
 	{
 		String sql = "SELECT a.idEventTypes, b.* " +
 					 "FROM EventTypes a INNER JOIN EventTypesLanguages b ON " +
 					 "     b.eventTypeId = a.idEventTypes " + 
 					 whereClause;
-		return (ArrayList<?>) (populateCollection(sql, objClass));
+		return (ArrayList<?>) (populateCollection(conn, sql, objClass));
 	}
 
 	public int getIdEventTypes() {

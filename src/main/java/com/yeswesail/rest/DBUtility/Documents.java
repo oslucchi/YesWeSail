@@ -36,14 +36,14 @@ public class Documents extends DBInterface
 	}
 
 	@SuppressWarnings("unchecked")
-	public static Documents[] findAllUsersDoc(int languageId, int userId) throws Exception
+	public static Documents[] findAllUsersDoc(DBConnection conn, int languageId, int userId) throws Exception
 	{
 		String sql = "SELECT a.*, b.name " +
 				 	 "FROM Documents a INNER JOIN DocumentTypes b ON " +
 				 	 "     b.idDocumentTypes = a.documentTypesId " + 
 				 	 "WHERE userId = " + userId;
 		
-		docs = (ArrayList<Documents>) populateCollection(sql, Documents.class);
+		docs = (ArrayList<Documents>) populateCollection(conn, sql, Documents.class);
 		return(docs.toArray(new Documents[docs.size()]));
 	}
 	public ArrayList<String> getImages()

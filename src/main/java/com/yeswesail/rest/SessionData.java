@@ -118,18 +118,19 @@ public class SessionData {
 		if (sessionData.get(token) != null)
 			return;
 		Object[] userData = new Object[SESSION_ELEMENTS];
-		UsersAuth ua = UsersAuth.findToken(token);
-		if (ua == null)
-		{
-			throw new Exception("Token '" + token + "' not found");
-		}
-		
+		UsersAuth ua = null;
 		DBConnection conn = null;
+
 		try
 		{
 			conn = DBInterface.connect();
+			ua = UsersAuth.findToken(conn, token);
+			if (ua == null)
+			{
+				throw new Exception("Token '" + token + "' not found");
+			}
 			userData[BASIC_PROFILE] = new Users(conn, ua.getUserId());
-			userData[WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+			userData[WHOLE_PROFILE] = AddressInfo.findUserId(conn, ua.getUserId());
 			userData[LANGUAGE] = new Integer(languageId);
 		}
 		catch(Exception e)
@@ -173,9 +174,9 @@ public class SessionData {
 		return(null);
 	}
 
-	public void addUser(int userId, int languageId) throws Exception
+	public void addUser(DBConnection conn, int userId, int languageId) throws Exception
 	{
-		UsersAuth ua = UsersAuth.findUserId(userId);
+		UsersAuth ua = UsersAuth.findUserId(conn, userId);
 		if (ua == null)
 		{
 			throw new Exception("User " + userId + " not found");
@@ -211,7 +212,7 @@ public class SessionData {
 		{
 			conn = DBInterface.connect();
 			userData[BASIC_PROFILE] = new Users(conn, ua.getUserId());
-			userData[WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+			userData[WHOLE_PROFILE] = AddressInfo.findUserId(conn, ua.getUserId());
 			userData[LANGUAGE] = new Integer(languageId);
 		}
 		catch(Exception e)

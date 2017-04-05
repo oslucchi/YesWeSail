@@ -62,7 +62,7 @@ public class LoginConfirm {
 		try 
 		{
 			conn = DBInterface.connect();
-			if ((ua = UsersAuth.findToken(token)) == null)
+			if ((ua = UsersAuth.findToken(conn, token)) == null)
 			{
 				DBInterface.disconnect(conn);
 				return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, 
@@ -242,7 +242,7 @@ public class LoginConfirm {
 						.entity(ResponseEntityCreator.formatEntity(prop.getDefaultLang(), "auth.invalidEmail")).build();
 			}
 			UsersAuth ua = null;
-			if ((ua = UsersAuth.findToken(token)) == null)
+			if ((ua = UsersAuth.findToken(conn, token)) == null)
 			{
 				DBInterface.disconnect(conn);
 				return Response.status(Response.Status.UNAUTHORIZED)

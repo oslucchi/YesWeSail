@@ -107,7 +107,7 @@ public class Events extends DBInterface implements Comparable<Events>
 				 	 "      status = '" + Constants.STATUS_ACTIVE + "'";
 		}
 		getSingleEventWithLanguageFallbackPolicy(conn, sql, sqlFallback);
-		getTicketMaxAndMin(events);
+		getTicketMaxAndMin(conn, events);
 	}
 
 	public void getEvents(DBConnection conn, int id, 
@@ -139,7 +139,7 @@ public class Events extends DBInterface implements Comparable<Events>
 			sqlFallback += " AND status = '" + Constants.STATUS_ACTIVE + "'";
 		}
 		getSingleEventWithLanguageFallbackPolicy(conn, sql, sqlFallback);
-		getTicketMaxAndMin(events);
+		getTicketMaxAndMin(conn, events);
 	}
 
 	private void getSingleEventWithLanguageFallbackPolicy(
@@ -190,7 +190,7 @@ public class Events extends DBInterface implements Comparable<Events>
 	
 	@SuppressWarnings("unchecked")
 	private static ArrayList<Events> 
-		getEventsListWithLanguageFallbackPolicy(String sql, String whereClause, int languageId) throws Exception
+		getEventsListWithLanguageFallbackPolicy(DBConnection conn, String sql, String whereClause, int languageId) throws Exception
 	{
 		whereClause = whereClause.trim().toUpperCase().startsWith("WHERE") ?
 							whereClause.trim().substring(6) : whereClause.trim();
@@ -198,7 +198,7 @@ public class Events extends DBInterface implements Comparable<Events>
 					   "      b.languageId = " + languageId + 
 					   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
 		log.trace("Getting events in the primary language requested");
-		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
+		ArrayList<Events> events = (ArrayList<Events>) Events.populateCollection(conn, sql + where, Events.class);
 		String sep = "";
 		String eventIds = "";
 		if (!events.isEmpty())
@@ -214,7 +214,7 @@ public class Events extends DBInterface implements Comparable<Events>
 				"      b.languageId = " + Constants.getAlternativeLanguage(languageId) +
 				   (whereClause.isEmpty() || whereClause.toUpperCase().startsWith("ORDER") ? " " : " AND ") + whereClause;
 		log.trace("Getting other events in alternative language");
-		ArrayList<Events> fallbackEvents = (ArrayList<Events>) Events.populateCollection(sql + where, Events.class);
+		ArrayList<Events> fallbackEvents = (ArrayList<Events>) Events.populateCollection(conn, sql + where, Events.class);
 		events.addAll(fallbackEvents);
 		for(Events event : events)
 		{
@@ -223,7 +223,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		return(sort(events));
 	}
 	
-	public static Events[] findHot(int languageId) throws Exception
+	public static Events[] findHot(DBConnection conn, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
@@ -234,8 +234,8 @@ public class Events extends DBInterface implements Comparable<Events>
 							 "        a.hotEvent = 1 " +
 						 	 "ORDER BY dateStart ";
 		
-		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(sql, whereClause, languageId);
-		getTicketMaxAndMin(events);
+		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(conn, sql, whereClause, languageId);
+		getTicketMaxAndMin(conn, events);
 		
 		log.trace("Event and tickets retireved. Set locale and prepare return list accordingly with limits");
 		ArrayList<Events> retList = new ArrayList<Events>();
@@ -259,23 +259,23 @@ public class Events extends DBInterface implements Comparable<Events>
 		
 	}
 
-	public static Events[] findHot(String token) throws Exception
+	public static Events[] findHot(DBConnection conn, String token) throws Exception
 	{
 		int languageId = SessionData.getInstance().getLanguage(token);
-		return(findHot(languageId));
+		return(findHot(conn, languageId));
 	}
 
-	public static Events[] findByFilter(String whereClause, int languageId) throws Exception
+	public static Events[] findByFilter(DBConnection conn, String whereClause, int languageId) throws Exception
 	{		
 		String sql = "SELECT a.*, b.description AS `title`, b.languageId " +
 				 	 "FROM Events AS a INNER JOIN EventDescription AS b " +
 				 	 "     ON a.idEvents = b.eventId AND " +
 					 "		  b.anchorZone = 0 ";
 		
-		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(sql, whereClause, languageId);
+		ArrayList<Events> events = getEventsListWithLanguageFallbackPolicy(conn, sql, whereClause, languageId);
 		if (events.size() == 0)
 			return null;
-		getTicketMaxAndMin(events);
+		getTicketMaxAndMin(conn, events);
 		
 		for(Events event : events)
 		{
@@ -302,14 +302,14 @@ public class Events extends DBInterface implements Comparable<Events>
 		return(events.toArray(new Events[events.size()]));
 	}
 
-	public static Events[] findByFilter(String whereClause, String token) throws Exception
+	public static Events[] findByFilter(DBConnection conn, String whereClause, String token) throws Exception
 	{
 		int languageId = SessionData.getInstance().getLanguage(token);
-		return(findByFilter(whereClause, languageId));
+		return(findByFilter(conn, whereClause, languageId));
 	}
 
 	@SuppressWarnings("unchecked")
-	private static void getTicketMaxAndMin(ArrayList<Events> events)
+	private static void getTicketMaxAndMin(DBConnection conn, ArrayList<Events> events)
 	{
 		if ((events == null) || (events.size() == 0))
 			return;
@@ -332,7 +332,7 @@ public class Events extends DBInterface implements Comparable<Events>
 		ArrayList<Events> tickets = null;
 		try 
 		{
-			tickets = (ArrayList<Events>) Events.populateCollection(sql, Events.class);
+			tickets = (ArrayList<Events>) Events.populateCollection(conn, sql, Events.class);
 		} 
 		catch(Exception e1) 
 		{

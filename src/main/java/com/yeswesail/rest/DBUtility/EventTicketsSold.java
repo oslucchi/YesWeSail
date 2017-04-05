@@ -29,11 +29,11 @@ public class EventTicketsSold extends DBInterface
 		idColName = "idEventTicketsSold";
 	}
 
-	private static void fillRecorsFound(ArrayList<EventTicketsSold> list, int languageId) throws Exception
+	private static void fillRecorsFound(DBConnection conn, ArrayList<EventTicketsSold> list, int languageId) throws Exception
 	{
 		for(EventTicketsSold ev : list)
 		{
-			Events[] events = Events.findByFilter("WHERE idEvents = " + ev.getEventId(), languageId);
+			Events[] events = Events.findByFilter(conn, "WHERE idEvents = " + ev.getEventId(), languageId);
 			for(Events item : events)
 			{
 				ev.dateStart = item.getDateStart();
@@ -66,7 +66,7 @@ public class EventTicketsSold extends DBInterface
 		title = e.getTitle();
 	}
 
-	public static Users[] findParticipants(int eventId) throws Exception
+	public static Users[] findParticipants(DBConnection conn, int eventId) throws Exception
 	{
 		String sql = "SELECT DISTINCT c.name, c.surname, c.idUsers, c.imageURL " +
 					 "FROM Users c INNER JOIN ( " +
@@ -76,11 +76,11 @@ public class EventTicketsSold extends DBInterface
 					 "      ) ON " +
 					 "	 a.userId = c.idUsers";
 		@SuppressWarnings("unchecked")
-		ArrayList<Users> tickets = (ArrayList<Users>) Users.populateCollection(sql, Users.class);
+		ArrayList<Users> tickets = (ArrayList<Users>) Users.populateCollection(conn, sql, Users.class);
 		return(tickets.toArray(new Users[tickets.size()]));
 	}
 	
-	public static EventTicketsSold[] getTicketSold(int eventId, int languageId) throws Exception
+	public static EventTicketsSold[] getTicketSold(DBConnection conn, int eventId, int languageId) throws Exception
 	{
 		String sql = "SELECT *, c.description, b.price " +
 					 "FROM EventTicketsDescription c INNER JOIN ( " +
@@ -92,12 +92,12 @@ public class EventTicketsSold extends DBInterface
 					 "WHERE c.languageId = " + languageId;
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
-			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
-		fillRecorsFound(tickets, languageId);
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(conn, sql, EventTicketsSold.class);
+		fillRecorsFound(conn, tickets, languageId);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
-	public static EventTicketsSold[] findByEventId(int eventId) throws Exception
+	public static EventTicketsSold[] findByEventId(DBConnection conn, int eventId) throws Exception
 	{
 		String sql = "SELECT a.* " +
 					 "FROM EventTicketsSold a INNER JOIN EventTickets b ON " +
@@ -105,12 +105,12 @@ public class EventTicketsSold extends DBInterface
 					 "WHERE b.eventId = " + eventId;
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
-			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
-		fillRecorsFound(tickets, Constants.LNG_IT);
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(conn, sql, EventTicketsSold.class);
+		fillRecorsFound(conn, tickets, Constants.LNG_IT);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 
-	public static EventTicketsSold[] findTicketSoldToUser(int userId, int languageId) throws Exception
+	public static EventTicketsSold[] findTicketSoldToUser(DBConnection conn, int userId, int languageId) throws Exception
 	{
 		String sql = "SELECT a.*, b.eventId, c.description, b.price " +
 					 "FROM (EventTicketsDescription c INNER JOIN ( " +
@@ -122,8 +122,8 @@ public class EventTicketsSold extends DBInterface
 					 "WHERE a.userId = " + userId;
 		@SuppressWarnings("unchecked")
 		ArrayList<EventTicketsSold> tickets = 
-			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(sql, EventTicketsSold.class);
-		fillRecorsFound(tickets, languageId);
+			(ArrayList<EventTicketsSold>) EventTicketsSold.populateCollection(conn, sql, EventTicketsSold.class);
+		fillRecorsFound(conn, tickets, languageId);
 		return(tickets.toArray(new EventTicketsSold[tickets.size()]));
 	}
 

@@ -124,7 +124,7 @@ public class CartHandler {
 				EventTickets ev = new EventTickets(conn, ticket.getEventTicketId());
 				if (ev.getTicketType() == EventTickets.WHOLE_BOAT)
 				{
-					EventTickets[] et = EventTickets.getAllTicketByEventId(ev.getEventId(), languageId);
+					EventTickets[] et = EventTickets.getAllTicketByEventId(conn, ev.getEventId(), languageId);
 					for (EventTickets item : et)
 					{
 						if (item.getTicketType() == EventTickets.WHOLE_BOAT)

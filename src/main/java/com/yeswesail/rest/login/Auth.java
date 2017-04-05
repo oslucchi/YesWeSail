@@ -154,11 +154,11 @@ public class Auth {
 		try 
 		{
 			log.debug("Looking up the token '" + token + "' to check if it exists already in the DB");
-			ua = UsersAuth.findToken(token);
+			ua = UsersAuth.findToken(conn, token);
 			if (ua == null)
 			{
 				log.debug("Not found, checking if the user " + userId + " already has one...");
-				ua = UsersAuth.findUserId(userId);
+				ua = UsersAuth.findUserId(conn, userId);
 			}
 			if (ua == null)
 			{
@@ -195,8 +195,8 @@ public class Auth {
 		}
 		try 
 		{
-			userProfile[SessionData.BASIC_PROFILE] = (u == null ? new Users(userId) : u);
-			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(userId);
+			userProfile[SessionData.BASIC_PROFILE] = (u == null ? new Users(conn, userId) : u);
+			userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(conn, userId);
 		}
 		catch(Exception e) 
 		{
@@ -285,7 +285,7 @@ public class Auth {
 			return Response.status(Status.OK).entity(ut.jsonize()).build();
 		}
 		
-		if (UsersAuth.findToken(token) == null)
+		if (UsersAuth.findToken(null, token) == null)
 		{
 			ut.addToJsonContainer("authorized", "false", true);
 			return Response.status(Status.UNAUTHORIZED).entity(ut.jsonize()).build();
@@ -380,7 +380,7 @@ public class Auth {
 		try 
 		{
 			conn = DBInterface.connect();
-			if ((ua = UsersAuth.findToken(token)) == null)
+			if ((ua = UsersAuth.findToken(conn, token)) == null)
 			{
 				sa.removeUser(token);
 				DBInterface.disconnect(conn);
@@ -412,14 +412,14 @@ public class Auth {
 			ua.update(conn, "idUsersAuth");
 			if (userProfile == null)
 			{
-				sa.addUser(ua.getUserId(), Constants.getLanguageCode(language));
+				sa.addUser(conn, ua.getUserId(), Constants.getLanguageCode(language));
 				userProfile = new Object[SessionData.SESSION_ELEMENTS];
 				userProfile = sa.getSessionData(ua.getToken());
 			}
 			else
 			{
 				userProfile[SessionData.BASIC_PROFILE] = new Users(conn, ua.getUserId());
-				userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(ua.getUserId());
+				userProfile[SessionData.WHOLE_PROFILE] = AddressInfo.findUserId(conn, ua.getUserId());
 				userProfile[SessionData.LANGUAGE] = Constants.getLanguageCode(language);
 				sa.updateSession(token, userProfile);
 			}
@@ -626,7 +626,7 @@ public class Auth {
 		try 
 		{
 			conn = DBInterface.connect();
-			UsersAuth ua = UsersAuth.findToken(token);
+			UsersAuth ua = UsersAuth.findToken(conn, token);
 			if (ua != null)
 				ua.delete(conn, ua.getIdUsersAuth());
 		}
