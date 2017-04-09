@@ -589,9 +589,9 @@ public class UsersHandler {
 		SessionData sd = SessionData.getInstance();
 		int languageId = sd.getLanguage(token);
 		jsonIn.idUsers = userId;
-		log.debug("user id " + userId + " isadmin " + !Utils.userIsAdmin(token, languageId) +
-				  " email requested for change " + sd.getBasicProfile(token).getEmail() + 
-				  " email in json data " + jsonIn.email);
+		log.debug("Request user update for user id " + userId + " (isadmin " + Utils.userIsAdmin(token, languageId) + ") " +
+				  " email from session data '" + sd.getBasicProfile(token).getEmail() + "' " + 
+				  " email in json data '" + jsonIn.email + "'");
 		
 		if (!Utils.userIsAdmin(token, languageId) && (jsonIn.email.compareTo(sd.getBasicProfile(token).getEmail()) != 0))
 		{
