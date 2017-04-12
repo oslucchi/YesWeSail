@@ -155,7 +155,8 @@ public class Utils {
 	public static boolean userIsAdmin(String token, int languageId)
 	{
 		SessionData sd = SessionData.getInstance();
-		if (sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR)
+		if ((sd.getBasicProfile(token) == null) || 
+			(sd.getBasicProfile(token).getRoleId() != Roles.ADMINISTRATOR))
 		{
 			return false;
 		}

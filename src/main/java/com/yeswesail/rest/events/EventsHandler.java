@@ -636,23 +636,51 @@ public class EventsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response eventDetails(EventJson jsonIn, 
-								 @HeaderParam("Language") String language, @HeaderParam("Edit-Mode") boolean editMode)
+								 @HeaderParam("Authorization") String token,
+								 @HeaderParam("Language") String language, 
+								 @HeaderParam("Edit-Mode") boolean editMode)
 	{
 		Genson genson = new Genson();
-		log.debug("Request is edit? " + editMode + ". Language requested is " + language);
+		log.debug("Language requested is " + language);
 		int languageId = Utils.setLanguageId(language);
 
 		Events event = null;
 		DBConnection conn = null;
-		try 
+		Users userQuerying = SessionData.getInstance().getBasicProfile(token);
+		int idUsers = -1;
+		if (userQuerying != null)
+		{
+			idUsers = userQuerying.getIdUsers();
+		}
+		int idShipowner = -1;
+		try
 		{
 			conn = DBInterface.connect();
+			event = new Events(conn, jsonIn.eventId);
+			idShipowner = event.getShipOwnerId();
+		}
+		catch(Exception e)
+		{
+			log.warn("Exception " + e.getMessage(), e);
+			DBInterface.disconnect(conn);
+			return Utils.jsonizeResponse(Response.Status.SERVICE_UNAVAILABLE, e, languageId, "generic.execError");
+		}
+
+		try 
+		{
 			if (editMode)
 			{
+				log.debug("Event requested in edit mode, returning it even if it is not active");
 				event = new Events(conn, jsonIn.eventId, languageId, false, false);
+			}
+			else if (Utils.userIsAdmin(token, languageId) || (idShipowner == idUsers))
+			{
+				log.debug("Event requested by admin or shipowner, returning it even if it is not active");
+				event = new Events(conn, jsonIn.eventId, languageId, false, true);
 			}
 			else
 			{
+				log.debug("Event requested generic user, returning it ONLY if it is active");
 				event = new Events(conn, jsonIn.eventId, languageId, true);
 			}
 			// Make sure the imageURL is set to large regardless of what is the DB
@@ -660,7 +688,7 @@ public class EventsHandler {
 									.replace("small", "large")
 									.replace("medium", "large"));
 		}
-		catch(Exception e) 
+		catch(Exception e)
 		{
 			log.warn("Exception " + e.getMessage(), e);
 			DBInterface.disconnect(conn);
