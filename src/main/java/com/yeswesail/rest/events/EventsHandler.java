@@ -30,6 +30,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.Response.StatusType;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.multipart.BodyPart;
 import org.glassfish.jersey.media.multipart.FormDataMultiPart;
@@ -1142,7 +1143,7 @@ public class EventsHandler {
 
 	}
 
-	private Response eventHandler(EventJson jsonIn, String language, String token)
+	private Response eventHandler(EventJson jsonIn, String language, String token, boolean isEdit)
 	{
 		int languageId = Utils.setLanguageId(language);
 
@@ -1205,13 +1206,7 @@ public class EventsHandler {
 			DBInterface.disconnect(conn);
 		}
 
-		if (jh.jasonize(event, language) != Response.Status.OK)
-		{
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-
-		return Response.status(Response.Status.OK).entity(jh.json).build();
+		return eventDetails(jsonIn, token, language, isEdit);
 	}
 	
 	private Response eventDetailsHandler(EventJson jsonIn, String language, int actionType)
@@ -1389,7 +1384,7 @@ public class EventsHandler {
 		{
 			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
-		return eventHandler(jsonIn, language, token); // Create event
+		return eventHandler(jsonIn, language, token, false); // Create event
 	}
 	
 	@PUT
@@ -1397,10 +1392,11 @@ public class EventsHandler {
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response eventUpdate(EventJson jsonIn, @PathParam("eventId") int eventId, 
-								@HeaderParam("Language") String language, @HeaderParam("Authorization") String token)
+								@HeaderParam("Language") String language, 
+								@HeaderParam("Authorization") String token)
 	{
 		jsonIn.eventId = eventId;
-		return eventHandler(jsonIn, language, token); // Update event
+		return eventHandler(jsonIn, language, token, true); // Update event
 	}
 	
 	@POST
@@ -1461,9 +1457,15 @@ public class EventsHandler {
 				{
 					et.setPrice(t.price);
 					et.update(conn, "idEventTickets");
+					eventTickets = (EventTickets[]) ArrayUtils.removeElement(eventTickets, et);
 				}
 			}
 		}
+		for(EventTickets t : eventTickets)
+		{
+			t.delete(conn, t.getIdEventTickets());
+		}
+
 	}
 	
 	@POST
