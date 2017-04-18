@@ -1384,6 +1384,10 @@ public class EventsHandler {
 		{
 			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "generic.unauthorized");
 		}
+		if (!Boats.userHasBoats(jsonIn.shipOwnerId))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "events.create.noboats");
+		}
 		return eventHandler(jsonIn, language, token, false); // Create event
 	}
 	

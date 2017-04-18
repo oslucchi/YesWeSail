@@ -61,6 +61,30 @@ public class Boats extends DBInterface
 		return(boats.toArray(new Boats[boats.size()]));
 	}
 
+	public static boolean userHasBoats(int ownerId)
+	{
+		String sql = "SELECT * " +
+				 	 "FROM Boats " +
+				 	 "WHERE ownerId = " + ownerId;
+		DBConnection conn = null;
+		try
+		{
+			conn = DBInterface.connect();
+			if (populateCollection(conn, sql, Boats.class).isEmpty())
+				return(false);
+			else
+				return(true);
+		}
+		catch(Exception e)
+		{
+			return(false);
+		}
+		finally
+		{
+			DBInterface.disconnect(conn);
+		}
+	}
+	
 	public int getIdBoats() {
 		return idBoats;
 	}
