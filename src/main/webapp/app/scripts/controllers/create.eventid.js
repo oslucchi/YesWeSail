@@ -484,6 +484,7 @@ angular.module('yeswesailApp').controller('EditEventCtrl', function ($scope, $ht
                     'Language': $scope.selectedLanguage
                 }
             }).then(function (res) {
+                $scope.tempTickets=res.data.tickets;
                 $scope.eventForm.$setPristine();
                 toastr.success($translate.instant('createeventid.saved'));
             }, function (err) {
