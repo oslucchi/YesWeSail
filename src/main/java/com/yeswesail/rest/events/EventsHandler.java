@@ -76,78 +76,6 @@ public class EventsHandler {
 	JsonHandler jh = new JsonHandler();
 	String contextPath = null;
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-/*
-	@POST
-	@Path("/hotEvents")
-	@Produces(MediaType.APPLICATION_JSON)
-	@Consumes(MediaType.APPLICATION_JSON)
-	public Response hotEvents(EventJson jsonIn, @HeaderParam("Language") String language)
-	{
-		/*
-		 * TODO 
-		 * define search criteria. 
-		 * For now next 4 expiring with no preference criteria.
-		 * It might be smart to present the one with only few tickets remaining. it just need to change the query
-		 */
-/*
-		int languageId = Utils.setLanguageId(language);
-
-		Events[] hot = null;
-		try 
-		{
-			log.trace("Getting hot events via findHot method");
-			hot = Events.findHot(Constants.getLanguageCode(language));
-			log.trace("Retrieval completed");
-		}
-		catch(Exception e) 
-		{
-			log.error("Exception '" + e.getMessage() + "' on Events.findHot with language " + language);
-			return Utils.jsonizeResponse(Response.Status.INTERNAL_SERVER_ERROR, e, languageId, "generic.execError");
-		}
-		// No record found. return an empty object
-		if (hot == null)
-		{
-			log.trace("No record found");
-			return Response.status(Response.Status.OK).entity("{}").build();
-		}
-		
-		ArrayList<ArrayList<Events>> hotList = organizeEvents(hot);
-		
-		if (jh.jasonize(hotList, language) != Response.Status.OK)
-		{
-			log.error("Error '" + jh.json + "' jsonizing the hot event object");
-			return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-					.entity(jh.json).build();
-		}
-		
-		HashMap<Integer, Users> shipownerList = new HashMap<>();
-		for(ArrayList<Events> listItem : hotList)
-		{
-			for(Events e : listItem)
-			{
-				try 
-				{
-					shipownerList.put(e.getShipOwnerId(), new Users(e.getShipOwnerId()));
-				}
-				catch(Exception e1)
-				{
-					log.debug("Excption " + e1.getMessage() + " retrieving data for shipowner " + 
-							  e.getShipOwnerId());
-				}
-			}
-		}
-		HashMap<String, Object> jsonResponse = new HashMap<>();
-		jsonResponse.put("events", hotList);
-		jsonResponse.put("shipowners", shipownerList);
-		
-		Genson genson = new Genson();
-		String entity = genson.serialize(jsonResponse);
-
-
-		return Response.status(Response.Status.OK).entity(entity).build();
-	}
-*/
-	
 	@POST
 	@Path("/hotEvents")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -1387,6 +1315,10 @@ public class EventsHandler {
 		if (!Boats.userHasBoats(jsonIn.shipOwnerId))
 		{
 			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "events.create.noboats");
+		}
+		if ((jsonIn.title == null) || (jsonIn.title.isEmpty()))
+		{
+			return Utils.jsonizeResponse(Status.UNAUTHORIZED, null, languageId, "events.create.missingTitle");
 		}
 		return eventHandler(jsonIn, language, token, false); // Create event
 	}
