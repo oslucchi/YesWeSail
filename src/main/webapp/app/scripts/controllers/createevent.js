@@ -44,9 +44,11 @@ angular.module('yeswesailApp')
             }
             $http.post(URLs.ddns + 'rest/events/create', temporaryEvent).then(function (res) {
                 $window.location.href = '/edit-event/'+res.data.event.idEvents;
+                 $scope.createError=null;
                 //$window.location.reload();
                 ngDialog.closeAll();                
             }, function (err) {
+                $scope.createError=err.data.error;
                 console.log(err);
             });
         };

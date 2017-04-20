@@ -82,7 +82,7 @@
         <div class="ui large button" ng-click="closeModals()">{{"global.cancel" | translate}}</div>
       </div>
 
-      <div class="ui error message"></div>
+      <div class="ui error message" ng-class="{'visible': createError}">{{createError}}</div>
 
     </ng-form>
 
